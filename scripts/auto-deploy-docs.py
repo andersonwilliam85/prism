@@ -479,8 +479,8 @@ nav:
     return config_path
 
 def generate_walmart_css(docs_server):
-    """Generate Walmart-branded CSS"""
-    css_content = """/* Walmart Brand Colors */
+    """Generate company-branded CSS (defaults to Walmart colors as example)"""
+    css_content = """/* Company Brand Colors (Walmart example) */
 :root {
   /* Primary Colors */
   --md-primary-fg-color: #0053e2;        /* Blue.100 */
@@ -683,6 +683,14 @@ def main():
             profile["setup_progress"]["tasks"]["setup_docs_server"]["timestamp"] = datetime.now().isoformat()
         
         with open(config_path, 'w') as f:
+            yaml.dump(profile, f, default_flow_style=False, sort_keys=False)
+    
+    # Start server
+    start_docs_server(docs_server)
+
+if __name__ == "__main__":
+    main()
+'w') as f:
             yaml.dump(profile, f, default_flow_style=False, sort_keys=False)
     
     # Start server

@@ -1,6 +1,8 @@
-# 🐶 Walmart Dev Environment Setup
+# 🐶 Dev Onboarding Package
 
 **One-command setup for a production-ready development environment!**
+
+*Configurable for any company - example configuration for Walmart included*
 
 ## What This Does
 
@@ -29,17 +31,24 @@ Check: `python3 --version` or `python --version`
 
 ## Quick Start
 
-### 1. Download this package
+### 1. Download/Clone this package
 
 ```bash
-# If you have git:
-git clone https://github.com/walmart/dev-setup.git
-cd walmart-dev-setup
+# Clone from your company's repo
+git clone https://github.com/yourcompany/dev-onboarding.git
+cd dev-onboarding
 
-# Or download and extract the ZIP
+# Or download the ZIP
 ```
 
-### 2. Install dependencies
+### 2. **IMPORTANT: Customize for your company first!**
+
+Before running, edit the config files (see [Customization](#customization-for-your-company) below):
+
+- `config/resources.yaml` - Company links
+- `config/tools.yaml` - Proxy, artifact repos, company tools
+
+### 3. Install dependencies
 
 ```bash
 pip3 install -r requirements.txt

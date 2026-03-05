@@ -1,10 +1,11 @@
 # Company Resources Configuration
 # These links appear on the documentation homepage
 # Fully customizable per company/team!
+# Example: Walmart configuration
 
 company:
-  name: "Walmart"
-  internal_domain: "walmart.com"
+  name: "Walmart"  # Change this to your company name
+  internal_domain: "walmart.com"  # Change to your domain
   
 resources:
   # Developer Experience & Tools

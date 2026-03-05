@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Walmart Dev Environment Setup - FULL IMPLEMENTATION
+Dev Onboarding Package - FULL IMPLEMENTATION
 
 Automated development environment installer for Mac, Windows, and Ubuntu.
 Sets up folder structure, tools, git config, SSH keys, and documentation server.

@@ -29,10 +29,10 @@ git:
     key_type: "ed25519"       # ed25519 (recommended) or rsa
     key_comment: ""           # Comment for SSH key (usually email)
     
-  # GitHub/GitLab configuration
+  # GitHub/GitLab configuration (example: Walmart GitHub Enterprise)
   github:
     username: ""              # GitHub username
-    enterprise_url: "https://github.walmart.com"  # Walmart GitHub Enterprise
+    enterprise_url: "https://github.walmart.com"  # Company GitHub Enterprise URL
   
   # Common git aliases
   aliases:

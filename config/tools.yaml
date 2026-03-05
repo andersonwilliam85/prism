@@ -274,7 +274,7 @@ tools:
           - "sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq"
           - "sudo chmod +x /usr/bin/yq"
 
-  # Code Puppy (optional Walmart tool)
+  # Code Puppy (example: Walmart's AI coding assistant)
   code-puppy:
     description: "AI coding assistant"
     required: false
