@@ -1,0 +1,21 @@
+{
+  "name": "@prism/acme-corp-config",
+  "version": "1.0.0",
+  "description": "Prism config template - customize for your company",
+  "main": "package.yaml",
+  "files": [
+    "package.yaml",
+    "config/",
+    "assets/",
+    "README.md"
+  ],
+  "keywords": ["prism","config","dev-environment","template","company","customizable"],
+  "author": "Will Anderson <andersonwilliam85@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andersonwilliam85/prism.git",
+    "directory": "config-packages/acme-corp"
+  },
+  "homepage": "https://github.com/andersonwilliam85/prism#readme"
+}

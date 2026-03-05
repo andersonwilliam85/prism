@@ -126,17 +126,22 @@ Automatically installs:
 - Editor configs (VS Code, Cursor, Zed)
 - And more...
 
-### 🎭 **Config Packages**
+### 🎭 **Config Packages (via npm!)**
 
-Choose pre-built configurations:
+Choose from pre-built configurations published on npm:
 
-- **personal-dev-config** - For freelancers & indie devs
-- **startup-config** - Fast, lean, flexible
-- **fortune500-config** - Enterprise-ready
-- **university-config** - Research & teaching
-- **opensource-project-config** - Community projects
-- **consulting-firm-config** - Multi-client setups
-- **acme-corp-config** - Template for your company
+- **@prism/personal-dev-config** - For freelancers & indie devs
+- **@prism/startup-config** - Fast, lean, flexible
+- **@prism/fortune500-config** - Enterprise-ready
+- **@prism/university-config** - Research & teaching
+- **@prism/opensource-config** - Community projects
+- **@prism/consulting-config** - Multi-client setups
+- **@prism/acme-corp-config** - Template for your company
+
+**Packages are fetched from npm** (via unpkg CDN) automatically!  
+No npm installation required. Works offline with local fallback.
+
+See [NPM Packages Documentation](docs/NPM_PACKAGES.md) for details.
 
 ### 📝 **Career Management**
 
@@ -282,6 +287,31 @@ Watch as Prism builds your perfect dev environment.
 ---
 
 ## Package System
+
+### Distributed via npm
+
+All Prism config packages are published to **npm public registry** under the `@prism` scope!
+
+**Benefits:**
+- ✅ **No custom registry** - Uses public npm infrastructure
+- ✅ **CDN delivery** - Fast global distribution via unpkg.com
+- ✅ **No npm required** - Prism fetches packages directly from CDN
+- ✅ **Versioned** - Semantic versioning built-in
+- ✅ **Discoverable** - Searchable on npmjs.com
+- ✅ **Offline fallback** - Local packages work too
+
+### Browsing Packages
+
+```bash
+# List available packages (fetches from npm)
+python3 scripts/npm_package_fetcher.py list
+
+# Search on npm
+npm search @prism
+
+# Browse on npmjs.com
+https://www.npmjs.com/search?q=%40prism
+```
 
 ### Using Built-in Packages
 

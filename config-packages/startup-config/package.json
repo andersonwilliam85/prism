@@ -1,0 +1,28 @@
+{
+  "name": "@prism/startup-config",
+  "version": "1.0.0",
+  "description": "Prism config for startups - fast, lean, and flexible",
+  "main": "package.yaml",
+  "files": [
+    "package.yaml",
+    "config/",
+    "assets/",
+    "README.md"
+  ],
+  "keywords": [
+    "prism",
+    "config",
+    "dev-environment",
+    "startup",
+    "agile",
+    "fast-moving"
+  ],
+  "author": "Will Anderson <andersonwilliam85@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andersonwilliam85/prism.git",
+    "directory": "config-packages/startup-config"
+  },
+  "homepage": "https://github.com/andersonwilliam85/prism#readme"
+}
