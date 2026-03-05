@@ -15,7 +15,7 @@ Sets up a complete, standardized dev environment with:
 ✅ **Career management system** (goals, wins, 1-on-1s, performance review prep)  
 ✅ **Progress tracking** (resume setup anytime, see what's done)  
 ✅ **CLI tools** (new-project, archive-project, find-project)  
-✅ **Optional: Code Puppy** (AI coding assistant)  
+✅ **Optional: AI assistants** (Claude Code, GitHub Copilot, etc.)  
 
 ## Supported Platforms
 
@@ -110,7 +110,7 @@ The installer will:
 
 | Tool | Purpose | Status |
 |------|---------|--------|
-| **Code Puppy** | AI coding assistant | Optional/Company-specific |
+| **AI Assistants** | Claude Code, Copilot, etc. | Optional |
 
 ## Folder Structure Created
 
@@ -310,7 +310,7 @@ tools:
   git: true
   rancher: true
   skaffold: true
-  code_puppy: false
+  ai_assistant: false
 templates:
   - python-fastapi-vbd
   - react-your-ui
@@ -471,7 +471,7 @@ After setup completes, you'll see:
    • Edit: ~/Development/tooling/dev-docs-server/config/user-profile.yaml
    • Add your accomplishment!
 
-5. Optional: Install Code Puppy
+5. Optional: Configure AI assistants (Claude Code, Copilot, etc.)
    • Visit: Your company's developer portal
    • AI coding assistant
 

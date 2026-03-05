@@ -5,7 +5,7 @@ Dev Onboarding Package
 Automated development environment installer for Mac, Windows, and Ubuntu.
 Sets up folder structure, tools, git config, SSH keys, and documentation server.
 
-No Code Puppy required - fully standalone!
+Fully standalone CLI installer!
 
 Usage:
     python3 install.py                    # Interactive setup

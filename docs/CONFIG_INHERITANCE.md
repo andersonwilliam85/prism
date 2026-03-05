@@ -265,7 +265,7 @@ career:
 - **Total: 9 tools** (all inherited and merged!)
 
 **Documentation homepage shows:**
-- Company resources (DX, Internal Dev Portal, Code Puppy)
+- Company resources (Internal Dev Portal, Documentation)
 - US resources (GCP Console, BigQuery)
 - Dept resources (Supply Chain Confluence, WMS Docs)
 - Team resources (Receiving API docs, Team Slack)

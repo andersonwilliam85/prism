@@ -1,0 +1,18 @@
+0000000000000000000000000000000000000000 1ac8240260ad0359533f7edb115352680d2698dc Will Anderson <will.anderson@walmart.com> 1772726676 -0600	commit (initial): feat: Initial dev environment setup package
+1ac8240260ad0359533f7edb115352680d2698dc b474a2bab71cf78caf52b5030dc9b0c53122684e Will Anderson <will.anderson@walmart.com> 1772726777 -0600	commit: Remove Cortex references from all documentation and config files
+b474a2bab71cf78caf52b5030dc9b0c53122684e fe94f040ad869a7ee3e2dbd1e0d228fa0fb8d77f Will Anderson <will.anderson@walmart.com> 1772726821 -0600	commit: chore: Remove remaining Cortex references
+fe94f040ad869a7ee3e2dbd1e0d228fa0fb8d77f 05aeede9430974d02c5005149fa38deada1d4c5a Will Anderson <will.anderson@walmart.com> 1772727097 -0600	commit: feat: Add IDEs, resources config, and idempotent installer foundation
+05aeede9430974d02c5005149fa38deada1d4c5a 3fce855725c3bc9d1bd2a8e6d11282612f7f5697 Will Anderson <will.anderson@walmart.com> 1772727239 -0600	commit: refactor: Rebrand as generic 'Dev Onboarding' package
+3fce855725c3bc9d1bd2a8e6d11282612f7f5697 42d087d6ad0f39520e7a83ef72667cc98f05d1e0 Will Anderson <will.anderson@walmart.com> 1772727628 -0600	commit: feat: Add hierarchical config inheritance system
+42d087d6ad0f39520e7a83ef72667cc98f05d1e0 ee6674f6b1979c767165a12d4f1c495e38d4045c Will Anderson <will.anderson@walmart.com> 1772727683 -0600	commit: docs: Add inheritance demo with real-world example
+ee6674f6b1979c767165a12d4f1c495e38d4045c ebe5c919d620c90c6ec4f3285cd07980002308dc Will Anderson <will.anderson@walmart.com> 1772728171 -0600	commit: feat: Configurable welcome page, web UI installer, and config packages
+ebe5c919d620c90c6ec4f3285cd07980002308dc 32b1d2e6993e128cfae57389100afb84dd5ad28d Will Anderson <will.anderson@walmart.com> 1772728737 -0600	commit: feat: Complete package system with Walmart & ACME packages
+32b1d2e6993e128cfae57389100afb84dd5ad28d e5ec5e58ec111f3a185bf9493e5db9fc2f162226 Will Anderson <will.anderson@walmart.com> 1772729187 -0600	commit: feat: Add personal-dev package for indie developers
+e5ec5e58ec111f3a185bf9493e5db9fc2f162226 82759250ff9dc5e25dc9d9d1eb1ffd4dad080bb6 Will Anderson <will.anderson@walmart.com> 1772729342 -0600	commit: feat: Add package selection as first step in web UI
+82759250ff9dc5e25dc9d9d1eb1ffd4dad080bb6 ff2dbc0d4d059a22762a28e429081346614e24b5 Will Anderson <will.anderson@walmart.com> 1772729363 -0600	commit: chore: Add Flask to requirements for web UI installer
+ff2dbc0d4d059a22762a28e429081346614e24b5 11c0e3fa557dea9276ff1cb1e45bcc43116f9cb5 Will Anderson <will.anderson@walmart.com> 1772729587 -0600	commit: feat: Make user info fields configurable per package/team
+11c0e3fa557dea9276ff1cb1e45bcc43116f9cb5 6d8956684b9a800f5982cabd8e0336083773a1a4 Will Anderson <will.anderson@walmart.com> 1772729963 -0600	commit: feat: Prepare for open source - remove Walmart from core, add registry
+6d8956684b9a800f5982cabd8e0336083773a1a4 f4126a53121f1195b5e184b7a50784c023fdef76 Will Anderson <will.anderson@walmart.com> 1772729982 -0600	commit: chore: Complete removal of Walmart from core docs
+f4126a53121f1195b5e184b7a50784c023fdef76 c475200c7375b394142951bd7aa2b92318541add Will Anderson <will.anderson@walmart.com> 1772730047 -0600	commit: docs: Add OPEN_SOURCE_READY summary document
+c475200c7375b394142951bd7aa2b92318541add 1c1ba89b8b61efa2f16f87e9375b915ced42621f Will Anderson <will.anderson@walmart.com> 1772730635 -0600	commit: feat: Add 5 new config packages - startup, fortune500, consulting, university, opensource
+1c1ba89b8b61efa2f16f87e9375b915ced42621f b86c4b652de1f436b4a6b249569b784813b43bd0 Will Anderson <will.anderson@walmart.com> 1772730890 -0600	commit: chore: Move walmart-config to separate monorepo

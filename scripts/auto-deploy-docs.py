@@ -3,7 +3,7 @@
 Auto-Deploy Documentation Server
 
 This script automatically builds and deploys your personal documentation server.
-No Code Puppy required - fully standalone!
+Fully standalone documentation generator!
 
 Run after initial setup completes, or manually: python3 auto-deploy-docs.py
 """
