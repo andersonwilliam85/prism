@@ -14,7 +14,6 @@ Sets up a complete, standardized dev environment with:
 ✅ **Progress tracking** (resume setup anytime, see what's done)  
 ✅ **CLI tools** (new-project, archive-project, find-project)  
 ✅ **Optional: Code Puppy** (AI coding assistant)  
-✅ **Coming soon: Cortex** (Advanced AI agent framework)  
 
 ## Supported Platforms
 
@@ -496,3 +495,4 @@ Your browser will automatically open to your new documentation site!
 ---
 
 **Happy coding! 🚀**
+🚀**

@@ -293,22 +293,6 @@ tools:
         url: "https://puppy.walmart.com/install"
         instructions: "Visit https://puppy.walmart.com to install"
 
-  # Cortex (future)
-  cortex:
-    description: "Advanced AI agent framework (Coming soon!)"
-    required: false
-    verify: "cortex --version"
-    install:
-      mac:
-        method: coming_soon
-        instructions: "Check back later for Cortex installation"
-      windows:
-        method: coming_soon
-        instructions: "Check back later for Cortex installation"
-      ubuntu:
-        method: coming_soon
-        instructions: "Check back later for Cortex installation"
-
 # Platform-specific package managers
 package_managers:
   mac:

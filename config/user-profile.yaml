@@ -100,7 +100,6 @@ tools_selected:
   
   # Optional tools
   code-puppy: false
-  cortex: false
 
 # Setup Progress Tracker
 setup_progress:
