@@ -229,12 +229,72 @@ def main():
     # Show banner
     print_banner(platform_name, platform_detail)
     
-    # TODO: Full installer implementation
-    print("\n🚧 Full installer coming in next iteration!")
-    print("\nFor now, you can manually:")
-    print("  1. Edit config/user-profile.yaml")
-    print("  2. Run: python3 scripts/auto-deploy-docs.py")
-    print()
+    # Import installation engine
+    from installer_engine import InstallationEngine
+    
+    # Gather user info (interactive)
+    user_info = {}
+    if not args.config:
+        print("\n👤 Let's get your information:\n")
+        user_info['name'] = input("Your name: ").strip()
+        user_info['email'] = input("Your email: ").strip()
+    
+    # Get or fetch package
+    package_path = None
+    if args.package:
+        # Try to fetch the package
+        import sys
+        sys.path.insert(0, str(SCRIPT_DIR / "scripts"))
+        from npm_package_fetcher import fetch_package
+        
+        package_name = args.package
+        if not package_name.startswith('@prism/'):
+            package_name = f"@prism/{package_name}-config"
+        
+        print(f"\n📦 Fetching package: {package_name}")
+        
+        try:
+            dest = SCRIPT_DIR / "temp_install" / package_name.split('/')[-1]
+            result = fetch_package(package_name, "latest", str(dest))
+            if result:
+                package_path = result
+                print(f"✅ Package fetched: {package_path}")
+        except Exception as e:
+            print(f"⚠️  Could not fetch from npm: {e}")
+            # Try local
+            pkg_id = package_name.replace('@prism/', '').replace('-config', '')
+            local_path = SCRIPT_DIR / "config-packages" / pkg_id
+            if local_path.exists():
+                package_path = str(local_path)
+                print(f"📁 Using local package: {package_path}")
+    
+    # Run installation
+    print("\n🚀 Starting installation...\n")
+    
+    def progress_callback(step, message, level):
+        """Print progress updates"""
+        pass  # Already printed by engine
+    
+    engine = InstallationEngine(
+        config_package=package_path,
+        user_info=user_info,
+        progress_callback=progress_callback
+    )
+    
+    try:
+        engine.install()
+        print("\n✅ Installation complete! 🎉")
+        print(f"\nYour workspace is ready at: {engine.workspace}")
+        print("\nNext steps:")
+        print("  1. Review your SSH key: cat ~/.ssh/id_ed25519.pub")
+        print("  2. Add it to GitHub/GitLab")
+        print(f"  3. Start coding in: {engine.workspace}/projects")
+        print("\nHappy coding! 🚀\n")
+    except Exception as e:
+        print(f"\n❌ Installation failed: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

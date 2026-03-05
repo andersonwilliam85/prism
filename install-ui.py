@@ -549,22 +549,32 @@ INDEX_HTML = """
                 const result = await response.json();
                 
                 if (result.success) {
-                    logOutput.innerHTML += `<div>✅ ${result.message}</div>`;
-                    if (result.path) {
-                        logOutput.innerHTML += `<div>📁 Package location: ${result.path}</div>`;
+                    // Show all progress messages
+                    if (result.progress) {
+                        for (let msg of result.progress) {
+                            const emoji = {
+                                'success': '✅',
+                                'error': '❌',
+                                'warning': '⚠️',
+                                'info': 'ℹ️'
+                            }[msg.level] || 'ℹ️';
+                            
+                            const color = {
+                                'success': '#10b981',
+                                'error': '#ef4444',
+                                'warning': '#f59e0b',
+                                'info': '#3b82f6'
+                            }[msg.level] || '#3b82f6';
+                            
+                            logOutput.innerHTML += `<div style="color: ${color};">${emoji} ${msg.message}</div>`;
+                            logOutput.scrollTop = logOutput.scrollHeight;
+                            await new Promise(resolve => setTimeout(resolve, 100));
+                        }
                     }
                     
-                    // Simulate additional steps
-                    const steps = [
-                        'Detecting platform...',
-                        'Validating configuration...',
-                        'Package ready for use!'
-                    ];
-                    
-                    for (let step of steps) {
-                        await new Promise(resolve => setTimeout(resolve, 500));
-                        logOutput.innerHTML += `<div>✅ ${step}</div>`;
-                        logOutput.scrollTop = logOutput.scrollHeight;
+                    logOutput.innerHTML += `<div style="color: #10b981; margin-top: 20px;">✅ <strong>Installation complete!</strong></div>`;
+                    if (result.workspace) {
+                        logOutput.innerHTML += `<div style="margin-top: 10px;">📁 Workspace: ${result.workspace}</div>`;
                     }
                     
                     // Go to complete
@@ -574,10 +584,10 @@ INDEX_HTML = """
                     document.getElementById('step7').classList.add('active');
                     updateProgress();
                 } else {
-                    logOutput.innerHTML += `<div style="color: #ef4444;">❌ Error: ${result.error}</div>`;
+                    logOutput.innerHTML += `<div style="color: #ef4444; margin-top: 20px;">❌ <strong>Error:</strong> ${result.error}</div>`;
                 }
             } catch (error) {
-                logOutput.innerHTML += `<div style="color: #ef4444;">❌ Error: ${error.message}</div>`;
+                logOutput.innerHTML += `<div style="color: #ef4444; margin-top: 20px;">❌ <strong>Error:</strong> ${error.message}</div>`;
             }
         }
         
@@ -855,7 +865,9 @@ def install():
     try:
         import sys
         sys.path.insert(0, str(ROOT_DIR / "scripts"))
+        sys.path.insert(0, str(ROOT_DIR))
         from npm_package_fetcher import fetch_package
+        from installer_engine import InstallationEngine
         
         package_name = data.get('package')
         user_info = data.get('userInfo', {})
@@ -876,35 +888,51 @@ def install():
         dest_dir = ROOT_DIR / "temp_install" / package_name.split('/')[-1]
         dest_dir.parent.mkdir(exist_ok=True)
         
+        package_path = None
+        
         try:
             result = fetch_package(package_name, "latest", str(dest_dir), unpkg_url)
             if result:
-                # Save user info to config
-                config_file = dest_dir / "user-config.yaml"
-                with open(config_file, 'w') as f:
-                    yaml.dump(user_info, f)
-                
-                return jsonify({
-                    "success": True, 
-                    "message": f"Package {package_name} fetched successfully!",
-                    "path": str(result)
-                })
+                package_path = result
         except Exception as e:
             print(f"Package fetch failed: {e}, trying local...")
             # Try local package
             pkg_id = package_name.replace('@prism/', '').replace('-config', '')
             local_path = ROOT_DIR / "config-packages" / pkg_id
             if local_path.exists():
-                return jsonify({
-                    "success": True,
-                    "message": f"Using local package: {pkg_id}",
-                    "path": str(local_path)
-                })
+                package_path = str(local_path)
             else:
                 return jsonify({
                     "success": False,
                     "error": f"Package not found: {package_name}"
                 }), 404
+        
+        # Run full installation using shared engine
+        progress_log = []
+        
+        def progress_callback(step, message, level):
+            """Collect progress messages"""
+            progress_log.append({
+                "step": step,
+                "message": message,
+                "level": level
+            })
+        
+        engine = InstallationEngine(
+            config_package=package_path,
+            user_info=user_info,
+            progress_callback=progress_callback
+        )
+        
+        # Run installation
+        engine.install()
+        
+        return jsonify({
+            "success": True,
+            "message": "Installation completed successfully!",
+            "workspace": str(engine.workspace),
+            "progress": progress_log
+        })
         
     except Exception as e:
         import traceback
