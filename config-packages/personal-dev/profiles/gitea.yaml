@@ -1,0 +1,108 @@
+# ============================================================================
+# GITEA PROFILE (Self-hosted)
+# ============================================================================
+# For developers using self-hosted Gitea
+
+user:
+  name: "Your Name"  # UPDATE THIS
+  email: "your-email@example.com"  # UPDATE THIS
+  username: "your-gitea-username"  # UPDATE THIS
+
+# Git configuration for Gitea
+git:
+  user:
+    name: "Your Name"  # UPDATE THIS
+    email: "your-email@example.com"
+  
+  platform:
+    name: "Gitea"
+    url: "https://git.yourdomain.com"  # UPDATE THIS - your Gitea instance
+    username: "your-gitea-username"  # UPDATE THIS
+  
+  config:
+    credential_helper: "osxkeychain"  # macOS
+    # credential_helper: "manager-core"  # Windows
+    # credential_helper: "libsecret"  # Linux
+
+# Tools for Gitea workflow
+tools_required:
+  - git
+  - tea             # Gitea CLI (optional but recommended)
+
+tools_available:
+  - vscode
+  - docker
+  - docker-compose
+
+# Gitea server configuration
+gitea:
+  server:
+    url: "https://git.yourdomain.com"  # UPDATE THIS
+    api_url: "https://git.yourdomain.com/api/v1"
+  
+  # Self-hosting info
+  hosting:
+    type: "self-hosted"  # or "cloud-hosted" (e.g., Gitea Cloud)
+    version: "1.21+"
+
+# Gitea repositories to clone
+repositories:
+  # Add your repos here:
+  # - name: "my-project"
+  #   url: "https://git.yourdomain.com/your-username/my-project"
+  #   description: "My project"
+
+# Gitea Actions (CI/CD) - like GitHub Actions!
+ci_cd:
+  platform: "Gitea Actions"
+  config_file: ".gitea/workflows/"
+  # Gitea Actions is compatible with GitHub Actions!
+  compatible_with: "GitHub Actions"
+
+# SSH Key setup
+ssh:
+  key_type: "ed25519"
+  key_path: "~/.ssh/id_ed25519"
+  instructions: |
+    Add your SSH key to Gitea:
+    1. Generate key: ssh-keygen -t ed25519 -C "your-email@example.com"
+    2. Copy key: pbcopy < ~/.ssh/id_ed25519.pub
+    3. Add to Gitea: https://git.yourdomain.com/user/settings/keys
+
+# Gitea features
+features:
+  - "Lightweight & fast"
+  - "Self-hosted (full control!)"
+  - "GitHub Actions compatible"
+  - "Pull requests"
+  - "Issues & projects"
+  - "Wiki"
+  - "Package registry"
+  - "Container registry"
+  - "No vendor lock-in"
+
+# Gitea resources
+resources:
+  gitea_docs: "https://docs.gitea.io"
+  gitea_actions: "https://docs.gitea.io/en-us/usage/actions/overview/"
+  gitea_cli: "https://gitea.com/gitea/tea"
+  gitea_community: "https://discourse.gitea.io"
+
+# Self-hosting notes
+self_hosting:
+  advantages:
+    - "Full control over your code"
+    - "No monthly fees"
+    - "Privacy (your server, your data)"
+    - "Customize as needed"
+  
+  recommended_for:
+    - "Personal projects"
+    - "Small teams"
+    - "Privacy-conscious developers"
+    - "Learning DevOps"
+
+# Career tracking
+career:
+  portfolio:
+    gitea_profile: "https://git.yourdomain.com/your-username"  # UPDATE THIS

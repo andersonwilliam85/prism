@@ -1,0 +1,102 @@
+# ============================================================================
+# GITLAB PROFILE (Self-hosted or GitLab.com)
+# ============================================================================
+# For developers using GitLab for personal or team projects
+
+user:
+  name: "Your Name"  # UPDATE THIS
+  email: "your-email@example.com"  # UPDATE THIS
+  username: "your-gitlab-username"  # UPDATE THIS
+
+# Git configuration for GitLab
+git:
+  user:
+    name: "Your Name"  # UPDATE THIS
+    email: "your-email@example.com"  # Should match GitLab email
+  
+  platform:
+    name: "GitLab"
+    url: "https://gitlab.com"  # Or your self-hosted: https://gitlab.yourcompany.com
+    username: "your-gitlab-username"  # UPDATE THIS
+  
+  # GitLab-specific settings
+  config:
+    credential_helper: "osxkeychain"  # macOS
+    # credential_helper: "manager-core"  # Windows
+    # credential_helper: "libsecret"  # Linux
+
+# Tools for GitLab workflow
+tools_required:
+  - git
+  - glab            # GitLab CLI - essential!
+
+tools_available:
+  - vscode          # Good GitLab integration
+  - docker
+  - docker-compose
+  - kubectl
+
+# GitLab projects to clone
+repositories:
+  # Add your projects here:
+  # - name: "my-awesome-project"
+  #   url: "https://gitlab.com/your-username/my-awesome-project"
+  #   description: "My awesome project"
+  # 
+  # - name: "dotfiles"
+  #   url: "https://gitlab.com/your-username/dotfiles"
+  #   description: "My dotfiles"
+
+# GitLab CI/CD
+ci_cd:
+  platform: "GitLab CI/CD"
+  config_file: ".gitlab-ci.yml"
+  runners:
+    # Use GitLab.com shared runners (free tier)
+    shared: true
+    # Or set up your own runners:
+    # - name: "my-runner"
+    #   tags: ["docker", "linux"]
+
+# SSH Key setup
+ssh:
+  key_type: "ed25519"
+  key_path: "~/.ssh/id_ed25519"
+  instructions: |
+    Add your SSH key to GitLab:
+    1. Generate key: ssh-keygen -t ed25519 -C "your-email@example.com"
+    2. Copy key: pbcopy < ~/.ssh/id_ed25519.pub  # macOS
+    3. Add to GitLab: https://gitlab.com/-/profile/keys (or your self-hosted URL)
+
+# GitLab-specific features
+features:
+  - "Built-in CI/CD (better than GitHub Actions!)"
+  - "Container Registry (free!)"
+  - "Issue tracking & boards"
+  - "Wiki for documentation"
+  - "Merge requests"
+  - "GitLab Pages (free static site hosting)"
+
+# GitLab-specific resources
+resources:
+  gitlab_docs: "https://docs.gitlab.com"
+  gitlab_ci_docs: "https://docs.gitlab.com/ee/ci/"
+  gitlab_cli: "https://gitlab.com/gitlab-org/cli"
+  gitlab_learn: "https://about.gitlab.com/learn/"
+
+# Self-hosted GitLab configuration (if applicable)
+self_hosted:
+  enabled: false  # Set to true if using self-hosted
+  # url: "https://gitlab.yourcompany.com"
+  # api_url: "https://gitlab.yourcompany.com/api/v4"
+  # registry_url: "registry.yourcompany.com"
+
+# Career tracking
+career:
+  portfolio:
+    gitlab_profile: "https://gitlab.com/your-username"  # UPDATE THIS
+  
+  showcase_projects:
+    # Pin your best projects
+    - "my-awesome-project"
+    - "another-cool-project"

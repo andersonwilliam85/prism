@@ -1,0 +1,80 @@
+# ============================================================================
+# GITHUB PROFILE (Personal/Public)
+# ============================================================================
+# For developers using GitHub.com for personal projects
+
+user:
+  name: "Your Name"  # UPDATE THIS
+  email: "your-email@gmail.com"  # UPDATE THIS
+  username: "your-github-username"  # UPDATE THIS
+
+# Git configuration for GitHub
+git:
+  user:
+    name: "Your Name"  # UPDATE THIS
+    email: "your-email@gmail.com"  # Should match GitHub email
+  
+  platform:
+    name: "GitHub"
+    url: "https://github.com"
+    username: "your-github-username"  # UPDATE THIS
+  
+  # GitHub-specific settings
+  config:
+    credential_helper: "osxkeychain"  # macOS
+    # credential_helper: "manager-core"  # Windows
+    # credential_helper: "libsecret"  # Linux
+
+# Tools for GitHub workflow
+tools_required:
+  - git
+  - gh              # GitHub CLI - essential!
+
+tools_available:
+  - vscode          # Great GitHub integration
+  - docker
+  - docker-compose
+
+# GitHub repositories to clone (your personal repos)
+repositories:
+  # Add your repos here:
+  # - name: "my-awesome-project"
+  #   url: "https://github.com/your-username/my-awesome-project"
+  #   description: "My awesome project"
+  # 
+  # - name: "dotfiles"
+  #   url: "https://github.com/your-username/dotfiles"
+  #   description: "My dotfiles"
+
+# GitHub Actions workflows
+ci_cd:
+  platform: "GitHub Actions"
+  config_file: ".github/workflows/"
+
+# SSH Key setup
+ssh:
+  key_type: "ed25519"
+  key_path: "~/.ssh/id_ed25519"
+  instructions: |
+    Add your SSH key to GitHub:
+    1. Generate key: ssh-keygen -t ed25519 -C "your-email@gmail.com"
+    2. Copy key: pbcopy < ~/.ssh/id_ed25519.pub  # macOS
+    3. Add to GitHub: https://github.com/settings/keys
+
+# GitHub-specific resources
+resources:
+  github_docs: "https://docs.github.com"
+  github_actions: "https://docs.github.com/actions"
+  github_cli: "https://cli.github.com"
+  github_education: "https://education.github.com"  # Free stuff for students!
+
+# Career tracking (for GitHub portfolio)
+career:
+  portfolio:
+    github_profile: "https://github.com/your-username"  # UPDATE THIS
+    readme_profile: true  # Create awesome GitHub profile README!
+  
+  showcase_repos:
+    # Pin your best projects on your GitHub profile
+    - "my-awesome-project"
+    - "another-cool-project"

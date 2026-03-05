@@ -1,0 +1,169 @@
+# ============================================================================
+# MULTI-PLATFORM PROFILE
+# ============================================================================
+# For developers using multiple git platforms
+# Example: GitHub for OSS, GitLab for personal projects, Work uses Bitbucket
+
+user:
+  name: "Your Name"  # UPDATE THIS
+  email: "your-primary-email@example.com"  # UPDATE THIS
+  username: "your-username"  # UPDATE THIS
+
+# Git configuration (global defaults)
+git:
+  user:
+    name: "Your Name"  # UPDATE THIS
+    email: "your-primary-email@example.com"  # UPDATE THIS
+  
+  # Multiple platforms configured
+  platforms:
+    github:
+      url: "https://github.com"
+      username: "your-github-username"  # UPDATE THIS
+      email: "your-github-email@gmail.com"  # Can be different per platform
+      ssh_key: "~/.ssh/id_ed25519_github"
+    
+    gitlab:
+      url: "https://gitlab.com"  # or self-hosted
+      username: "your-gitlab-username"  # UPDATE THIS
+      email: "your-gitlab-email@example.com"
+      ssh_key: "~/.ssh/id_ed25519_gitlab"
+    
+    work:
+      # Your work git platform (Bitbucket, GitHub Enterprise, etc.)
+      url: "https://git.yourcompany.com"  # UPDATE THIS
+      username: "your-work-username"  # UPDATE THIS
+      email: "you@yourcompany.com"
+      ssh_key: "~/.ssh/id_ed25519_work"
+
+# Tools for multi-platform workflow
+tools_required:
+  - git
+  - gh              # GitHub CLI
+  - glab            # GitLab CLI
+
+tools_available:
+  - tea             # Gitea CLI (if using Gitea)
+  - vscode
+  - docker
+  - docker-compose
+
+# SSH Configuration (multiple keys)
+ssh:
+  # Separate SSH keys per platform (recommended!)
+  keys:
+    - name: "GitHub"
+      path: "~/.ssh/id_ed25519_github"
+      email: "your-github-email@gmail.com"
+    
+    - name: "GitLab"
+      path: "~/.ssh/id_ed25519_gitlab"
+      email: "your-gitlab-email@example.com"
+    
+    - name: "Work"
+      path: "~/.ssh/id_ed25519_work"
+      email: "you@yourcompany.com"
+  
+  # SSH config file setup
+  config_file: "~/.ssh/config"
+  config_template: |
+    # GitHub
+    Host github.com
+      HostName github.com
+      User git
+      IdentityFile ~/.ssh/id_ed25519_github
+    
+    # GitLab
+    Host gitlab.com
+      HostName gitlab.com
+      User git
+      IdentityFile ~/.ssh/id_ed25519_gitlab
+    
+    # Work
+    Host git.yourcompany.com
+      HostName git.yourcompany.com
+      User git
+      IdentityFile ~/.ssh/id_ed25519_work
+
+# Git config per directory (conditional includes)
+git_conditional_config:
+  # Use different git config based on project directory
+  # Add to ~/.gitconfig:
+  template: |
+    # Personal projects (GitHub)
+    [includeIf "gitdir:~/Projects/personal/"]
+      path = ~/.gitconfig-github
+    
+    # Open source (GitLab)
+    [includeIf "gitdir:~/Projects/open-source/"]
+      path = ~/.gitconfig-gitlab
+    
+    # Work projects
+    [includeIf "gitdir:~/Projects/work/"]
+      path = ~/.gitconfig-work
+  
+  configs:
+    github: |
+      [user]
+        name = Your Name
+        email = your-github-email@gmail.com
+    
+    gitlab: |
+      [user]
+        name = Your Name
+        email = your-gitlab-email@example.com
+    
+    work: |
+      [user]
+        name = Your Name
+        email = you@yourcompany.com
+
+# Projects organization
+projects:
+  workspace: "~/Projects"
+  
+  structure:
+    personal/:
+      platform: "GitHub"
+      description: "Personal projects"
+    
+    open-source/:
+      platform: "GitLab"
+      description: "OSS contributions"
+    
+    work/:
+      platform: "Work Git"
+      description: "Work projects"
+    
+    freelance/:
+      platform: "Varies"
+      description: "Client projects"
+
+# CI/CD platforms
+ci_cd:
+  platforms:
+    - "GitHub Actions (for GitHub repos)"
+    - "GitLab CI/CD (for GitLab repos)"
+    - "Work CI/CD (for work repos)"
+
+# Resources
+resources:
+  github: "https://docs.github.com"
+  gitlab: "https://docs.gitlab.com"
+  multi_ssh: "https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent"
+  git_conditional: "https://git-scm.com/docs/git-config#_conditional_includes"
+
+# Tips for multi-platform workflow
+tips:
+  - "Use separate SSH keys per platform for better security"
+  - "Use git conditional includes to auto-switch email per project directory"
+  - "Organize projects by platform: ~/Projects/github/, ~/Projects/gitlab/, etc."
+  - "Install all CLIs: gh, glab, tea for easier management"
+  - "Consider using .gitconfig-github, .gitconfig-gitlab for platform-specific settings"
+
+# Career tracking
+career:
+  portfolio:
+    github: "https://github.com/your-username"
+    gitlab: "https://gitlab.com/your-username"
+    personal_site: "https://yourname.dev"

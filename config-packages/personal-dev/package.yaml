@@ -1,0 +1,128 @@
+# ============================================================================
+# PERSONAL DEV CONFIG PACKAGE
+# ============================================================================
+# Perfect for freelancers, indie developers, small teams, and personal projects
+# Supports: GitHub, GitLab, Bitbucket, Gitea, and more!
+
+package:
+  name: "personal-dev-config"
+  version: "1.0.0"
+  description: "Personal development environment for freelancers and indie developers"
+  author: "Dev Onboarding Community"
+  homepage: "https://github.com/dev-onboarding/personal-config"
+  support:
+    github: "https://github.com/dev-onboarding/personal-config/issues"
+    community: "https://discord.gg/dev-onboarding"
+  
+  type: "personal"  # Not a company - personal/freelance
+  
+  requires:
+    onboarding_version: ">=1.0.0"
+    python_version: ">=3.8"
+  
+  install:
+    target_dir: "config/"
+    
+    files:
+      - source: "welcome.yaml"
+        dest: "config/welcome.yaml"
+        description: "Welcome page for personal devs"
+      
+      - source: "resources.yaml"
+        dest: "config/resources.yaml"
+        description: "Free developer resources"
+    
+    directories:
+      - source: "base/"
+        dest: "config/base/"
+        description: "Base personal dev config"
+      
+      - source: "profiles/"
+        dest: "config/profiles/"
+        description: "Pre-configured profiles (GitHub, GitLab, etc.)"
+  
+  post_install:
+    message: |
+      🎉 Personal Dev config installed!
+      
+      Choose your git platform profile:
+      1. GitHub (public)   - profiles/github.yaml
+      2. GitLab            - profiles/gitlab.yaml
+      3. Bitbucket         - profiles/bitbucket.yaml
+      4. Gitea (self-host) - profiles/gitea.yaml
+      5. Multiple/Custom   - Edit config/base/personal-dev.yaml
+      
+      Next steps:
+      1. Copy chosen profile to config/user-profile.yaml
+      2. Run: python3 install-ui.py
+      3. Start coding! 🚀
+
+# Package contents
+contents:
+  base_config: "base/personal-dev.yaml"
+  welcome_page: "welcome.yaml"
+  resources: "resources.yaml"
+  
+  # Pre-configured profiles
+  profiles:
+    - id: "github"
+      name: "GitHub (Personal/Public)"
+      file: "profiles/github.yaml"
+      description: "Using GitHub.com for personal projects"
+    
+    - id: "gitlab"
+      name: "GitLab (Self-hosted or GitLab.com)"
+      file: "profiles/gitlab.yaml"
+      description: "Using GitLab for repositories"
+    
+    - id: "bitbucket"
+      name: "Bitbucket"
+      file: "profiles/bitbucket.yaml"
+      description: "Using Bitbucket for repositories"
+    
+    - id: "gitea"
+      name: "Gitea (Self-hosted)"
+      file: "profiles/gitea.yaml"
+      description: "Using self-hosted Gitea"
+    
+    - id: "multi"
+      name: "Multiple Platforms"
+      file: "profiles/multi-platform.yaml"
+      description: "Using multiple git platforms"
+
+# Distribution
+distribution:
+  local:
+    path: "config-packages/personal-dev/"
+    discoverable: true
+  
+  git:
+    url: "https://github.com/dev-onboarding/personal-config"
+    branch: "main"
+
+# Metadata
+metadata:
+  tags:
+    - personal
+    - freelance
+    - indie
+    - small-team
+    - no-corporate
+    - github
+    - gitlab
+    - bitbucket
+    - gitea
+  
+  keywords:
+    - freelancer
+    - indie-developer
+    - personal-projects
+    - side-projects
+    - open-source
+  
+  company_size: "personal"  # Not a company!
+  regions: ["Global"]
+  
+  last_updated: "2026-03-04"
+  maintainers:
+    - "Dev Onboarding Community"

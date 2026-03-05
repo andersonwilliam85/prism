@@ -1,0 +1,274 @@
+# ============================================================================
+# PERSONAL DEV RESOURCES
+# ============================================================================
+# Free/cheap resources for indie developers and freelancers
+
+company:
+  name: "Personal Dev"
+
+resources:
+  # Git Platforms
+  git_platforms:
+    - name: "GitHub"
+      icon: "🐙"
+      url: "https://github.com"
+      description: "Most popular, best for portfolio & OSS"
+      tier: "Free (unlimited repos, 2000 Actions minutes/month)"
+    
+    - name: "GitLab"
+      icon: "🦊"
+      url: "https://gitlab.com"
+      description: "Better CI/CD, can self-host"
+      tier: "Free (unlimited repos, 400 CI/CD minutes/month)"
+    
+    - name: "Bitbucket"
+      icon: "🚣"
+      url: "https://bitbucket.org"
+      description: "Good for Atlassian ecosystem"
+      tier: "Free (unlimited repos, 50 Pipeline minutes/month)"
+    
+    - name: "Gitea"
+      icon: "☕"
+      url: "https://gitea.io"
+      description: "Self-hosted, lightweight, free"
+      tier: "Free (self-host on your own server)"
+  
+  # Free Deployment Platforms
+  deployment:
+    - name: "Vercel"
+      icon: "▲"
+      url: "https://vercel.com"
+      description: "Deploy frontend instantly (Next.js, React, Vue)"
+      tier: "Free (Hobby plan)"
+    
+    - name: "Netlify"
+      icon: "🌐"
+      url: "https://netlify.com"
+      description: "Static sites, serverless functions"
+      tier: "Free (100 GB bandwidth/month)"
+    
+    - name: "Render"
+      icon: "🚀"
+      url: "https://render.com"
+      description: "Full-stack apps, databases, cron jobs"
+      tier: "Free (750 hours/month)"
+    
+    - name: "Railway"
+      icon: "🚂"
+      url: "https://railway.app"
+      description: "Deploy anything with ease"
+      tier: "Free ($5 credit/month)"
+    
+    - name: "Fly.io"
+      icon: "✈️"
+      url: "https://fly.io"
+      description: "Deploy apps globally"
+      tier: "Free (3 shared-cpu-1x VMs)"
+    
+    - name: "Cloudflare Pages"
+      icon: "☁️"
+      url: "https://pages.cloudflare.com"
+      description: "Static sites with unlimited bandwidth"
+      tier: "Free (unlimited bandwidth!)"
+  
+  # Backend as a Service (BaaS)
+  backend_services:
+    - name: "Supabase"
+      icon: "🔥"
+      url: "https://supabase.com"
+      description: "PostgreSQL, Auth, Storage, Realtime"
+      tier: "Free (500 MB database, 1 GB storage)"
+    
+    - name: "Firebase"
+      icon: "🔥"
+      url: "https://firebase.google.com"
+      description: "Firestore, Auth, Hosting, Functions"
+      tier: "Free (Spark plan)"
+    
+    - name: "PlanetScale"
+      icon: "🪐"
+      url: "https://planetscale.com"
+      description: "MySQL database with branches"
+      tier: "Free (5 GB storage)"
+    
+    - name: "Neon"
+      icon: "🐛"
+      url: "https://neon.tech"
+      description: "Serverless PostgreSQL"
+      tier: "Free (3 GB storage)"
+  
+  # Learning Resources (FREE!)
+  learning:
+    - name: "freeCodeCamp"
+      icon: "🎓"
+      url: "https://freecodecamp.org"
+      description: "Complete web dev curriculum (FREE!)"
+      tier: "Free"
+    
+    - name: "The Odin Project"
+      icon: "⚡"
+      url: "https://theodinproject.com"
+      description: "Full-stack curriculum (FREE!)"
+      tier: "Free"
+    
+    - name: "MDN Web Docs"
+      icon: "📖"
+      url: "https://developer.mozilla.org"
+      description: "Web technology reference"
+      tier: "Free"
+    
+    - name: "roadmap.sh"
+      icon: "🗺️"
+      url: "https://roadmap.sh"
+      description: "Developer roadmaps & guides"
+      tier: "Free"
+    
+    - name: "Exercism"
+      icon: "🏃"
+      url: "https://exercism.org"
+      description: "Coding practice with mentorship"
+      tier: "Free"
+  
+  # Developer Tools
+  developer_tools:
+    - name: "VS Code"
+      icon: "💻"
+      url: "https://code.visualstudio.com"
+      description: "Best free code editor"
+      tier: "Free"
+    
+    - name: "Postman"
+      icon: "📨"
+      url: "https://postman.com"
+      description: "API testing & documentation"
+      tier: "Free"
+    
+    - name: "Insomnia"
+      icon: "🐜"
+      url: "https://insomnia.rest"
+      description: "API client (alternative to Postman)"
+      tier: "Free"
+    
+    - name: "DBeaver"
+      icon: "🗄️"
+      url: "https://dbeaver.io"
+      description: "Universal database client"
+      tier: "Free"
+  
+  # Design & Assets
+  design_assets:
+    - name: "Figma"
+      icon: "🎨"
+      url: "https://figma.com"
+      description: "Design tool (free for personal use)"
+      tier: "Free (up to 3 projects)"
+    
+    - name: "Unsplash"
+      icon: "📸"
+      url: "https://unsplash.com"
+      description: "Free high-quality images"
+      tier: "Free"
+    
+    - name: "Heroicons"
+      icon: "🧑‍🎨"
+      url: "https://heroicons.com"
+      description: "Beautiful free SVG icons"
+      tier: "Free"
+    
+    - name: "Tailwind UI"
+      icon: "🌊"
+      url: "https://tailwindui.com"
+      description: "UI components (some free)"
+      tier: "Free components available"
+  
+  # Communities
+  communities:
+    - name: "Dev.to"
+      icon: "📝"
+      url: "https://dev.to"
+      description: "Developer blogging & community"
+    
+    - name: "r/webdev"
+      icon: "🔴"
+      url: "https://reddit.com/r/webdev"
+      description: "Web development subreddit"
+    
+    - name: "Indie Hackers"
+      icon: "🛠️"
+      url: "https://indiehackers.com"
+      description: "Community for indie founders"
+    
+    - name: "Hashnode"
+      icon: "📝"
+      url: "https://hashnode.com"
+      description: "Developer blogging platform"
+  
+  # Monitoring & Analytics
+  monitoring:
+    - name: "Google Analytics"
+      icon: "📈"
+      url: "https://analytics.google.com"
+      description: "Website analytics"
+      tier: "Free"
+    
+    - name: "Plausible"
+      icon: "📉"
+      url: "https://plausible.io"
+      description: "Privacy-friendly analytics"
+      tier: "Paid (but ethical)"
+    
+    - name: "UptimeRobot"
+      icon: "✅"
+      url: "https://uptimerobot.com"
+      description: "Uptime monitoring"
+      tier: "Free (50 monitors)"
+  
+  # Email Services
+  email:
+    - name: "Resend"
+      icon: "📧"
+      url: "https://resend.com"
+      description: "Developer-first email API"
+      tier: "Free (3,000 emails/month)"
+    
+    - name: "SendGrid"
+      icon: "📨"
+      url: "https://sendgrid.com"
+      description: "Email delivery service"
+      tier: "Free (100 emails/day)"
+  
+  # Domain & DNS
+  domains:
+    - name: "Namecheap"
+      icon: "🌐"
+      url: "https://namecheap.com"
+      description: "Affordable domain registrar"
+      tier: "~$10/year"
+    
+    - name: "Cloudflare"
+      icon: "☁️"
+      url: "https://cloudflare.com"
+      description: "Free DNS, CDN, DDoS protection"
+      tier: "Free"
+  
+  # Job Boards (for freelancers)
+  freelance:
+    - name: "Upwork"
+      icon: "💼"
+      url: "https://upwork.com"
+      description: "Freelance marketplace"
+    
+    - name: "Toptal"
+      icon: "👑"
+      url: "https://toptal.com"
+      description: "Top 3% freelancers"
+    
+    - name: "Fiverr"
+      icon: "🟢"
+      url: "https://fiverr.com"
+      description: "Gig-based freelancing"
+    
+    - name: "We Work Remotely"
+      icon: "🏠"
+      url: "https://weworkremotely.com"
+      description: "Remote job board"

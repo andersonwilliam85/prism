@@ -1,0 +1,172 @@
+# ============================================================================
+# PERSONAL DEV BASE CONFIGURATION
+# ============================================================================
+# For freelancers, indie developers, and personal projects
+# No corporate proxy, VPN, or enterprise tools - just the essentials!
+
+company:
+  name: "Personal Dev"
+  type: "personal"  # Not a company!
+
+# Git Configuration (customize for your platform)
+git:
+  user:
+    name: "${USER}"  # Auto-detected from system
+    email: "${USER}@example.com"  # UPDATE THIS!
+  
+  # Multiple platforms supported - uncomment your choice:
+  # platforms:
+  #   github:
+  #     url: "https://github.com"
+  #     username: "your-username"
+  #   
+  #   gitlab:
+  #     url: "https://gitlab.com"  # or your self-hosted URL
+  #     username: "your-username"
+  #   
+  #   bitbucket:
+  #     url: "https://bitbucket.org"
+  #     username: "your-username"
+  #   
+  #   gitea:
+  #     url: "https://git.yourdomain.com"  # your self-hosted Gitea
+  #     username: "your-username"
+
+# Network (no corporate proxy!)
+environment:
+  # Most personal devs don't need proxy
+  proxy:
+    enabled: false
+    # Uncomment if you DO need proxy:
+    # http: "http://proxy.example.com:8080"
+    # https: "http://proxy.example.com:8080"
+  
+  vpn:
+    required: false  # No corporate VPN needed!
+
+# Core Tools (minimal essentials)
+tools_required:
+  - git              # Version control
+  - gh               # GitHub CLI (if using GitHub)
+  # - glab           # GitLab CLI (if using GitLab)
+  # - docker         # Containerization
+  # - docker-compose # Local dev environments
+
+# Optional Tools (install what you need)
+tools_available:
+  # Languages
+  - python3
+  - nodejs
+  - go
+  - rust
+  - ruby
+  
+  # Editors/IDEs
+  - vscode
+  - vim
+  - neovim
+  
+  # Utilities
+  - docker
+  - docker-compose
+  - kubectl
+  - terraform
+  - jq
+  - yq
+  - httpie
+  
+  # Language-specific tools
+  - pipenv         # Python
+  - poetry         # Python
+  - nvm            # Node version manager
+  - rbenv          # Ruby version manager
+  
+  # Database clients
+  - postgresql
+  - mysql
+  - mongodb
+  - redis
+
+# Tech Stack (customize for your projects)
+tech_stack:
+  # Backend options
+  backend:
+    - Python + FastAPI
+    - Node.js + Express
+    - Go + Gin
+    - Ruby + Rails
+  
+  # Frontend options
+  frontend:
+    - React + TypeScript
+    - Vue.js
+    - Svelte
+    - HTMX + Tailwind
+  
+  # Databases
+  databases:
+    - PostgreSQL
+    - SQLite
+    - MongoDB
+    - Redis
+  
+  # DevOps
+  devops:
+    - Docker
+    - Docker Compose
+    - GitHub Actions (or GitLab CI)
+
+# Personal Projects Structure
+projects:
+  workspace: "~/Projects"  # Where you keep your projects
+  
+  # Suggested organization
+  structure:
+    - personal/        # Personal projects
+    - freelance/       # Client work
+    - open-source/     # OSS contributions
+    - learning/        # Tutorials, courses
+    - experiments/     # POCs, spikes
+
+# Cloud Accounts (free tiers!)
+cloud:
+  # Free tier friendly options
+  providers:
+    - name: "Vercel"
+      url: "https://vercel.com"
+      tier: "Free (Hobby)"
+      use_for: "Frontend deployments"
+    
+    - name: "Render"
+      url: "https://render.com"
+      tier: "Free"
+      use_for: "Backend, databases"
+    
+    - name: "Railway"
+      url: "https://railway.app"
+      tier: "Free ($5 credit/month)"
+      use_for: "Full-stack apps"
+    
+    - name: "Fly.io"
+      url: "https://fly.io"
+      tier: "Free"
+      use_for: "Global app deployment"
+    
+    - name: "Supabase"
+      url: "https://supabase.com"
+      tier: "Free"
+      use_for: "PostgreSQL + Auth + Storage"
+    
+    - name: "Netlify"
+      url: "https://netlify.com"
+      tier: "Free"
+      use_for: "Static sites, serverless"
+
+# Learning Resources
+learning:
+  platforms:
+    - "freeCodeCamp"
+    - "The Odin Project"
+    - "MDN Web Docs"
+    - "Dev.to"
+    - "YouTube (Fireship, Traversy Media)"

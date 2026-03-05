@@ -1,0 +1,83 @@
+# ============================================================================
+# BITBUCKET PROFILE
+# ============================================================================
+# For developers using Bitbucket for repositories
+
+user:
+  name: "Your Name"  # UPDATE THIS
+  email: "your-email@example.com"  # UPDATE THIS
+  username: "your-bitbucket-username"  # UPDATE THIS
+
+# Git configuration for Bitbucket
+git:
+  user:
+    name: "Your Name"  # UPDATE THIS
+    email: "your-email@example.com"  # Should match Bitbucket email
+  
+  platform:
+    name: "Bitbucket"
+    url: "https://bitbucket.org"
+    username: "your-bitbucket-username"  # UPDATE THIS
+  
+  config:
+    credential_helper: "osxkeychain"  # macOS
+    # credential_helper: "manager-core"  # Windows
+
+# Tools for Bitbucket workflow
+tools_required:
+  - git
+
+tools_available:
+  - vscode          # Bitbucket extensions available
+  - sourcetree      # Atlassian's Git GUI
+  - docker
+  - docker-compose
+
+# Bitbucket repositories to clone
+repositories:
+  # Add your repos here:
+  # - name: "my-project"
+  #   url: "https://bitbucket.org/your-username/my-project"
+  #   description: "My project"
+
+# Bitbucket Pipelines (CI/CD)
+ci_cd:
+  platform: "Bitbucket Pipelines"
+  config_file: "bitbucket-pipelines.yml"
+  minutes_per_month: 50  # Free tier limit
+
+# SSH Key setup
+ssh:
+  key_type: "ed25519"
+  key_path: "~/.ssh/id_ed25519"
+  instructions: |
+    Add your SSH key to Bitbucket:
+    1. Generate key: ssh-keygen -t ed25519 -C "your-email@example.com"
+    2. Copy key: pbcopy < ~/.ssh/id_ed25519.pub
+    3. Add to Bitbucket: https://bitbucket.org/account/settings/ssh-keys/
+
+# Bitbucket-specific features
+features:
+  - "Bitbucket Pipelines (CI/CD)"
+  - "Jira integration"
+  - "Trello integration"
+  - "Pull requests"
+  - "Branch permissions"
+
+# Bitbucket resources
+resources:
+  bitbucket_docs: "https://support.atlassian.com/bitbucket-cloud/"
+  pipelines_docs: "https://support.atlassian.com/bitbucket-cloud/docs/get-started-with-bitbucket-pipelines/"
+  bitbucket_learn: "https://www.atlassian.com/git/tutorials"
+
+# Atlassian ecosystem
+atlassian:
+  # If using other Atlassian tools
+  jira: false
+  confluence: false
+  trello: false
+
+# Career tracking
+career:
+  portfolio:
+    bitbucket_profile: "https://bitbucket.org/your-username"  # UPDATE THIS
