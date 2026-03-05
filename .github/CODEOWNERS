@@ -1,0 +1,53 @@
+# CODEOWNERS
+# 
+# This file defines who is responsible for code review in different parts of the repo.
+# When a PR is created, these users/teams are automatically requested for review.
+# 
+# Syntax: <file-pattern> <owner1> <owner2> ...
+# Order matters - last matching pattern takes precedence.
+# 
+# Learn more: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything (unless overridden below)
+* @your-org/prism-maintainers
+
+# Core Scripts
+/scripts/ @your-org/prism-core-team
+/scripts/config_merger.py @your-org/config-experts
+/scripts/package_validator.py @your-org/package-team
+
+# Installation & Deployment
+/install-ui.py @your-org/prism-core-team
+/auto-deploy-docs.py @your-org/docs-team
+/Makefile @your-org/devops-team
+
+# GitHub Actions & CI/CD
+/.github/workflows/ @your-org/devops-team @your-org/prism-maintainers
+/.github/BRANCH_PROTECTION.md @your-org/devops-team
+
+# Tests
+/tests/ @your-org/qa-team
+/tests/unit/ @your-org/prism-core-team
+/tests/e2e/ @your-org/qa-team @your-org/frontend-team
+/conftest.py @your-org/qa-team
+/pytest.ini @your-org/qa-team
+
+# Documentation
+/docs/ @your-org/docs-team
+/README.md @your-org/prism-maintainers @your-org/docs-team
+/DASHBOARD_COMMANDS.md @your-org/docs-team
+
+# Dependencies
+/requirements.txt @your-org/prism-maintainers @your-org/security-team
+/requirements-dev.txt @your-org/devops-team
+
+# Configuration
+/packages/ @your-org/package-team
+*.yaml @your-org/config-experts
+*.yml @your-org/config-experts
+
+# Security-sensitive files
+/.github/workflows/ @your-org/security-team @your-org/devops-team
+
+# Examples (if you add them later)
+# /examples/ @your-org/docs-team @your-org/prism-core-team
