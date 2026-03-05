@@ -1,0 +1,24 @@
+# Python dependencies for dev environment setup
+
+# Rich terminal UI
+rich>=13.7.0
+
+# Interactive prompts (alternative to rich prompts)
+questionary>=2.0.1
+
+# YAML parsing
+PyYAML>=6.0.1
+
+# Git operations
+GitPython>=3.1.40
+
+# File watching (for docs auto-refresh)
+watchdog>=3.0.0
+
+# MkDocs and extensions (for documentation server)
+mkdocs-material>=9.5.3
+pymdown-extensions>=10.7
+mkdocs-mermaid2-plugin>=1.1.1
+
+# HTTP requests (for downloading tools)
+requests>=2.31.0

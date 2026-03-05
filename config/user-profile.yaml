@@ -1,0 +1,332 @@
+# User Profile Configuration
+# This file stores user preferences and setup progress
+
+# User Information
+user:
+  # Git configuration
+  name: ""                    # Full name for git commits
+  email: ""                   # Email for git commits
+  username: ""                # Corporate username (e.g., w0a035b)
+  
+  # Team/Org information
+  team: ""                    # Team name
+  department: ""              # Department
+  manager: ""                 # Manager name (optional)
+  
+  # Preferences
+  editor: "vim"               # Preferred text editor (vim, nano, code)
+  shell: "bash"               # Preferred shell (bash, zsh, fish)
+  
+# Git Configuration
+git:
+  # Global settings
+  signing_key: ""             # GPG key for commit signing (optional)
+  default_branch: "main"      # Default branch name
+  
+  # SSH Configuration
+  ssh:
+    generate_key: true        # Generate SSH key during setup?
+    key_type: "ed25519"       # ed25519 (recommended) or rsa
+    key_comment: ""           # Comment for SSH key (usually email)
+    
+  # GitHub/GitLab configuration
+  github:
+    username: ""              # GitHub username
+    enterprise_url: "https://github.walmart.com"  # Walmart GitHub Enterprise
+  
+  # Common git aliases
+  aliases:
+    co: "checkout"
+    br: "branch"
+    ci: "commit"
+    st: "status"
+    unstage: "reset HEAD --"
+    last: "log -1 HEAD"
+    visual: "log --graph --oneline --all"
+
+# Development Environment
+dev_environment:
+  # Base folder location
+  root: "~/Development"
+  
+  # Folder structure to create
+  folders:
+    - projects
+    - experiments
+    - learning
+    - opensource
+    - tooling
+    - archive
+    - docs
+  
+  # Documentation server
+  docs_server:
+    enabled: true
+    port: 8000
+    auto_scan: true
+    scan_interval: 300  # seconds
+
+# Tools to Install (user selections)
+tools_selected:
+  # Core (usually required)
+  git: true
+  
+  # Java ecosystem
+  openjdk: false
+  maven: false
+  gradle: false
+  
+  # Python ecosystem
+  python: false
+  
+  # Node.js ecosystem
+  nodejs: false
+  
+  # Container & K8s
+  rancher-desktop: false
+  kubectl: false
+  skaffold: false
+  helm: false
+  
+  # Cloud CLIs
+  gcloud: false
+  azure-cli: false
+  bq: false
+  
+  # Utilities
+  gh: false
+  jq: false
+  yq: false
+  
+  # Optional tools
+  code-puppy: false
+  cortex: false
+
+# Setup Progress Tracker
+setup_progress:
+  # Overall status
+  started_at: ""              # ISO timestamp
+  completed_at: ""            # ISO timestamp
+  last_updated: ""            # ISO timestamp
+  status: "not_started"       # not_started, in_progress, completed, failed
+  
+  # Individual task completion
+  tasks:
+    # Phase 1: System Preparation
+    detect_platform:
+      completed: false
+      timestamp: ""
+      notes: ""
+    
+    install_package_manager:
+      completed: false
+      timestamp: ""
+      notes: ""
+    
+    # Phase 2: User Information
+    collect_user_info:
+      completed: false
+      timestamp: ""
+      notes: ""
+    
+    # Phase 3: Folder Structure
+    create_folder_structure:
+      completed: false
+      timestamp: ""
+      notes: ""
+    
+    # Phase 4: Tool Installation
+    install_git:
+      completed: false
+      timestamp: ""
+      notes: ""
+    
+    install_dev_tools:
+      completed: false
+      timestamp: ""
+      notes: ""  # Comma-separated list of installed tools
+    
+    install_cloud_tools:
+      completed: false
+      timestamp: ""
+      notes: ""
+    
+    # Phase 5: Configuration
+    configure_git_global:
+      completed: false
+      timestamp: ""
+      notes: ""
+    
+    generate_ssh_key:
+      completed: false
+      timestamp: ""
+      notes: ""
+    
+    configure_maven:
+      completed: false
+      timestamp: ""
+      notes: ""
+    
+    configure_npm:
+      completed: false
+      timestamp: ""
+      notes: ""
+    
+    configure_pip:
+      completed: false
+      timestamp: ""
+      notes: ""
+    
+    # Phase 6: Documentation
+    setup_docs_server:
+      completed: false
+      timestamp: ""
+      notes: ""
+    
+    generate_onboarding_docs:
+      completed: false
+      timestamp: ""
+      notes: ""
+    
+    # Phase 7: Verification
+    verify_git:
+      completed: false
+      timestamp: ""
+      notes: ""
+    
+    verify_tools:
+      completed: false
+      timestamp: ""
+      notes: ""
+    
+    verify_rancher:
+      completed: false
+      timestamp: ""
+      notes: ""
+    
+    # Phase 8: Optional Tools
+    install_code_puppy:
+      completed: false
+      timestamp: ""
+      notes: ""
+    
+    configure_github_cli:
+      completed: false
+      timestamp: ""
+      notes: ""
+    
+    configure_azure_cli:
+      completed: false
+      timestamp: ""
+      notes: ""
+    
+    configure_gcloud:
+      completed: false
+      timestamp: ""
+      notes: ""
+
+# Career Management
+career:
+  # Current role
+  role:
+    title: ""                     # Current job title
+    level: ""                     # IC3, IC4, M1, etc.
+    start_date: ""                # When you started this role
+    team: ""                      # Current team
+  
+  # Career goals
+  goals:
+    short_term:                   # This quarter/6 months
+      - goal: ""
+        target_date: ""
+        status: "not_started"     # not_started, in_progress, completed, blocked
+        progress: 0               # 0-100%
+        notes: ""
+    
+    long_term:                    # 1-2 years
+      - goal: ""
+        target_date: ""
+        status: "not_started"
+        notes: ""
+  
+  # Skills tracking
+  skills:
+    # Skills you want to develop
+    learning:
+      - skill: ""
+        proficiency: "beginner"   # beginner, intermediate, advanced, expert
+        target_level: ""
+        resources: []             # Courses, books, docs
+        practice_projects: []     # Projects to build this skill
+    
+    # Skills you have
+    current:
+      - skill: ""
+        proficiency: ""
+        years_experience: 0
+        last_used: ""
+  
+  # Wins & Accomplishments
+  wins:
+    - title: ""
+      date: ""
+      description: ""
+      impact: ""                  # Business impact, team impact
+      evidence: ""                # Link to PR, doc, metrics
+      tags: []                    # For filtering (technical, leadership, etc.)
+  
+  # 1-on-1 Notes
+  one_on_ones:
+    - date: ""
+      with: ""                    # Manager, mentor, peer
+      topics: []
+      action_items: []
+      feedback_received: ""
+      feedback_given: ""
+  
+  # Performance Review Prep
+  review_prep:
+    cycle: ""                     # Q1-2026, H1-2026, etc.
+    self_assessment: ""
+    key_accomplishments: []
+    areas_for_growth: []
+    peer_feedback: []
+  
+  # Learning & Development
+  learning:
+    courses_completed:
+      - title: ""
+        platform: ""              # Udemy, Coursera, internal, etc.
+        completed_date: ""
+        certificate_url: ""
+    
+    courses_in_progress:
+      - title: ""
+        platform: ""
+        progress: 0               # 0-100%
+        target_completion: ""
+    
+    books_read:
+      - title: ""
+        author: ""
+        completed_date: ""
+        key_takeaways: ""
+  
+  # Mentorship
+  mentorship:
+    mentors:
+      - name: ""
+        focus_area: ""            # What they help with
+        meeting_cadence: ""       # Weekly, biweekly, monthly
+    
+    mentees:
+      - name: ""
+        focus_area: ""
+        started_date: ""
+
+# Installation Issues/Errors
+issues:
+  - task: ""
+    error: ""
+    timestamp: ""
+    resolved: false
