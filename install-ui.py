@@ -603,38 +603,46 @@ INDEX_HTML = """
                 `;
             }
             
-            // Organization section (only if package has orgs/depts)
-            if (metadata.has_sub_orgs || metadata.has_departments || metadata.has_teams) {
+            // Organization section (only if package has org hierarchy: sub_orgs or departments)
+            // Teams alone don't constitute "organizational units" - they're more like groups/squads
+            const hasOrgHierarchy = metadata.has_sub_orgs || metadata.has_departments;
+            
+            if (hasOrgHierarchy) {
                 const subOrg = document.getElementById('subOrg')?.selectedOptions[0]?.text;
                 const dept = document.getElementById('department')?.selectedOptions[0]?.text;
                 
                 let orgHTML = '<h4>🏢 Organization:</h4><div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">';
+                let hasOrgData = false;
                 
                 if (metadata.has_sub_orgs && subOrg && subOrg !== 'None') {
                     orgHTML += `<p><strong>Sub-Organization:</strong> ${subOrg}</p>`;
+                    hasOrgData = true;
                 }
                 
                 if (metadata.has_departments && dept && dept !== 'None' && dept !== 'Select sub-org first...') {
                     orgHTML += `<p><strong>Department:</strong> ${dept}</p>`;
+                    hasOrgData = true;
                 }
                 
+                // If package has teams AND org hierarchy, show teams here too
                 if (metadata.has_teams) {
-                    // Check if any teams selected
                     const teamCheckboxes = document.querySelectorAll('#teamsList input[type="checkbox"]:checked');
                     if (teamCheckboxes.length > 0) {
                         const teams = Array.from(teamCheckboxes).map(cb => cb.nextElementSibling?.textContent || '').filter(t => t);
                         if (teams.length > 0) {
                             orgHTML += `<p><strong>Teams:</strong> ${teams.join(', ')}</p>`;
+                            hasOrgData = true;
                         }
                     }
                 }
                 
                 orgHTML += '</div>';
                 
-                // Only show if we have actual org data
-                if (orgHTML.includes('<p>')) {
+                // Only show if we have actual org data selected
+                if (hasOrgData) {
                     summaryHTML += orgHTML;
-                } else if (metadata.has_sub_orgs || metadata.has_departments || metadata.has_teams) {
+                } else {
+                    // Has org structure but nothing selected
                     summaryHTML += `
                         <h4>🏢 Organization:</h4>
                         <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
@@ -642,6 +650,22 @@ INDEX_HTML = """
                         </div>
                     `;
                 }
+            } else if (metadata.has_teams) {
+                // Package has teams but NO org hierarchy (e.g., startup-config)
+                // Only show teams section if teams were actually selected
+                const teamCheckboxes = document.querySelectorAll('#teamsList input[type="checkbox"]:checked');
+                if (teamCheckboxes.length > 0) {
+                    const teams = Array.from(teamCheckboxes).map(cb => cb.nextElementSibling?.textContent || '').filter(t => t);
+                    if (teams.length > 0) {
+                        summaryHTML += `
+                            <h4>👥 Teams:</h4>
+                            <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                                <p><strong>${teams.length} team(s) selected:</strong> ${teams.join(', ')}</p>
+                            </div>
+                        `;
+                    }
+                }
+                // If no teams selected, don't show anything (teams are optional)
             }
             
             // Tools section (only if package has tools)
