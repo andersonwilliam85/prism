@@ -37,7 +37,7 @@ INDEX_HTML = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prism - Configuration Installer</title>
+    <title>Prism Installer</title>
     <style>
         * {
             margin: 0;
@@ -287,7 +287,7 @@ INDEX_HTML = """
         <!-- Step 1: Prism Selection -->
         <div class="step active" id="step1">
             <h2>🔷 Choose Your Prism</h2>
-            <p>Select the configuration prism that best fits your needs:</p>
+            <p>Select the prism that best fits your needs:</p>
             
             <!-- Registry Configuration (Expandable) -->
             <details style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
@@ -326,7 +326,7 @@ INDEX_HTML = """
             <div id="invalidPackagesSection" style="margin-top: 30px; display: none;">
                 <details style="padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 8px;">
                     <summary style="cursor: pointer; font-weight: 600; color: #856404;">
-                        ⚠️ <span id="invalidPackagesCount">0</span> Invalid Package(s) - Click to View
+                        ⚠️ <span id="invalidPackagesCount">0</span> Invalid Prism(s) - Click to View
                     </summary>
                     <div id="invalidPackagesList" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ffeaa7;">
                         <!-- Populated by JS -->
@@ -505,7 +505,7 @@ INDEX_HTML = """
         function nextStep() {
             // Validate package selection on step 1
             if (currentStep === 1 && !selectedPackage) {
-                alert('Please select a config package!');
+                alert('Please select a prism!');
                 return;
             }
             
@@ -722,7 +722,7 @@ INDEX_HTML = """
             // Show loading state
             btn.disabled = true;
             btn.textContent = '⏳ Validating...';
-            resultsDiv.innerHTML = '<p style="color: #666;">Checking configurations...</p>';
+            resultsDiv.innerHTML = '<p style="color: #666;">Validating prism...</p>';
             
             try {
                 const response = await fetch(`/api/package/${selectedPackage}/validate-configs`);
@@ -746,9 +746,9 @@ INDEX_HTML = """
                     // All configs valid
                     resultsDiv.innerHTML = `
                         <div class="alert alert-info" style="background: #d4edda; border-color: #c3e6cb; color: #155724;">
-                            <strong>✅ All Configurations Valid!</strong><br>
+                            <strong>✅ Prism Valid!</strong><br>
                             <div style="margin-top: 10px; font-size: 0.9em;">
-                                📊 Validated ${summary.total_files} configuration file(s)<br>
+                                📊 Validated ${summary.total_files} file(s)<br>
                                 ${summary.total_warnings > 0 ? `⚠️ ${summary.total_warnings} warning(s) - review recommended` : ''}
                             </div>
                         </div>
@@ -784,8 +784,8 @@ INDEX_HTML = """
                             </details>
                             <div style="margin-top: 15px; padding: 10px; background: #fff; border-radius: 4px;">
                                 <strong>🔧 What to do:</strong><br>
-                                These configuration errors won't prevent installation, but may cause issues.
-                                Contact your admin or fix the configuration files before installing.
+                                These errors won't prevent installation, but may cause issues.<br>
+                                Contact your admin or fix the prism files before installing.
                             </div>
                         </div>
                     `;
@@ -920,8 +920,8 @@ INDEX_HTML = """
                     console.error('Error loading packages:', data.error);
                     document.getElementById('packagesList').innerHTML = `
                         <div class="alert alert-warning">
-                            <strong>⚠️ Could not load packages from registry</strong><br>
-                            Using local packages. Error: ${data.error}
+                            <strong>⚠️ Could not load prisms from registry</strong><br>
+                            Using local prisms. Error: ${data.error}
                         </div>
                     `;
                 }
@@ -981,8 +981,8 @@ INDEX_HTML = """
                 } else {
                     packagesList.innerHTML = `
                         <div class="alert alert-warning">
-                            <strong>⚠️ No valid packages found!</strong><br>
-                            Please check your registry configuration or ensure local packages exist.
+                            <strong>⚠️ No valid prisms found!</strong><br>
+                            Please check your registry configuration or ensure local prisms exist.
                         </div>
                     `;
                 }
