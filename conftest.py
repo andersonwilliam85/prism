@@ -57,6 +57,16 @@ user_info_fields:
 
 
 @pytest.fixture(scope="session")
+def browser_type_launch_args(browser_type_launch_args):
+    """Override browser launch args to use system Chrome."""
+    return {
+        **browser_type_launch_args,
+        "channel": "chrome",  # Use system Chrome
+        "headless": False,
+    }
+
+
+@pytest.fixture(scope="session")
 def playwright_browser_args():
     """Browser arguments for Playwright tests."""
     return [
@@ -68,9 +78,10 @@ def playwright_browser_args():
 
 @pytest.fixture(scope="session")
 def playwright_launch_options(playwright_browser_args):
-    """Launch options for Playwright."""
+    """Launch options for Playwright - use system Chrome."""
     return {
-        "headless": True,  # Set to False for debugging
+        "headless": True,  # Use headless for faster tests
         "args": playwright_browser_args,
-        "slow_mo": 0,  # Increase for debugging (milliseconds)
+        "slow_mo": 0,  # No delay for speed
+        "channel": "chrome",  # Use system Chrome instead of downloading browsers
     }
