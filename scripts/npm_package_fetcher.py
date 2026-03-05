@@ -150,7 +150,14 @@ def fetch_local_package(package_name: str) -> str:
         local_name,
         local_name + "-config",
         local_name.replace("-", "_"),
+        local_name.replace("-", "_") + "-config",
     ]
+    
+    # Special cases
+    if package_name == "@prism/consulting-config":
+        variations.insert(0, "consulting-firm-config")
+    elif package_name == "@prism/opensource-config":
+        variations.insert(0, "opensource-project-config")
     
     script_dir = Path(__file__).parent.parent
     config_packages_dir = script_dir / "config-packages"
