@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'docs/**'
-      - 'scripts/auto-deploy-docs.py'
-      - '.github/workflows/docs.yml'
   workflow_dispatch:
 
 permissions:
@@ -35,10 +31,10 @@ jobs:
       - name: Generate documentation site
         run: |
           python scripts/auto-deploy-docs.py
+          cd docs_server && mkdocs build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site
-          cname: prism-docs.example.com  # Optional: Add your custom domain
+          publish_dir: ./docs_server/site
