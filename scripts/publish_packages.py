@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).parent.parent
-CONFIG_PACKAGES_DIR = SCRIPT_DIR / "config-packages"
+CONFIG_PACKAGES_DIR = SCRIPT_DIR / "prisms"
 
 # Package mapping
 PACKAGE_DIRS = {

@@ -1158,7 +1158,7 @@ def validate_package_configs(package_id):
     try:
         from config_validator import PackageConfigValidator
         
-        packages_dir = ROOT_DIR / "config-packages"
+        packages_dir = ROOT_DIR / "prisms"
         package_path = packages_dir / package_id
         
         if not package_path.exists():
