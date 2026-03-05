@@ -98,6 +98,16 @@ tools_selected:
   jq: false
   yq: false
   
+  # IDEs and Editors
+  vscode: false
+  intellij: false
+  pycharm: false
+  webstorm: false
+  vim: false
+  
+  # Database Tools
+  dbeaver: false
+  
   # Optional tools
   code-puppy: false
 

@@ -140,6 +140,16 @@ def load_user_profile():
     with open(config_path) as f:
         return yaml.safe_load(f)
 
+def load_resources():
+    """Load company resources from config"""
+    resources_path = Path(__file__).parent.parent / "config" / "resources.yaml"
+    
+    if not resources_path.exists():
+        return {"company": {"name": "Company"}, "resources": {}}
+    
+    with open(resources_path) as f:
+        return yaml.safe_load(f)
+
 def setup_docs_structure():
     """Create documentation folder structure"""
     if RICH_AVAILABLE:
@@ -172,9 +182,24 @@ def setup_docs_structure():
     
     return docs_server
 
-def generate_index_page(docs_server, user_profile):
+def generate_index_page(docs_server, user_profile, resources_config):
     """Generate homepage for docs"""
     user_name = user_profile.get("user", {}).get("name", "Developer")
+    company_name = resources_config.get("company", {}).get("name", "Company")
+    
+    # Build resource links sections
+    resource_sections = ""
+    for category, items in resources_config.get("resources", {}).items():
+        section_title = category.replace("_", " ").title()
+        resource_sections += f"\n### {section_title}\n\n"
+        
+        for item in items:
+            icon = item.get("icon", "🔗")
+            name = item.get("name", "")
+            url = item.get("url", "#")
+            desc = item.get("description", "")
+            
+            resource_sections += f"- **{icon} [{name}]({url})** - {desc}\n"
     
     index_content = f"""# Welcome to Your Dev Environment Docs
 
@@ -219,6 +244,12 @@ def generate_index_page(docs_server, user_profile):
     [:octicons-arrow-right-24: Career Dashboard](career/index.md)
 
 </div>
+
+---
+
+## 🔗 {company_name} Resources
+
+{resource_sections}
 
 ---
 
@@ -618,7 +649,7 @@ def main():
     else:
         print("\nGenerating documentation pages...")
     
-    generate_index_page(docs_server, user_profile)
+    generate_index_page(docs_server, user_profile, resources_config)
     generate_career_dashboard(docs_server, user_profile)
     generate_mkdocs_config(docs_server, user_profile)
     generate_walmart_css(docs_server)

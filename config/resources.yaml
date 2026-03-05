@@ -1,0 +1,134 @@
+# Company Resources Configuration
+# These links appear on the documentation homepage
+# Fully customizable per company/team!
+
+company:
+  name: "Walmart"
+  internal_domain: "walmart.com"
+  
+resources:
+  # Developer Experience & Tools
+  developer_experience:
+    - name: "DX (Developer Experience)"
+      url: "https://dx.walmart.com"
+      description: "Developer portal, tools, and documentation"
+      icon: "🚀"
+    
+    - name: "NDE (Node Development Environment)"
+      url: "https://nde.walmart.com"
+      description: "Node.js development tools and packages"
+      icon: "📦"
+  
+  # Internal Tools
+  internal_tools:
+    - name: "ME@Walmart"
+      url: "https://me.walmart.com"
+      description: "Employee portal (HR, benefits, time off)"
+      icon: "👤"
+    
+    - name: "WMLink"
+      url: "https://wmlink.walmart.com"
+      description: "Quick links to internal resources"
+      icon: "🔗"
+    
+    - name: "Code Puppy"
+      url: "https://puppy.walmart.com"
+      description: "AI coding assistant"
+      icon: "🐶"
+    
+    - name: "Artifactory"
+      url: "https://artifactory.walmart.com"
+      description: "Package repository (Maven, npm, pip)"
+      icon: "📚"
+  
+  # Collaboration
+  collaboration:
+    - name: "Confluence"
+      url: "https://confluence.walmart.com"
+      description: "Team documentation and knowledge base"
+      icon: "📖"
+    
+    - name: "Jira"
+      url: "https://jira.walmart.com"
+      description: "Project tracking and issue management"
+      icon: "📋"
+    
+    - name: "GitHub Enterprise"
+      url: "https://github.walmart.com"
+      description: "Internal source code hosting"
+      icon: "💻"
+    
+    - name: "Slack"
+      url: "https://walmart.enterprise.slack.com"
+      description: "Team chat and collaboration"
+      icon: "💬"
+  
+  # Learning & Support
+  learning:
+    - name: "Element LLM Gateway"
+      url: "https://element.walmart.com"
+      slack: "#element-genai-support"
+      description: "AI/LLM services (powers Code Puppy!)"
+      icon: "🤖"
+    
+    - name: "Walmart Academy"
+      url: "https://academy.walmart.com"
+      description: "Training courses and certifications"
+      icon: "🎓"
+    
+    - name: "Tech Communities"
+      url: "https://communities.walmart.com/tech"
+      description: "Guilds, tech talks, and knowledge sharing"
+      icon: "🌐"
+  
+  # Cloud & Infrastructure
+  infrastructure:
+    - name: "GCP Console"
+      url: "https://console.cloud.google.com"
+      description: "Google Cloud Platform"
+      icon: "☁️"
+    
+    - name: "Azure Portal"
+      url: "https://portal.azure.com"
+      description: "Microsoft Azure"
+      icon: "☁️"
+    
+    - name: "Kubernetes Dashboard"
+      url: "https://k8s.walmart.com"
+      description: "Internal K8s clusters"
+      icon: "☸️"
+
+# Onboarding Checklists
+onboarding:
+  first_day:
+    - "Access ME@Walmart and complete HR forms"
+    - "Set up VPN (required for all internal tools)"
+    - "Join team Slack channels"
+    - "Request access to GitHub Enterprise"
+  
+  first_week:
+    - "Complete security training"
+    - "Set up development environment (this installer!)"
+    - "Clone team repositories"
+    - "Attend team standup"
+    - "Schedule 1-on-1 with manager"
+  
+  first_month:
+    - "Ship your first PR"
+    - "Complete onboarding documentation"
+    - "Join a tech community/guild"
+    - "Set up Code Puppy"
+
+# Support Channels
+support:
+  it_help:
+    slack: "#it-support"
+    email: "ithelpdesk@walmart.com"
+  
+  dev_tools:
+    slack: "#dev-tools-support"
+    confluence: "https://confluence.walmart.com/dev-tools"
+  
+  code_puppy:
+    slack: "#element-genai-support"
+    docs: "https://puppy.walmart.com/docs"
