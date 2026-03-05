@@ -81,7 +81,7 @@ An **open-source, configurable developer environment onboarding system** with:
 ```yaml
 default_registry:
   type: "github"
-  url: "https://github.com/dev-onboarding/packages"
+  url: "https://github.com/prism/packages"
   enabled: true
 
 registries:
@@ -172,8 +172,8 @@ locales/
 ### For Indie Developers
 
 ```bash
-git clone https://github.com/dev-onboarding/dev-onboarding.git
-cd dev-onboarding
+git clone https://github.com/prism/prism.git
+cd prism
 pip3 install -r requirements.txt
 
 python3 scripts/package_manager.py install personal-dev-config
@@ -184,8 +184,8 @@ python3 install-ui.py
 ### For Companies
 
 ```bash
-git clone https://github.com/dev-onboarding/dev-onboarding.git
-cd dev-onboarding
+git clone https://github.com/prism/prism.git
+cd prism
 
 # Option 1: Use ACME template
 python3 scripts/package_manager.py install acme-corp-config
@@ -279,13 +279,13 @@ python3 scripts/package_manager.py install personal-dev-config
 ### npm (Future)
 
 ```bash
-npm install -g @dev-onboarding/personal-dev-config
+npm install -g @prism/personal-dev-config
 ```
 
 ### PyPI (Future)
 
 ```bash
-pip install dev-onboarding-personal-dev-config
+pip install prism-personal-dev-config
 ```
 
 ### Corporate Registry
@@ -337,7 +337,7 @@ registries:
 ### Before Release
 
 1. **Add LICENSE** (MIT recommended)
-2. **Create GitHub org** (dev-onboarding)
+2. **Create GitHub org** (prism)
 3. **Set up public registry** (GitHub repo)
 4. **Add CI/CD** (test packages, validate)
 5. **Create CONTRIBUTING.md**

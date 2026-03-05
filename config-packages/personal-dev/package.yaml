@@ -9,10 +9,10 @@ package:
   version: "1.0.0"
   description: "Personal development environment for freelancers and indie developers"
   author: "Dev Onboarding Community"
-  homepage: "https://github.com/dev-onboarding/personal-config"
+  homepage: "https://github.com/prism/personal-config"
   support:
-    github: "https://github.com/dev-onboarding/personal-config/issues"
-    community: "https://discord.gg/dev-onboarding"
+    github: "https://github.com/prism/personal-config/issues"
+    community: "https://discord.gg/prism"
   
   type: "personal"  # Not a company - personal/freelance
   
@@ -127,7 +127,7 @@ distribution:
     discoverable: true
   
   git:
-    url: "https://github.com/dev-onboarding/personal-config"
+    url: "https://github.com/prism/personal-config"
     branch: "main"
 
 # Metadata

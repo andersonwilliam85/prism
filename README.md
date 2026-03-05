@@ -1,504 +1,384 @@
-# 🐶 Dev Onboarding Package
+# 💎 Prism
 
-**One-command setup for a production-ready development environment!**
-*Open source & configurable for any company - example configurations included*
+**Refract complexity into clarity**
+
+*One-command setup for production-ready development environments*
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey)](https://github.com/andersonwilliam85/prism)
 
 ---
-## What This Does
 
-Sets up a complete, standardized dev environment with:
+## The Problem
 
-✅ **Organized folder structure** (projects, experiments, learning, tooling)  
-✅ **Essential dev tools** (Git, Rancher Desktop, Skaffold, Python, Node.js, Azure CLI, GCloud, etc.)  
-✅ **Git global config** + **SSH key generation**  
-✅ **Documentation server** (MkDocs with company branding, auto-scans your projects)  
-✅ **Career management system** (goals, wins, 1-on-1s, performance review prep)  
-✅ **Progress tracking** (resume setup anytime, see what's done)  
-✅ **CLI tools** (new-project, archive-project, find-project)  
-✅ **Optional: AI assistants** (Claude Code, GitHub Copilot, etc.)  
+Setting up a new development machine is painful:
 
-## Supported Platforms
+- ❌ Installing dozens of tools manually
+- ❌ Remembering all the configuration steps
+- ❌ Inconsistent environments across teams
+- ❌ Lost productivity on day 1 (and beyond)
+- ❌ No standardization = chaos
 
-- ✅ macOS (Intel & Apple Silicon)
-- ✅ Windows 10/11
-- ✅ Ubuntu 20.04+
+**I kept running into this.** Every new machine, every new project, every new team member - the same tedious setup over and over.
 
-## Prerequisites
+So I built **Prism**.
 
-**Python 3.9+** (usually pre-installed on Mac/Ubuntu, download for Windows)
+---
 
-Check: `python3 --version` or `python --version`
-
-## Quick Start
-
-### 1. Download/Clone this package
+## The Solution
 
 ```bash
-# Clone from your company's repo
-git clone https://github.com/yourcompany/dev-onboarding.git
-cd dev-onboarding
+# Clone
+git clone https://github.com/andersonwilliam85/prism.git
+cd prism
 
-# Or download the ZIP
-```
-
-### 2. **IMPORTANT: Customize for your company first!**
-
-Before running, edit the config files (see [Customization](#customization-for-your-company) below):
-
-- `config/resources.yaml` - Company links
-- `config/tools.yaml` - Proxy, artifact repos, company tools
-
-### 3. Install dependencies
-
-```bash
-pip3 install -r requirements.txt
-```
-
-### 3. Run the installer
-
-```bash
+# Run
 python3 install.py
+
+# Done! 🌈
 ```
 
-The installer will:
-- Detect your OS
-- Walk you through interactive setup
-- Install selected tools
-- Configure everything
-- Generate onboarding docs
+**That's it.** One command gives you:
 
-**Estimated time:** 10-15 minutes (depending on downloads)
+✔ **Organized folder structure** (projects, experiments, learning, tooling)  
+✔ **Essential dev tools** (Git, Docker, Python, Node.js, cloud CLIs, etc.)  
+✔ **Git global config** + **SSH key generation**  
+✔ **Documentation server** (MkDocs with branding, auto-scans your projects)  
+✔ **Career management** (goals, wins, 1-on-1s, performance review prep)  
+✔ **Progress tracking** (resume anytime, see what's done)  
+✔ **CLI tools** (new-project, archive-project, find-project)  
+✔ **Configurable packages** (company-specific, personal, open source)
 
-## What Happens During Setup
+---
 
-The installer will:
+## Why Prism?
 
-1. **🔍 Detect your platform** (Mac/Windows/Ubuntu)
-2. **💬 Collect your info** (name, email, team)
-3. **📦 Install package manager** (brew/winget/apt if needed)
-4. **🛠️ Install selected tools** (git, kubectl, etc.)
-5. **⚙️ Configure git globally**
-   - Set user.name and user.email
-   - Add useful aliases (co, br, st, etc.)
-   - Configure default branch (main)
-6. **🔐 Generate SSH key** (ed25519)
-   - Saves to ~/.ssh/id_ed25519
-   - Shows public key to add to GitHub/GitLab
-7. **📁 Create folder structure** (~/Development/*)
-8. **🎯 Configure tools** (Maven, npm, pip with your company repos)
-9. **📚 Build & launch docs server**
-   - Auto-generates docs from your environment
-   - Opens in browser at http://localhost:8000
-   - Career dashboard ready to use!
-10. **✅ Show next steps**
+### 🔬 **Scientific Precision**
 
-**Progress is saved** after each step - you can resume anytime!
+Like a prism refracts white light into a rainbow, Prism takes complex setup chaos and transforms it into organized clarity.
 
-## What Gets Installed
+### 🌈 **Beautiful Structure**
 
-### Core Tools (Recommended)
+Your workspace isn't just functional - it's *beautiful*. Organized, documented, ready to impress.
 
-| Tool | Purpose | Mac | Windows | Ubuntu |
-|------|---------|-----|---------|--------|
-| **Git** | Version control | brew | winget | apt |
-| **Rancher Desktop** | Kubernetes (Docker alternative) | brew | installer | deb |
-| **Skaffold** | K8s dev workflow | brew | chocolatey | binary |
-| **Python 3.11+** | Backend development | brew | winget | apt |
-| **Node.js 20 LTS** | Frontend development | brew | winget | nvm |
+### 💡 **Illuminating**
 
-### Optional Tools
+Never wonder "where did I put that?" or "how do I configure this?" again. Everything has its place.
 
-| Tool | Purpose | Status |
-|------|---------|--------|
-| **AI Assistants** | Claude Code, Copilot, etc. | Optional |
+### ✨ **Extensible**
 
-## Folder Structure Created
+Built with a package system. Use built-in configs or create your own. Personal, startup, enterprise - Prism adapts.
+
+---
+
+## Features
+
+### 📚 **Smart Folder Structure**
 
 ```
 ~/Development/
-├── projects/          # Active team/assigned projects
-├── experiments/       # POCs, spike work, testing ideas
-├── learning/          # Courses, tutorials, skill-building
-├── opensource/        # OSS contributions
-├── tooling/           # Dev productivity tools & scripts
-│   └── dev-docs-server/  # Documentation + Career tracking
-├── archive/           # Completed/shelved work (by quarter)
-└── docs/              # Cross-project documentation
+├── projects/          # Active work
+├── experiments/       # POCs, testing
+├── learning/          # Tutorials, courses
+├── tooling/           # Custom scripts
+└── archive/           # Completed projects
+
+~/Documentation/       # Auto-generated docs site
+~/Career/              # Goals, wins, reviews
 ```
 
-## Post-Install Usage
+### 🛠️ **Tool Installation**
 
-### Start Documentation Server
+Automatically installs:
+- Git, GitHub CLI
+- Docker / Rancher Desktop
+- Python, Node.js, Go
+- Cloud CLIs (AWS, Azure, GCP)
+- Kubernetes tools (kubectl, helm, skaffold)
+- Editor configs (VS Code, Cursor, Zed)
+- And more...
+
+### 🎭 **Config Packages**
+
+Choose pre-built configurations:
+
+- **personal-dev-config** - For freelancers & indie devs
+- **startup-config** - Fast, lean, flexible
+- **fortune500-config** - Enterprise-ready
+- **university-config** - Research & teaching
+- **opensource-project-config** - Community projects
+- **consulting-firm-config** - Multi-client setups
+- **acme-corp-config** - Template for your company
+
+### 📝 **Career Management**
+
+Built-in tools for:
+- Goal tracking
+- Win logging (brag document)
+- 1-on-1 prep
+- Performance review material
+- Resume updates
+
+### 📊 **Progress Tracking**
+
+Resume anytime:
+```bash
+python3 install.py --status   # See what's done
+python3 install.py --resume   # Continue where you left off
+```
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- **Python 3.9+** (usually pre-installed on Mac/Linux)
+- **Internet connection**
+
+### Installation
 
 ```bash
-cd ~/Development/tooling/dev-docs-server
-./start-docs-server
+# 1. Clone the repo
+git clone https://github.com/andersonwilliam85/prism.git
+cd prism
 
-# Or use the shortcut:
-start-docs-server
+# 2. Run the installer
+python3 install.py
 
-# Opens at: http://localhost:8000
+# 3. Follow the prompts
+# Choose your package, confirm settings, let it run
+
+# 4. Done!
 ```
 
-The docs server auto-scans your `~/Development/` folder and generates:
-- Project listings with git status
-- README previews
-- Architecture docs (if present)
-- Full-text search across all docs
-- **Career dashboard** (goals, wins, 1-on-1 notes)
-
-### Career Management
-
-Your docs server includes a built-in career tracking system:
-
-**Access it at:** http://localhost:8000/career/
-
-#### Track Your Wins
-
-Edit `~/Development/tooling/dev-docs-server/config/user-profile.yaml`:
-
-```yaml
-career:
-  wins:
-    - title: "Shipped Supplier Receiving System"
-      date: "2026-03-05"
-      description: "Built VBD architecture with K8s deployment"
-      impact: "Reduced processing time by 40%"
-      evidence: "https://github.com/yourteam/your-project"
-      tags: ["technical", "architecture", "kubernetes"]
-```
-
-Then refresh your docs - the win appears automatically!
-
-#### Set Goals
-
-```yaml
-career:
-  goals:
-    short_term:
-      - goal: "Master Kubernetes deployments"
-        target_date: "2026-06-30"
-        status: "in_progress"
-        progress: 60
-        notes: "Completed Skaffold training, building 3rd K8s project"
-```
-
-#### Log 1-on-1 Notes
-
-```yaml
-career:
-  one_on_ones:
-    - date: "2026-03-05"
-      with: "Manager Name"
-      topics: ["Q1 goals", "Promotion discussion"]
-      action_items:
-        - "Complete architecture certification"
-        - "Lead next sprint planning"
-      feedback_received: "Excellent work on supplier system"
-```
-
-#### Track Learning
-
-```yaml
-career:
-  learning:
-    courses_in_progress:
-      - title: "Advanced Kubernetes"
-        platform: "Udemy"
-        progress: 75
-        target_completion: "2026-04-01"
-```
-
-All of this data appears in your **Career Dashboard** for easy access!
-
-### Create Projects
-
-For now, manually create projects in the appropriate folder:
+### Advanced Usage
 
 ```bash
-cd ~/Development/projects
-mkdir my-new-api
-cd my-new-api
-git init
-```
+# Non-interactive (use config file)
+python3 install.py --config my-config.yaml
 
-Your docs server will auto-discover it within 5 minutes!
-
-### Archive Old Projects
-
-```bash
-archive-project old-dashboard
-
-# Moves to: ~/Development/archive/2026-Q1/old-dashboard/
-```
-
-### Find Projects
-
-```bash
-find-project supplier
-
-# Searches across all non-archived folders
-```
-
-## Rancher Desktop Configuration
-
-The installer configures Rancher Desktop with:
-- **Kubernetes**: v1.28.5 (or latest stable)
-- **Container Runtime**: containerd (Docker-compatible)
-- **Resources**: 8GB RAM, 4 CPUs (adjustable)
-
-**Why Rancher over Docker Desktop?**
-- Free for enterprise use
-- Includes Kubernetes built-in
-- Lighter weight
-- Better K8s dev experience
-
-## Skaffold Workflow
-
-All K8s templates come with `skaffold.yaml` configured:
-
-```bash
-cd ~/Development/projects/my-app
-
-# Development mode (hot reload)
-skaffold dev
-
-# One-time deploy
-skaffold run
-
-# Clean up
-skaffold delete
-```
-
-## Customization
-
-### Change Folder Structure
-
-Edit `config/folder-structure.yaml` before running installer:
-
-```yaml
-root: ~/Development
-folders:
-  - projects
-  - experiments
-  - my-custom-folder  # Add your own!
-```
-
-### Add Custom Tools
-
-Edit `config/tools.yaml`:
-
-```yaml
-tools:
-  my-cli:
-    description: "My custom CLI tool"
-    mac:
-      method: brew
-      package: my-cli
-    windows:
-      method: winget
-      package: MyCompany.MyCLI
-```
-
-### Skip Interactive Prompts
-
-Create `.installer-config.yaml` with your preferences:
-
-```yaml
-dev_folder: ~/Development
-tools:
-  git: true
-  rancher: true
-  skaffold: true
-  ai_assistant: false
-templates:
-  - python-fastapi-vbd
-  - react-your-ui
-```
-
-Then run: `python3 install.py --config .installer-config.yaml`
-
-## Troubleshooting
-
-### Check Setup Progress
-
-```bash
-python3 install.py --status
-
-# Shows:
-# ✅ Completed tasks
-# ⏳ Pending tasks
-# Timestamps for each step
-```
-
-### Resume Interrupted Setup
-
-```bash
+# Resume from checkpoint
 python3 install.py --resume
 
-# Picks up where you left off!
-# Progress is saved after each major step
+# Check progress
+python3 install.py --status
+
+# Install specific package
+python3 install.py --package personal-dev-config
 ```
 
-### "Python not found"
+---
 
-**Mac/Ubuntu:**
-```bash
-python3 --version  # Try with '3'
-```
+## Supported Platforms
 
-**Windows:**
-- Install from https://python.org
-- Or use Microsoft Store version
+- ✅ **macOS** (Intel & Apple Silicon)
+- ✅ **Windows** 10/11
+- ✅ **Linux** (Ubuntu 20.04+, Debian, Fedora)
 
-### "Permission denied" on Mac/Ubuntu
+---
 
-```bash
-sudo python3 install.py  # May need sudo for some installs
-```
+## Package System
 
-### Rancher Desktop won't start
+### Using Built-in Packages
 
-1. Check system requirements (8GB+ RAM)
-2. Ensure virtualization is enabled (BIOS setting)
-3. On Windows: Enable WSL2
-
-### Skaffold can't connect to cluster
+Prism includes 7 pre-configured packages:
 
 ```bash
-# Verify Rancher is running
-kubectl cluster-info
-
-# Should show: Kubernetes control plane is running at...
+python3 scripts/package_manager.py list
 ```
 
-## Uninstall
+### Creating Your Own
 
 ```bash
-python3 install.py --uninstall
+# Use the template
+cp -r config-packages/acme-corp config-packages/my-company
+cd config-packages/my-company
 
-# Removes:
-# - Installed tools (asks for confirmation)
-# - CLI scripts from PATH
-# - Does NOT remove ~/Development (your projects are safe!)
+# Edit package.yaml
+vim package.yaml
+
+# Validate
+python3 ../../scripts/package_manager.py validate my-company
+
+# Install
+python3 install.py --package my-company
 ```
 
-## Team Onboarding
+See [Package Documentation](docs/CREATING_PACKAGES.md) for details.
 
-### Package This for Your Team
+---
+
+## Configuration
+
+### Package Structure
+
+```yaml
+# package.yaml
+package:
+  name: "my-company"
+  version: "1.0.0"
+  description: "My company dev environment"
+  
+  # NEW: Assets support!
+  assets:
+    logo: "assets/logo.png"
+    colors: "assets/colors.yaml"
+    
+  branding:
+    primary_color: "#4A90E2"
+    secondary_color: "#9B59B6"
+  
+  tools:
+    - git
+    - docker
+    - python
+    - nodejs
+    
+  repositories:
+    - url: "git@github.com:mycompany/backend.git"
+      path: "~/Development/projects/backend"
+```
+
+Full schema: [docs/CONFIG_SCHEMA.md](docs/CONFIG_SCHEMA.md)
+
+---
+
+## CLI Tools
+
+After installation, you get helpful commands:
 
 ```bash
-# 1. Customize the config files
-edit config/preferences.yaml
-edit config/tools.yaml
+# Create new project
+new-project my-app
 
-# 2. Add your team's templates
-cp -r my-company-template templates/
+# Archive completed project
+archive-project old-app
 
-# 3. Create distributable package
-./scripts/package.sh
+# Find projects
+find-project search-term
 
-# Creates: dev-setup-v1.0.0.zip
+# Launch docs site
+mkdocs serve
 ```
 
-### Share with Team
+---
 
-**Option 1: Git repo (internal GitHub)**
-```bash
-git clone https://github.com/your-org/dev-setup.git
-cd dev-setup
-python3 install.py
-```
+## Documentation Server
 
-**Option 2: ZIP file**
-1. Download `dev-setup-v1.0.0.zip`
-2. Extract and run `python3 install.py`
+Auto-generated docs with:
 
-**Option 3: Confluence + SharePoint**
-- Attach ZIP to Confluence page
-- Link in team onboarding docs
+- 🏠 Homepage with project overview
+- 📁 Auto-scanned project list
+- 📚 Architecture diagrams (if present)
+- 📝 README rendering
+- 🎨 Custom branding (your logo, colors)
+
+Launch: `mkdocs serve`  
+Visit: `http://localhost:8000`
+
+---
+
+## The Story
+
+I'm **Will Anderson**, and I kept hitting the same wall:
+
+Every time I set up a new dev environment (new job, new machine, helping a teammate), I'd spend hours:
+
+1. Installing tools I forgot about
+2. Configuring git (again)
+3. Generating SSH keys (again)
+4. Creating folder structures
+5. Cloning repos
+6. Setting up docs
+
+It was **tedious, error-prone, and wasteful**.
+
+So one weekend, I started building a solution. Started with Claude Code helping me scaffold the basics. But I wanted more:
+
+- **Standardized** - Everyone gets the same great setup
+- **Extensible** - Works for solo devs AND Fortune 500
+- **Beautiful** - Not just functional, *impressive*
+- **Open source** - Everyone should benefit
+
+Prism is the result. Built to solve my problem, shared to solve yours.
+
+---
+
+## Philosophy
+
+### 💎 **Refract Complexity Into Clarity**
+
+Complex setups become simple. Chaos becomes structure. Confusion becomes confidence.
+
+### 🌈 **Beauty Through Structure**
+
+Your dev environment should be as beautiful as the code you write.
+
+### 💡 **Illuminate, Don't Dictate**
+
+Prism provides structure but stays flexible. Use what you need, skip what you don't.
+
+### ✨ **Open & Extensible**
+
+Built on open principles. Fork it, extend it, make it yours.
+
+---
 
 ## Contributing
 
-Want to improve this installer?
+Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md)
 
-1. Fork the repo
-2. Make changes
-3. Test on your platform
-4. Submit PR with description
+### Ways to Help
+
+- ⭐ Star the repo
+- 🐛 Report bugs
+- 💡 Suggest features
+- 📝 Improve docs
+- 🎭 Create config packages
+- 🔧 Submit PRs
+
+---
+
+## License
+
+**MIT License** - See [LICENSE](LICENSE)
+
+Copyright (c) 2025 William Anderson
+
+---
+
+## Acknowledgments
+
+- Built with help from **Claude Code** (Anthropic)
+- Inspired by frustration and necessity
+- Made with ♥️ for developers everywhere
+
+---
+
+## Links
+
+- **GitHub**: [github.com/andersonwilliam85/prism](https://github.com/andersonwilliam85/prism)
+- **Issues**: [github.com/andersonwilliam85/prism/issues](https://github.com/andersonwilliam85/prism/issues)
+- **Docs**: [Coming soon - GitHub Pages]
+- **Packages**: [github.com/andersonwilliam85/prism-packages](https://github.com/andersonwilliam85/prism-packages)
+
+---
 
 ## Support
 
-- **Slack**: #dev-environment-setup
-- **Teams**: [Dev Tools Team](https://teams.microsoft.com/...)
-- **Docs**: http://localhost:8000 (after setup)
+Having issues? Found a bug?
 
-## What's Next?
+1. Check [Issues](https://github.com/andersonwilliam85/prism/issues)
+2. Search existing issues
+3. Create a new issue with details
 
-After setup completes, you'll see:
-
-```
-╔══════════════════════════════════════════════════════════╗
-║                    🎉 Setup Complete! 🎉                 ║
-╚══════════════════════════════════════════════════════════╝
-
-🚀 Your development environment is ready!
-
-📁 Folder structure:  ~/Development/
-🔑 SSH key generated: ~/.ssh/id_ed25519.pub
-📖 Docs server:       http://localhost:8000
-
-═══════════════════════════════════════════════════════════
-
-📋 Next Steps:
-
-1. Add your SSH key to GitHub Enterprise:
-   • Copy: ~/.ssh/id_ed25519.pub
-   • Add at: https://github.com/settings/keys (or your git platform)
-
-2. Your documentation server is running!
-   • Access at: http://localhost:8000
-   • Bookmark the Career Dashboard: /career/
-
-3. Start a project:
-   cd ~/Development/projects
-   mkdir my-first-project
-   cd my-first-project
-   git init
-   
-4. Track your first win:
-   • Visit: http://localhost:8000/career/
-   • Edit: ~/Development/tooling/dev-docs-server/config/user-profile.yaml
-   • Add your accomplishment!
-
-5. Optional: Configure AI assistants (Claude Code, Copilot, etc.)
-   • Visit: Your company's developer portal
-   • AI coding assistant
-
-═══════════════════════════════════════════════════════════
-
-💡 Pro Tips:
-
-• Run `start-docs-server` anytime to launch your docs
-• Check progress: `python3 install.py --status`
-• Your docs auto-refresh every 5 minutes
-• Log wins regularly - great for performance reviews!
-
-═══════════════════════════════════════════════════════════
-```
-
-Your browser will automatically open to your new documentation site!
+Pull requests welcome! 🚀
 
 ---
 
-## After Setup, check out:
-
-1. **Documentation Homepage**: http://localhost:8000
-2. **Career Dashboard**: http://localhost:8000/career/
-3. **Onboarding docs**: `~/Development/docs/onboarding/`
-4. **User profile config**: `~/Development/tooling/dev-docs-server/config/user-profile.yaml`
-
----
-
-**Happy coding! 🚀**
-🚀**
+<p align="center">
+  <strong>💎 Prism - Refract complexity into clarity</strong><br>
+  Made with ♥️ by <a href="https://github.com/andersonwilliam85">William Anderson</a>
+</p>

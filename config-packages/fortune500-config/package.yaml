@@ -136,7 +136,7 @@ distribution:
     discoverable: true
   
   git:
-    url: "https://github.com/dev-onboarding/fortune500-config"
+    url: "https://github.com/prism/fortune500-config"
     branch: "main"
 
 metadata:

@@ -1,0 +1,27 @@
+# Color Palette
+
+primary:
+  prism_blue: "#4A90E2"
+  prism_purple: "#9B59B6"
+  prism_cyan: "#1ABC9C"
+
+secondary:
+  deep_indigo: "#2C3E50"
+  light_gray: "#ECF0F1"
+  white: "#FFFFFF"
+  black: "#000000"
+
+accent:
+  rainbow:
+    red: "#FF6B6B"
+    orange: "#FFA500"
+    yellow: "#FFD93D"
+    green: "#6BCF7F"
+    blue: "#4A90E2"
+    purple: "#9B59B6"
+
+semantics:
+  success: "#1ABC9C"
+  error: "#E74C3C"
+  warning: "#F39C12"
+  info: "#4A90E2"

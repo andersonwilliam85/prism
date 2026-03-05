@@ -61,7 +61,7 @@ Edit `resources.yaml`:
 
 ### 7. Test installation
 ```bash
-cd ../../  # Back to dev-onboarding root
+cd ../../  # Back to prism root
 python3 scripts/package_manager.py install your-company-config
 ```
 

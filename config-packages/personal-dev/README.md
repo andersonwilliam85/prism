@@ -61,7 +61,7 @@ Pre-configured profiles for:
 ### 1. Install Package
 
 ```bash
-cd dev-onboarding
+cd prism
 python3 scripts/package_manager.py install personal-dev-config
 ```
 
@@ -516,7 +516,7 @@ For work:
 - ❓ Stack Overflow - https://stackoverflow.com
 
 **Package Issues:**
-- GitHub: https://github.com/dev-onboarding/personal-config/issues
+- GitHub: https://github.com/prism/personal-config/issues
 
 ---
 

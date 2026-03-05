@@ -6,7 +6,7 @@
 # Default public registry
 default_registry:
   type: "github"
-  url: "https://github.com/dev-onboarding/packages"
+  url: "https://github.com/andersonwilliam85/prism-packages"
   branch: "main"
   enabled: true
 
@@ -15,7 +15,7 @@ registries:
   # Public community registry (GitHub)
   - name: "community"
     type: "github"
-    url: "https://github.com/dev-onboarding/community-packages"
+    url: "https://github.com/andersonwilliam85/prism-community-packages"
     branch: "main"
     enabled: true
     priority: 1
@@ -23,14 +23,14 @@ registries:
   # npm registry (future)
   - name: "npm"
     type: "npm"
-    package_prefix: "@dev-onboarding/"
+    package_prefix: "@prism/"
     enabled: false
     priority: 2
   
   # PyPI registry (future)
   - name: "pypi"
     type: "pypi"
-    package_prefix: "dev-onboarding-"
+    package_prefix: "prism-"
     enabled: false
     priority: 3
   
@@ -52,7 +52,7 @@ registries:
 # Cache settings
 cache:
   enabled: true
-  directory: "~/.dev-onboarding/cache"
+  directory: "~/.prism/cache"
   ttl_hours: 24
 
 # i18n settings (future)
