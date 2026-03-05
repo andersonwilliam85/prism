@@ -41,6 +41,8 @@ python3 install.py
 
 **That's it.** One command gives you:
 
+✔ **Beautiful Web UI** (visual package selection, step-by-step wizard, live progress)  
+✔ **OR CLI installer** (if you prefer the terminal)  
 ✔ **Organized folder structure** (projects, experiments, learning, tooling)  
 ✔ **Essential dev tools** (Git, Docker, Python, Node.js, cloud CLIs, etc.)  
 ✔ **Git global config** + **SSH key generation**  
@@ -74,7 +76,32 @@ Built with a package system. Use built-in configs or create your own. Personal, 
 
 ## Features
 
-### 📚 **Smart Folder Structure**
+### 🌐 **Web UI Installer**
+
+Gorgeous visual setup experience:
+
+- **Package Gallery** - Browse configs with beautiful cards
+- **Visual Wizard** - 7-step guided setup
+- **Live Progress** - Watch installation in real-time
+- **Responsive Design** - Works on any screen size
+- **Smart Validation** - Prevents configuration errors
+- **Auto-launch** - Opens in your browser automatically
+
+Launch with: `python3 web_installer.py`
+
+### 💻 **CLI Installer**
+
+Prefer the terminal?
+
+- **Interactive Prompts** - Guided questions
+- **Non-interactive Mode** - Use config files
+- **Resume Capability** - Pick up where you left off
+- **Status Checking** - See what's installed
+- **Scriptable** - Automate deployments
+
+Run with: `python3 install.py`
+
+### 📁 **Smart Folder Structure**
 
 ```
 ~/Development/
@@ -130,21 +157,53 @@ python3 install.py --resume   # Continue where you left off
 
 ---
 
-## Quick Start
+## Installation Methods
 
 ### Prerequisites
 
 - **Python 3.9+** (usually pre-installed on Mac/Linux)
 - **Internet connection**
+- **Flask** (for web UI - auto-installs if missing)
 
-### Installation
+### 🌐 Web UI Installer (Recommended)
+
+Beautiful, visual setup experience:
 
 ```bash
 # 1. Clone the repo
 git clone https://github.com/andersonwilliam85/prism.git
 cd prism
 
-# 2. Run the installer
+# 2. Launch the web installer
+python3 web_installer.py
+
+# 3. Open your browser
+# Automatically opens http://localhost:5000
+
+# 4. Follow the visual wizard!
+```
+
+**Web UI Features:**
+
+✨ **Package Selection** - Beautiful cards showing all available packages  
+📋 **Step-by-Step Wizard** - Clear progress through 7 steps  
+👤 **User Info** - Name, email, GitHub username  
+🏢 **Organization Setup** - Department/team selection (if applicable)  
+🛠️ **Tool Selection** - Visual checkboxes for tools to install  
+✅ **Confirmation** - Review before installing  
+📊 **Live Progress** - Real-time installation updates  
+🎉 **Completion** - Success screen with next steps
+
+### 💻 CLI Installer (Classic)
+
+Prefer the terminal? No problem:
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/andersonwilliam85/prism.git
+cd prism
+
+# 2. Run the CLI installer
 python3 install.py
 
 # 3. Follow the prompts
@@ -154,6 +213,21 @@ python3 install.py
 ```
 
 ### Advanced Usage
+
+#### Web UI Options
+
+```bash
+# Custom port
+python3 web_installer.py --port 8080
+
+# Debug mode
+python3 web_installer.py --debug
+
+# Specify host
+python3 web_installer.py --host 0.0.0.0
+```
+
+#### CLI Options
 
 ```bash
 # Non-interactive (use config file)
@@ -168,6 +242,34 @@ python3 install.py --status
 # Install specific package
 python3 install.py --package personal-dev-config
 ```
+
+---
+
+## Screenshots
+
+### Web UI Installer
+
+**Package Selection:**
+![Package Selection](assets/screenshots/package-selection.png)
+
+Choose from personal, startup, enterprise, university, consulting, or open source configs.
+
+**User Setup:**
+![User Setup](assets/screenshots/user-setup.png)
+
+Enter your details once, used throughout the setup.
+
+**Tool Selection:**
+![Tool Selection](assets/screenshots/tool-selection.png)
+
+Pick exactly what you need - no bloat!
+
+**Live Progress:**
+![Installation Progress](assets/screenshots/progress.png)
+
+Watch as Prism builds your perfect dev environment.
+
+*(Screenshots coming soon - repo is brand new!)*
 
 ---
 
