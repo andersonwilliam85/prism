@@ -182,10 +182,55 @@ def setup_docs_structure():
     
     return docs_server
 
-def generate_index_page(docs_server, user_profile, resources_config):
-    """Generate homepage for docs"""
+def generate_index_page(docs_server, user_profile, resources_config, welcome_config):
+    """Generate homepage for docs using configurable welcome content"""
     user_name = user_profile.get("user", {}).get("name", "Developer")
-    company_name = resources_config.get("company", {}).get("name", "Company")
+    company_name = welcome_config.get("company", {}).get("name", "Company")
+    
+    # Welcome content from config
+    welcome = welcome_config.get("welcome", {})
+    title = welcome.get("title", "Welcome to Your Dev Environment")
+    subtitle = welcome.get("subtitle", "Your development environment is ready!")
+    hero_message = welcome.get("hero_message", "This is your personal knowledge base.")
+    
+    # Getting Started section
+    getting_started_html = ""
+    getting_started = welcome.get("getting_started", {})
+    if getting_started:
+        getting_started_html = f"\n## {getting_started.get('title', '🎯 Getting Started')}\n\n"
+        for item in getting_started.get("items", []):
+            icon = item.get("icon", "•")
+            text = item.get("text", "")
+            link = item.get("link", "")
+            if link:
+                getting_started_html += f"- {icon} [{text}]({link})\n"
+            else:
+                getting_started_html += f"- {icon} {text}\n"
+    
+    # Quick Tips section
+    quick_tips_html = ""
+    quick_tips = welcome.get("quick_tips", {})
+    if quick_tips:
+        quick_tips_html = f"\n## {quick_tips.get('title', '💡 Pro Tips')}\n\n"
+        for item in quick_tips.get("items", []):
+            tip_type = item.get("type", "tip")
+            text = item.get("text", "")
+            link = item.get("link", "")
+            
+            # Map type to admonition style
+            admonition_map = {
+                "critical": "danger",
+                "tip": "tip",
+                "success": "success",
+                "info": "info",
+                "warning": "warning"
+            }
+            admonition = admonition_map.get(tip_type, "tip")
+            
+            if link:
+                quick_tips_html += f'!!! {admonition}\n    {text} [Learn more]({link})\n\n'
+            else:
+                quick_tips_html += f'!!! {admonition}\n    {text}\n\n'
     
     # Build resource links sections
     resource_sections = ""
@@ -639,6 +684,10 @@ def main():
     # Load user profile
     user_profile = load_user_profile()
     
+    # Load resources and welcome config
+    resources_config = load_resources()
+    welcome_config = load_welcome_config()
+    
     # Setup docs structure
     docs_server = setup_docs_structure()
     update_progress("create_docs_structure")
@@ -649,7 +698,7 @@ def main():
     else:
         print("\nGenerating documentation pages...")
     
-    generate_index_page(docs_server, user_profile, resources_config)
+    generate_index_page(docs_server, user_profile, resources_config, welcome_config)
     generate_career_dashboard(docs_server, user_profile)
     generate_mkdocs_config(docs_server, user_profile)
     generate_walmart_css(docs_server)

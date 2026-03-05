@@ -7,6 +7,7 @@
 company:
   name: "Walmart"
   domain: "walmart.com"
+  internal_domain: ".walmart.com,.samsclub.com"
   
 # ============================================================================
 # NETWORK & PROXY (Required for all Walmart devs)
@@ -19,8 +20,15 @@ environment:
   
   vpn:
     required: true
-    name: "Walmart Global VPN"
-    instructions: "Connect via Pulse Secure or GlobalProtect"
+    name: "Walmart VPN"
+    instructions: "Connect via Pulse Secure VPN or use Eagle/walmartwifi networks"
+    urls:
+      - "https://vpn.walmart.com"
+  
+  wifi:
+    recommended: "walmartwifi"  # Preferred over eagle for dev work
+    avoid: "eagle"  # Known proxy issues with brew/npm
+    note: "Use 'walmartwifi' network to avoid proxy issues with package managers"
 
 # ============================================================================
 # ARTIFACT REPOSITORIES (Company-wide)

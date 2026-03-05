@@ -1,0 +1,89 @@
+# Config Package Metadata
+# This defines a company configuration package that can be installed
+
+package:
+  name: "walmart-config"
+  version: "1.0.0"
+  description: "Walmart development environment configuration"
+  author: "Walmart Engineering"
+  homepage: "https://dx.walmart.com"
+  
+  # Package type
+  type: "company"  # company, sub-org, department, or team
+  
+  # Compatibility
+  requires:
+    onboarding_version: ">=1.0.0"  # Minimum dev-onboarding version
+  
+  # Installation
+  install:
+    # Where to install files
+    target_dir: "config/"
+    
+    # Files to copy
+    files:
+      - source: "base/walmart.yaml"
+        dest: "config/base/walmart.yaml"
+      
+      - source: "welcome.yaml"
+        dest: "config/welcome.yaml"
+      
+      - source: "resources.yaml"
+        dest: "config/resources.yaml"
+    
+    # Directories to copy
+    directories:
+      - source: "orgs/"
+        dest: "config/orgs/"
+      
+      - source: "departments/"
+        dest: "config/departments/"
+      
+      - source: "teams/"
+        dest: "config/teams/"
+  
+  # Post-install script (optional)
+  post_install:
+    script: "scripts/post-install.sh"
+    message: "Walmart config installed! Edit config/inheritance.yaml to select your org/dept/team."
+
+# Package contents
+contents:
+  base_config: "base/walmart.yaml"
+  welcome_page: "welcome.yaml"
+  resources: "resources.yaml"
+  
+  sub_orgs:
+    - walmart-us
+    - sams-club
+    - walmart-intl
+  
+  departments:
+    - supply-chain
+    - ecommerce
+    - data-engineering
+    - platform
+    - store-tech
+    - mobile
+  
+  teams:
+    - receiving-systems
+    - fulfillment
+    - checkout-frontend
+    - product-catalog
+    - analytics-platform
+    - k8s-platform
+
+# Distribution
+distribution:
+  # Where to download this package
+  registry: "https://artifacts.walmart.com/config-packages/"
+  
+  # Or Git repository
+  git:
+    url: "https://github.walmart.com/engineering/walmart-config"
+    branch: "main"
+  
+  # Or local path
+  local:
+    path: "config-packages/walmart/"
