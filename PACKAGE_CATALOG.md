@@ -1,6 +1,6 @@
 # 📦 Config Package Catalog
 
-**8 complete config packages covering every organization type**
+**7 complete config packages covering every organization type**
 
 ---
 
@@ -14,7 +14,7 @@
 | 🚀 Startup | `startup-config` | 10-50 | Flat |
 | 🏢 Small Company | `acme-corp-config` | 50-500 | 2 levels |
 | 🎯 Consulting Firm | `consulting-firm-config` | Variable | By client |
-| 🏭 Large Enterprise | `walmart-config` | 5,000-50,000 | 4 levels |
+
 | 🌐 Fortune 500 | `fortune500-config` | 50,000+ | 5 levels |
 | 🎓 University | `university-config` | Variable | Depts → Labs |
 | 🌟 Open Source Project | `opensource-project-config` | Community | Flat |
@@ -148,43 +148,7 @@ python3 scripts/package_manager.py install consulting-firm-config
 
 ---
 
-### 5. 🏭 walmart-config
-
-**Perfect for:** Large enterprises (5,000-50,000 employees)
-
-**What you get:**
-- Complete 4-level hierarchy
-- Real-world enterprise example
-- GitHub Enterprise integration
-- Corporate proxy config
-
-**User fields:**
-- Full name
-- Corporate email (@walmart.com)
-- LDAP username (optional)
-- Employee ID (optional)
-- Cost center (optional)
-
-**Structure:**
-```
-Walmart
-└── Walmart US
-    └── Supply Chain
-        └── Receiving Systems
-```
-
-**Use as:** Real enterprise template
-
-**Installation:**
-```bash
-python3 scripts/package_manager.py install walmart-config
-```
-
-**Tags:** `walmart`, `enterprise`, `complete`, `hierarchical`
-
----
-
-### 6. 🌐 fortune500-config
+### 5. 🌐 fortune500-config
 
 **Perfect for:** Fortune 500, multinational corporations (50,000+ employees)
 
@@ -226,7 +190,7 @@ python3 scripts/package_manager.py install fortune500-config
 
 ---
 
-### 7. 🎓 university-config
+### 6. 🏫 university-config
 
 **Perfect for:** Universities, research institutions, academic labs
 
@@ -270,7 +234,7 @@ python3 scripts/package_manager.py install university-config
 
 ---
 
-### 8. 🌟 opensource-project-config
+### 7. 🌟 opensource-project-config
 
 **Perfect for:** Open source projects, community-driven development
 
@@ -341,15 +305,15 @@ python3 scripts/package_manager.py create mycompany-config
 
 ## 📊 Comparison Matrix
 
-| Feature | Personal | Startup | ACME | Consulting | Walmart | Fortune500 | University | OSS |
-|---------|----------|---------|------|------------|---------|------------|------------|-----|
-| **Hierarchy Levels** | 0 | 1 | 2 | 1 (clients) | 4 | 5 | 2 | 0 |
-| **User Fields** | 3 | 5 | 4 | 5 | 6 | 6 | 6 | 5 |
-| **Org Size** | 1 | 10-50 | 100-1K | Variable | 5K-50K | 50K+ | Variable | Community |
-| **Approval Workflows** | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| **Multi-client** | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| **Complexity** | Low | Low | Medium | Medium | High | Very High | Medium | Low |
-| **Recommended** | ✅ | ✅ | - | - | - | ✅ | - | ✅ |
+| Feature | Personal | Startup | ACME | Consulting | Fortune500 | University | OSS |
+|---------|----------|---------|------|------------|------------|------------|-----|
+| **Hierarchy Levels** | 0 | 1 | 2 | 1 (clients) | 5 | 2 | 0 |
+| **User Fields** | 3 | 5 | 4 | 5 | 6 | 6 | 5 |
+| **Org Size** | 1 | 10-50 | 100-1K | Variable | 50K+ | Variable | Community |
+| **Approval Workflows** | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ |
+| **Multi-client** | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| **Complexity** | Low | Low | Medium | Medium | Very High | Medium | Low |
+| **Recommended** | ✅ | ✅ | - | - | ✅ | - | ✅ |
 
 ---
 
@@ -396,7 +360,7 @@ python3 install-ui.py
 → **consulting-firm-config**
 
 ### Enterprise
-→ **walmart-config** or **fortune500-config**
+→ **fortune500-config**
 
 ### University
 → **university-config**
@@ -406,4 +370,4 @@ python3 install-ui.py
 
 ---
 
-**📦 8 packages. Every organization type covered. Ready to ship!** 🚀
+**📦 7 packages. Every organization type covered. Ready to ship!** 🚀

@@ -89,7 +89,7 @@ acme-corp/
 - 1 team
 - ~6 files
 
-**Walmart package (complete):**
+**Fortune500 package (complete enterprise template):**
 - 1 base config
 - Multiple sub-orgs
 - Multiple departments

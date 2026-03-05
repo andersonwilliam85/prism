@@ -19,18 +19,18 @@ The Config Package System allows companies to create, distribute, and install co
 
 ## 📦 Available Packages
 
-### Example Configs (ACME Corp & Personal Dev)
-**Package:** `walmart-config`  
+### Example Configs (Fortune500 & Personal Dev)
+**Package:** `fortune500-config`  
 **Type:** Company (large enterprise)  
 **Includes:**
 - Complete base configuration
-- 1 sub-org (Walmart US)
-- 1 department (Supply Chain)
-- 1 team (Receiving Systems)
-- Welcome page with Walmart-specific guidance
-- Resource links to internal tools
-- GitHub Enterprise (gecgithub01.walmart.com)
-- Proxy, VPN, WiFi guidance
+- Multi-level hierarchy support
+- Department and team structures
+- Manager approval workflows
+- Welcome page with enterprise guidance
+- Resource links to developer tools
+- Enterprise integration examples
+- Security and compliance templates
 
 ### ACME Corp Config (Template)
 **Package:** `acme-corp-config`  
@@ -57,10 +57,10 @@ python3 scripts/package_manager.py list
 ```
 📦 Available Config Packages
 
-  📦 walmart-config (v1.0.0)
-     Complete Walmart development environment configuration
-     Type: company | Size: large | Author: Walmart Engineering
-     Tags: walmart, enterprise, complete, hierarchical
+  📦 fortune500-config (v1.0.0)
+     Complete enterprise development environment configuration
+     Type: company | Size: large | Author: Prism Team
+     Tags: enterprise, complete, hierarchical
 
   📦 acme-corp-config (v1.0.0)
      ACME Corp dev environment (example template)
@@ -73,13 +73,13 @@ python3 scripts/package_manager.py list
 ### Get Package Info
 
 ```bash
-python3 scripts/package_manager.py info walmart-config
+python3 scripts/package_manager.py info fortune500-config
 ```
 
 ### Install a Package
 
 ```bash
-python3 scripts/package_manager.py install walmart-config
+python3 scripts/package_manager.py validate fortune500-config
 ```
 
 **What happens:**
@@ -91,13 +91,13 @@ python3 scripts/package_manager.py install walmart-config
 ### Validate Package
 
 ```bash
-python3 scripts/package_manager.py validate walmart-config
+python3 scripts/package_manager.py validate fortune500-config
 ```
 
 ### Search Packages
 
 ```bash
-python3 scripts/package_manager.py search walmart
+python3 scripts/package_manager.py search enterprise
 ```
 
 ---
@@ -136,16 +136,16 @@ cd config-packages/mycompany
 # Add your orgs/teams
 ```
 
-### Option 3: Start from Walmart Package
+### Option 3: Start from Enterprise Template
 
 For large enterprises:
 
 ```bash
-cp -r config-packages/walmart config-packages/mycompany
+cp -r config-packages/fortune500-config config-packages/mycompany
 cd config-packages/mycompany
 
-# Use Walmart structure as template
-# Replace all Walmart-specific content
+# Use enterprise structure as template
+# Replace all example content with your company data
 ```
 
 ---
@@ -164,7 +164,7 @@ mycompany/
     └── mycompany.yaml    # REQUIRED: Base company config
 ```
 
-### Complete Package (like Walmart)
+### Complete Package (Enterprise Template)
 
 ```
 mycompany/
@@ -337,7 +337,7 @@ Creates scaffold with:
 
 ## 🔄 Workflow: Creating & Distributing Packages
 
-### For Large Enterprises (Walmart-style)
+### For Large Enterprises
 
 #### 1. Create Package Structure
 
@@ -650,10 +650,14 @@ import json
 # Get employee info from HR API
 employee = get_employee_from_hr_api(employee_id)
 
-# Determine package
-if employee['division'] == 'Walmart US':
-    if employee['department'] == 'Supply Chain':
-        package = 'walmart-config'
+# Determine package based on organization
+if employee['division'] == 'Engineering':
+    if employee['department'] == 'Platform':
+        package = 'platform-engineering-config'
+    else:
+        package = 'engineering-config'
+else:
+    package = 'default-config'
 
 subprocess.run([
     'python3', 'scripts/package_manager.py', 

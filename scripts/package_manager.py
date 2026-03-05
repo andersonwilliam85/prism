@@ -90,7 +90,7 @@ class PackageManager:
         Install a config package
         
         Args:
-            package_name: Name of package (e.g., "walmart-config")
+            package_name: Name of package (e.g., "fortune500-config")
             source: Optional source (local path, git url, or registry)
         
         Returns:
@@ -430,9 +430,9 @@ def main():
         epilog="""
 Examples:
   python3 scripts/package_manager.py list
-  python3 scripts/package_manager.py info walmart-config
-  python3 scripts/package_manager.py install walmart-config
-  python3 scripts/package_manager.py validate walmart-config
+  python3 scripts/package_manager.py info fortune500-config
+  python3 scripts/package_manager.py install fortune500-config
+  python3 scripts/package_manager.py validate fortune500-config
   python3 scripts/package_manager.py create mycompany-config
         """
     )

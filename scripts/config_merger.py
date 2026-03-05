@@ -246,10 +246,10 @@ def load_merged_config(
     
     Example:
         config = load_merged_config(
-            company="config/base/walmart.yaml",
-            sub_org="config/orgs/walmart-us.yaml",
-            department="config/departments/supply-chain.yaml",
-            team="config/teams/receiving-systems.yaml",
+            company="config/base/company.yaml",
+            sub_org="config/orgs/sub-organization.yaml",
+            department="config/departments/engineering.yaml",
+            team="config/teams/platform.yaml",
             user="config/user-profile.yaml"
         )
     """

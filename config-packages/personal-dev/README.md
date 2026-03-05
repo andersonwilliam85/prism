@@ -19,7 +19,7 @@ A **lightweight, no-corporate-BS** development environment config for indie deve
 - 🏠 Remote developers
 
 **NOT for:**
-- ❌ Corporate environments (use walmart-config or acme-corp-config instead)
+- ❌ Corporate environments (use fortune500-config or acme-corp-config instead)
 - ❌ Teams requiring VPN/proxy
 - ❌ Enterprise compliance
 
@@ -499,7 +499,7 @@ deploy:
 
 For work:
 - Use company's config package
-- Or use walmart-config/acme-corp-config as templates
+- Or use fortune500-config/acme-corp-config as templates
 
 ### Q: Can I contribute to this package?
 

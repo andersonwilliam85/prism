@@ -22,16 +22,16 @@ An **open-source, configurable developer environment onboarding system** with:
 
 ## 📦 Included Packages
 
-### 1. **walmart-config** (Enterprise Example)
+### 1. **fortune500-config** (Enterprise Example)
 
 **For:** Large enterprise with complex hierarchy  
-**Size:** 42 KB, 7 config files  
+**Size:** Complete enterprise template  
 **Includes:**
-- GitHub Enterprise (gecgithub01.walmart.com)
-- Corporate proxy config
-- LDAP/employee ID fields (all optional)
+- Multi-level organizational hierarchy
+- Manager approval workflows
+- Enterprise authentication patterns
 - Complete hierarchy (orgs → depts → teams)
-- Example: Supply Chain → Receiving Systems
+- Security and compliance templates
 
 **Use as:** Enterprise template for Fortune 500-style companies
 
@@ -225,7 +225,7 @@ python3 scripts/package_manager.py create your-company-config
 
 ### Packages (Specific)
 
-- `config-packages/walmart/` - Enterprise example
+- `config-packages/fortune500-config/` - Enterprise example
 - `config-packages/acme-corp/` - Medium company template
 - `config-packages/personal-dev/` - Indie developer config
 
@@ -238,9 +238,9 @@ python3 scripts/package_manager.py create your-company-config
 ### 1. **Large Enterprise** (Fortune 500)
 
 - Fork repo
-- Create package like walmart-config
+- Create package like fortune500-config
 - Complete hierarchy (5 levels)
-- Corporate proxy, LDAP, employee IDs
+- Enterprise authentication and security
 - Internal package registry
 - 1000+ developers
 
