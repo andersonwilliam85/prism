@@ -393,8 +393,8 @@ INDEX_HTML = """
         .settings-panel {
             position: fixed;
             top: 0;
-            left: -400px;
-            width: 400px;
+            left: -450px;
+            width: 450px;
             height: 100vh;
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(20px);
@@ -402,36 +402,95 @@ INDEX_HTML = """
             transition: left 0.3s ease;
             z-index: 9999;
             overflow-y: auto;
-            padding: 20px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
         }
         
         .settings-panel.open {
             left: 0;
         }
         
-        .settings-panel h2 {
+        .settings-header {
+            padding: 20px;
+            padding-top: 60px;
             background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 20px;
-            padding-top: 40px;
+            color: white;
+        }
+        
+        .settings-panel h2 {
+            color: white;
+            margin: 0 0 10px 0;
+            font-size: 1.5em;
+        }
+        
+        .settings-panel .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9em;
+        }
+        
+        /* Step Navigation */
+        .settings-steps {
+            display: flex;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid #e0e0e0;
+            overflow-x: auto;
+            gap: 10px;
+        }
+        
+        .settings-step-btn {
+            padding: 8px 16px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .settings-step-btn:hover {
+            border-color: var(--gradient-1);
+            transform: translateY(-2px);
+        }
+        
+        .settings-step-btn.active {
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+            color: white;
+            border-color: transparent;
+        }
+        
+        .settings-step-btn.completed {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+        
+        /* Settings Content */
+        .settings-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .settings-step-content {
+            display: none;
+        }
+        
+        .settings-step-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
         }
         
         .settings-section {
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 25px;
         }
         
-        .settings-section:last-child {
-            border-bottom: none;
-        }
-        
-        .settings-section h3 {
+        .settings-section h4 {
             color: #333;
-            margin-bottom: 15px;
-            font-size: 1.1em;
+            font-size: 1em;
+            margin-bottom: 10px;
         }
         
         .settings-section p {
@@ -607,65 +666,140 @@ INDEX_HTML = """
     
     <!-- Settings Panel -->
     <div class="settings-panel" id="settingsPanel">
-        <h2>⚙️ Prism Configuration</h2>
+        <!-- Header -->
+        <div class="settings-header">
+            <h2>⚙️ Configure Prism</h2>
+            <p class="subtitle">Set up your installation preferences</p>
+        </div>
         
-        <!-- Theme Selection -->
-        <div class="settings-section">
-            <h3>🎨 Theme</h3>
-            <p>Choose your preferred color scheme</p>
-            <div class="theme-grid">
-                <div class="theme-option active" data-theme="ocean" onclick="selectTheme('ocean')">
-                    <div class="theme-preview ocean"></div>
-                    <div class="theme-name">Ocean Blue</div>
+        <!-- Step Navigation -->
+        <div class="settings-steps">
+            <button class="settings-step-btn active" data-step="1" onclick="goToSettingsStep(1)">
+                1. Select Prism
+            </button>
+            <button class="settings-step-btn" data-step="2" onclick="goToSettingsStep(2)">
+                2. Package Repos
+            </button>
+            <button class="settings-step-btn" data-step="3" onclick="goToSettingsStep(3)">
+                3. Theme
+            </button>
+            <button class="settings-step-btn" data-step="4" onclick="goToSettingsStep(4)">
+                4. Advanced
+            </button>
+        </div>
+        
+        <!-- Settings Content -->
+        <div class="settings-content">
+            <!-- Step 1: Select Prism -->
+            <div class="settings-step-content active" id="settingsStep1">
+                <h3>🔷 Select Your Setup Prism</h3>
+                <p style="color: #666; margin-bottom: 20px;">Choose which configuration prism to install. This will configure your development environment.</p>
+                
+                <div id="settingsPrismList" style="max-height: 400px; overflow-y: auto;">
+                    <!-- Prisms will be loaded here -->
+                    <p style="color: #999; text-align: center; padding: 40px;">Loading prisms...</p>
                 </div>
-                <div class="theme-option" data-theme="purple" onclick="selectTheme('purple')">
-                    <div class="theme-preview purple"></div>
-                    <div class="theme-name">Purple Haze</div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: #f0f9ff; border-left: 4px solid #0093E9; border-radius: 4px;">
+                    <p style="font-size: 0.9em; margin: 0;"><strong>💡 Tip:</strong> You can add more prism sources in the next step!</p>
                 </div>
-                <div class="theme-option" data-theme="forest" onclick="selectTheme('forest')">
-                    <div class="theme-preview forest"></div>
-                    <div class="theme-name">Forest Green</div>
+            </div>
+            
+            <!-- Step 2: Package Repositories -->
+            <div class="settings-step-content" id="settingsStep2">
+                <h3>📦 Package Repositories</h3>
+                <p style="color: #666; margin-bottom: 20px;">Configure where to load prisms and packages from</p>
+                
+                <div class="settings-section">
+                    <h4 style="font-size: 1em; margin-bottom: 10px;">🔷 Prism Sources</h4>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 15px;">Add registries or URLs to load additional setup prisms</p>
+                    <div class="prism-source-input">
+                        <input type="text" id="prismSourceUrl" placeholder="https://registry.example.com/prisms" />
+                        <button onclick="addPrismSource()">Add</button>
+                    </div>
+                    <div class="prism-sources-list" id="prismSourcesList" style="margin-top: 15px;">
+                        <!-- Sources populated by JS -->
+                    </div>
                 </div>
-                <div class="theme-option" data-theme="sunset" onclick="selectTheme('sunset')">
-                    <div class="theme-preview sunset"></div>
-                    <div class="theme-name">Sunset Orange</div>
+                
+                <div class="settings-section" style="margin-top: 30px;">
+                    <h4 style="font-size: 1em; margin-bottom: 10px;">📦 npm Registry</h4>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 15px;">Configure custom npm registry for corporate/air-gapped environments</p>
+                    <div class="form-group">
+                        <label for="settingsNpmRegistry">Registry URL</label>
+                        <input type="text" id="settingsNpmRegistry" placeholder="https://registry.npmjs.org" />
+                    </div>
                 </div>
-                <div class="theme-option" data-theme="midnight" onclick="selectTheme('midnight')">
-                    <div class="theme-preview midnight"></div>
-                    <div class="theme-name">Midnight Dark</div>
+            </div>
+            
+            <!-- Step 3: Theme -->
+            <div class="settings-step-content" id="settingsStep3">
+                <h3>🎨 Choose Your Theme</h3>
+                <p style="color: #666; margin-bottom: 20px;">Select your preferred color scheme</p>
+                
+                <div class="theme-grid">
+                    <div class="theme-option active" data-theme="ocean" onclick="selectTheme('ocean')">
+                        <div class="theme-preview ocean"></div>
+                        <div class="theme-name">Ocean Blue</div>
+                    </div>
+                    <div class="theme-option" data-theme="purple" onclick="selectTheme('purple')">
+                        <div class="theme-preview purple"></div>
+                        <div class="theme-name">Purple Haze</div>
+                    </div>
+                    <div class="theme-option" data-theme="forest" onclick="selectTheme('forest')">
+                        <div class="theme-preview forest"></div>
+                        <div class="theme-name">Forest Green</div>
+                    </div>
+                    <div class="theme-option" data-theme="sunset" onclick="selectTheme('sunset')">
+                        <div class="theme-preview sunset"></div>
+                        <div class="theme-name">Sunset Orange</div>
+                    </div>
+                    <div class="theme-option" data-theme="midnight" onclick="selectTheme('midnight')">
+                        <div class="theme-preview midnight"></div>
+                        <div class="theme-name">Midnight Dark</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: #f0f9ff; border-left: 4px solid #0093E9; border-radius: 4px;">
+                    <p style="font-size: 0.9em; margin: 0;"><strong>💡 Tip:</strong> Your theme choice is saved automatically and persists across sessions!</p>
+                </div>
+            </div>
+            
+            <!-- Step 4: Advanced -->
+            <div class="settings-step-content" id="settingsStep4">
+                <h3>⚙️ Advanced Configuration</h3>
+                <p style="color: #666; margin-bottom: 20px;">Additional settings and information</p>
+                
+                <div class="settings-section">
+                    <h4 style="font-size: 1em; margin-bottom: 10px;">💾 Configuration Export/Import</h4>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 15px;">Share your Prism configuration with others</p>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn-secondary" onclick="exportPrismConfig()" style="flex: 1;">📤 Export Config</button>
+                        <button class="btn-secondary" onclick="importPrismConfig()" style="flex: 1;">📥 Import Config</button>
+                    </div>
+                </div>
+                
+                <div class="settings-section" style="margin-top: 30px;">
+                    <h4 style="font-size: 1em; margin-bottom: 10px;">🔄 Reset Configuration</h4>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 15px;">Reset all Prism settings to defaults</p>
+                    <button class="btn-secondary" onclick="resetPrismConfig()" style="background: #ef4444; color: white; width: 100%;">Reset to Defaults</button>
+                </div>
+                
+                <div class="settings-section" style="margin-top: 30px;">
+                    <h4 style="font-size: 1em; margin-bottom: 10px;">ℹ️ About Prism</h4>
+                    <p style="font-size: 0.85em; color: #666;">Light refracts through configuration - infinite possibilities</p>
+                    <p style="font-size: 0.85em; color: #999;">Version: 1.0.0</p>
+                    <p style="font-size: 0.85em; color: #999;">Architecture: Meta-Prism (Self-Configuring)</p>
                 </div>
             </div>
         </div>
         
-        <!-- Prism Sources -->
-        <div class="settings-section">
-            <h3>🔷 Prism Sources</h3>
-            <p>Add registries or URLs to load additional setup prisms</p>
-            <div class="prism-source-input">
-                <input type="text" id="prismSourceUrl" placeholder="https://registry.example.com/prisms" />
-                <button onclick="addPrismSource()">Add</button>
+        <!-- Action Buttons -->
+        <div style="padding: 20px; border-top: 1px solid #e0e0e0; background: white;">
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-secondary" onclick="toggleSettings()" style="flex: 1;">Close</button>
+                <button class="btn-primary" onclick="applySettingsAndContinue()" style="flex: 2;">Apply & Continue →</button>
             </div>
-            <div class="prism-sources-list" id="prismSourcesList">
-                <!-- Sources populated by JS -->
-            </div>
-        </div>
-        
-        <!-- Registry Configuration -->
-        <div class="settings-section">
-            <h3>📦 npm Registry</h3>
-            <p>Configure custom npm registry for prism distribution</p>
-            <div class="form-group">
-                <label for="npmRegistry">Registry URL</label>
-                <input type="text" id="npmRegistry" placeholder="https://registry.npmjs.org" />
-            </div>
-            <button class="btn-secondary" onclick="saveRegistryConfig()" style="width: 100%; margin-top: 10px;">Save Registry</button>
-        </div>
-        
-        <!-- About -->
-        <div class="settings-section">
-            <h3>ℹ️ About Prism</h3>
-            <p style="font-size: 0.85em;">Light refracts through configuration - infinite possibilities</p>
-            <p style="font-size: 0.85em; color: #999;">Version: 1.0.0</p>
         </div>
     </div>
     
@@ -895,14 +1029,141 @@ INDEX_HTML = """
         // SETTINGS PANEL
         // ========================================
         
+        let currentSettingsStep = 1;
+        
         function toggleSettings() {
             const panel = document.getElementById('settingsPanel');
             const overlay = document.getElementById('settingsOverlay');
             const hamburger = document.getElementById('hamburgerMenu');
             
+            const isOpening = !panel.classList.contains('open');
+            
             panel.classList.toggle('open');
             overlay.classList.toggle('open');
             hamburger.classList.toggle('open');
+            
+            // If opening, load prisms into step 1
+            if (isOpening) {
+                loadPrismsIntoSettings();
+            }
+        }
+        
+        function goToSettingsStep(stepNum) {
+            currentSettingsStep = stepNum;
+            
+            // Update step buttons
+            document.querySelectorAll('.settings-step-btn').forEach(btn => {
+                const btnStep = parseInt(btn.dataset.step);
+                if (btnStep === stepNum) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // Update step content
+            document.querySelectorAll('.settings-step-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById('settingsStep' + stepNum).classList.add('active');
+        }
+        
+        function loadPrismsIntoSettings() {
+            const container = document.getElementById('settingsPrismList');
+            
+            // Show the prisms from the main packages data
+            if (typeof packages !== 'undefined' && packages.length > 0) {
+                let html = '';
+                packages.forEach(pkg => {
+                    const isSelected = selectedPackage === pkg.name;
+                    html += `
+                        <div class="package-option ${isSelected ? 'active' : ''}" onclick="selectPrismFromSettings('${pkg.name}')" style="margin-bottom: 15px; padding: 15px; border: 2px solid ${isSelected ? 'var(--gradient-1)' : '#e0e0e0'}; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 2em;">${pkg.emoji}</span>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; font-size: 1.1em; margin-bottom: 5px;">${pkg.title}</div>
+                                    <div style="font-size: 0.9em; color: #666;">${pkg.description}</div>
+                                </div>
+                                ${isSelected ? '<span style="color: #10b981; font-weight: 600;">✓ Selected</span>' : ''}
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = '<p style="color: #999; text-align: center; padding: 40px;">Loading prisms...</p>';
+            }
+        }
+        
+        function selectPrismFromSettings(prismName) {
+            selectedPackage = prismName;
+            loadPrismsIntoSettings();
+        }
+        
+        function applySettingsAndContinue() {
+            // Save all settings
+            const npmReg = document.getElementById('settingsNpmRegistry').value.trim();
+            if (npmReg) {
+                prismConfig.npmRegistry = npmReg;
+                savePrismConfig(prismConfig);
+            }
+            
+            // Close settings panel
+            toggleSettings();
+            
+            // If a prism is selected, proceed with installation
+            if (selectedPackage) {
+                // Trigger the package selection
+                selectPackage(selectedPackage);
+            }
+        }
+        
+        function exportPrismConfig() {
+            const config = JSON.stringify(prismConfig, null, 2);
+            const blob = new Blob([config], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'prism-config.json';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function importPrismConfig() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'application/json';
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        try {
+                            const config = JSON.parse(event.target.result);
+                            prismConfig = config;
+                            savePrismConfig(config);
+                            
+                            // Apply theme
+                            document.documentElement.setAttribute('data-theme', config.theme);
+                            
+                            // Reload UI
+                            location.reload();
+                        } catch (err) {
+                            alert('Invalid config file: ' + err.message);
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        }
+        
+        function resetPrismConfig() {
+            if (confirm('Are you sure you want to reset all Prism settings to defaults? This cannot be undone.')) {
+                prismConfig = {...DEFAULT_PRISM_CONFIG};
+                savePrismConfig(prismConfig);
+                location.reload();
+            }
         }
         
         function selectTheme(themeName) {
@@ -1006,9 +1267,13 @@ INDEX_HTML = """
             // Render prism sources
             renderPrismSources();
             
-            // Set registry value
+            // Set registry values (both in main UI and settings)
             if (prismConfig.npmRegistry) {
-                document.getElementById('npmRegistry').value = prismConfig.npmRegistry;
+                const npmReg = document.getElementById('npmRegistry');
+                if (npmReg) npmReg.value = prismConfig.npmRegistry;
+                
+                const settingsNpmReg = document.getElementById('settingsNpmRegistry');
+                if (settingsNpmReg) settingsNpmReg.value = prismConfig.npmRegistry;
             }
         })();
         
