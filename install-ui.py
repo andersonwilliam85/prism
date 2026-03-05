@@ -426,6 +426,31 @@ INDEX_HTML = """
         let currentStep = 1;
         const totalSteps = 7;
         let selectedPackage = null;
+        let hasOrganizations = false;
+        let hasTools = false;
+        
+        // Determine which steps are active
+        function getNextActiveStep(current) {
+            let next = current + 1;
+            
+            // Skip organization step if no organizations
+            if (next === 3 && !hasOrganizations) next++;
+            // Skip tools step if no tools
+            if (next === 4 && !hasTools) next++;
+            
+            return next;
+        }
+        
+        function getPrevActiveStep(current) {
+            let prev = current - 1;
+            
+            // Skip tools step if no tools (going backwards)
+            if (prev === 4 && !hasTools) prev--;
+            // Skip organization step if no organizations (going backwards)
+            if (prev === 3 && !hasOrganizations) prev--;
+            
+            return prev;
+        }
         
         function updateProgress() {
             const progress = (currentStep / totalSteps) * 100;
@@ -440,7 +465,8 @@ INDEX_HTML = """
             }
             
             document.getElementById('step' + currentStep).classList.remove('active');
-            currentStep++;
+            const next = getNextActiveStep(currentStep);
+            currentStep = next;
             document.getElementById('step' + currentStep).classList.add('active');
             updateProgress();
             
@@ -453,7 +479,8 @@ INDEX_HTML = """
         
         function prevStep() {
             document.getElementById('step' + currentStep).classList.remove('active');
-            currentStep--;
+            const prev = getPrevActiveStep(currentStep);
+            currentStep = prev;
             document.getElementById('step' + currentStep).classList.add('active');
             updateProgress();
         }
@@ -461,6 +488,17 @@ INDEX_HTML = """
         async function loadOrganizations() {
             const response = await fetch('/api/organizations');
             const data = await response.json();
+            
+            // Check if we have any organizations
+            hasOrganizations = (data.sub_orgs && data.sub_orgs.length > 0) ||
+                              (data.departments && data.departments.length > 0) ||
+                              (data.teams && data.teams.length > 0);
+            
+            if (!hasOrganizations) {
+                // Skip this step automatically
+                nextStep();
+                return;
+            }
             
             const subOrgSelect = document.getElementById('subOrg');
             subOrgSelect.innerHTML = '<option value="">None</option>';
@@ -472,6 +510,15 @@ INDEX_HTML = """
         async function loadTools() {
             const response = await fetch('/api/tools');
             const data = await response.json();
+            
+            // Check if we have any tools
+            hasTools = data.tools && data.tools.length > 0;
+            
+            if (!hasTools) {
+                // Skip this step automatically
+                nextStep();
+                return;
+            }
             
             const toolsList = document.getElementById('toolsList');
             toolsList.innerHTML = '';
@@ -802,8 +849,8 @@ def get_user_fields(package_name):
         with open(pkg_yaml_path) as f:
             pkg_config = yaml.safe_load(f)
         
-        # Get user_info_fields from package config
-        fields = pkg_config.get('package', {}).get('user_info_fields', [])
+        # Get user_info_fields from package config (can be at root or under 'package')
+        fields = pkg_config.get('user_info_fields', pkg_config.get('package', {}).get('user_info_fields', []))
         
         # If no fields defined, use defaults
         if not fields:
