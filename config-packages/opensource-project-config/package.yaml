@@ -1,0 +1,120 @@
+# ============================================================================
+# OPEN SOURCE PROJECT CONFIG PACKAGE
+# ============================================================================
+# For open source project maintainers and contributors
+# Community-driven, transparent, welcoming
+
+package:
+  name: "opensource-project-config"
+  version: "1.0.0"
+  description: "Open source project contributor environment setup"
+  author: "Project Maintainers"
+  homepage: "https://github.com/your-project"
+  support:
+    github: "https://github.com/your-project/issues"
+    discord: "https://discord.gg/your-project"
+    discussions: "https://github.com/your-project/discussions"
+  
+  type: "opensource"
+  
+  requires:
+    onboarding_version: ">=1.0.0"
+    python_version: ">=3.8"
+  
+  install:
+    target_dir: "config/"
+    
+    files:
+      - source: "welcome.yaml"
+        dest: "config/welcome.yaml"
+      
+      - source: "resources.yaml"
+        dest: "config/resources.yaml"
+    
+    directories:
+      - source: "base/"
+        dest: "config/base/"
+  
+  post_install:
+    message: |
+      🌟 Open source project config installed!
+      
+      Welcome to the community! We're excited to have you.
+      
+      First time contributing?
+      1. Read CONTRIBUTING.md
+      2. Check out "good first issue" labels
+      3. Join our Discord for help
+      
+      Ready to code:
+      1. Fork the repo
+      2. Create a branch
+      3. Make your changes
+      4. Submit a PR!
+      
+      Every contribution counts! 💚
+  
+  # User info fields (minimal - open to all!)
+  user_info_fields:
+    - id: "name"
+      label: "Name"
+      type: "text"
+      required: true
+      placeholder: "Alex OpenSource"
+      description: "How should we call you?"
+    
+    - id: "email"
+      label: "Email"
+      type: "email"
+      required: true
+      placeholder: "alex@example.com"
+      description: "For git commits and notifications"
+    
+    - id: "github_username"
+      label: "GitHub Username"
+      type: "text"
+      required: true
+      placeholder: "alexcodes"
+    
+    - id: "timezone"
+      label: "Timezone"
+      type: "text"
+      required: false
+      placeholder: "UTC-5 (EST)"
+      description: "Helps with async collaboration"
+    
+    - id: "contribution_interest"
+      label: "What interests you?"
+      type: "text"
+      required: false
+      placeholder: "Documentation, bug fixes, new features"
+      description: "What would you like to contribute to?"
+
+contents:
+  base_config: "base/opensource.yaml"
+  welcome_page: "welcome.yaml"
+  resources: "resources.yaml"
+
+distribution:
+  local:
+    path: "config-packages/opensource-project-config/"
+    discoverable: true
+  
+  git:
+    url: "https://github.com/your-project/dev-setup"
+    branch: "main"
+
+metadata:
+  tags:
+    - recommended
+    - opensource
+    - community
+    - contributors
+    - welcoming
+  
+  company_size: "community"
+  regions: ["Global"]
+  
+  last_updated: "2026-03-04"
+  maintainers:
+    - "Open Source Community"

@@ -86,7 +86,7 @@ user_info_fields:
     placeholder: "john.doe@walmart.com"
     description: "Your @walmart.com email address"
     validation:
-      pattern: ".*@walmart\.com$"
+      pattern: ".*@walmart\\.com$"
       message: "Must be a @walmart.com email"
   
   - id: "ldap_username"

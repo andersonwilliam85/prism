@@ -61,7 +61,7 @@ package:
       required: true
       placeholder: "alice@acmecorp.com"
       validation:
-        pattern: ".*@acmecorp\.com$"
+        pattern: ".*@acmecorp\\.com$"
         message: "Must be an @acmecorp.com email"
     
     - id: "github_username"

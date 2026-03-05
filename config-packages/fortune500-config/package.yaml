@@ -1,0 +1,155 @@
+# ============================================================================
+# FORTUNE 500 ENTERPRISE CONFIG PACKAGE
+# ============================================================================
+# Large multinational enterprise with complex hierarchy
+# Example: Tech company with 50,000+ employees
+
+package:
+  name: "fortune500-config"
+  version: "1.0.0"
+  description: "Fortune 500 enterprise development environment (generic large company)"
+  author: "Enterprise DevOps Team"
+  homepage: "https://dev.enterprise.com"
+  support:
+    email: "devops@enterprise.com"
+    slack: "#dev-support"
+    portal: "https://devportal.enterprise.com"
+  
+  type: "company"
+  
+  requires:
+    onboarding_version: ">=1.0.0"
+    python_version: ">=3.8"
+  
+  install:
+    target_dir: "config/"
+    
+    files:
+      - source: "welcome.yaml"
+        dest: "config/welcome.yaml"
+      
+      - source: "resources.yaml"
+        dest: "config/resources.yaml"
+    
+    directories:
+      - source: "base/"
+        dest: "config/base/"
+      
+      - source: "orgs/"
+        dest: "config/orgs/"
+      
+      - source: "departments/"
+        dest: "config/departments/"
+      
+      - source: "teams/"
+        dest: "config/teams/"
+  
+  post_install:
+    message: |
+      🎉 Fortune 500 enterprise config installed!
+      
+      Next steps:
+      1. Run: python3 install-ui.py
+      2. Select your business unit and team
+      3. Install tools and start coding!
+  
+  # User info fields (enterprise-grade)
+  user_info_fields:
+    - id: "name"
+      label: "Full Name"
+      type: "text"
+      required: true
+      placeholder: "Jane Smith"
+    
+    - id: "email"
+      label: "Corporate Email"
+      type: "email"
+      required: true
+      placeholder: "jane.smith@enterprise.com"
+      validation:
+        pattern: ".*@enterprise\\.com$"
+        message: "Must be a @enterprise.com email"
+    
+    - id: "employee_id"
+      label: "Employee ID"
+      type: "text"
+      required: true
+      placeholder: "E123456"
+      description: "Your 6-digit employee ID"
+    
+    - id: "manager_email"
+      label: "Manager Email"
+      type: "email"
+      required: true
+      placeholder: "manager@enterprise.com"
+      description: "Your direct manager's email"
+    
+    - id: "office_location"
+      label: "Office Location"
+      type: "text"
+      required: true
+      placeholder: "Seattle, WA"
+      description: "Your primary office location"
+    
+    - id: "cost_center"
+      label: "Cost Center"
+      type: "text"
+      required: false
+      placeholder: "CC-12345"
+      description: "Your department's cost center (if known)"
+
+contents:
+  base_config: "base/enterprise.yaml"
+  welcome_page: "welcome.yaml"
+  resources: "resources.yaml"
+  
+  business_units:
+    - id: "engineering"
+      name: "Engineering"
+      file: "orgs/engineering.yaml"
+    
+    - id: "product"
+      name: "Product & Design"
+      file: "orgs/product.yaml"
+    
+    - id: "data-science"
+      name: "Data Science & Analytics"
+      file: "orgs/data-science.yaml"
+  
+  departments:
+    - id: "cloud-infrastructure"
+      name: "Cloud Infrastructure"
+      file: "departments/cloud-infrastructure.yaml"
+    
+    - id: "platform-engineering"
+      name: "Platform Engineering"
+      file: "departments/platform-engineering.yaml"
+  
+  teams:
+    - id: "k8s-platform"
+      name: "Kubernetes Platform Team"
+      file: "teams/k8s-platform.yaml"
+
+distribution:
+  local:
+    path: "config-packages/fortune500-config/"
+    discoverable: true
+  
+  git:
+    url: "https://github.com/dev-onboarding/fortune500-config"
+    branch: "main"
+
+metadata:
+  tags:
+    - recommended
+    - enterprise
+    - fortune500
+    - large-scale
+    - multinational
+  
+  company_size: "large"
+  regions: ["Global"]
+  
+  last_updated: "2026-03-04"
+  maintainers:
+    - "Enterprise DevOps Team"

@@ -1,0 +1,139 @@
+# ============================================================================
+# UNIVERSITY CONFIG PACKAGE
+# ============================================================================
+# University/educational institution
+# Professors, researchers, students
+
+package:
+  name: "university-config"
+  version: "1.0.0"
+  description: "University development environment for research and teaching"
+  author: "University IT Department"
+  homepage: "https://cs.university.edu"
+  support:
+    email: "it-help@university.edu"
+    portal: "https://help.university.edu"
+  
+  type: "educational"
+  
+  requires:
+    onboarding_version: ">=1.0.0"
+    python_version: ">=3.8"
+  
+  install:
+    target_dir: "config/"
+    
+    files:
+      - source: "welcome.yaml"
+        dest: "config/welcome.yaml"
+      
+      - source: "resources.yaml"
+        dest: "config/resources.yaml"
+    
+    directories:
+      - source: "base/"
+        dest: "config/base/"
+      
+      - source: "departments/"
+        dest: "config/departments/"
+      
+      - source: "labs/"
+        dest: "config/labs/"
+  
+  post_install:
+    message: |
+      🎓 University config installed!
+      
+      Welcome to the university development environment.
+      
+      Students: Check out GitHub Education Pack for free tools!
+      Researchers: Access to high-performance computing clusters available.
+      
+      Next:
+      1. Run: python3 install-ui.py
+      2. Select your department and lab
+      3. Start your research or coursework!
+  
+  # User info fields (academic)
+  user_info_fields:
+    - id: "name"
+      label: "Full Name"
+      type: "text"
+      required: true
+      placeholder: "Dr. Sarah Researcher"
+    
+    - id: "email"
+      label: "University Email"
+      type: "email"
+      required: true
+      placeholder: "sarah@university.edu"
+      validation:
+        pattern: ".*@university\\.edu$"
+        message: "Must be a @university.edu email"
+    
+    - id: "student_id"
+      label: "Student/Employee ID"
+      type: "text"
+      required: true
+      placeholder: "123456789"
+    
+    - id: "role"
+      label: "Role"
+      type: "text"
+      required: true
+      placeholder: "Graduate Student, Professor, Researcher"
+      description: "Your role at the university"
+    
+    - id: "department"
+      label: "Department"
+      type: "text"
+      required: true
+      placeholder: "Computer Science"
+    
+    - id: "advisor"
+      label: "Advisor/Supervisor"
+      type: "text"
+      required: false
+      placeholder: "Dr. John Professor"
+      description: "Your advisor or research supervisor (if applicable)"
+
+contents:
+  base_config: "base/university.yaml"
+  welcome_page: "welcome.yaml"
+  resources: "resources.yaml"
+  
+  departments:
+    - id: "computer-science"
+      name: "Computer Science"
+      file: "departments/computer-science.yaml"
+    
+    - id: "data-science"
+      name: "Data Science"
+      file: "departments/data-science.yaml"
+  
+  labs:
+    - id: "ml-research-lab"
+      name: "Machine Learning Research Lab"
+      file: "labs/ml-research-lab.yaml"
+    
+    - id: "systems-lab"
+      name: "Systems & Networking Lab"
+      file: "labs/systems-lab.yaml"
+
+distribution:
+  local:
+    path: "config-packages/university-config/"
+    discoverable: true
+
+metadata:
+  tags:
+    - education
+    - university
+    - research
+    - academic
+    - students
+  
+  company_size: "large"
+  regions: ["Global"]
+  
+  last_updated: "2026-03-04"

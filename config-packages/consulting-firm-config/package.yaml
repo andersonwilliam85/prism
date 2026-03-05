@@ -1,0 +1,119 @@
+# ============================================================================
+# CONSULTING FIRM CONFIG PACKAGE
+# ============================================================================
+# Consulting/agency working with multiple clients
+# Context-switching between client projects
+
+package:
+  name: "consulting-firm-config"
+  version: "1.0.0"
+  description: "Consulting firm development environment - multi-client support"
+  author: "Consulting Firm IT"
+  homepage: "https://consultingfirm.com"
+  support:
+    email: "it@consultingfirm.com"
+  
+  type: "company"
+  
+  requires:
+    onboarding_version: ">=1.0.0"
+    python_version: ">=3.8"
+  
+  install:
+    target_dir: "config/"
+    
+    files:
+      - source: "welcome.yaml"
+        dest: "config/welcome.yaml"
+      
+      - source: "resources.yaml"
+        dest: "config/resources.yaml"
+    
+    directories:
+      - source: "base/"
+        dest: "config/base/"
+      
+      - source: "clients/"
+        dest: "config/clients/"
+  
+  post_install:
+    message: |
+      🎯 Consulting firm config installed!
+      
+      You'll be working across multiple client projects.
+      Each client has their own config and requirements.
+      
+      Next:
+      1. Run: python3 install-ui.py
+      2. Select your primary client
+      3. Set up client-specific tools
+  
+  # User info fields
+  user_info_fields:
+    - id: "name"
+      label: "Full Name"
+      type: "text"
+      required: true
+      placeholder: "Jordan Consultant"
+    
+    - id: "email"
+      label: "Company Email"
+      type: "email"
+      required: true
+      placeholder: "jordan@consultingfirm.com"
+    
+    - id: "consultant_id"
+      label: "Consultant ID"
+      type: "text"
+      required: true
+      placeholder: "CON-123"
+    
+    - id: "primary_client"
+      label: "Primary Client"
+      type: "text"
+      required: true
+      placeholder: "ACME Corp"
+      description: "The client you'll be working with most"
+    
+    - id: "billable_hours_tracker"
+      label: "Time Tracking System"
+      type: "text"
+      required: false
+      placeholder: "Harvest, Toggl, etc."
+      description: "Which time tracking system do you use?"
+
+contents:
+  base_config: "base/consulting-firm.yaml"
+  welcome_page: "welcome.yaml"
+  resources: "resources.yaml"
+  
+  # Organized by clients
+  clients:
+    - id: "client-fintech"
+      name: "FinTech Client"
+      file: "clients/fintech-client.yaml"
+    
+    - id: "client-healthcare"
+      name: "Healthcare Client"
+      file: "clients/healthcare-client.yaml"
+    
+    - id: "client-retail"
+      name: "Retail Client"
+      file: "clients/retail-client.yaml"
+
+distribution:
+  local:
+    path: "config-packages/consulting-firm-config/"
+    discoverable: true
+
+metadata:
+  tags:
+    - consulting
+    - agency
+    - multi-client
+    - professional-services
+  
+  company_size: "medium"
+  regions: ["Global"]
+  
+  last_updated: "2026-03-04"

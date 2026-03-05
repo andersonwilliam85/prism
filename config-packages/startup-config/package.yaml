@@ -1,0 +1,116 @@
+# ============================================================================
+# STARTUP CONFIG PACKAGE
+# ============================================================================
+# Fast-moving startup with flat structure
+# 10-50 employees, move fast and break things!
+
+package:
+  name: "startup-config"
+  version: "1.0.0"
+  description: "Startup development environment - fast, lean, and flexible"
+  author: "Engineering Team"
+  homepage: "https://startup.com"
+  support:
+    slack: "#engineering"
+  
+  type: "company"
+  
+  requires:
+    onboarding_version: ">=1.0.0"
+    python_version: ">=3.8"
+  
+  install:
+    target_dir: "config/"
+    
+    files:
+      - source: "welcome.yaml"
+        dest: "config/welcome.yaml"
+      
+      - source: "resources.yaml"
+        dest: "config/resources.yaml"
+    
+    directories:
+      - source: "base/"
+        dest: "config/base/"
+      
+      - source: "teams/"
+        dest: "config/teams/"
+  
+  post_install:
+    message: |
+      🚀 Startup config installed!
+      
+      Welcome to the team! We move fast here.
+      
+      Next:
+      1. Join #engineering on Slack
+      2. Run: python3 install-ui.py
+      3. Ship code on day 1!
+  
+  # User info fields (minimal - we're a startup!)
+  user_info_fields:
+    - id: "name"
+      label: "Name"
+      type: "text"
+      required: true
+      placeholder: "Alex"
+      description: "Just your first name is fine!"
+    
+    - id: "email"
+      label: "Email"
+      type: "email"
+      required: true
+      placeholder: "alex@startup.com"
+    
+    - id: "github_username"
+      label: "GitHub Username"
+      type: "text"
+      required: true
+      placeholder: "alexcodes"
+      description: "Your GitHub handle"
+    
+    - id: "slack_handle"
+      label: "Slack Handle"
+      type: "text"
+      required: true
+      placeholder: "@alex"
+    
+    - id: "role"
+      label: "Role"
+      type: "text"
+      required: false
+      placeholder: "Full-stack Engineer"
+      description: "What you'll be working on"
+
+contents:
+  base_config: "base/startup.yaml"
+  welcome_page: "welcome.yaml"
+  resources: "resources.yaml"
+  
+  # Flat structure - just teams!
+  teams:
+    - id: "engineering"
+      name: "Engineering Team"
+      file: "teams/engineering.yaml"
+    
+    - id: "product"
+      name: "Product Team"
+      file: "teams/product.yaml"
+
+distribution:
+  local:
+    path: "config-packages/startup-config/"
+    discoverable: true
+
+metadata:
+  tags:
+    - recommended
+    - startup
+    - small-team
+    - fast-moving
+    - flat-structure
+  
+  company_size: "small"
+  regions: ["Global"]
+  
+  last_updated: "2026-03-04"
