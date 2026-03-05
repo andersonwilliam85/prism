@@ -285,14 +285,8 @@ INDEX_HTML = """
         <div class="step" id="step2">
             <h2>Your Information</h2>
             
-            <div class="form-group">
-                <label for="userName">Full Name</label>
-                <input type="text" id="userName" placeholder="John Doe" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="userEmail">Email</label>
-                <input type="email" id="userEmail" placeholder="john.doe@company.com" required>
+            <div id="userInfoFields">
+                <!-- Fields populated dynamically based on selected package -->
             </div>
             
             <div class="buttons">
@@ -422,6 +416,7 @@ INDEX_HTML = """
             updateProgress();
             
             // Load data for specific steps
+            if (currentStep === 2) loadUserInfoFields();  // Load dynamic fields
             if (currentStep === 3) loadOrganizations();
             if (currentStep === 4) loadTools();
             if (currentStep === 5) showSummary();
@@ -464,15 +459,25 @@ INDEX_HTML = """
         }
         
         function showSummary() {
-            const name = document.getElementById('userName').value;
-            const email = document.getElementById('userEmail').value;
-            const subOrg = document.getElementById('subOrg').selectedOptions[0].text;
-            const dept = document.getElementById('department').selectedOptions[0].text;
+            // Collect all user info field values
+            const userInfoFields = document.querySelectorAll('#userInfoFields input');
+            let userInfoHTML = '';
+            userInfoFields.forEach(input => {
+                if (input.value) {
+                    const label = input.previousElementSibling?.previousElementSibling?.textContent.replace('*', '').trim() || input.name;
+                    userInfoHTML += `<p><strong>${label}:</strong> ${input.value}</p>`;
+                }
+            });
+            
+            const subOrg = document.getElementById('subOrg').selectedOptions[0]?.text || 'None';
+            const dept = document.getElementById('department').selectedOptions[0]?.text || 'None';
             
             document.getElementById('summary').innerHTML = `
                 <p><strong>Package:</strong> ${selectedPackage}</p>
-                <p><strong>Name:</strong> ${name}</p>
-                <p><strong>Email:</strong> ${email}</p>
+                <hr>
+                <h4>User Information:</h4>
+                ${userInfoHTML}
+                <hr>
                 <p><strong>Organization:</strong> ${subOrg} / ${dept}</p>
                 <p style="margin-top: 20px;"><strong>Tools to install:</strong> ~15 selected</p>
             `;
@@ -575,6 +580,39 @@ INDEX_HTML = """
             selected.querySelector('.checkmark').style.display = 'block';
         }
         
+        // Load user info fields based on selected package
+        async function loadUserInfoFields() {
+            const response = await fetch(`/api/package/${selectedPackage}/user-fields`);
+            const data = await response.json();
+            
+            const container = document.getElementById('userInfoFields');
+            container.innerHTML = '';
+            
+            data.fields.forEach(field => {
+                const required = field.required ? 'required' : '';
+                const pattern = field.validation?.pattern || '';
+                const title = field.validation?.message || '';
+                
+                container.innerHTML += `
+                    <div class="form-group">
+                        <label for="field_${field.id}">
+                            ${field.label}
+                            ${field.required ? '<span style="color: red;">*</span>' : ''}
+                        </label>
+                        ${field.description ? `<p style="font-size: 0.85em; color: #666; margin: 5px 0;">${field.description}</p>` : ''}
+                        <input
+                            type="${field.type}"
+                            id="field_${field.id}"
+                            name="${field.id}"
+                            placeholder="${field.placeholder || ''}"
+                            ${required}
+                            ${pattern ? `pattern="${pattern}" title="${title}"` : ''}
+                        >
+                    </div>
+                `;
+            });
+        }
+        
         // Initialize
         updateProgress();
         loadPackages();
@@ -605,6 +643,48 @@ def get_packages():
         return jsonify({"packages": packages})
     except Exception as e:
         return jsonify({"packages": [], "error": str(e)})
+
+@app.route("/api/package/<package_name>/user-fields")
+def get_user_fields(package_name):
+    """Get user info fields for a specific package"""
+    import sys
+    import yaml
+    sys.path.insert(0, str(Path(__file__).parent / "scripts"))
+    
+    try:
+        from package_manager import PackageManager
+        pm = PackageManager()
+        
+        # Find the package
+        packages = pm.discover_packages()
+        pkg = next((p for p in packages if p['name'] == package_name), None)
+        
+        if not pkg:
+            return jsonify({"fields": [], "error": "Package not found"})
+        
+        # Load package.yaml to get user_info_fields
+        pkg_path = Path(pkg['path'])
+        pkg_yaml_path = pkg_path / 'package.yaml'
+        
+        if not pkg_yaml_path.exists():
+            return jsonify({"fields": [], "error": "package.yaml not found"})
+        
+        with open(pkg_yaml_path) as f:
+            pkg_config = yaml.safe_load(f)
+        
+        # Get user_info_fields from package config
+        fields = pkg_config.get('package', {}).get('user_info_fields', [])
+        
+        # If no fields defined, use defaults
+        if not fields:
+            fields = [
+                {"id": "name", "label": "Full Name", "type": "text", "required": True, "placeholder": "John Doe"},
+                {"id": "email", "label": "Email", "type": "email", "required": True, "placeholder": "john.doe@example.com"}
+            ]
+        
+        return jsonify({"fields": fields})
+    except Exception as e:
+        return jsonify({"fields": [], "error": str(e)})
 
 @app.route("/api/organizations")
 def get_organizations():

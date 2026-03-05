@@ -46,6 +46,30 @@ package:
       
       Edit config/inheritance.yaml to customize for your team.
       Then run: python3 install-ui.py
+  
+  # User info fields
+  user_info_fields:
+    - id: "name"
+      label: "Full Name"
+      type: "text"
+      required: true
+      placeholder: "Alice Smith"
+    
+    - id: "email"
+      label: "ACME Email"
+      type: "email"
+      required: true
+      placeholder: "alice@acmecorp.com"
+      validation:
+        pattern: ".*@acmecorp\.com$"
+        message: "Must be an @acmecorp.com email"
+    
+    - id: "github_username"
+      label: "GitHub Enterprise Username"
+      type: "text"
+      required: true
+      placeholder: "asmith"
+      description: "Your username on GitHub Enterprise"
 
 contents:
   base_config: "base/acme-corp.yaml"

@@ -29,6 +29,26 @@ team:
     - "Barcode scanning integration"
 
 # ============================================================================
+# USER INFO FIELDS (Team-specific extensions)
+# ============================================================================
+# Inherits: name, email, ldap_username, employee_id, cost_center from walmart package
+# Add team-specific fields:
+user_info_fields:
+  - id: "slack_handle"
+    label: "Slack Handle"
+    type: "text"
+    required: true
+    placeholder: "@jdoe"
+    description: "Your Slack handle for team notifications (#receiving-systems)"
+  
+  - id: "on_call_phone"
+    label: "On-Call Phone"
+    type: "tel"
+    required: false
+    placeholder: "+1-555-123-4567"
+    description: "Phone number for on-call rotation (optional)"
+
+# ============================================================================
 # REPOSITORIES (Team-specific)
 # ============================================================================
 repositories:

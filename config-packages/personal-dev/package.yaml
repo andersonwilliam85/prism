@@ -57,6 +57,36 @@ package:
       2. Run: python3 install-ui.py
       3. Start coding! 🚀
 
+# User info fields (minimal for indie devs!)
+user_info_fields:
+  - id: "name"
+    label: "Your Name"
+    type: "text"
+    required: true
+    placeholder: "Jane Developer"
+    description: "Your name (for git commits)"
+  
+  - id: "email"
+    label: "Email"
+    type: "email"
+    required: true
+    placeholder: "jane@example.com"
+    description: "Your email (for git commits & platform)"
+  
+  - id: "username"
+    label: "Username"
+    type: "text"
+    required: true
+    placeholder: "janedev"
+    description: "Your username on chosen git platform (GitHub/GitLab/etc.)"
+  
+  - id: "portfolio_url"
+    label: "Portfolio/Website"
+    type: "url"
+    required: false
+    placeholder: "https://janedev.com"
+    description: "Your portfolio or personal website (optional)"
+
 # Package contents
 contents:
   base_config: "base/personal-dev.yaml"
