@@ -1,0 +1,187 @@
+# ============================================================================
+# COMPANY BASE CONFIGURATION - Walmart
+# ============================================================================
+# This config applies to ALL Walmart developers across all sub-orgs
+# Settings here are inherited by everyone unless explicitly overridden
+
+company:
+  name: "Walmart"
+  domain: "walmart.com"
+  
+# ============================================================================
+# NETWORK & PROXY (Required for all Walmart devs)
+# ============================================================================
+environment:
+  proxy:
+    http: "http://sysproxy.wal-mart.com:8080"
+    https: "http://sysproxy.wal-mart.com:8080"
+    no_proxy: "localhost,127.0.0.1,.walmart.com,.samsclub.com"
+  
+  vpn:
+    required: true
+    name: "Walmart Global VPN"
+    instructions: "Connect via Pulse Secure or GlobalProtect"
+
+# ============================================================================
+# ARTIFACT REPOSITORIES (Company-wide)
+# ============================================================================
+environment:
+  maven:
+    settings_xml: |
+      <settings>
+        <mirrors>
+          <mirror>
+            <id>walmart-maven</id>
+            <url>https://maven.ci.artifacts.walmart.com/artifactory/maven-virtual/</url>
+            <mirrorOf>central</mirrorOf>
+          </mirror>
+        </mirrors>
+      </settings>
+  
+  npm:
+    registry: "https://npm.ci.artifacts.walmart.com/artifactory/api/npm/npm-virtual/"
+  
+  pip:
+    index_url: "https://pypi.ci.artifacts.walmart.com/artifactory/api/pypi/external-pypi/simple"
+    trusted_host: "pypi.ci.artifacts.walmart.com"
+
+# ============================================================================
+# GIT CONFIGURATION (Company-wide)
+# ============================================================================
+git:
+  enterprise_url: "https://github.walmart.com"
+  default_branch: "main"
+  signing_required: true  # All commits must be signed
+  
+  aliases:
+    co: "checkout"
+    br: "branch"
+    st: "status"
+    ci: "commit"
+    unstage: "reset HEAD --"
+
+# ============================================================================
+# REQUIRED TOOLS (Every Walmart developer needs these)
+# ============================================================================
+tools_required:
+  - git
+  - gh          # GitHub CLI for enterprise
+  - kubectl     # All teams use Kubernetes
+  - jq          # JSON processing
+  - yq          # YAML processing
+
+# ============================================================================
+# OPTIONAL TOOLS (Available to all, installed on request)
+# ============================================================================
+tools_available:
+  - vscode
+  - intellij
+  - pycharm
+  - docker
+  - rancher
+  - skaffold
+  - helm
+  - azure-cli
+  - gcloud
+  - code-puppy  # Walmart's AI coding assistant
+
+# ============================================================================
+# EXCLUDED TOOLS (Security/compliance reasons)
+# ============================================================================
+tools_excluded:
+  - docker-desktop  # Use Rancher Desktop instead (licensing)
+  # Add tools banned by security here
+
+# ============================================================================
+# COMPANY RESOURCES (Available to everyone)
+# ============================================================================
+resources:
+  developer_experience:
+    - name: "DX (Developer Experience)"
+      url: "https://dx.walmart.com"
+      icon: "🚀"
+    
+    - name: "Code Puppy"
+      url: "https://puppy.walmart.com"
+      icon: "🐶"
+  
+  internal_tools:
+    - name: "ME@Walmart"
+      url: "https://me.walmart.com"
+      icon: "👤"
+    
+    - name: "WMLink"
+      url: "https://wmlink.walmart.com"
+      icon: "🔗"
+    
+    - name: "Artifactory"
+      url: "https://artifactory.walmart.com"
+      icon: "📦"
+  
+  collaboration:
+    - name: "Confluence"
+      url: "https://confluence.walmart.com"
+      icon: "📖"
+    
+    - name: "Jira"
+      url: "https://jira.walmart.com"
+      icon: "📋"
+    
+    - name: "GitHub Enterprise"
+      url: "https://github.walmart.com"
+      icon: "💻"
+    
+    - name: "Slack"
+      url: "https://walmart.enterprise.slack.com"
+      icon: "💬"
+  
+  support:
+    - name: "IT Support"
+      slack: "#it-support"
+      email: "ithelpdesk@walmart.com"
+    
+    - name: "Element LLM Gateway"
+      slack: "#element-genai-support"
+      description: "AI/LLM support (powers Code Puppy)"
+
+# ============================================================================
+# ONBOARDING (Company-wide tasks)
+# ============================================================================
+onboarding:
+  first_day:
+    - "Access ME@Walmart and complete HR forms"
+    - "Set up VPN (Pulse Secure or GlobalProtect)"
+    - "Join Walmart Slack workspace"
+    - "Request GitHub Enterprise access"
+  
+  first_week:
+    - "Complete security training (required)"
+    - "Complete Code of Conduct training"
+    - "Set up development environment (this installer!)"
+    - "Schedule 1-on-1 with manager"
+
+# ============================================================================
+# COMPLIANCE & SECURITY
+# ============================================================================
+compliance:
+  # Code signing required
+  code_signing: true
+  
+  # Secrets management
+  secrets:
+    tool: "HashiCorp Vault"
+    url: "https://vault.walmart.com"
+  
+  # Data classification
+  data_classification:
+    - "Public"
+    - "Internal"
+    - "Confidential"
+    - "Restricted (PII/HIPAA)"
+  
+  # Security tools (required)
+  security_tools:
+    - name: "Snyk"
+      description: "Dependency scanning"
+    - name: "SonarQube"
+      description: "Code quality & security"

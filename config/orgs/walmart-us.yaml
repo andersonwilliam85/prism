@@ -1,0 +1,98 @@
+# ============================================================================
+# SUB-ORGANIZATION: Walmart US
+# ============================================================================
+# Inherits from: config/base/walmart.yaml
+# Applies to: All Walmart US developers
+# Scope: US operations, stores, distribution centers
+
+sub_org:
+  id: "walmart-us"
+  name: "Walmart US"
+  region: "United States"
+
+# ============================================================================
+# CLOUD ACCOUNTS (US-specific)
+# ============================================================================
+cloud:
+  gcp:
+    project_prefix: "walmart-us"
+    default_region: "us-central1"
+    billing_account: "walmart-us-engineering"
+  
+  azure:
+    subscription: "Walmart-US-Engineering"
+    default_region: "eastus2"
+  
+  aws:
+    account_prefix: "wmt-us"
+    default_region: "us-east-1"
+
+# ============================================================================
+# ADDITIONAL TOOLS (US operations)
+# ============================================================================
+tools_required:
+  # Inherits base tools (git, kubectl, etc.)
+  # Adds US-specific requirements:
+  - bq        # BigQuery CLI (US uses GCP heavily)
+  - gcloud    # Google Cloud SDK
+
+tools_available:
+  # Adds to base available tools:
+  - maven     # Java is big in US operations
+  - gradle
+  - node      # E-commerce frontend
+
+# ============================================================================
+# US-SPECIFIC RESOURCES
+# ============================================================================
+resources:
+  # Inherits company resources (DX, ME@Walmart, etc.)
+  # Adds US-specific resources:
+  
+  cloud:
+    - name: "GCP Console (US)"
+      url: "https://console.cloud.google.com"
+      description: "US GCP projects"
+      icon: "☁️"
+    
+    - name: "BigQuery (US Data Warehouse)"
+      url: "https://console.cloud.google.com/bigquery"
+      icon: "📊"
+  
+  collaboration:
+    - name: "US Engineering Slack Channels"
+      channels:
+        - "#us-engineering"
+        - "#us-platform"
+        - "#us-deployments"
+    
+    - name: "US Engineering Confluence"
+      url: "https://confluence.walmart.com/display/USENG"
+
+# ============================================================================
+# US ONBOARDING ADDITIONS
+# ============================================================================
+onboarding:
+  first_week:
+    # Adds to company onboarding:
+    - "Access GCP US projects (request via ServiceNow)"
+    - "Join #us-engineering Slack channel"
+    - "Review US architecture guidelines"
+  
+  first_month:
+    - "Complete US-specific security training"
+    - "Set up BigQuery access"
+
+# ============================================================================
+# COMPLIANCE (US-specific)
+# ============================================================================
+compliance:
+  # Inherits company compliance settings
+  # Adds US requirements:
+  data_residency:
+    - "All PII must stay in US regions"
+    - "CCPA compliance required for California customers"
+  
+  certifications:
+    - "SOC 2 Type II"
+    - "PCI-DSS (for payment processing)"

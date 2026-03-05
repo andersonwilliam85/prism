@@ -1,0 +1,266 @@
+# ============================================================================
+# TEAM: Receiving Systems
+# ============================================================================
+# Inherits from:
+#   config/base/walmart.yaml →
+#   config/orgs/walmart-us.yaml →
+#   config/departments/supply-chain.yaml
+#
+# Applies to: Receiving Systems team members only
+# Scope: Warehouse receiving, intake, putaway systems
+
+team:
+  id: "receiving-systems"
+  name: "Receiving Systems Team"
+  description: "Warehouse receiving, intake, and putaway"
+  
+  # Team leadership
+  manager: "Jane Smith"
+  tech_lead: "John Doe"
+  
+  # Team size
+  size: 8
+  
+  # Primary focus areas
+  focus:
+    - "Supplier receiving API"
+    - "Putaway optimization"
+    - "Receiving dashboard UI"
+    - "Barcode scanning integration"
+
+# ============================================================================
+# REPOSITORIES (Team-specific)
+# ============================================================================
+repositories:
+  primary:
+    - name: "receiving-api"
+      url: "https://github.walmart.com/supply-chain/receiving-api"
+      language: "Python (FastAPI)"
+      description: "Core receiving API service"
+    
+    - name: "receiving-ui"
+      url: "https://github.walmart.com/supply-chain/receiving-ui"
+      language: "TypeScript (React)"
+      description: "Warehouse receiving dashboard"
+    
+    - name: "putaway-engine"
+      url: "https://github.walmart.com/supply-chain/putaway-engine"
+      language: "Python"
+      description: "Putaway location optimization"
+  
+  supporting:
+    - name: "receiving-shared-lib"
+      url: "https://github.walmart.com/supply-chain/receiving-shared"
+      description: "Shared utilities and models"
+
+# ============================================================================
+# REQUIRED TOOLS (Team-specific additions)
+# ============================================================================
+tools_required:
+  # Inherits all from dept + org + company
+  # Team requires:
+  - skaffold    # K8s dev workflow
+  - helm        # Chart management
+  - vscode      # Team standard (could be optional in dept)
+
+tools_available:
+  # Team uses these specifically:
+  - k9s         # Kubernetes CLI UI
+  - stern       # Multi-pod log tailing
+
+# ============================================================================
+# VSCODE EXTENSIONS (Team standard)
+# ============================================================================
+vscode:
+  required_extensions:
+    - "ms-python.python"
+    - "ms-python.vscode-pylance"
+    - "ms-azuretools.vscode-docker"
+    - "redhat.vscode-yaml"
+    - "esbenp.prettier-vscode"
+  
+  recommended_extensions:
+    - "ms-kubernetes-tools.vscode-kubernetes-tools"
+    - "GitHub.copilot"  # If team has licenses
+
+# ============================================================================
+# TEAM RESOURCES
+# ============================================================================
+resources:
+  # Inherits all company + org + dept resources
+  # Adds team-specific:
+  
+  documentation:
+    - name: "Receiving Systems Runbook"
+      url: "https://confluence.walmart.com/display/RECV/Runbook"
+      icon: "📖"
+    
+    - name: "API Documentation"
+      url: "https://receiving-api.walmart.com/docs"
+      icon: "📝"
+    
+    - name: "Architecture Diagrams"
+      url: "https://confluence.walmart.com/display/RECV/Architecture"
+  
+  collaboration:
+    - name: "Team Slack Channel"
+      channel: "#receiving-systems"
+      description: "Team chat, standups, updates"
+    
+    - name: "Team Jira Board"
+      url: "https://jira.walmart.com/projects/RECV"
+      description: "Sprint planning and tracking"
+  
+  monitoring:
+    - name: "Receiving Systems Dashboard"
+      url: "https://grafana.walmart.com/d/receiving"
+      description: "Service health, metrics, alerts"
+    
+    - name: "Logs (Splunk)"
+      url: "https://splunk.walmart.com/receiving"
+    
+    - name: "APM (New Relic)"
+      url: "https://newrelic.com/walmart/receiving"
+  
+  databases:
+    - name: "Receiving DB (Dev)"
+      type: "PostgreSQL"
+      host: "receiving-dev.walmart.com:5432"
+      database: "receiving"
+    
+    - name: "Receiving DB (Staging)"
+      type: "PostgreSQL"
+      host: "receiving-staging.walmart.com:5432"
+      database: "receiving"
+    
+    - name: "Analytics (BigQuery)"
+      dataset: "walmart-us.receiving_analytics"
+
+# ============================================================================
+# DEVELOPMENT WORKFLOW
+# ============================================================================
+workflow:
+  # Branch strategy
+  branching:
+    main_branch: "main"
+    dev_branch: "develop"
+    feature_prefix: "feat/"
+    bugfix_prefix: "fix/"
+    hotfix_prefix: "hotfix/"
+  
+  # PR requirements
+  pull_requests:
+    required_approvals: 2
+    require_tests: true
+    require_ci_pass: true
+    auto_merge: false
+  
+  # Local development
+  local_dev:
+    - "Run `skaffold dev` to start local K8s cluster"
+    - "API available at http://localhost:8080"
+    - "UI available at http://localhost:3000"
+  
+  # Deployment
+  deployment:
+    dev: "Auto-deploy on merge to develop"
+    staging: "Auto-deploy on merge to main"
+    prod: "Manual approval required"
+
+# ============================================================================
+# ONBOARDING (Team-specific)
+# ============================================================================
+onboarding:
+  first_day:
+    # Adds to company + org + dept onboarding:
+    - "Welcome meeting with team lead"
+    - "Join #receiving-systems Slack channel"
+    - "Get added to receiving-systems GitHub team"
+  
+  first_week:
+    - "Clone all team repositories"
+    - "Set up local dev environment (Skaffold + Rancher)"
+    - "Run the receiving-api locally"
+    - "Review architecture documentation"
+    - "Pair with a team member on current work"
+  
+  first_month:
+    - "Ship first feature (starter task from backlog)"
+    - "Participate in sprint planning"
+    - "Complete team-specific training modules"
+    - "Shadow an on-call rotation"
+
+# ============================================================================
+# TEAM CONVENTIONS (Specific to this team)
+# ============================================================================
+conventions:
+  # Inherits dept conventions, adds team specifics:
+  
+  commit_messages:
+    format: "[RECV-<ticket>] <type>(<scope>): <description>"
+    types:
+      - "feat": "New feature"
+      - "fix": "Bug fix"
+      - "docs": "Documentation"
+      - "refactor": "Code refactor"
+      - "test": "Test updates"
+      - "chore": "Maintenance"
+    example: "[RECV-1234] feat(api): add barcode validation endpoint"
+  
+  python:
+    # Team uses Pydantic AI for LLM features
+    ai_framework: "pydantic-ai"
+    
+    # Test coverage requirement
+    test_coverage_min: 80
+  
+  react:
+    component_structure: "functional"
+    state_management: "React Query + Zustand"
+    styling: "Tailwind CSS + Walmart UI components"
+
+# ============================================================================
+# PROJECT SCAFFOLDS (Team templates)
+# ============================================================================
+scaffolds:
+  # When creating new services, use these templates:
+  python_service:
+    template: "https://github.walmart.com/supply-chain/template-python-service"
+    includes:
+      - "FastAPI setup"
+      - "VBD architecture"
+      - "Docker + Skaffold config"
+      - "GitHub Actions CI/CD"
+      - "Pre-configured tests"
+  
+  react_app:
+    template: "https://github.walmart.com/supply-chain/template-react-app"
+    includes:
+      - "React + TypeScript"
+      - "Walmart UI components"
+      - "Tailwind CSS"
+      - "Vite build"
+
+# ============================================================================
+# CONTACTS
+# ============================================================================
+contacts:
+  manager:
+    name: "Jane Smith"
+    email: "jane.smith@walmart.com"
+    slack: "@jane.smith"
+  
+  tech_lead:
+    name: "John Doe"
+    email: "john.doe@walmart.com"
+    slack: "@john.doe"
+  
+  product_owner:
+    name: "Alice Johnson"
+    email: "alice.johnson@walmart.com"
+    slack: "@alice.johnson"
+  
+  scrum_master:
+    name: "Bob Williams"
+    email: "bob.williams@walmart.com"
+    slack: "@bob.williams"

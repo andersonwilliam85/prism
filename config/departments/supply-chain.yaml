@@ -1,0 +1,156 @@
+# ============================================================================
+# DEPARTMENT: Supply Chain Technology
+# ============================================================================
+# Inherits from: config/base/walmart.yaml → config/orgs/walmart-us.yaml
+# Applies to: All Supply Chain Tech developers
+# Scope: Warehouse, logistics, receiving, inventory, fulfillment
+
+department:
+  id: "supply-chain"
+  name: "Supply Chain Technology"
+  description: "Warehouse management, logistics, receiving, inventory"
+
+# ============================================================================
+# TECH STACK (Supply Chain specific)
+# ============================================================================
+tech_stack:
+  primary_languages:
+    - Python      # Data processing, automation
+    - Java        # Legacy WMS systems
+    - TypeScript  # Modern UIs (React)
+  
+  frameworks:
+    - FastAPI     # Python APIs
+    - Spring Boot # Java services
+    - React       # Frontend
+  
+  databases:
+    - PostgreSQL  # Transactional data
+    - BigQuery    # Analytics
+    - Redis       # Caching
+
+# ============================================================================
+# REQUIRED TOOLS (Supply Chain specific)
+# ============================================================================
+tools_required:
+  # Inherits: git, kubectl, bq, gcloud, etc.
+  # Adds Supply Chain requirements:
+  - python      # Primary language
+  - dbeaver     # Database client (warehouse DBs)
+  - docker      # Local development
+
+tools_available:
+  # Adds to inherited available tools:
+  - pycharm     # Python IDE (popular in dept)
+  - jupyter     # Data analysis
+  - postman     # API testing
+
+# ============================================================================
+# PYTHON PACKAGES (Pre-approved for Supply Chain)
+# ============================================================================
+python:
+  common_packages:
+    - fastapi
+    - pydantic
+    - sqlalchemy
+    - pandas      # Data processing
+    - pytest
+    - black       # Code formatting
+    - mypy        # Type checking
+
+# ============================================================================
+# DEPARTMENT RESOURCES
+# ============================================================================
+resources:
+  # Inherits company + US resources
+  # Adds Supply Chain specific:
+  
+  documentation:
+    - name: "Supply Chain Architecture"
+      url: "https://confluence.walmart.com/display/SUPPLYCHAIN/Architecture"
+      icon: "🏛️"
+    
+    - name: "WMS API Documentation"
+      url: "https://wms-api.walmart.com/docs"
+      icon: "📝"
+  
+  collaboration:
+    - name: "Supply Chain Slack Channels"
+      channels:
+        - "#supply-chain-tech"
+        - "#warehouse-systems"
+        - "#logistics-platform"
+        - "#inventory-management"
+    
+    - name: "Supply Chain Jira Board"
+      url: "https://jira.walmart.com/projects/SCT"
+  
+  databases:
+    - name: "Warehouse DB (Prod - READ ONLY)"
+      type: "PostgreSQL"
+      host: "warehouse-db.walmart.com"
+      note: "Request access via ServiceNow"
+    
+    - name: "Supply Chain Data Warehouse"
+      type: "BigQuery"
+      dataset: "walmart-us.supply_chain"
+  
+  tools:
+    - name: "Warehouse Dashboard"
+      url: "https://warehouse-dashboard.walmart.com"
+      description: "Real-time DC operations"
+    
+    - name: "Inventory Insights"
+      url: "https://inventory.walmart.com"
+      description: "Inventory analytics platform"
+
+# ============================================================================
+# ONBOARDING (Supply Chain specific)
+# ============================================================================
+onboarding:
+  first_week:
+    # Adds to company + US onboarding:
+    - "Join #supply-chain-tech Slack channel"
+    - "Request access to warehouse databases"
+    - "Review Supply Chain architecture docs"
+    - "Set up local WMS development environment"
+  
+  first_month:
+    - "Shadow a warehouse deployment"
+    - "Complete WMS system overview training"
+    - "Access BigQuery supply chain datasets"
+    - "Ship first PR (starter task from backlog)"
+
+# ============================================================================
+# CODE CONVENTIONS (Department standards)
+# ============================================================================
+conventions:
+  python:
+    formatter: "black"
+    line_length: 100
+    type_checking: "mypy"
+  
+  javascript:
+    formatter: "prettier"
+    linter: "eslint"
+  
+  git:
+    commit_format: "[SCT-<ticket>] <type>: <description>"
+    branch_format: "<type>/SCT-<ticket>-<description>"
+    example: "feat/SCT-1234-add-receiving-endpoint"
+
+# ============================================================================
+# TEAM STRUCTURE (FYI for team config selection)
+# ============================================================================
+teams:
+  - name: "Receiving Systems"
+    focus: "Warehouse receiving, intake, putaway"
+  
+  - name: "Fulfillment & Shipping"
+    focus: "Order picking, packing, shipping"
+  
+  - name: "Inventory Management"
+    focus: "Stock tracking, cycle counts, replenishment"
+  
+  - name: "Transportation"
+    focus: "Fleet management, route optimization"
