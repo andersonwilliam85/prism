@@ -386,7 +386,7 @@ career:
       date: "2026-03-05"
       description: "Built VBD architecture system with K8s deployment"
       impact: "Reduced processing time by 40%"
-      evidence: "https://github.walmart.com/myteam/supplier-receiving"
+      evidence: "https://gecgithub01.walmart.com/myteam/supplier-receiving"
       tags: ["technical", "architecture", "kubernetes"]
 ```
 

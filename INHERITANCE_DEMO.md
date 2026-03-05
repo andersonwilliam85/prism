@@ -219,11 +219,11 @@ tech_stack:  # From Supply Chain
 
 repositories:  # From Receiving Systems
   - name: "receiving-api"
-    url: "https://github.walmart.com/supply-chain/receiving-api"
+    url: "https://gecgithub01.walmart.com/supply-chain/receiving-api"
     language: "Python (FastAPI)"
   
   - name: "receiving-ui"
-    url: "https://github.walmart.com/supply-chain/receiving-ui"
+    url: "https://gecgithub01.walmart.com/supply-chain/receiving-ui"
     language: "TypeScript (React)"
 
 resources:

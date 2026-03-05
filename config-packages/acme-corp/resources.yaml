@@ -1,0 +1,40 @@
+# ============================================================================
+# ACME CORP RESOURCES (Example)
+# ============================================================================
+
+company:
+  name: "ACME Corp"
+
+resources:
+  developer_tools:
+    - name: "GitHub Enterprise"
+      icon: "🐙"
+      url: "https://github.acmecorp.com"
+      description: "Source code and collaboration"
+    
+    - name: "CI/CD Dashboard"
+      icon: "🚀"
+      url: "https://ci.acmecorp.com"
+      description: "Build and deployment pipelines"
+  
+  documentation:
+    - name: "Engineering Handbook"
+      icon: "📚"
+      url: "https://handbook.acmecorp.com"
+      description: "Standards, practices, and guides"
+    
+    - name: "API Docs"
+      icon: "📝"
+      url: "https://api-docs.acmecorp.com"
+      description: "Internal API documentation"
+  
+  communication:
+    - name: "Slack"
+      icon: "💬"
+      url: "https://acmecorp.slack.com"
+      description: "Team chat and collaboration"
+    
+    - name: "Jira"
+      icon: "🎫"
+      url: "https://jira.acmecorp.com"
+      description: "Project and issue tracking"

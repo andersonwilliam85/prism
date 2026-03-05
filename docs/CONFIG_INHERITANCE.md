@@ -104,7 +104,7 @@ tools_required:
 
 repositories:
   - name: "receiving-api"
-    url: "https://github.walmart.com/supply-chain/receiving-api"
+    url: "https://gecgithub01.walmart.com/supply-chain/receiving-api"
 ```
 
 ### 3. Configs Get Merged Automatically
@@ -240,7 +240,7 @@ tools_required:
 
 repositories:
   - name: "receiving-api"
-    url: "https://github.walmart.com/supply-chain/receiving-api"
+    url: "https://gecgithub01.walmart.com/supply-chain/receiving-api"
 
 team:
   manager: "Jane Smith"
@@ -279,11 +279,11 @@ Use `${VAR}` placeholders in configs:
 ```yaml
 # In config file:
 repositories:
-  - url: "https://github.walmart.com/${TEAM}/my-repo"
+  - url: "https://gecgithub01.walmart.com/${TEAM}/my-repo"
 
 # At runtime:
 # export TEAM=receiving-systems
-# Result: https://github.walmart.com/receiving-systems/my-repo
+# Result: https://gecgithub01.walmart.com/receiving-systems/my-repo
 ```
 
 With defaults:

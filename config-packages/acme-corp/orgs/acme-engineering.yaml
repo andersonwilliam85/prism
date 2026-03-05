@@ -1,0 +1,19 @@
+# ============================================================================
+# ACME ENGINEERING SUB-ORG (Example)
+# ============================================================================
+
+sub_org:
+  id: "acme-engineering"
+  name: "ACME Engineering"
+  description: "Product engineering division"
+
+# Additional tools for engineering
+tools_required:
+  - vscode
+  - postman
+
+# Engineering-specific repositories
+repositories:
+  - name: "engineering-handbook"
+    url: "https://github.acmecorp.com/engineering/handbook"
+    description: "Engineering standards and practices"

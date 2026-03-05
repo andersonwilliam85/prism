@@ -1,0 +1,57 @@
+# ============================================================================
+# ACME CORP BASE CONFIGURATION (Example)
+# ============================================================================
+
+company:
+  name: "ACME Corp"
+  domain: "acmecorp.com"
+  internal_domain: ".acmecorp.com"
+
+# Network & Environment
+environment:
+  proxy:
+    http: "http://proxy.acmecorp.com:8080"
+    https: "http://proxy.acmecorp.com:8080"
+    no_proxy: "localhost,127.0.0.1,.acmecorp.com"
+  
+  vpn:
+    required: false
+    name: "ACME VPN"
+
+# Git Configuration
+git:
+  user:
+    name: "${USER}"  # Auto-detected
+    email: "${USER}@acmecorp.com"
+  
+  enterprise:
+    enabled: true
+    enterprise_url: "https://github.acmecorp.com"
+
+# Required Tools (installed for everyone)
+tools_required:
+  - git
+  - docker
+  - kubectl
+  - python3
+
+# Available Tools (optional)
+tools_available:
+  - nodejs
+  - java
+  - terraform
+  - helm
+
+# Cloud Accounts
+cloud:
+  aws:
+    accounts:
+      - name: "acme-prod"
+        id: "123456789012"
+      - name: "acme-dev"
+        id: "210987654321"
+  
+  gcp:
+    projects:
+      - "acme-production"
+      - "acme-development"

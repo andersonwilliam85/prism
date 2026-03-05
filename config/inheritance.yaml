@@ -258,7 +258,7 @@ env_sources:
 auto_detect:
   # Try to auto-detect sub-org from:
   sub_org:
-    - git_remote        # Parse from git remote URL (github.walmart.com/walmart-us/...)
+    - git_remote        # Parse from git remote URL (gecgithub01.walmart.com/walmart-us/...)
     - email_domain      # Parse from email (@walmart.com vs @samsclub.com)
     - hostname          # Parse from machine hostname
     - env_var           # ${SUB_ORG} environment variable

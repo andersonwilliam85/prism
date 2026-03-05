@@ -1,0 +1,76 @@
+# ============================================================================
+# ACME CORP CONFIG PACKAGE (Example)
+# ============================================================================
+# Minimal example of a company config package
+# Use this as a template for your own company!
+
+package:
+  name: "acme-corp-config"
+  version: "1.0.0"
+  description: "ACME Corp development environment configuration (example template)"
+  author: "ACME Corp IT Team"
+  homepage: "https://dev.acmecorp.com"
+  support:
+    email: "devops@acmecorp.com"
+    slack: "#dev-support"
+  
+  type: "company"
+  
+  requires:
+    onboarding_version: ">=1.0.0"
+    python_version: ">=3.8"
+  
+  install:
+    target_dir: "config/"
+    
+    files:
+      - source: "welcome.yaml"
+        dest: "config/welcome.yaml"
+      
+      - source: "resources.yaml"
+        dest: "config/resources.yaml"
+    
+    directories:
+      - source: "base/"
+        dest: "config/base/"
+      
+      - source: "orgs/"
+        dest: "config/orgs/"
+      
+      - source: "teams/"
+        dest: "config/teams/"
+  
+  post_install:
+    message: |
+      🎉 ACME Corp config installed!
+      
+      Edit config/inheritance.yaml to customize for your team.
+      Then run: python3 install-ui.py
+
+contents:
+  base_config: "base/acme-corp.yaml"
+  welcome_page: "welcome.yaml"
+  resources: "resources.yaml"
+  
+  sub_orgs:
+    - id: "acme-engineering"
+      name: "ACME Engineering"
+      file: "orgs/acme-engineering.yaml"
+  
+  teams:
+    - id: "platform-team"
+      name: "Platform Team"
+      file: "teams/platform-team.yaml"
+
+distribution:
+  local:
+    path: "config-packages/acme-corp/"
+    discoverable: true
+
+metadata:
+  tags:
+    - example
+    - template
+    - minimal
+  company_size: "medium"
+  last_updated: "2026-03-04"

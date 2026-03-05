@@ -32,7 +32,7 @@ git:
   # GitHub/GitLab configuration (example: Walmart GitHub Enterprise)
   github:
     username: ""              # GitHub username
-    enterprise_url: "https://github.walmart.com"  # Company GitHub Enterprise URL
+    enterprise_url: "https://gecgithub01.walmart.com"  # Company GitHub Enterprise URL
   
   # Common git aliases
   aliases:

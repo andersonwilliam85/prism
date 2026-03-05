@@ -1,0 +1,46 @@
+# ============================================================================
+# ACME CORP WELCOME PAGE (Example)
+# ============================================================================
+
+company:
+  name: "ACME Corp"
+  tagline: "Building the future"
+
+welcome:
+  title: "Welcome to ACME Corp Engineering"
+  subtitle: "Your development environment is ready!"
+  hero_message: |
+    This is your personal knowledge base for all things ACME.
+
+  getting_started:
+    title: "🎯 Getting Started"
+    items:
+      - text: "Check out our **Engineering Handbook**"
+        icon: "📚"
+        link: "https://handbook.acmecorp.com"
+      
+      - text: "Join **#engineering** on Slack"
+        icon: "💬"
+
+installation:
+  prerequisites:
+    title: "Before You Start"
+    items:
+      - text: "**Connect to VPN** if working remotely"
+        required: false
+        icon: "🔒"
+
+support:
+  contacts:
+    - name: "IT Support"
+      channels:
+        email: "it@acmecorp.com"
+        slack: "#it-support"
+      hours: "9am-5pm"
+
+branding:
+  colors:
+    primary: "#FF6B35"    # ACME Orange
+    secondary: "#004E89"  # ACME Blue
+  
+  footer_text: "Built with ❤️ by ACME Engineering"

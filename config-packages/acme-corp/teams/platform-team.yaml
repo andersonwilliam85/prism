@@ -1,0 +1,24 @@
+# ============================================================================
+# PLATFORM TEAM (Example)
+# ============================================================================
+
+team:
+  id: "platform-team"
+  name: "Platform Engineering Team"
+  manager: "Jane Smith"
+  tech_lead: "John Doe"
+  slack_channel: "#platform-team"
+
+# Team repositories
+repositories:
+  - name: "platform-api"
+    url: "https://github.acmecorp.com/platform/api"
+  
+  - name: "platform-ui"
+    url: "https://github.acmecorp.com/platform/ui"
+
+# Team-specific tools
+tools_required:
+  - kubernetes
+  - terraform
+  - helm

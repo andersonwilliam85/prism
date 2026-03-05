@@ -164,7 +164,7 @@ career:
       date: "2026-03-05"
       description: "Built VBD architecture with K8s deployment"
       impact: "Reduced processing time by 40%"
-      evidence: "https://github.walmart.com/myteam/supplier-receiving"
+      evidence: "https://gecgithub01.walmart.com/myteam/supplier-receiving"
       tags: ["technical", "architecture", "kubernetes"]
 ```
 
@@ -405,7 +405,7 @@ cp -r my-company-template templates/
 
 **Option 1: Git repo (internal GitHub)**
 ```bash
-git clone https://github.walmart.com/your-team/dev-setup.git
+git clone https://gecgithub01.walmart.com/your-team/dev-setup.git
 cd dev-setup
 python3 install.py
 ```
@@ -454,7 +454,7 @@ After setup completes, you'll see:
 
 1. Add your SSH key to GitHub Enterprise:
    • Copy: ~/.ssh/id_ed25519.pub
-   • Add at: https://github.walmart.com/settings/keys
+   • Add at: https://gecgithub01.walmart.com/settings/keys
 
 2. Your documentation server is running!
    • Access at: http://localhost:8000
