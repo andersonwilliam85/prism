@@ -509,55 +509,72 @@ INDEX_HTML = """
         }
         
         async function loadOrganizations() {
+            // Get package-specific metadata
+            const metadataResponse = await fetch(`/api/package/${selectedPackage}/metadata`);
+            const metadata = await metadataResponse.json();
+            
+            // Check if THIS package has organizations/departments/teams
+            hasOrganizations = metadata.has_sub_orgs || metadata.has_departments || metadata.has_teams;
+            
+            if (!hasOrganizations) {
+                // Skip this step automatically - this package doesn't use orgs
+                nextStep();
+                return;
+            }
+            
+            // Load actual org data
             const response = await fetch('/api/organizations');
             const data = await response.json();
             
-            // Check if we have any organizations
-            hasOrganizations = (data.sub_orgs && data.sub_orgs.length > 0) ||
-                              (data.departments && data.departments.length > 0) ||
-                              (data.teams && data.teams.length > 0);
-            
-            if (!hasOrganizations) {
-                // Skip this step automatically
-                nextStep();
-                return;
-            }
-            
             const subOrgSelect = document.getElementById('subOrg');
             subOrgSelect.innerHTML = '<option value="">None</option>';
-            data.sub_orgs.forEach(org => {
-                subOrgSelect.innerHTML += `<option value="${org.id}">${org.name}</option>`;
-            });
+            
+            if (data.sub_orgs) {
+                data.sub_orgs.forEach(org => {
+                    subOrgSelect.innerHTML += `<option value="${org.id}">${org.name}</option>`;
+                });
+            }
         }
         
         async function loadTools() {
-            const response = await fetch('/api/tools');
-            const data = await response.json();
+            // Get package-specific metadata
+            const metadataResponse = await fetch(`/api/package/${selectedPackage}/metadata`);
+            const metadata = await metadataResponse.json();
             
-            // Check if we have any tools
-            hasTools = data.tools && data.tools.length > 0;
+            // Check if THIS package has tools
+            hasTools = metadata.has_tools;
             
             if (!hasTools) {
-                // Skip this step automatically
+                // Skip this step automatically - this package doesn't use tools
                 nextStep();
                 return;
             }
+            
+            // Load actual tools data
+            const response = await fetch('/api/tools');
+            const data = await response.json();
             
             const toolsList = document.getElementById('toolsList');
             toolsList.innerHTML = '';
             
-            data.tools.forEach(tool => {
-                const checked = tool.required ? 'checked disabled' : '';
-                toolsList.innerHTML += `
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="tool_${tool.id}" ${checked}>
-                        <label for="tool_${tool.id}">${tool.name}</label>
-                    </div>
-                `;
-            });
+            if (data.tools && data.tools.length > 0) {
+                data.tools.forEach(tool => {
+                    const checked = tool.required ? 'checked disabled' : '';
+                    toolsList.innerHTML += `
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="tool_${tool.id}" ${checked}>
+                            <label for="tool_${tool.id}">${tool.name}</label>
+                        </div>
+                    `;
+                });
+            }
         }
         
-        function showSummary() {
+        async function showSummary() {
+            // Fetch package metadata to know what to show
+            const metadataResponse = await fetch(`/api/package/${selectedPackage}/metadata`);
+            const metadata = await metadataResponse.json();
+            
             // Collect all user info field values
             const userInfoFields = document.querySelectorAll('#userInfoFields input');
             let userInfoHTML = '';
@@ -568,18 +585,84 @@ INDEX_HTML = """
                 }
             });
             
-            const subOrg = document.getElementById('subOrg').selectedOptions[0]?.text || 'None';
-            const dept = document.getElementById('department').selectedOptions[0]?.text || 'None';
-            
-            document.getElementById('summary').innerHTML = `
-                <p><strong>Package:</strong> ${selectedPackage}</p>
-                <hr>
-                <h4>User Information:</h4>
-                ${userInfoHTML}
-                <hr>
-                <p><strong>Organization:</strong> ${subOrg} / ${dept}</p>
-                <p style="margin-top: 20px;"><strong>Tools to install:</strong> ~15 selected</p>
+            // Build summary based on what this package actually has
+            let summaryHTML = `
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border: 2px solid #dee2e6;">
+                    <h3 style="margin-top: 0; color: #667eea;">📦 ${metadata.display_name || selectedPackage}</h3>
+                    ${metadata.description ? `<p style="color: #666; margin-bottom: 20px;">${metadata.description}</p>` : ''}
+                    <hr style="border-color: #dee2e6;">
             `;
+            
+            // User Information section (always shown if there are fields)
+            if (userInfoHTML) {
+                summaryHTML += `
+                    <h4>👤 User Information:</h4>
+                    <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                        ${userInfoHTML}
+                    </div>
+                `;
+            }
+            
+            // Organization section (only if package has orgs/depts)
+            if (metadata.has_sub_orgs || metadata.has_departments || metadata.has_teams) {
+                const subOrg = document.getElementById('subOrg')?.selectedOptions[0]?.text;
+                const dept = document.getElementById('department')?.selectedOptions[0]?.text;
+                
+                let orgHTML = '<h4>🏢 Organization:</h4><div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">';
+                
+                if (metadata.has_sub_orgs && subOrg && subOrg !== 'None') {
+                    orgHTML += `<p><strong>Sub-Organization:</strong> ${subOrg}</p>`;
+                }
+                
+                if (metadata.has_departments && dept && dept !== 'None' && dept !== 'Select sub-org first...') {
+                    orgHTML += `<p><strong>Department:</strong> ${dept}</p>`;
+                }
+                
+                if (metadata.has_teams) {
+                    // Check if any teams selected
+                    const teamCheckboxes = document.querySelectorAll('#teamsList input[type="checkbox"]:checked');
+                    if (teamCheckboxes.length > 0) {
+                        const teams = Array.from(teamCheckboxes).map(cb => cb.nextElementSibling?.textContent || '').filter(t => t);
+                        if (teams.length > 0) {
+                            orgHTML += `<p><strong>Teams:</strong> ${teams.join(', ')}</p>`;
+                        }
+                    }
+                }
+                
+                orgHTML += '</div>';
+                
+                // Only show if we have actual org data
+                if (orgHTML.includes('<p>')) {
+                    summaryHTML += orgHTML;
+                } else if (metadata.has_sub_orgs || metadata.has_departments || metadata.has_teams) {
+                    summaryHTML += `
+                        <h4>🏢 Organization:</h4>
+                        <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                            <p style="color: #999;"><em>No organizational units selected</em></p>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Tools section (only if package has tools)
+            if (metadata.has_tools) {
+                const toolCheckboxes = document.querySelectorAll('#toolsList input[type="checkbox"]:checked');
+                const selectedTools = Array.from(toolCheckboxes).map(cb => cb.nextElementSibling?.textContent || '').filter(t => t);
+                
+                summaryHTML += `
+                    <h4>🛠️ Tools:</h4>
+                    <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                        ${selectedTools.length > 0 ? 
+                            `<p><strong>${selectedTools.length} tool(s) selected:</strong> ${selectedTools.join(', ')}</p>` : 
+                            `<p style="color: #999;"><em>No tools selected</em></p>`
+                        }
+                    </div>
+                `;
+            }
+            
+            summaryHTML += '</div>';
+            
+            document.getElementById('summary').innerHTML = summaryHTML;
             
             // Show validation section
             document.getElementById('configValidationSection').style.display = 'block';
@@ -1054,6 +1137,71 @@ def validate_package_configs(package_id):
             "valid": False,
             "error": str(e)
         })
+
+@app.route("/api/package/<package_name>/metadata")
+def get_package_metadata(package_name):
+    """Get package metadata (what sections/features are available)"""
+    import sys
+    import yaml
+    sys.path.insert(0, str(Path(__file__).parent / "scripts"))
+    
+    try:
+        from package_manager import PackageManager
+        pm = PackageManager()
+        
+        # Find the package
+        packages = pm.discover_packages()
+        pkg = next((p for p in packages if p['name'] == package_name), None)
+        
+        if not pkg:
+            return jsonify({"error": "Package not found"})
+        
+        # Load package.yaml
+        pkg_path = Path(pkg['path'])
+        pkg_yaml_path = pkg_path / 'package.yaml'
+        
+        if not pkg_yaml_path.exists():
+            return jsonify({"error": "package.yaml not found"})
+        
+        with open(pkg_yaml_path) as f:
+            pkg_config = yaml.safe_load(f)
+        
+        # Determine what's available in this package
+        contents = pkg_config.get('contents', {})
+        package_section = pkg_config.get('package', {})
+        
+        # Check for organizations/departments/teams
+        has_sub_orgs = 'sub_orgs' in contents or 'organizations' in contents
+        has_departments = 'departments' in contents
+        has_teams = 'teams' in contents
+        
+        # Check for tools
+        has_tools = 'tools' in package_section or 'tools' in pkg_config
+        
+        # Get user info fields count
+        user_fields = package_section.get('user_info_fields', [])
+        
+        # Get package display info
+        display_name = package_section.get('name', package_name)
+        description = package_section.get('description', '')
+        
+        metadata = {
+            'name': package_name,
+            'display_name': display_name,
+            'description': description,
+            'has_sub_orgs': has_sub_orgs,
+            'has_departments': has_departments,
+            'has_teams': has_teams,
+            'has_tools': has_tools,
+            'user_fields_count': len(user_fields),
+            'package_type': package_section.get('type', 'company')
+        }
+        
+        return jsonify(metadata)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e)})
 
 @app.route("/api/package/<package_name>/user-fields")
 def get_user_fields(package_name):
