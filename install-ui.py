@@ -341,70 +341,332 @@ INDEX_HTML = """
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
-        /* Theme Switcher Styles */
-        .theme-switcher {
-            position: absolute;
+        /* Hamburger Menu */
+        .hamburger-menu {
+            position: fixed;
             top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.9);
+            left: 20px;
+            z-index: 10000;
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            padding: 8px;
+            padding: 12px;
             border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .hamburger-menu:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+        
+        .hamburger-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+        
+        .hamburger-icon span {
+            display: block;
+            height: 3px;
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .hamburger-menu.open .hamburger-icon span:nth-child(1) {
+            transform: rotate(45deg) translate(7px, 7px);
+        }
+        
+        .hamburger-menu.open .hamburger-icon span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .hamburger-menu.open .hamburger-icon span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+        
+        /* Settings Panel */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            left: -400px;
+            width: 400px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+            transition: left 0.3s ease;
+            z-index: 9999;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .settings-panel.open {
+            left: 0;
+        }
+        
+        .settings-panel h2 {
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            padding-top: 40px;
+        }
+        
+        .settings-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .settings-section:last-child {
+            border-bottom: none;
+        }
+        
+        .settings-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        
+        .settings-section p {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+        
+        /* Theme Grid in Settings */
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .theme-option {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .theme-option:hover {
+            transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         
-        .theme-btn {
-            width: 36px;
-            height: 36px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+        .theme-option.active {
+            border-color: var(--gradient-1);
+            box-shadow: 0 0 0 3px rgba(0, 147, 233, 0.2);
         }
         
-        .theme-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        .theme-preview {
+            width: 100%;
+            height: 40px;
+            border-radius: 6px;
+            margin-bottom: 8px;
         }
         
-        .theme-btn.active {
-            box-shadow: 0 0 0 3px white, 0 0 0 5px var(--gradient-1);
-            transform: scale(1.05);
-        }
-        
-        .theme-btn[data-theme="ocean"] {
+        .theme-preview.ocean {
             background: linear-gradient(135deg, #0093E9, #80D0C7);
         }
         
-        .theme-btn[data-theme="purple"] {
+        .theme-preview.purple {
             background: linear-gradient(135deg, #667eea, #764ba2);
         }
         
-        .theme-btn[data-theme="forest"] {
+        .theme-preview.forest {
             background: linear-gradient(135deg, #134E5E, #71B280);
         }
         
-        .theme-btn[data-theme="sunset"] {
+        .theme-preview.sunset {
             background: linear-gradient(135deg, #f12711, #f5af19);
         }
         
-        .theme-btn[data-theme="midnight"] {
+        .theme-preview.midnight {
             background: linear-gradient(135deg, #2c3e50, #3498db);
         }
+        
+        .theme-name {
+            font-size: 0.85em;
+            color: #666;
+            font-weight: 600;
+        }
+        
+        /* Prism Source Input */
+        .prism-source-input {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .prism-source-input input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+        
+        .prism-source-input button {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--gradient-1), var(--gradient-2));
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .prism-source-input button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .prism-sources-list {
+            margin-top: 15px;
+        }
+        
+        .prism-source-item {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .prism-source-item .source-url {
+            font-size: 0.85em;
+            color: #666;
+            font-family: 'Courier New', monospace;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .prism-source-item .remove-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: all 0.2s ease;
+        }
+        
+        .prism-source-item .remove-btn:hover {
+            background: #dc2626;
+        }
+        
+        /* Overlay for settings panel */
+        .settings-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 9998;
+        }
+        
+        .settings-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+
     </style>
 </head>
 <body>
-    <!-- Theme Switcher -->
-    <div class="theme-switcher">
-        <button class="theme-btn active" data-theme="ocean" title="Ocean Blue" aria-label="Ocean Blue Theme"></button>
-        <button class="theme-btn" data-theme="purple" title="Purple Haze" aria-label="Purple Haze Theme"></button>
-        <button class="theme-btn" data-theme="forest" title="Forest Green" aria-label="Forest Green Theme"></button>
-        <button class="theme-btn" data-theme="sunset" title="Sunset Orange" aria-label="Sunset Orange Theme"></button>
-        <button class="theme-btn" data-theme="midnight" title="Midnight Dark" aria-label="Midnight Dark Theme"></button>
+    <!-- Settings Overlay -->
+    <div class="settings-overlay" id="settingsOverlay" onclick="toggleSettings()"></div>
+    
+    <!-- Hamburger Menu -->
+    <div class="hamburger-menu" id="hamburgerMenu" onclick="toggleSettings()">
+        <div class="hamburger-icon">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+    
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settingsPanel">
+        <h2>⚙️ Prism Configuration</h2>
+        
+        <!-- Theme Selection -->
+        <div class="settings-section">
+            <h3>🎨 Theme</h3>
+            <p>Choose your preferred color scheme</p>
+            <div class="theme-grid">
+                <div class="theme-option active" data-theme="ocean" onclick="selectTheme('ocean')">
+                    <div class="theme-preview ocean"></div>
+                    <div class="theme-name">Ocean Blue</div>
+                </div>
+                <div class="theme-option" data-theme="purple" onclick="selectTheme('purple')">
+                    <div class="theme-preview purple"></div>
+                    <div class="theme-name">Purple Haze</div>
+                </div>
+                <div class="theme-option" data-theme="forest" onclick="selectTheme('forest')">
+                    <div class="theme-preview forest"></div>
+                    <div class="theme-name">Forest Green</div>
+                </div>
+                <div class="theme-option" data-theme="sunset" onclick="selectTheme('sunset')">
+                    <div class="theme-preview sunset"></div>
+                    <div class="theme-name">Sunset Orange</div>
+                </div>
+                <div class="theme-option" data-theme="midnight" onclick="selectTheme('midnight')">
+                    <div class="theme-preview midnight"></div>
+                    <div class="theme-name">Midnight Dark</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Prism Sources -->
+        <div class="settings-section">
+            <h3>🔷 Prism Sources</h3>
+            <p>Add registries or URLs to load additional setup prisms</p>
+            <div class="prism-source-input">
+                <input type="text" id="prismSourceUrl" placeholder="https://registry.example.com/prisms" />
+                <button onclick="addPrismSource()">Add</button>
+            </div>
+            <div class="prism-sources-list" id="prismSourcesList">
+                <!-- Sources populated by JS -->
+            </div>
+        </div>
+        
+        <!-- Registry Configuration -->
+        <div class="settings-section">
+            <h3>📦 npm Registry</h3>
+            <p>Configure custom npm registry for prism distribution</p>
+            <div class="form-group">
+                <label for="npmRegistry">Registry URL</label>
+                <input type="text" id="npmRegistry" placeholder="https://registry.npmjs.org" />
+            </div>
+            <button class="btn-secondary" onclick="saveRegistryConfig()" style="width: 100%; margin-top: 10px;">Save Registry</button>
+        </div>
+        
+        <!-- About -->
+        <div class="settings-section">
+            <h3>ℹ️ About Prism</h3>
+            <p style="font-size: 0.85em;">Light refracts through configuration - infinite possibilities</p>
+            <p style="font-size: 0.85em; color: #999;">Version: 1.0.0</p>
+        </div>
     </div>
     
     <div class="container">
@@ -601,38 +863,158 @@ INDEX_HTML = """
     </div>
     
     <script>
-        // Theme Switcher Logic
-        (function() {
-            const themes = ['ocean', 'purple', 'forest', 'sunset', 'midnight'];
-            const savedTheme = localStorage.getItem('prismTheme') || 'ocean';
+        // ========================================
+        // PRISM CONFIGURATION (Meta-Prism)
+        // ========================================
+        
+        // Default Prism Configuration
+        const DEFAULT_PRISM_CONFIG = {
+            theme: 'ocean',
+            sources: [
+                { url: 'local', name: 'Built-in Prisms', type: 'local' }
+            ],
+            npmRegistry: '',
+            unpkgUrl: ''
+        };
+        
+        // Load Prism Configuration
+        function loadPrismConfig() {
+            const saved = localStorage.getItem('prismConfig');
+            return saved ? JSON.parse(saved) : DEFAULT_PRISM_CONFIG;
+        }
+        
+        // Save Prism Configuration
+        function savePrismConfig(config) {
+            localStorage.setItem('prismConfig', JSON.stringify(config));
+        }
+        
+        // Current config
+        let prismConfig = loadPrismConfig();
+        
+        // ========================================
+        // SETTINGS PANEL
+        // ========================================
+        
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            const overlay = document.getElementById('settingsOverlay');
+            const hamburger = document.getElementById('hamburgerMenu');
             
-            // Apply saved theme on load
-            document.documentElement.setAttribute('data-theme', savedTheme);
+            panel.classList.toggle('open');
+            overlay.classList.toggle('open');
+            hamburger.classList.toggle('open');
+        }
+        
+        function selectTheme(themeName) {
+            // Update theme
+            document.documentElement.setAttribute('data-theme', themeName);
             
-            // Set active button
-            document.querySelectorAll('.theme-btn').forEach(btn => {
-                if (btn.dataset.theme === savedTheme) {
-                    btn.classList.add('active');
+            // Update active state in settings
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                if (opt.dataset.theme === themeName) {
+                    opt.classList.add('active');
                 } else {
-                    btn.classList.remove('active');
+                    opt.classList.remove('active');
                 }
-                
-                // Add click handler
-                btn.addEventListener('click', function() {
-                    const theme = this.dataset.theme;
-                    
-                    // Update DOM
-                    document.documentElement.setAttribute('data-theme', theme);
-                    
-                    // Update active button
-                    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    
-                    // Save to localStorage
-                    localStorage.setItem('prismTheme', theme);
-                });
             });
+            
+            // Save to config
+            prismConfig.theme = themeName;
+            savePrismConfig(prismConfig);
+        }
+        
+        function addPrismSource() {
+            const input = document.getElementById('prismSourceUrl');
+            const url = input.value.trim();
+            
+            if (!url) {
+                alert('Please enter a valid URL');
+                return;
+            }
+            
+            // Add to config
+            prismConfig.sources.push({
+                url: url,
+                name: url,
+                type: 'remote'
+            });
+            savePrismConfig(prismConfig);
+            
+            // Clear input
+            input.value = '';
+            
+            // Refresh UI
+            renderPrismSources();
+            
+            // Reload prisms from all sources
+            loadPackages();
+        }
+        
+        function removePrismSource(index) {
+            prismConfig.sources.splice(index, 1);
+            savePrismConfig(prismConfig);
+            renderPrismSources();
+            loadPackages();
+        }
+        
+        function renderPrismSources() {
+            const list = document.getElementById('prismSourcesList');
+            list.innerHTML = '';
+            
+            prismConfig.sources.forEach((source, index) => {
+                if (source.type === 'local') {
+                    list.innerHTML += `
+                        <div class="prism-source-item">
+                            <span class="source-url">🔷 ${source.name}</span>
+                            <span style="font-size: 0.75em; color: #10b981; font-weight: 600;">DEFAULT</span>
+                        </div>
+                    `;
+                } else {
+                    list.innerHTML += `
+                        <div class="prism-source-item">
+                            <span class="source-url">${source.url}</span>
+                            <button class="remove-btn" onclick="removePrismSource(${index})">Remove</button>
+                        </div>
+                    `;
+                }
+            });
+        }
+        
+        function saveRegistryConfig() {
+            const npmRegistry = document.getElementById('npmRegistry').value.trim();
+            
+            prismConfig.npmRegistry = npmRegistry;
+            savePrismConfig(prismConfig);
+            
+            alert('✅ Registry configuration saved!');
+        }
+        
+        // Initialize Prism Configuration on load
+        (function() {
+            // Apply saved theme
+            document.documentElement.setAttribute('data-theme', prismConfig.theme);
+            
+            // Set active theme in settings
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                if (opt.dataset.theme === prismConfig.theme) {
+                    opt.classList.add('active');
+                } else {
+                    opt.classList.remove('active');
+                }
+            });
+            
+            // Render prism sources
+            renderPrismSources();
+            
+            // Set registry value
+            if (prismConfig.npmRegistry) {
+                document.getElementById('npmRegistry').value = prismConfig.npmRegistry;
+            }
         })();
+        
+        // ========================================
+        // INSTALLATION FLOW
+        // ========================================
         
         let currentStep = 1;
         const totalSteps = 7;
