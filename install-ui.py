@@ -300,6 +300,18 @@ INDEX_HTML = """
                 <!-- Populated by JS -->
             </div>
             
+            <!-- Invalid packages section -->
+            <div id="invalidPackagesSection" style="margin-top: 30px; display: none;">
+                <details style="padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 8px;">
+                    <summary style="cursor: pointer; font-weight: 600; color: #856404;">
+                        ⚠️ <span id="invalidPackagesCount">0</span> Invalid Package(s) - Click to View
+                    </summary>
+                    <div id="invalidPackagesList" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ffeaa7;">
+                        <!-- Populated by JS -->
+                    </div>
+                </details>
+            </div>
+            
             <div class="alert alert-info" style="margin-top: 20px;">
                 <strong>💡 Tip:</strong> Not sure which to pick? Personal Dev is great for freelancers!
             </div>
@@ -683,6 +695,12 @@ INDEX_HTML = """
                 
                 const packagesList = document.getElementById('packagesList');
                 
+                // Show stats if available
+                if (data.stats) {
+                    console.log(`📊 Package stats: ${data.stats.valid} valid, ${data.stats.invalid} invalid (${data.stats.total} total)`);
+                }
+                
+                // Render valid packages
                 if (data.packages && data.packages.length > 0) {
                     packagesList.innerHTML = '';
                     
@@ -693,6 +711,12 @@ INDEX_HTML = """
                         const source = pkg.source || 'local';
                         const sourceIcon = source === 'npm' ? '🌐' : '📁';
                         const sourceBadge = `<span style="background: ${source === 'npm' ? '#10b981' : '#6b7280'}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">${sourceIcon} ${source}</span>`;
+                        
+                        // Show warnings badge if any
+                        let warningsBadge = '';
+                        if (pkg.warnings && pkg.warnings.length > 0) {
+                            warningsBadge = `<span style="background: #ffc107; color: #000; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-left: 5px;">⚠️ ${pkg.warnings.length} warning(s)</span>`;
+                        }
                         
                         packagesList.innerHTML += `
                             <div class="package-card" onclick="selectPackage('${pkg.id}')" id="pkg_${pkg.id}" style="
@@ -711,7 +735,7 @@ INDEX_HTML = """
                                         <p style="margin: 0 0 10px 0; color: #666;">${description}</p>
                                         <div style="font-size: 0.9em; color: #888;">
                                             <strong>Version:</strong> ${version} | 
-                                            <strong>Source:</strong> ${sourceBadge}
+                                            <strong>Source:</strong> ${sourceBadge}${warningsBadge}
                                         </div>
                                     </div>
                                     <div style="width: 30px; height: 30px; border: 2px solid #e0e0e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-left: 20px;">
@@ -724,10 +748,40 @@ INDEX_HTML = """
                 } else {
                     packagesList.innerHTML = `
                         <div class="alert alert-warning">
-                            <strong>⚠️ No packages found!</strong><br>
+                            <strong>⚠️ No valid packages found!</strong><br>
                             Please check your registry configuration or ensure local packages exist.
                         </div>
                     `;
+                }
+                
+                // Render invalid packages section
+                if (data.invalid_packages && data.invalid_packages.length > 0) {
+                    const invalidSection = document.getElementById('invalidPackagesSection');
+                    const invalidList = document.getElementById('invalidPackagesList');
+                    const invalidCount = document.getElementById('invalidPackagesCount');
+                    
+                    invalidSection.style.display = 'block';
+                    invalidCount.textContent = data.invalid_packages.length;
+                    
+                    invalidList.innerHTML = '';
+                    data.invalid_packages.forEach(pkg => {
+                        let errorsHtml = '<ul style="margin: 10px 0; padding-left: 20px; color: #721c24;">';
+                        pkg.errors.forEach(error => {
+                            errorsHtml += `<li>${error}</li>`;
+                        });
+                        errorsHtml += '</ul>';
+                        
+                        invalidList.innerHTML += `
+                            <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 15px; margin-bottom: 10px;">
+                                <h4 style="margin: 0 0 5px 0; color: #721c24;">❌ ${pkg.name}</h4>
+                                <p style="margin: 0 0 10px 0; color: #856404; font-size: 0.9em;">📁 ${pkg.path}</p>
+                                <div style="font-size: 0.9em;">
+                                    <strong style="color: #721c24;">Errors:</strong>
+                                    ${errorsHtml}
+                                </div>
+                            </div>
+                        `;
+                    });
                 }
             } catch (error) {
                 console.error('Failed to load packages:', error);
@@ -809,17 +863,58 @@ def index():
 
 @app.route("/api/packages")
 def get_packages():
-    """Get available config packages"""
+    """Get available config packages with validation"""
     import sys
     sys.path.insert(0, str(Path(__file__).parent / "scripts"))
     
     try:
-        from package_manager import PackageManager
-        pm = PackageManager()
-        packages = pm.discover_packages()
-        return jsonify({"packages": packages})
+        from package_validator import validate_all_packages
+        
+        packages_dir = ROOT_DIR / "config-packages"
+        valid_packages, invalid_packages = validate_all_packages(packages_dir)
+        
+        # Format valid packages
+        formatted_valid = []
+        for pkg in valid_packages:
+            formatted_valid.append({
+                "id": pkg['id'],
+                "name": pkg['name'],
+                "displayName": pkg['name'].replace('-config', '').replace('-', ' ').title(),
+                "description": pkg['description'],
+                "version": pkg['version'],
+                "source": "local",
+                "path": pkg['path'],
+                "warnings": pkg.get('warnings', [])
+            })
+        
+        # Format invalid packages
+        formatted_invalid = []
+        for pkg in invalid_packages:
+            formatted_invalid.append({
+                "id": pkg['id'],
+                "name": pkg['name'],
+                "description": pkg['description'],
+                "errors": pkg['errors'],
+                "path": pkg['path']
+            })
+        
+        return jsonify({
+            "packages": formatted_valid,
+            "invalid_packages": formatted_invalid,
+            "stats": {
+                "valid": len(valid_packages),
+                "invalid": len(invalid_packages),
+                "total": len(valid_packages) + len(invalid_packages)
+            }
+        })
     except Exception as e:
-        return jsonify({"packages": [], "error": str(e)})
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            "packages": [],
+            "invalid_packages": [],
+            "error": str(e)
+        })
 
 @app.route("/api/package/<package_name>/user-fields")
 def get_user_fields(package_name):
