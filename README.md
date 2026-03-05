@@ -81,13 +81,21 @@ Built with a package system. Use built-in configs or create your own. Personal, 
 Gorgeous visual setup experience:
 
 - **Package Gallery** - Browse configs with beautiful cards
-- **Visual Wizard** - 7-step guided setup
+- **Visual Wizard** - Step-by-step guided setup
+- **Registry Configuration** - Support for corporate/custom npm registries
 - **Live Progress** - Watch installation in real-time
 - **Responsive Design** - Works on any screen size
 - **Smart Validation** - Prevents configuration errors
 - **Auto-launch** - Opens in your browser automatically
 
-Launch with: `python3 web_installer.py`
+Launch with:
+```bash
+python3 install-ui.py
+# or use the convenience script
+./start_web_ui.sh
+```
+
+Opens automatically at: **http://localhost:5555**
 
 ### 💻 **CLI Installer**
 

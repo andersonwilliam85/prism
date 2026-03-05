@@ -267,12 +267,41 @@ INDEX_HTML = """
             <h2>📦 Choose Your Config Package</h2>
             <p>Select the configuration package that best fits your needs:</p>
             
+            <!-- Registry Configuration (Expandable) -->
+            <details style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                <summary style="cursor: pointer; font-weight: 600; color: #667eea;">
+                    ⚙️ Advanced: Custom Registry Configuration
+                </summary>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #dee2e6;">
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 15px;">
+                        Configure custom npm registry for corporate/air-gapped environments
+                    </p>
+                    
+                    <div class="form-group">
+                        <label for="npmRegistry">npm Registry URL</label>
+                        <input type="text" id="npmRegistry" placeholder="https://registry.npmjs.org (default)">
+                        <small style="color: #666;">Leave empty to use default public registry</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="unpkgUrl">unpkg CDN URL</label>
+                        <input type="text" id="unpkgUrl" placeholder="https://unpkg.com (default)">
+                        <small style="color: #666;">Leave empty to use default unpkg CDN</small>
+                    </div>
+                    
+                    <button class="btn-secondary" onclick="testRegistry()" style="margin-top: 10px;">
+                        🔍 Test Connection
+                    </button>
+                    <span id="registryTestResult" style="margin-left: 10px;"></span>
+                </div>
+            </details>
+            
             <div id="packagesList" style="margin-top: 30px;">
                 <!-- Populated by JS -->
             </div>
             
             <div class="alert alert-info" style="margin-top: 20px;">
-                <strong>💡 Tip:</strong> Not sure which to pick? Scroll through the options above!
+                <strong>💡 Tip:</strong> Not sure which to pick? Personal Dev is great for freelancers!
             </div>
             
             <div class="buttons">
@@ -489,78 +518,169 @@ INDEX_HTML = """
             document.getElementById('step6').classList.add('active');
             updateProgress();
             
-            // Simulate installation (replace with actual install logic)
             const logOutput = document.getElementById('logOutput');
-            const steps = [
-                'Detecting platform...',
-                'Installing package manager...',
-                'Installing git...',
-                'Installing kubectl...',
-                'Configuring Maven...',
-                'Generating SSH key...',
-                'Setting up documentation server...',
-                'Installation complete!'
-            ];
             
-            for (let i = 0; i < steps.length; i++) {
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                logOutput.innerHTML += `<div>✅ ${steps[i]}</div>`;
-                logOutput.scrollTop = logOutput.scrollHeight;
+            try {
+                // Collect all form data
+                const userInfo = {};
+                document.querySelectorAll('#userInfoFields input').forEach(input => {
+                    if (input.value) {
+                        userInfo[input.name] = input.value;
+                    }
+                });
+                
+                const registry = document.getElementById('npmRegistry').value || null;
+                const unpkgUrl = document.getElementById('unpkgUrl').value || null;
+                
+                logOutput.innerHTML = '<div>🚀 Starting installation...</div>';
+                
+                // Call backend API
+                const response = await fetch('/api/install', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        package: selectedPackage,
+                        userInfo: userInfo,
+                        registry: registry,
+                        unpkgUrl: unpkgUrl
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    logOutput.innerHTML += `<div>✅ ${result.message}</div>`;
+                    if (result.path) {
+                        logOutput.innerHTML += `<div>📁 Package location: ${result.path}</div>`;
+                    }
+                    
+                    // Simulate additional steps
+                    const steps = [
+                        'Detecting platform...',
+                        'Validating configuration...',
+                        'Package ready for use!'
+                    ];
+                    
+                    for (let step of steps) {
+                        await new Promise(resolve => setTimeout(resolve, 500));
+                        logOutput.innerHTML += `<div>✅ ${step}</div>`;
+                        logOutput.scrollTop = logOutput.scrollHeight;
+                    }
+                    
+                    // Go to complete
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    currentStep = 7;
+                    document.getElementById('step6').classList.remove('active');
+                    document.getElementById('step7').classList.add('active');
+                    updateProgress();
+                } else {
+                    logOutput.innerHTML += `<div style="color: #ef4444;">❌ Error: ${result.error}</div>`;
+                }
+            } catch (error) {
+                logOutput.innerHTML += `<div style="color: #ef4444;">❌ Error: ${error.message}</div>`;
+            }
+        }
+        
+        // Test registry connection
+        async function testRegistry() {
+            const registry = document.getElementById('npmRegistry').value;
+            const unpkg = document.getElementById('unpkgUrl').value;
+            const result = document.getElementById('registryTestResult');
+            
+            if (!registry && !unpkg) {
+                result.innerHTML = '<span style="color: #f59e0b;">⚠️ Enter a registry URL to test</span>';
+                return;
             }
             
-            // Go to complete
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            currentStep = 7;
-            document.getElementById('step6').classList.remove('active');
-            document.getElementById('step7').classList.add('active');
-            updateProgress();
+            result.innerHTML = '<span style="color: #667eea;">🔄 Testing...</span>';
+            
+            try {
+                const testUrl = unpkg || registry || 'https://unpkg.com';
+                const response = await fetch(testUrl + '/@prism/personal-dev-config@latest/package.json');
+                
+                if (response.ok) {
+                    result.innerHTML = '<span style="color: #10b981;">✅ Connection successful!</span>';
+                } else {
+                    result.innerHTML = '<span style="color: #ef4444;">❌ Connection failed (status: ' + response.status + ')</span>';
+                }
+            } catch (error) {
+                result.innerHTML = '<span style="color: #ef4444;">❌ Connection failed: ' + error.message + '</span>';
+            }
         }
         
         // Load packages on page load
         async function loadPackages() {
-            const response = await fetch('/api/packages');
-            const data = await response.json();
-            
-            const packagesList = document.getElementById('packagesList');
-            packagesList.innerHTML = '';
-            
-            data.packages.forEach(pkg => {
-                const isRecommended = pkg.tags.includes('recommended');
-                const recommendedBadge = isRecommended ? '<span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-left: 10px;">Recommended</span>' : '';
+            try {
+                const response = await fetch('/api/packages');
+                const data = await response.json();
                 
-                packagesList.innerHTML += `
-                    <div class="package-card" onclick="selectPackage('${pkg.name}')" id="pkg_${pkg.name}" style="
-                        border: 2px solid #e0e0e0;
-                        border-radius: 12px;
-                        padding: 20px;
-                        margin-bottom: 15px;
-                        cursor: pointer;
-                        transition: all 0.3s;
-                    ">
-                        <div style="display: flex; justify-content: space-between; align-items: start;">
-                            <div style="flex: 1;">
-                                <h3 style="margin: 0 0 10px 0; color: #333;">
-                                    📦 ${pkg.name} ${recommendedBadge}
-                                </h3>
-                                <p style="margin: 0 0 10px 0; color: #666;">${pkg.description}</p>
-                                <div style="font-size: 0.9em; color: #888;">
-                                    <strong>Type:</strong> ${pkg.type} | 
-                                    <strong>Size:</strong> ${pkg.company_size} | 
-                                    <strong>Author:</strong> ${pkg.author}
-                                </div>
-                                ${pkg.tags.length > 0 ? `
-                                    <div style="margin-top: 10px;">
-                                        ${pkg.tags.slice(0, 5).map(tag => `<span style="background: #f0f0f0; padding: 3px 8px; border-radius: 4px; font-size: 0.8em; margin-right: 5px;">${tag}</span>`).join('')}
-                                    </div>
-                                ` : ''}
-                            </div>
-                            <div style="width: 30px; height: 30px; border: 2px solid #e0e0e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-left: 20px;">
-                                <span class="checkmark" style="display: none; color: #667eea; font-size: 1.5em;">✓</span>
-                            </div>
+                if (data.error) {
+                    console.error('Error loading packages:', data.error);
+                    document.getElementById('packagesList').innerHTML = `
+                        <div class="alert alert-warning">
+                            <strong>⚠️ Could not load packages from registry</strong><br>
+                            Using local packages. Error: ${data.error}
                         </div>
+                    `;
+                }
+                
+                const packagesList = document.getElementById('packagesList');
+                
+                if (data.packages && data.packages.length > 0) {
+                    packagesList.innerHTML = '';
+                    
+                    data.packages.forEach(pkg => {
+                        const displayName = pkg.displayName || pkg.name || pkg.id;
+                        const description = pkg.description || 'No description available';
+                        const version = pkg.version || 'latest';
+                        const source = pkg.source || 'local';
+                        const sourceIcon = source === 'npm' ? '🌐' : '📁';
+                        const sourceBadge = `<span style="background: ${source === 'npm' ? '#10b981' : '#6b7280'}; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">${sourceIcon} ${source}</span>`;
+                        
+                        packagesList.innerHTML += `
+                            <div class="package-card" onclick="selectPackage('${pkg.id}')" id="pkg_${pkg.id}" style="
+                                border: 2px solid #e0e0e0;
+                                border-radius: 12px;
+                                padding: 20px;
+                                margin-bottom: 15px;
+                                cursor: pointer;
+                                transition: all 0.3s;
+                            ">
+                                <div style="display: flex; justify-content: space-between; align-items: start;">
+                                    <div style="flex: 1;">
+                                        <h3 style="margin: 0 0 10px 0; color: #333;">
+                                            📦 ${displayName}
+                                        </h3>
+                                        <p style="margin: 0 0 10px 0; color: #666;">${description}</p>
+                                        <div style="font-size: 0.9em; color: #888;">
+                                            <strong>Version:</strong> ${version} | 
+                                            <strong>Source:</strong> ${sourceBadge}
+                                        </div>
+                                    </div>
+                                    <div style="width: 30px; height: 30px; border: 2px solid #e0e0e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-left: 20px;">
+                                        <span class="checkmark" style="display: none; color: #667eea; font-size: 1.5em;">✓</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    packagesList.innerHTML = `
+                        <div class="alert alert-warning">
+                            <strong>⚠️ No packages found!</strong><br>
+                            Please check your registry configuration or ensure local packages exist.
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Failed to load packages:', error);
+                document.getElementById('packagesList').innerHTML = `
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Error loading packages</strong><br>
+                        ${error.message}
                     </div>
                 `;
-            });
+            }
         }
         
         function selectPackage(packageName) {
@@ -732,10 +852,64 @@ def install():
     """Run the actual installation"""
     data = request.json
     
-    # TODO: Call actual installer with config
-    # For now, just simulate
-    
-    return jsonify({"success": True, "message": "Installation started"})
+    try:
+        import sys
+        sys.path.insert(0, str(ROOT_DIR / "scripts"))
+        from npm_package_fetcher import fetch_package
+        
+        package_name = data.get('package')
+        user_info = data.get('userInfo', {})
+        registry = data.get('registry', None)
+        unpkg_url = data.get('unpkgUrl', None)
+        
+        # Set registry env vars if provided
+        if registry:
+            os.environ['PRISM_NPM_REGISTRY'] = registry
+        if unpkg_url:
+            os.environ['PRISM_UNPKG_URL'] = unpkg_url
+        
+        # Fetch the package
+        if not package_name.startswith('@prism/'):
+            package_name = f"@prism/{package_name}-config"
+        
+        # Try to fetch package (will fallback to local if needed)
+        dest_dir = ROOT_DIR / "temp_install" / package_name.split('/')[-1]
+        dest_dir.parent.mkdir(exist_ok=True)
+        
+        try:
+            result = fetch_package(package_name, "latest", str(dest_dir), unpkg_url)
+            if result:
+                # Save user info to config
+                config_file = dest_dir / "user-config.yaml"
+                with open(config_file, 'w') as f:
+                    yaml.dump(user_info, f)
+                
+                return jsonify({
+                    "success": True, 
+                    "message": f"Package {package_name} fetched successfully!",
+                    "path": str(result)
+                })
+        except Exception as e:
+            print(f"Package fetch failed: {e}, trying local...")
+            # Try local package
+            pkg_id = package_name.replace('@prism/', '').replace('-config', '')
+            local_path = ROOT_DIR / "config-packages" / pkg_id
+            if local_path.exists():
+                return jsonify({
+                    "success": True,
+                    "message": f"Using local package: {pkg_id}",
+                    "path": str(local_path)
+                })
+            else:
+                return jsonify({
+                    "success": False,
+                    "error": f"Package not found: {package_name}"
+                }), 404
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "error": str(e)}), 500
 
 # ============================================================================
 # Main
