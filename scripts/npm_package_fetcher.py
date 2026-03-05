@@ -141,7 +141,7 @@ def fetch_package(package_name: str, version: str = "latest", dest_dir: str = No
 
 def fetch_local_package(package_name: str) -> str:
     """
-    Fallback: Load package from local config-packages directory.
+    Fallback: Load prism from local prisms directory.
     
     Args:
         package_name: Full package name (e.g., @prism/personal-dev-config)
@@ -167,7 +167,7 @@ def fetch_local_package(package_name: str) -> str:
         variations.insert(0, "opensource-project-config")
     
     script_dir = Path(__file__).parent.parent
-    config_packages_dir = script_dir / "config-packages"
+    config_packages_dir = script_dir / "prisms"
     
     for variant in variations:
         local_path = config_packages_dir / variant

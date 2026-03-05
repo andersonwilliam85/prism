@@ -1,7 +1,7 @@
 {
-  "name": "@prism/consulting-config",
+  "name": "@prism/fortune500-config",
   "version": "1.0.0",
-  "description": "Prism config for consulting firms - multi-client, flexible setups",
+  "description": "Prism config for Fortune 500 enterprises - comprehensive and compliant",
   "main": "package.yaml",
   "files": [
     "package.yaml",
@@ -9,13 +9,20 @@
     "assets/",
     "README.md"
   ],
-  "keywords": ["prism","config","dev-environment","consulting","multi-client","professional-services"],
+  "keywords": [
+    "prism",
+    "config",
+    "dev-environment",
+    "enterprise",
+    "fortune500",
+    "compliance"
+  ],
   "author": "Will Anderson <andersonwilliam85@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/andersonwilliam85/prism.git",
-    "directory": "config-packages/consulting-firm-config"
+    "directory": "prisms/fortune500-config"
   },
   "homepage": "https://github.com/andersonwilliam85/prism#readme"
 }

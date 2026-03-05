@@ -3,7 +3,7 @@
 Config Package Manager
 
 Manages config packages (install, list, search, info, validate).
-Auto-discovers packages in config-packages/ directory.
+Auto-discovers prisms in prisms/ directory.
 
 Usage:
     python3 scripts/package_manager.py list
@@ -29,12 +29,12 @@ class PackageManager:
     def __init__(self, root_dir: Path = None):
         """Initialize package manager"""
         self.root_dir = root_dir or Path.cwd()
-        self.packages_dir = self.root_dir / "config-packages"
+        self.packages_dir = self.root_dir / "prisms"
         self.config_dir = self.root_dir / "config"
     
     def discover_packages(self) -> List[Dict]:
         """
-        Auto-discover all packages in config-packages/ directory
+        Auto-discover all prisms in prisms/ directory
         
         Returns:
             List of package metadata dicts
@@ -305,7 +305,7 @@ contents:
 
 distribution:
   local:
-    path: "config-packages/{package_name.replace('-config', '')}/"
+            path: "prisms/{package_name.replace('-config', '')}/"
     discoverable: true
 
 metadata:
@@ -475,7 +475,7 @@ Examples:
         print("="*70)
         
         if not packages:
-            print("  No packages found in config-packages/")
+            print("  No prisms found in prisms/")
             print("\n  Create one with: python3 scripts/package_manager.py create <name>")
         else:
             for pkg in packages:

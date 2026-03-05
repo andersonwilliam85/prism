@@ -88,7 +88,7 @@ contents:
 
 distribution:
   local:
-    path: "config-packages/acme-corp/"
+    path: "prisms/acme-corp/"
     discoverable: true
 
 metadata:

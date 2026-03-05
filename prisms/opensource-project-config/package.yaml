@@ -97,7 +97,7 @@ contents:
 
 distribution:
   local:
-    path: "config-packages/opensource-project-config/"
+    path: "prisms/opensource-project-config/"
     discoverable: true
   
   git:

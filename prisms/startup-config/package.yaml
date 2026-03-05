@@ -99,7 +99,7 @@ contents:
 
 distribution:
   local:
-    path: "config-packages/startup-config/"
+    path: "prisms/startup-config/"
     discoverable: true
 
 metadata:

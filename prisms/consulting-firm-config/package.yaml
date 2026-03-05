@@ -103,7 +103,7 @@ contents:
 
 distribution:
   local:
-    path: "config-packages/consulting-firm-config/"
+    path: "prisms/consulting-firm-config/"
     discoverable: true
 
 metadata:

@@ -37,7 +37,7 @@ INDEX_HTML = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dev Onboarding - Setup Wizard</title>
+    <title>Prism - Configuration Installer</title>
     <style>
         * {
             margin: 0;
@@ -47,7 +47,9 @@ INDEX_HTML = """
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -55,10 +57,17 @@ INDEX_HTML = """
             padding: 20px;
         }
         
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
         .container {
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.5) inset;
             max-width: 800px;
             width: 100%;
             padding: 40px;
@@ -71,7 +80,10 @@ INDEX_HTML = """
         
         .header h1 {
             font-size: 2.5em;
-            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 10px;
         }
         
@@ -163,28 +175,30 @@ INDEX_HTML = """
         }
         
         .btn-primary {
-            background: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             color: white;
+            position: relative;
+            overflow: hidden;
         }
         
         .btn-primary:hover {
-            background: #5568d3;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
         }
         
         .btn-secondary {
-            background: #e0e0e0;
+            background: rgba(224, 224, 224, 0.8);
+            backdrop-filter: blur(10px);
             color: #333;
         }
         
         .btn-secondary:hover {
-            background: #d0d0d0;
+            background: rgba(208, 208, 208, 0.9);
         }
         
         .progress-bar {
             height: 6px;
-            background: #e0e0e0;
+            background: rgba(224, 224, 224, 0.5);
             border-radius: 3px;
             margin-bottom: 30px;
             overflow: hidden;
@@ -192,8 +206,16 @@ INDEX_HTML = """
         
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            background-size: 200% 100%;
+            animation: progressShimmer 2s ease infinite;
             transition: width 0.5s;
+        }
+        
+        @keyframes progressShimmer {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 100% 0%; }
+            100% { background-position: 0% 0%; }
         }
         
         .alert {
@@ -254,18 +276,18 @@ INDEX_HTML = """
 <body>
     <div class="container">
         <div class="header">
-            <h1>🐶 Dev Onboarding</h1>
-            <p class="subtitle">One-click development environment setup</p>
+            <h1>🔷 Prism</h1>
+            <p class="subtitle">Light refracts through configuration - infinite possibilities</p>
         </div>
         
         <div class="progress-bar">
             <div class="progress-fill" id="progressFill" style="width: 20%"></div>
         </div>
         
-        <!-- Step 1: Package Selection -->
+        <!-- Step 1: Prism Selection -->
         <div class="step active" id="step1">
-            <h2>📦 Choose Your Config Package</h2>
-            <p>Select the configuration package that best fits your needs:</p>
+            <h2>🔷 Choose Your Prism</h2>
+            <p>Select the configuration prism that best fits your needs:</p>
             
             <!-- Registry Configuration (Expandable) -->
             <details style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
@@ -384,7 +406,7 @@ INDEX_HTML = """
         
         <!-- Step 5: Confirm -->
         <div class="step" id="step5">
-            <h2>Ready to Install!</h2>
+            <h2>✨ Ready to Refract!</h2>
             
             <div id="summary">
                 <!-- Populated by JS -->
@@ -585,12 +607,13 @@ INDEX_HTML = """
                 }
             });
             
-            // Build summary based on what this package actually has
+            // Build summary based on what this prism actually has
             let summaryHTML = `
-                <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border: 2px solid #dee2e6;">
-                    <h3 style="margin-top: 0; color: #667eea;">📦 ${metadata.display_name || selectedPackage}</h3>
+                <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(240, 147, 251, 0.05) 100%); padding: 20px; border-radius: 12px; border: 2px solid transparent; background-clip: padding-box; position: relative;">
+                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%); border-radius: 10px; opacity: 0.1; z-index: -1;"></div>
+                    <h3 style="margin-top: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">🔷 ${metadata.display_name || selectedPackage}</h3>
                     ${metadata.description ? `<p style="color: #666; margin-bottom: 20px;">${metadata.description}</p>` : ''}
-                    <hr style="border-color: #dee2e6;">
+                    <hr style="border-color: rgba(102, 126, 234, 0.2);">
             `;
             
             // User Information section (always shown if there are fields)
@@ -1080,7 +1103,7 @@ def get_packages():
     try:
         from package_validator import validate_all_packages
         
-        packages_dir = ROOT_DIR / "config-packages"
+        packages_dir = ROOT_DIR / "prisms"
         valid_packages, invalid_packages = validate_all_packages(packages_dir)
         
         # Format valid packages
@@ -1351,7 +1374,7 @@ def install():
             print(f"Package fetch failed: {e}, trying local...")
             # Try local package
             pkg_id = package_name.replace('@prism/', '').replace('-config', '')
-            local_path = ROOT_DIR / "config-packages" / pkg_id
+            local_path = ROOT_DIR / "prisms" / pkg_id
             if local_path.exists():
                 package_path = str(local_path)
             else:

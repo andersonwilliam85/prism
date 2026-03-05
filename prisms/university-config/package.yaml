@@ -122,7 +122,7 @@ contents:
 
 distribution:
   local:
-    path: "config-packages/university-config/"
+    path: "prisms/university-config/"
     discoverable: true
 
 metadata:

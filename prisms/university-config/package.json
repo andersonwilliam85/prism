@@ -1,7 +1,7 @@
 {
-  "name": "@prism/fortune500-config",
+  "name": "@prism/university-config",
   "version": "1.0.0",
-  "description": "Prism config for Fortune 500 enterprises - comprehensive and compliant",
+  "description": "Prism config for universities - research, teaching, and collaboration",
   "main": "package.yaml",
   "files": [
     "package.yaml",
@@ -9,20 +9,13 @@
     "assets/",
     "README.md"
   ],
-  "keywords": [
-    "prism",
-    "config",
-    "dev-environment",
-    "enterprise",
-    "fortune500",
-    "compliance"
-  ],
+  "keywords": ["prism","config","dev-environment","university","research","education"],
   "author": "Will Anderson <andersonwilliam85@gmail.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/andersonwilliam85/prism.git",
-    "directory": "config-packages/fortune500-config"
+    "directory": "prisms/university-config"
   },
   "homepage": "https://github.com/andersonwilliam85/prism#readme"
 }

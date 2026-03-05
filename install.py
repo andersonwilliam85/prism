@@ -263,7 +263,7 @@ def main():
             print(f"⚠️  Could not fetch from npm: {e}")
             # Try local
             pkg_id = package_name.replace('@prism/', '').replace('-config', '')
-            local_path = SCRIPT_DIR / "config-packages" / pkg_id
+            local_path = SCRIPT_DIR / "prisms" / pkg_id
             if local_path.exists():
                 package_path = str(local_path)
                 print(f"📁 Using local package: {package_path}")
