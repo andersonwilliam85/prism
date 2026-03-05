@@ -232,6 +232,13 @@ class ConfigMerger:
         return substitute_value(config)
 
 
+# Simple merge function for testing
+def merge_configs(base: Dict[str, Any], override: Dict[str, Any]) -> Dict[str, Any]:
+    """Simple config merge for testing purposes"""
+    merger = ConfigMerger()
+    return merger._merge_level(base, override, "test")
+
+
 # Convenience function
 def load_merged_config(
     company: Optional[str] = None,
