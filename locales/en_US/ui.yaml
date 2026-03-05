@@ -1,0 +1,30 @@
+# English (US) UI Strings
+# Future: All UI text will be extracted here for i18n
+
+# Placeholder for future i18n implementation
+
+ui:
+  welcome: "Welcome to Dev Onboarding!"
+  getting_started: "Let's set up your development environment"
+  
+  steps:
+    package_selection: "Choose Your Config Package"
+    user_info: "Your Information"
+    organization: "Organization"
+    tools: "Tools"
+    confirmation: "Confirmation"
+    installing: "Installing"
+    complete: "Complete"
+  
+  buttons:
+    next: "Next"
+    back: "Back"
+    install: "Install"
+    finish: "Finish"
+  
+  messages:
+    select_package: "Please select a config package"
+    installation_complete: "Installation complete!"
+    error: "An error occurred"
+
+# Note: Currently not used - implementation in Phase 2

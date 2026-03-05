@@ -525,7 +525,7 @@ INDEX_HTML = """
             packagesList.innerHTML = '';
             
             data.packages.forEach(pkg => {
-                const isRecommended = pkg.tags.includes('personal') || pkg.tags.includes('walmart');
+                const isRecommended = pkg.tags.includes('recommended');
                 const recommendedBadge = isRecommended ? '<span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-left: 10px;">Recommended</span>' : '';
                 
                 packagesList.innerHTML += `

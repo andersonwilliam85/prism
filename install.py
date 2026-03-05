@@ -148,7 +148,7 @@ def print_banner(platform_name, platform_detail):
     """Print welcome banner"""
     if RICH_AVAILABLE:
         console.print(Panel(
-            f"[bold blue]🐶 Walmart Dev Environment Setup[/bold blue]\n\n"
+            f"[bold blue]🐶 Dev Environment Setup[/bold blue]\n\n"
             f"Platform: {platform_name.title()} ({platform_detail})\n\n"
             f"This installer will set up:\n"
             f"  • Organized folder structure\n"
@@ -162,7 +162,7 @@ def print_banner(platform_name, platform_detail):
         ))
     else:
         print("\n" + "="*60)
-        print("🐶 Walmart Dev Environment Setup")
+        print("🐶 Dev Environment Setup")
         print("="*60)
         print(f"\nPlatform: {platform_name.title()} ({platform_detail})")
         print("\nThis will set up your complete dev environment.")

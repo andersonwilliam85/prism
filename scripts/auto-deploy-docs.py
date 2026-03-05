@@ -109,11 +109,12 @@ def install_python_packages():
         "watchdog"
     ]
     
-    # Check if running in Walmart environment (use proxy)
+    # Check if proxy configured in package (company-specific)
     env = os.environ.copy()
-    if "walmart.com" in os.path.expanduser("~"):
-        env["HTTP_PROXY"] = "http://sysproxy.wal-mart.com:8080"
-        env["HTTPS_PROXY"] = "http://sysproxy.wal-mart.com:8080"
+    # Proxy settings should come from package config, not hardcoded
+    # if "proxy" in config:
+    #     env["HTTP_PROXY"] = config["proxy"]["http"]
+    #     env["HTTPS_PROXY"] = config["proxy"]["https"]
     
     cmd = f"pip3 install {' '.join(packages)} --quiet"
     success, stdout, stderr = run_command(cmd, check=False)
@@ -386,7 +387,7 @@ career:
       date: "2026-03-05"
       description: "Built VBD architecture system with K8s deployment"
       impact: "Reduced processing time by 40%"
-      evidence: "https://gecgithub01.walmart.com/myteam/supplier-receiving"
+            evidence: "https://github.com/yourteam/your-project"
       tags: ["technical", "architecture", "kubernetes"]
 ```
 
@@ -473,7 +474,7 @@ theme:
     repo: fontawesome/brands/github
 
 extra_css:
-  - assets/stylesheets/walmart.css
+    - assets/stylesheets/company.css
 
 plugins:
   - search:
@@ -523,9 +524,9 @@ nav:
     
     return config_path
 
-def generate_walmart_css(docs_server):
-    """Generate company-branded CSS (defaults to Walmart colors as example)"""
-    css_content = """/* Company Brand Colors (Walmart example) */
+def generate_company_css(docs_server):
+    """Generate company-branded CSS (loads from config if present)"""
+    css_content = """/* Company Brand Colors (customize in your config package) */
 :root {
   /* Primary Colors */
   --md-primary-fg-color: #0053e2;        /* Blue.100 */
@@ -587,7 +588,7 @@ def generate_walmart_css(docs_server):
 }
 """
     
-    css_path = docs_server / "overrides" / "assets" / "stylesheets" / "walmart.css"
+    css_path = docs_server / "overrides" / "assets" / "stylesheets" / "company.css"
     css_path.write_text(css_content)
     
     return css_path
@@ -701,7 +702,7 @@ def main():
     generate_index_page(docs_server, user_profile, resources_config, welcome_config)
     generate_career_dashboard(docs_server, user_profile)
     generate_mkdocs_config(docs_server, user_profile)
-    generate_walmart_css(docs_server)
+    generate_company_css(docs_server)
     
     # Create placeholder pages
     (docs_server / "docs" / "projects" / "index.md").write_text("# Projects\n\n*Auto-scanning your projects...*")

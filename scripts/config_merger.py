@@ -9,8 +9,8 @@ Usage:
     from config_merger import load_merged_config
     
     config = load_merged_config(
-        company="config/base/walmart.yaml",
-        sub_org="config/orgs/walmart-us.yaml",
+        company="config/base/company.yaml",
+        sub_org="config/orgs/engineering.yaml",
         department="config/departments/supply-chain.yaml",
         team="config/teams/receiving-systems.yaml",
         user="config/user-profile.yaml"
@@ -268,8 +268,8 @@ if __name__ == "__main__":
     import json
     
     config = load_merged_config(
-        company="config/base/walmart.yaml",
-        sub_org="config/orgs/walmart-us.yaml",
+        company="config/base/company.yaml",
+        sub_org="config/orgs/engineering.yaml",
         department="config/departments/supply-chain.yaml",
         team="config/teams/receiving-systems.yaml"
     )

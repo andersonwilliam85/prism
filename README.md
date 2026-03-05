@@ -1,9 +1,9 @@
 # 🐶 Dev Onboarding Package
 
 **One-command setup for a production-ready development environment!**
+*Open source & configurable for any company - example configurations included*
 
-*Configurable for any company - example configuration for Walmart included*
-
+---
 ## What This Does
 
 Sets up a complete, standardized dev environment with:
@@ -11,7 +11,7 @@ Sets up a complete, standardized dev environment with:
 ✅ **Organized folder structure** (projects, experiments, learning, tooling)  
 ✅ **Essential dev tools** (Git, Rancher Desktop, Skaffold, Python, Node.js, Azure CLI, GCloud, etc.)  
 ✅ **Git global config** + **SSH key generation**  
-✅ **Documentation server** (MkDocs with Walmart branding, auto-scans your projects)  
+✅ **Documentation server** (MkDocs with company branding, auto-scans your projects)  
 ✅ **Career management system** (goals, wins, 1-on-1s, performance review prep)  
 ✅ **Progress tracking** (resume setup anytime, see what's done)  
 ✅ **CLI tools** (new-project, archive-project, find-project)  
@@ -85,7 +85,7 @@ The installer will:
    - Saves to ~/.ssh/id_ed25519
    - Shows public key to add to GitHub/GitLab
 7. **📁 Create folder structure** (~/Development/*)
-8. **🎯 Configure tools** (Maven, npm, pip with Walmart repos)
+8. **🎯 Configure tools** (Maven, npm, pip with your company repos)
 9. **📚 Build & launch docs server**
    - Auto-generates docs from your environment
    - Opens in browser at http://localhost:8000
@@ -110,7 +110,7 @@ The installer will:
 
 | Tool | Purpose | Status |
 |------|---------|--------|
-| **Code Puppy** | AI coding assistant | Available at puppy.walmart.com |
+| **Code Puppy** | AI coding assistant | Optional/Company-specific |
 
 ## Folder Structure Created
 
@@ -164,7 +164,7 @@ career:
       date: "2026-03-05"
       description: "Built VBD architecture with K8s deployment"
       impact: "Reduced processing time by 40%"
-      evidence: "https://gecgithub01.walmart.com/myteam/supplier-receiving"
+      evidence: "https://github.com/yourteam/your-project"
       tags: ["technical", "architecture", "kubernetes"]
 ```
 
@@ -313,7 +313,7 @@ tools:
   code_puppy: false
 templates:
   - python-fastapi-vbd
-  - react-walmart-ui
+  - react-your-ui
 ```
 
 Then run: `python3 install.py --config .installer-config.yaml`
@@ -398,20 +398,20 @@ cp -r my-company-template templates/
 # 3. Create distributable package
 ./scripts/package.sh
 
-# Creates: walmart-dev-setup-v1.0.0.zip
+# Creates: dev-setup-v1.0.0.zip
 ```
 
 ### Share with Team
 
 **Option 1: Git repo (internal GitHub)**
 ```bash
-git clone https://gecgithub01.walmart.com/your-team/dev-setup.git
+git clone https://github.com/your-org/dev-setup.git
 cd dev-setup
 python3 install.py
 ```
 
 **Option 2: ZIP file**
-1. Download `walmart-dev-setup-v1.0.0.zip`
+1. Download `dev-setup-v1.0.0.zip`
 2. Extract and run `python3 install.py`
 
 **Option 3: Confluence + SharePoint**
@@ -454,7 +454,7 @@ After setup completes, you'll see:
 
 1. Add your SSH key to GitHub Enterprise:
    • Copy: ~/.ssh/id_ed25519.pub
-   • Add at: https://gecgithub01.walmart.com/settings/keys
+   • Add at: https://github.com/settings/keys (or your git platform)
 
 2. Your documentation server is running!
    • Access at: http://localhost:8000
@@ -472,7 +472,7 @@ After setup completes, you'll see:
    • Add your accomplishment!
 
 5. Optional: Install Code Puppy
-   • Visit: https://puppy.walmart.com
+   • Visit: Your company's developer portal
    • AI coding assistant
 
 ═══════════════════════════════════════════════════════════

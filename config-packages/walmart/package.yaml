@@ -92,23 +92,23 @@ user_info_fields:
   - id: "ldap_username"
     label: "LDAP Username"
     type: "text"
-    required: true
+    required: false
     placeholder: "jdoe123"
-    description: "Your Walmart LDAP/network username"
+    description: "Your Walmart LDAP/network username (optional)"
   
   - id: "employee_id"
     label: "Employee ID"
     type: "text"
     required: false
     placeholder: "W0123456"
-    description: "Your Walmart employee ID (optional)"
+    description: "Your Walmart employee ID (if applicable)"
   
   - id: "cost_center"
     label: "Cost Center"
     type: "text"
     required: false
     placeholder: "12345"
-    description: "Your team's cost center (optional)"
+    description: "Your team's cost center (if applicable)"
 
 # Package contents
 contents:
