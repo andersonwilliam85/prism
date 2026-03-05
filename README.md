@@ -1,388 +1,379 @@
-# 💎 Prism
+# 💎 Prism Package Manager
 
 **Refract complexity into clarity**
 
-*One-command setup for production-ready development environments*
+*Configuration inheritance system for managing multi-level development environments*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey)](https://github.com/andersonwilliam85/prism)
-[![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](https://github.com/andersonwilliam85/prism/actions)
-[![Coverage](https://img.shields.io/badge/coverage-%3E90%25-brightgreen.svg)](https://github.com/andersonwilliam85/prism)
+[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey)](#supported-platforms)
+[![Tests](https://img.shields.io/badge/tests-passing-brightgreen.svg)](#testing)
 
 ---
 
-## The Problem
+## 🎯 What is Prism?
 
-Setting up a new development machine is painful:
+Prism is a **configuration inheritance system** that manages complex, multi-level development environments through composable YAML configurations. Like a prism refracts white light into distinct colors, Prism takes organizational complexity and refracts it into clear, manageable configuration layers.
 
-- ❌ Installing dozens of tools manually
-- ❌ Remembering all the configuration steps
-- ❌ Inconsistent environments across teams
-- ❌ Lost productivity on day 1 (and beyond)
-- ❌ No standardization = chaos
+### The Problem
 
-**I kept running into this.** Every new machine, every new project, every new team member - the same tedious setup over and over.
+Large organizations face configuration chaos:
 
-So I built **Prism**.
+- 🏢 **Complex hierarchies**: Fortune 500 companies with 5+ organizational levels
+- 🎯 **Conflicting requirements**: Different teams need different tools, configs, and access
+- 🔄 **Configuration drift**: No single source of truth across 50,000+ employees
+- ⚠️ **Onboarding nightmare**: New hires waste days configuring their environment
+- 📊 **No standardization**: Every team reinvents the wheel
+
+### The Solution
+
+Prism provides:
+
+✅ **Configuration inheritance** - Define once at company level, override per team  
+✅ **Multi-level hierarchies** - Support structures from flat (startups) to 5+ levels (enterprise)  
+✅ **Beautiful web UI** - Visual package selection and installation wizard  
+✅ **CLI tools** - Scriptable, automatable, CI/CD friendly  
+✅ **NPM distribution** - Packages published to npm, no custom infrastructure  
+✅ **Validation system** - Catch errors before deployment  
+✅ **Merge strategies** - Smart deep-merging with list handling  
 
 ---
 
-## The Solution
+## 🚀 Quick Start
+
+### Installation
 
 ```bash
-# Clone
-git clone https://github.com/andersonwilliam85/prism.git
+# Clone the repository
+git clone https://github.com/yourusername/prism.git
 cd prism
 
-# Run
-python3 install.py
+# Install dependencies
+make install-dev
 
-# Done! 🌈
+# Run tests
+make test
+
+# Start the web UI installer
+make run
+# Opens at http://localhost:5555
 ```
 
-**That's it.** One command gives you:
+### Create Your First Configuration
 
-✔ **Beautiful Web UI** (visual package selection, step-by-step wizard, live progress)  
-✔ **OR CLI installer** (if you prefer the terminal)  
-✔ **Organized folder structure** (projects, experiments, learning, tooling)  
-✔ **Essential dev tools** (Git, Docker, Python, Node.js, cloud CLIs, etc.)  
-✔ **Git global config** + **SSH key generation**  
-✔ **Documentation server** (MkDocs with branding, auto-scans your projects)  
-✔ **Career management** (goals, wins, 1-on-1s, performance review prep)  
-✔ **Progress tracking** (resume anytime, see what's done)  
-✔ **CLI tools** (new-project, archive-project, find-project)  
-✔ **Configurable packages** (company-specific, personal, open source)
+```bash
+# Use a template as starting point
+cp -r prisms/acme-corp prisms/my-company
 
----
+# Edit the base configuration
+vim prisms/my-company/base/my-company.yaml
 
-## Why Prism?
+# Create team-specific overrides
+vim prisms/my-company/teams/platform-team.yaml
 
-### 🔬 **Scientific Precision**
+# Validate
+python3 scripts/package_validator.py prisms/my-company
 
-Like a prism refracts white light into a rainbow, Prism takes complex setup chaos and transforms it into organized clarity.
+# Test the configuration
+python3 scripts/config_merger.py \
+  prisms/my-company/base/my-company.yaml \
+  prisms/my-company/teams/platform-team.yaml
+```
 
-### 🌈 **Beautiful Structure**
-
-Your workspace isn't just functional - it's *beautiful*. Organized, documented, ready to impress.
-
-### 💡 **Illuminating**
-
-Never wonder "where did I put that?" or "how do I configure this?" again. Everything has its place.
-
-### ✨ **Extensible**
-
-Built with a package system. Use built-in configs or create your own. Personal, startup, enterprise - Prism adapts.
+See [Creating Configurations](docs/user-guide/creating-configurations.md) for detailed guide.
 
 ---
 
-## Features
+## 📖 Features
 
-### 🌐 **Web UI Installer**
+### 🌐 Web UI Installer
 
-Gorgeous visual setup experience:
+- **Package gallery** with visual cards showing all configurations
+- **Step-by-step wizard** with progress tracking
+- **Live installation updates** via Server-Sent Events
+- **Theme system** (5 beautiful themes with localStorage persistence)
+- **Responsive design** works on any screen size
+- **Smart validation** prevents configuration errors
 
-- **Package Gallery** - Browse configs with beautiful cards
-- **Visual Wizard** - Step-by-step guided setup
-- **Registry Configuration** - Support for corporate/custom npm registries
-- **Live Progress** - Watch installation in real-time
-- **Responsive Design** - Works on any screen size
-- **Smart Validation** - Prevents configuration errors
-- **Auto-launch** - Opens in your browser automatically
-
-Launch with:
 ```bash
 python3 install-ui.py
-# or use the convenience script
-./start_web_ui.sh
+# or
+make run
 ```
 
-Opens automatically at: **http://localhost:5555**
+### 🎭 Configuration Inheritance
 
-### 💻 **CLI Installer**
-
-Prefer the terminal?
-
-- **Interactive Prompts** - Guided questions
-- **Non-interactive Mode** - Use config files
-- **Resume Capability** - Pick up where you left off
-- **Status Checking** - See what's installed
-- **Scriptable** - Automate deployments
-
-Run with: `python3 install.py`
-
-### 📁 **Smart Folder Structure**
+**Multi-level hierarchy support:**
 
 ```
-~/Development/
-├── projects/          # Active work
-├── experiments/       # POCs, testing
-├── learning/          # Tutorials, courses
-├── tooling/           # Custom scripts
-└── archive/           # Completed projects
-
-~/Documentation/       # Auto-generated docs site
-~/Career/              # Goals, wins, reviews
+Company (base)
+  └── Business Unit
+      └── Department
+          └── Team
+              └── Individual
 ```
 
-### 🛠️ **Tool Installation**
+Configurations merge intelligently:
+- Base layer defines company standards
+- Each level can override or extend
+- Smart deep-merge handles nested structures
+- List concatenation or replacement strategies
 
-Automatically installs:
-- Git, GitHub CLI
-- Docker / Rancher Desktop
-- Python, Node.js, Go
-- Cloud CLIs (AWS, Azure, GCP)
-- Kubernetes tools (kubectl, helm, skaffold)
-- Editor configs (VS Code, Cursor, Zed)
-- And more...
+See [Config Inheritance](docs/user-guide/config-inheritance.md).
 
-### 🎭 **Config Packages (via npm!)**
+### 📦 Package System
 
-Choose from pre-built configurations published on npm:
+**Built-in configurations:**
 
-- **@prism/personal-dev-config** - For freelancers & indie devs
-- **@prism/startup-config** - Fast, lean, flexible
-- **@prism/fortune500-config** - Enterprise-ready
-- **@prism/university-config** - Research & teaching
-- **@prism/opensource-config** - Community projects
-- **@prism/consulting-config** - Multi-client setups
-- **@prism/acme-corp-config** - Template for your company
+| Package | Use Case | Hierarchy | Users |
+|---------|----------|-----------|-------|
+| `personal-dev` | Freelancers, indie devs | Flat | 1 |
+| `startup` | Seed/Series A startups | 1 level | 10-50 |
+| `acme-corp` | Template for companies | 2 levels | 100-1K |
+| `consulting-firm` | Multi-client work | By client | Variable |
+| `fortune500` | Enterprise | 5 levels | 50K+ |
+| `university` | Academic institutions | Dept → Lab | Variable |
+| `opensource` | Community projects | Flat | Community |
 
-**Packages are fetched from npm** (via unpkg CDN) automatically!  
-No npm installation required. Works offline with local fallback.
+See [Choosing a Package](docs/user-guide/choosing-a-package.md).
 
-**Custom Registry Support:**  
-Use your own npm registry for corporate/air-gapped environments:
+### 🔧 NPM Distribution
+
+Packages are published to npm under the `@prism` scope:
 
 ```bash
-# Use custom registry
+# Packages auto-fetch from npm via unpkg CDN
+python3 install.py --package @prism/personal-dev-config
+
+# Use custom registry (corporate/air-gapped)
 python3 install.py --npm-registry https://npm.mycompany.com
 
 # Or set environment variable
 export PRISM_NPM_REGISTRY=https://npm.mycompany.com
-python3 install.py
 ```
 
-See [Custom Registry Documentation](docs/CUSTOM_REGISTRY.md) for details.
+See [NPM Packages](docs/reference/npm-packages.md) and [Custom Registries](docs/user-guide/custom-registries.md).
 
-### 📝 **Career Management**
+### ✅ Validation System
 
-Built-in tools for:
-- Goal tracking
-- Win logging (brag document)
-- 1-on-1 prep
-- Performance review material
-- Resume updates
+Comprehensive validation ensures:
 
-### 📊 **Progress Tracking**
+- Required fields present (`name`, `version`, `description`)
+- Valid YAML syntax
+- Schema compliance
+- Asset file existence
+- User info field validation
 
-Resume anytime:
 ```bash
-python3 install.py --status   # See what's done
-python3 install.py --resume   # Continue where you left off
+# Validate single package
+python3 scripts/package_validator.py prisms/my-company
+
+# Validate all packages
+python3 scripts/package_validator.py --all
 ```
+
+### 🧪 Testing & CI/CD
+
+**Professional testing stack:**
+
+- **Unit tests** - Core functionality (pytest)
+- **CLI tests** - Command-line interface
+- **E2E tests** - Full user flows (Playwright)
+- **Coverage reporting** - Track test coverage
+- **GitHub Actions** - Automated CI/CD pipeline
+
+```bash
+make test              # Fast tests (unit + CLI)
+make test-all          # All tests including E2E
+make test-coverage     # With coverage report
+make test-trace        # E2E with trace viewer
+```
+
+See [Testing](docs/development/testing.md) and [CI/CD](docs/development/ci-cd.md).
 
 ---
 
-## Installation Methods
+## 📚 Documentation
 
-### Prerequisites
+### Getting Started
 
-- **Python 3.9+** (usually pre-installed on Mac/Linux)
-- **Internet connection**
-- **Flask** (for web UI - auto-installs if missing)
+- [Installation](docs/getting-started/installation.md) - Setup and dependencies
+- [Quickstart](docs/getting-started/quickstart.md) - Your first Prism package
+- [First Configuration](docs/getting-started/first-configuration.md) - Step-by-step guide
 
-### 🌐 Web UI Installer (Recommended)
+### User Guide
 
-Beautiful, visual setup experience:
+- [Choosing a Package](docs/user-guide/choosing-a-package.md) - Which config is right for you?
+- [Creating Configurations](docs/user-guide/creating-configurations.md) - Build your own
+- [Config Inheritance](docs/user-guide/config-inheritance.md) - How merging works
+- [Custom Registries](docs/user-guide/custom-registries.md) - Corporate npm registries
 
-```bash
-# 1. Clone the repo
-git clone https://github.com/andersonwilliam85/prism.git
-cd prism
+### Development
 
-# 2. Launch the web installer
-python3 web_installer.py
+- [Testing](docs/development/testing.md) - Running and writing tests
+- [Contributing](docs/development/contributing.md) - Join the project
+- [CI/CD](docs/development/ci-cd.md) - Automation pipeline
 
-# 3. Open your browser
-# Automatically opens http://localhost:5000
+### Reference
 
-# 4. Follow the visual wizard!
-```
-
-**Web UI Features:**
-
-✨ **Package Selection** - Beautiful cards showing all available packages  
-📋 **Step-by-Step Wizard** - Clear progress through 7 steps  
-👤 **User Info** - Name, email, GitHub username  
-🏢 **Organization Setup** - Department/team selection (if applicable)  
-🛠️ **Tool Selection** - Visual checkboxes for tools to install  
-✅ **Confirmation** - Review before installing  
-📊 **Live Progress** - Real-time installation updates  
-🎉 **Completion** - Success screen with next steps
-
-### 💻 CLI Installer (Classic)
-
-Prefer the terminal? No problem:
-
-```bash
-# 1. Clone the repo
-git clone https://github.com/andersonwilliam85/prism.git
-cd prism
-
-# 2. Run the CLI installer
-python3 install.py
-
-# 3. Follow the prompts
-# Choose your package, confirm settings, let it run
-
-# 4. Done!
-```
-
-### Advanced Usage
-
-#### Web UI Options
-
-```bash
-# Custom port
-python3 web_installer.py --port 8080
-
-# Debug mode
-python3 web_installer.py --debug
-
-# Specify host
-python3 web_installer.py --host 0.0.0.0
-```
-
-#### CLI Options
-
-```bash
-# Non-interactive (use config file)
-python3 install.py --config my-config.yaml
-
-# Resume from checkpoint
-python3 install.py --resume
-
-# Check progress
-python3 install.py --status
-
-# Install specific package
-python3 install.py --package personal-dev-config
-```
+- [Package System](docs/reference/package-system.md) - Technical architecture
+- [NPM Packages](docs/reference/npm-packages.md) - Distribution system
+- [Configuration Schema](docs/reference/configuration-schema.md) - YAML structure
 
 ---
 
-## Screenshots
+## 🏗️ Architecture
 
-### Web UI Installer
+### Core Components
 
-**Package Selection:**
-![Package Selection](assets/screenshots/package-selection.png)
+```
+prism/
+├── install-ui.py          # Web UI server (Flask)
+├── install.py             # CLI installer
+├── installer_engine.py    # Core installation logic
+├── scripts/
+│   ├── config_merger.py   # Configuration inheritance engine
+│   ├── config_validator.py # YAML validation
+│   ├── package_validator.py # Package schema validation
+│   ├── package_manager.py  # Package operations
+│   └── npm_package_fetcher.py # NPM integration
+├── prisms/                # Configuration packages
+│   ├── personal-dev/
+│   ├── startup/
+│   ├── acme-corp/
+│   ├── consulting-firm/
+│   ├── fortune500/
+│   ├── university/
+│   └── opensource/
+└── tests/                 # Comprehensive test suite
+    ├── unit/
+    ├── e2e/
+    └── integration/
+```
 
-Choose from personal, startup, enterprise, university, consulting, or open source configs.
+### Configuration Merge Flow
 
-**User Setup:**
-![User Setup](assets/screenshots/user-setup.png)
+```python
+# 1. Load base configuration
+base = load_yaml("prisms/company/base/company.yaml")
 
-Enter your details once, used throughout the setup.
+# 2. Load team override
+team = load_yaml("prisms/company/teams/platform.yaml")
 
-**Tool Selection:**
-![Tool Selection](assets/screenshots/tool-selection.png)
+# 3. Deep merge
+result = merge_configs(base, team)
 
-Pick exactly what you need - no bloat!
+# 4. Result contains:
+# - All base settings
+# - Team overrides applied
+# - Lists concatenated or replaced
+# - Nested dicts merged
+```
 
-**Live Progress:**
-![Installation Progress](assets/screenshots/progress.png)
-
-Watch as Prism builds your perfect dev environment.
-
-*(Screenshots coming soon - repo is brand new!)*
+See [Package System](docs/reference/package-system.md) for technical details.
 
 ---
 
-## Supported Platforms
+## 💻 Supported Platforms
 
 - ✅ **macOS** (Intel & Apple Silicon)
 - ✅ **Windows** 10/11
-- ✅ **Linux** (Ubuntu 20.04+, Debian, Fedora)
+- ✅ **Linux** (Ubuntu 20.04+, Debian, Fedora, RHEL)
 
 ---
 
-## Package System
+## 🛠️ Development
 
-### Distributed via npm
+### Prerequisites
 
-All Prism config packages are published to **npm public registry** under the `@prism` scope!
+- Python 3.9+
+- Flask (for web UI)
+- Playwright (for E2E tests)
 
-**Benefits:**
-- ✅ **No custom registry** - Uses public npm infrastructure
-- ✅ **CDN delivery** - Fast global distribution via unpkg.com
-- ✅ **No npm required** - Prism fetches packages directly from CDN
-- ✅ **Versioned** - Semantic versioning built-in
-- ✅ **Discoverable** - Searchable on npmjs.com
-- ✅ **Offline fallback** - Local packages work too
-
-### Browsing Packages
+### Setup
 
 ```bash
-# List available packages (fetches from npm)
-python3 scripts/npm_package_fetcher.py list
+# Install development dependencies
+make install-dev
 
-# Search on npm
-npm search @prism
+# Run tests
+make test
 
-# Browse on npmjs.com
-https://www.npmjs.com/search?q=%40prism
+# Start development server
+make run
+
+# Run linters
+make lint
+
+# Format code
+make format
 ```
 
-### Using Built-in Packages
-
-Prism includes 7 pre-configured packages:
+### Makefile Commands
 
 ```bash
-python3 scripts/package_manager.py list
+make help              # See all 40+ commands
+make dev               # Quick start: install + run
+make test              # Fast tests (unit + CLI)
+make test-all          # All tests
+make check             # All CI checks
+make pre-commit        # Pre-commit checks
+make ci                # Full CI pipeline
 ```
 
-### Creating Your Own
-
-```bash
-# Use the template
-cp -r config-packages/acme-corp config-packages/my-company
-cd config-packages/my-company
-
-# Edit package.yaml
-vim package.yaml
-
-# Validate
-python3 ../../scripts/package_manager.py validate my-company
-
-# Install
-python3 install.py --package my-company
-```
-
-See [Package Documentation](docs/CREATING_PACKAGES.md) for details.
+See [Contributing](docs/development/contributing.md) for development workflow.
 
 ---
 
-## Configuration
+## 🧪 Testing
 
-### Package Structure
+### Test Coverage
+
+- **72 total tests**
+  - 15 unit tests (config merger, package validator)
+  - 3 CLI tests (installer interface)
+  - 54 E2E tests (full user flows)
+
+### Running Tests
+
+```bash
+# Fast tests (unit + CLI)
+make test
+
+# All tests including E2E
+make test-all
+
+# With coverage report
+make test-coverage
+
+# E2E with trace viewer (debugging)
+make test-trace
+make show-trace
+```
+
+### Continuous Integration
+
+GitHub Actions workflows:
+
+1. **PR Checks** - Lint, test, coverage on every PR
+2. **Dev Deploy** - Auto-deploy to dev on merge
+3. **Stage Deploy** - Release candidates with smoke tests
+4. **Production Deploy** - Tagged releases with artifacts
+
+See [CI/CD Documentation](docs/development/ci-cd.md).
+
+---
+
+## 📝 Examples
+
+### Simple Personal Configuration
 
 ```yaml
-# package.yaml
+# prisms/my-setup/package.yaml
 package:
-  name: "my-company"
+  name: "my-dev-setup"
   version: "1.0.0"
-  description: "My company dev environment"
-  
-  # NEW: Assets support!
-  assets:
-    logo: "assets/logo.png"
-    colors: "assets/colors.yaml"
-    
-  branding:
-    primary_color: "#4A90E2"
-    secondary_color: "#9B59B6"
+  description: "My personal development environment"
   
   tools:
     - git
@@ -391,144 +382,146 @@ package:
     - nodejs
     
   repositories:
-    - url: "git@github.com:mycompany/backend.git"
-      path: "~/Development/projects/backend"
+    - url: "git@github.com:me/project.git"
+      path: "~/Development/projects/project"
 ```
 
-Full schema: [docs/CONFIG_SCHEMA.md](docs/CONFIG_SCHEMA.md)
+### Enterprise Multi-Level Configuration
+
+```yaml
+# Base company config
+# prisms/company/base/company.yaml
+package:
+  name: "acme-corp"
+  tools:
+    - git
+    - docker
+  security:
+    sso: true
+    vpn_required: true
 
 ---
+# Team override
+# prisms/company/teams/platform.yaml
+package:
+  name: "platform-team"
+  tools:
+    - kubernetes
+    - terraform
+  security:
+    vault_access: true
 
-## CLI Tools
-
-After installation, you get helpful commands:
-
-```bash
-# Create new project
-new-project my-app
-
-# Archive completed project
-archive-project old-app
-
-# Find projects
-find-project search-term
-
-# Launch docs site
-mkdocs serve
+# Merged result:
+# - All company tools + team tools
+# - Company security + team security
+# - Team-specific additions
 ```
 
----
-
-## Documentation Server
-
-Auto-generated docs with:
-
-- 🏠 Homepage with project overview
-- 📁 Auto-scanned project list
-- 📚 Architecture diagrams (if present)
-- 📝 README rendering
-- 🎨 Custom branding (your logo, colors)
-
-Launch: `mkdocs serve`  
-Visit: `http://localhost:8000`
+See [Configuration Examples](docs/user-guide/creating-configurations.md#examples).
 
 ---
 
-## The Story
+## 🤝 Contributing
 
-I'm **Will Anderson**, and I kept hitting the same wall:
+Contributions are welcome! Here's how:
 
-Every time I set up a new dev environment (new job, new machine, helping a teammate), I'd spend hours:
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/my-feature`
+3. **Make changes and test**: `make test-all`
+4. **Format code**: `make format`
+5. **Run CI checks**: `make check`
+6. **Commit**: `git commit -m "feat: add my feature"`
+7. **Push**: `git push origin feature/my-feature`
+8. **Create Pull Request**
 
-1. Installing tools I forgot about
-2. Configuring git (again)
-3. Generating SSH keys (again)
-4. Creating folder structures
-5. Cloning repos
-6. Setting up docs
+See [Contributing Guide](docs/development/contributing.md) for detailed workflow.
 
-It was **tedious, error-prone, and wasteful**.
+### Ways to Contribute
 
-So one weekend, I started building a solution. Started with Claude Code helping me scaffold the basics. But I wanted more:
-
-- **Standardized** - Everyone gets the same great setup
-- **Extensible** - Works for solo devs AND Fortune 500
-- **Beautiful** - Not just functional, *impressive*
-- **Open source** - Everyone should benefit
-
-Prism is the result. Built to solve my problem, shared to solve yours.
-
----
-
-## Philosophy
-
-### 💎 **Refract Complexity Into Clarity**
-
-Complex setups become simple. Chaos becomes structure. Confusion becomes confidence.
-
-### 🌈 **Beauty Through Structure**
-
-Your dev environment should be as beautiful as the code you write.
-
-### 💡 **Illuminate, Don't Dictate**
-
-Prism provides structure but stays flexible. Use what you need, skip what you don't.
-
-### ✨ **Open & Extensible**
-
-Built on open principles. Fork it, extend it, make it yours.
+- ⭐ **Star the repo** - Show your support
+- 🐛 **Report bugs** - Help us improve
+- 💡 **Suggest features** - Share your ideas
+- 📝 **Improve docs** - Make it clearer
+- 🎭 **Create packages** - Share your configs
+- 🔧 **Submit PRs** - Fix bugs or add features
 
 ---
 
-## Contributing
-
-Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md)
-
-### Ways to Help
-
-- ⭐ Star the repo
-- 🐛 Report bugs
-- 💡 Suggest features
-- 📝 Improve docs
-- 🎭 Create config packages
-- 🔧 Submit PRs
-
----
-
-## License
+## 📜 License
 
 **MIT License** - See [LICENSE](LICENSE)
 
 Copyright (c) 2025 William Anderson
 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
 ---
 
-## Acknowledgments
+## 👨‍💻 Author
 
-- Built with help from **Claude Code** (Anthropic)
-- Inspired by frustration and necessity
+**Created by [William Anderson](https://github.com/andersonwilliam85)**
+
+Prism was built to solve the configuration chaos problem at scale - from solo developers to Fortune 500 enterprises. What started as a weekend project to automate dev environment setup evolved into a comprehensive configuration inheritance system.
+
+### The Story
+
+Every new job, new machine, new teammate - I'd spend hours:
+
+1. Installing forgotten tools
+2. Configuring git (again)
+3. Generating SSH keys (again)
+4. Creating folder structures
+5. Cloning repositories
+
+It was tedious, error-prone, and didn't scale. After experiencing this pain at startups and enterprise companies, I built Prism to:
+
+- **Standardize** - Everyone gets the same great setup
+- **Scale** - Works for 1 person or 50,000
+- **Simplify** - Complex hierarchies become manageable
+- **Share** - Open source for everyone to benefit
+
+### Philosophy
+
+💎 **Refract Complexity Into Clarity** - Like a prism turns white light into a spectrum, Prism turns organizational chaos into clear structure.
+
+🌈 **Beauty Through Organization** - Your dev environment should be as elegant as the code you write.
+
+💡 **Illuminate, Don't Dictate** - Provide structure but stay flexible. Use what you need.
+
+✨ **Open & Extensible** - Built on open principles. Fork it, extend it, make it yours.
+
+---
+
+## 🙏 Acknowledgments
+
+- Built with assistance from **Claude** (Anthropic)
+- Inspired by the frustration of manual environment setup
+- Influenced by npm's package ecosystem
+- Motivated by the need for better configuration management at scale
 - Made with ♥️ for developers everywhere
 
 ---
 
-## Links
+## 🔗 Links
 
 - **GitHub**: [github.com/andersonwilliam85/prism](https://github.com/andersonwilliam85/prism)
 - **Issues**: [github.com/andersonwilliam85/prism/issues](https://github.com/andersonwilliam85/prism/issues)
-- **Docs**: [Coming soon - GitHub Pages]
-- **Packages**: [github.com/andersonwilliam85/prism-packages](https://github.com/andersonwilliam85/prism-packages)
+- **Documentation**: [docs/](docs/)
+- **NPM Packages**: [@prism scope](https://www.npmjs.com/search?q=%40prism)
 
 ---
 
-## Support
+## 📞 Support
 
-Having issues? Found a bug?
+Need help? Found a bug?
 
-1. Check [Issues](https://github.com/andersonwilliam85/prism/issues)
-2. Search existing issues
-3. Create a new issue with details
+1. **Check documentation**: [docs/](docs/)
+2. **Search issues**: [GitHub Issues](https://github.com/andersonwilliam85/prism/issues)
+3. **Create new issue**: [New Issue](https://github.com/andersonwilliam85/prism/issues/new)
 
-Pull requests welcome! 🚀
+Pull requests are always welcome! 🚀
 
 ---
 
