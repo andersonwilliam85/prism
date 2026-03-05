@@ -151,6 +151,14 @@ def load_resources():
     with open(resources_path) as f:
         return yaml.safe_load(f)
 
+def load_welcome_config():
+    """Load welcome configuration"""
+    welcome_path = Path(__file__).parent.parent / "config" / "welcome.yaml"
+    if welcome_path.exists():
+        with open(welcome_path) as f:
+            return yaml.safe_load(f)
+    return {"company": {"name": "Your Company"}, "welcome": {}}
+
 def setup_docs_structure():
     """Create documentation folder structure"""
     if RICH_AVAILABLE:
@@ -997,14 +1005,7 @@ def main():
             profile["setup_progress"]["tasks"]["setup_docs_server"]["completed"] = True
             profile["setup_progress"]["tasks"]["setup_docs_server"]["timestamp"] = datetime.now().isoformat()
         
-        with open(config_path, 'w') as f:
-            yaml.dump(profile, f, default_flow_style=False, sort_keys=False)
-    
-    # Start server
-    start_docs_server(docs_server)
-
-if __name__ == "__main__":
-    main()
+        with open(config_path, 
 'w') as f:
             yaml.dump(profile, f, default_flow_style=False, sort_keys=False)
     
