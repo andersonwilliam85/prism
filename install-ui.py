@@ -244,6 +244,11 @@ INDEX_HTML = """
             overflow-y: auto;
             margin-top: 20px;
         }
+        
+        .package-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -257,18 +262,22 @@ INDEX_HTML = """
             <div class="progress-fill" id="progressFill" style="width: 20%"></div>
         </div>
         
-        <!-- Step 1: Welcome -->
+        <!-- Step 1: Package Selection -->
         <div class="step active" id="step1">
-            <h2>Welcome!</h2>
-            <p>Let's set up your development environment in just a few steps.</p>
+            <h2>📦 Choose Your Config Package</h2>
+            <p>Select the configuration package that best fits your needs:</p>
+            
+            <div id="packagesList" style="margin-top: 30px;">
+                <!-- Populated by JS -->
+            </div>
             
             <div class="alert alert-info" style="margin-top: 20px;">
-                <strong>💡 Tip:</strong> This installer is idempotent - you can run it multiple times safely!
+                <strong>💡 Tip:</strong> Not sure which to pick? Scroll through the options above!
             </div>
             
             <div class="buttons">
                 <div></div>
-                <button class="btn-primary" onclick="nextStep()">Get Started →</button>
+                <button class="btn-primary" onclick="nextStep()">Next →</button>
             </div>
         </div>
         
@@ -393,6 +402,7 @@ INDEX_HTML = """
     <script>
         let currentStep = 1;
         const totalSteps = 7;
+        let selectedPackage = null;
         
         function updateProgress() {
             const progress = (currentStep / totalSteps) * 100;
@@ -400,6 +410,12 @@ INDEX_HTML = """
         }
         
         function nextStep() {
+            // Validate package selection on step 1
+            if (currentStep === 1 && !selectedPackage) {
+                alert('Please select a config package!');
+                return;
+            }
+            
             document.getElementById('step' + currentStep).classList.remove('active');
             currentStep++;
             document.getElementById('step' + currentStep).classList.add('active');
@@ -454,6 +470,7 @@ INDEX_HTML = """
             const dept = document.getElementById('department').selectedOptions[0].text;
             
             document.getElementById('summary').innerHTML = `
+                <p><strong>Package:</strong> ${selectedPackage}</p>
                 <p><strong>Name:</strong> ${name}</p>
                 <p><strong>Email:</strong> ${email}</p>
                 <p><strong>Organization:</strong> ${subOrg} / ${dept}</p>
@@ -494,8 +511,73 @@ INDEX_HTML = """
             updateProgress();
         }
         
+        // Load packages on page load
+        async function loadPackages() {
+            const response = await fetch('/api/packages');
+            const data = await response.json();
+            
+            const packagesList = document.getElementById('packagesList');
+            packagesList.innerHTML = '';
+            
+            data.packages.forEach(pkg => {
+                const isRecommended = pkg.tags.includes('personal') || pkg.tags.includes('walmart');
+                const recommendedBadge = isRecommended ? '<span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-left: 10px;">Recommended</span>' : '';
+                
+                packagesList.innerHTML += `
+                    <div class="package-card" onclick="selectPackage('${pkg.name}')" id="pkg_${pkg.name}" style="
+                        border: 2px solid #e0e0e0;
+                        border-radius: 12px;
+                        padding: 20px;
+                        margin-bottom: 15px;
+                        cursor: pointer;
+                        transition: all 0.3s;
+                    ">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div style="flex: 1;">
+                                <h3 style="margin: 0 0 10px 0; color: #333;">
+                                    📦 ${pkg.name} ${recommendedBadge}
+                                </h3>
+                                <p style="margin: 0 0 10px 0; color: #666;">${pkg.description}</p>
+                                <div style="font-size: 0.9em; color: #888;">
+                                    <strong>Type:</strong> ${pkg.type} | 
+                                    <strong>Size:</strong> ${pkg.company_size} | 
+                                    <strong>Author:</strong> ${pkg.author}
+                                </div>
+                                ${pkg.tags.length > 0 ? `
+                                    <div style="margin-top: 10px;">
+                                        ${pkg.tags.slice(0, 5).map(tag => `<span style="background: #f0f0f0; padding: 3px 8px; border-radius: 4px; font-size: 0.8em; margin-right: 5px;">${tag}</span>`).join('')}
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div style="width: 30px; height: 30px; border: 2px solid #e0e0e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-left: 20px;">
+                                <span class="checkmark" style="display: none; color: #667eea; font-size: 1.5em;">✓</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        function selectPackage(packageName) {
+            selectedPackage = packageName;
+            
+            // Update UI - remove selection from all
+            document.querySelectorAll('.package-card').forEach(card => {
+                card.style.border = '2px solid #e0e0e0';
+                card.style.background = 'white';
+                card.querySelector('.checkmark').style.display = 'none';
+            });
+            
+            // Highlight selected
+            const selected = document.getElementById('pkg_' + packageName);
+            selected.style.border = '2px solid #667eea';
+            selected.style.background = '#f8f9ff';
+            selected.querySelector('.checkmark').style.display = 'block';
+        }
+        
         // Initialize
         updateProgress();
+        loadPackages();
     </script>
 </body>
 </html>
@@ -509,6 +591,20 @@ INDEX_HTML = """
 def index():
     """Main installer UI"""
     return render_template_string(INDEX_HTML)
+
+@app.route("/api/packages")
+def get_packages():
+    """Get available config packages"""
+    import sys
+    sys.path.insert(0, str(Path(__file__).parent / "scripts"))
+    
+    try:
+        from package_manager import PackageManager
+        pm = PackageManager()
+        packages = pm.discover_packages()
+        return jsonify({"packages": packages})
+    except Exception as e:
+        return jsonify({"packages": [], "error": str(e)})
 
 @app.route("/api/organizations")
 def get_organizations():
