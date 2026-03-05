@@ -1,0 +1,309 @@
+# ============================================================================
+# WALMART PRISM - ENTERPRISE CONFIGURATION
+# ============================================================================
+# Walmart-specific development environment configuration
+# Includes: Theme, sources, tools, and multi-tier setup
+
+package:
+  name: "walmart-prism"
+  version: "1.0.0"
+  description: "Walmart enterprise development environment - secure, compliant, and powerful"
+  author: "Walmart Global Tech"
+  homepage: "https://tech.walmart.com"
+  support:
+    slack: "#element-genai-support"
+    teams: "https://teams.microsoft.com/l/channel/19%3AGbP8DGJjrXq1sL3IlXErZc5U7hk-IEqsokmnImcKyP41%40thread.tacv2/General"
+    confluence: "https://confluence.walmart.com/prism"
+  
+  type: "enterprise"
+  
+  requires:
+    onboarding_version: ">=1.0.0"
+    python_version: ">=3.8"
+    network: "walmart-vpn"  # Must be on VPN or Eagle WiFi
+
+# PRISM META-CONFIGURATION
+# Walmart-specific theme, sources, and registry settings
+prism_config:
+  theme: "blue"  # Walmart blue theme (custom or use 'ocean' as close match)
+  
+  sources:
+    - url: "local"
+      name: "Built-in Prisms"
+      type: "local"
+    
+    - url: "https://puppy.walmart.com/prism-registry"
+      name: "Walmart Internal Prism Registry"
+      type: "remote"
+      auth_required: true
+  
+  npm_registry: "https://pypi.ci.artifacts.walmart.com/artifactory/api/pypi/external-pypi/simple"
+  npm_registry_insecure: true  # Allow insecure (corporate cert)
+  
+  # Walmart-specific proxies
+  proxies:
+    http: "http://sysproxy.wal-mart.com:8080"
+    https: "http://sysproxy.wal-mart.com:8080"
+  
+  # Walmart branding
+  branding:
+    name: "Walmart Prism"
+    tagline: "Powering Walmart Global Tech"
+    logo_url: "https://puppy.walmart.com/assets/walmart-spark.svg"
+    primary_color: "#0071ce"  # Walmart blue
+    secondary_color: "#ffc220"  # Walmart spark
+
+# BUNDLED SETUP PRISMS
+# Multiple prisms bundled together for different roles/teams
+bundled_prisms:
+  # Base prism (everyone gets this)
+  base:
+    - id: "walmart-base"
+      name: "Walmart Base Configuration"
+      description: "Core Walmart dev environment setup"
+      required: true
+      config: "base/walmart-base.yaml"
+  
+  # Role-based prisms (user selects one)
+  roles:
+    - id: "engineer"
+      name: "Software Engineer"
+      description: "Full development environment for engineers"
+      config: "roles/engineer.yaml"
+      tools:
+        - vscode
+        - docker
+        - kubectl
+        - gh-cli
+    
+    - id: "data-scientist"
+      name: "Data Scientist"
+      description: "ML/DS environment with Jupyter, BigQuery"
+      config: "roles/data-scientist.yaml"
+      tools:
+        - jupyter
+        - bigquery-cli
+        - python-ds-stack
+    
+    - id: "product-manager"
+      name: "Product Manager"
+      description: "Lightweight setup for PMs"
+      config: "roles/product-manager.yaml"
+      tools:
+        - slack
+        - teams
+        - confluence
+  
+  # Org-based prisms (optional, multi-select)
+  orgs:
+    - id: "global-tech"
+      name: "Global Tech"
+      description: "Walmart Global Tech resources"
+      config: "orgs/global-tech.yaml"
+    
+    - id: "sams-club"
+      name: "Sam's Club Tech"
+      description: "Sam's Club specific setup"
+      config: "orgs/sams-club.yaml"
+    
+    - id: "walmart-connect"
+      name: "Walmart Connect"
+      description: "Walmart Connect (advertising) setup"
+      config: "orgs/walmart-connect.yaml"
+  
+  # Team-based prisms (optional, multi-select)
+  teams:
+    - id: "element-genai"
+      name: "Element GenAI"
+      description: "Element LLM Gateway team"
+      config: "teams/element-genai.yaml"
+      resources:
+        - slack: "#element-genai-support"
+        - docs: "https://element.walmart.com"
+    
+    - id: "code-puppy"
+      name: "Code Puppy"
+      description: "Code Puppy development team"
+      config: "teams/code-puppy.yaml"
+      resources:
+        - slack: "https://walmart.enterprise.slack.com/archives/C094Y1D24JY"
+        - marketplace: "https://puppy.walmart.com/marketplace"
+
+# SETUP CONFIGURATION
+setup:
+  install:
+    target_dir: "config/"
+    
+    files:
+      - source: "welcome.yaml"
+        dest: "config/welcome.yaml"
+        description: "Walmart welcome page"
+      
+      - source: "resources.yaml"
+        dest: "config/resources.yaml"
+        description: "Walmart resources (Slack, Confluence, etc.)"
+      
+      - source: "security.yaml"
+        dest: "config/security.yaml"
+        description: "InfoSec guidelines and compliance"
+    
+    directories:
+      - source: "base/"
+        dest: "config/base/"
+        description: "Base Walmart configuration"
+      
+      - source: "roles/"
+        dest: "config/roles/"
+        description: "Role-specific configurations"
+      
+      - source: "orgs/"
+        dest: "config/orgs/"
+        description: "Organization configurations"
+      
+      - source: "teams/"
+        dest: "config/teams/"
+        description: "Team configurations"
+  
+  post_install:
+    message: |
+      🎉 Welcome to Walmart Global Tech!
+      
+      Your development environment is configured.
+      
+      🔐 Security Note:
+      - Code Puppy ONLY works on VPN or Eagle WiFi
+      - Element LLM Gateway keeps all data inside Walmart network
+      - Sensitive data permitted (no HIPAA patient data)
+      
+      📚 Resources:
+      - Code Puppy Marketplace: https://puppy.walmart.com/marketplace
+      - Doghouse (Training): https://puppy.walmart.com/doghouse
+      - Element GenAI Support: #element-genai-support on Slack
+      
+      🚀 Next Steps:
+      1. Join your team's Slack channels
+      2. Check Confluence for team docs
+      3. Start shipping code!
+      
+      Happy coding! 🐶✨
+
+# User info fields
+user_info_fields:
+  - id: "name"
+    label: "Full Name"
+    type: "text"
+    required: true
+    placeholder: "Taylor Smith"
+    description: "Your full name (as in Workday)"
+  
+  - id: "email"
+    label: "Walmart Email"
+    type: "email"
+    required: true
+    placeholder: "w0a035b@walmart.com"
+    description: "Your Walmart email address"
+  
+  - id: "user_id"
+    label: "User ID"
+    type: "text"
+    required: true
+    placeholder: "w0a035b"
+    description: "Your Walmart user ID (w0xxxxx)"
+  
+  - id: "slack_handle"
+    label: "Slack Handle"
+    type: "text"
+    required: true
+    placeholder: "@taylor.smith"
+    description: "Your Slack handle"
+  
+  - id: "role"
+    label: "Role"
+    type: "select"
+    required: true
+    options:
+      - "Software Engineer"
+      - "Data Scientist"
+      - "Product Manager"
+      - "Engineering Manager"
+      - "Other"
+    description: "Your role at Walmart"
+  
+  - id: "org"
+    label: "Organization"
+    type: "select"
+    required: true
+    options:
+      - "Global Tech"
+      - "Sam's Club Tech"
+      - "Walmart Connect"
+      - "Supply Chain Tech"
+      - "Other"
+    description: "Your organization"
+  
+  - id: "team"
+    label: "Team"
+    type: "text"
+    required: false
+    placeholder: "Element GenAI"
+    description: "Your team name (optional)"
+
+# Package contents
+contents:
+  base_config: "base/walmart-base.yaml"
+  welcome_page: "welcome.yaml"
+  resources: "resources.yaml"
+  security: "security.yaml"
+  
+  roles:
+    - engineer
+    - data-scientist
+    - product-manager
+  
+  orgs:
+    - global-tech
+    - sams-club
+    - walmart-connect
+  
+  teams:
+    - element-genai
+    - code-puppy
+
+# Distribution
+distribution:
+  local:
+    path: "prisms/walmart.prism/"
+    discoverable: true
+  
+  internal:
+    url: "https://puppy.walmart.com/prism-registry/walmart"
+    auth_required: true
+
+# Metadata
+metadata:
+  tags:
+    - walmart
+    - enterprise
+    - fortune-500
+    - internal
+    - secure
+    - compliant
+  
+  keywords:
+    - walmart-global-tech
+    - element-genai
+    - code-puppy
+    - enterprise
+  
+  company_size: "fortune-1"  # Walmart is #1!
+  regions: ["Global", "US", "International"]
+  
+  security:
+    classification: "internal-use-only"
+    data_handling: "sensitive-data-permitted"  # No HIPAA!
+    network_required: "walmart-vpn"
+  
+  last_updated: "2026-03-04"
+  maintainers:
+    - "Code Puppy Team"
+    - "Element GenAI Team"

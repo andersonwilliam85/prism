@@ -1840,7 +1840,7 @@ INDEX_HTML = """
             }
         }
         
-        function selectPackage(packageName) {
+        async function selectPackage(packageName) {
             selectedPackage = packageName;
             
             // Update UI - remove selection from all
@@ -1855,6 +1855,72 @@ INDEX_HTML = """
             selected.style.border = '2px solid #667eea';
             selected.style.background = '#f8f9ff';
             selected.querySelector('.checkmark').style.display = 'block';
+            
+            // Load and apply prism_config from selected package
+            await loadAndApplyPrismConfig(packageName);
+        }
+        
+        async function loadAndApplyPrismConfig(packageName) {
+            try {
+                const response = await fetch(`/api/package/${packageName}/config`);
+                const data = await response.json();
+                
+                if (data.prism_config) {
+                    console.log(`📦 Applying prism_config from ${packageName}:`, data.prism_config);
+                    
+                    // Apply theme if specified
+                    if (data.prism_config.theme) {
+                        const theme = data.prism_config.theme;
+                        document.documentElement.setAttribute('data-theme', theme);
+                        
+                        // Update theme selection in settings
+                        document.querySelectorAll('.theme-option').forEach(opt => {
+                            if (opt.dataset.theme === theme) {
+                                opt.classList.add('active');
+                            } else {
+                                opt.classList.remove('active');
+                            }
+                        });
+                        
+                        // Save to prismConfig
+                        prismConfig.theme = theme;
+                        savePrismConfig(prismConfig);
+                    }
+                    
+                    // Apply sources if specified
+                    if (data.prism_config.sources && data.prism_config.sources.length > 0) {
+                        // Merge with existing sources (don't duplicate)
+                        data.prism_config.sources.forEach(newSource => {
+                            const exists = prismConfig.sources.some(s => s.url === newSource.url);
+                            if (!exists && newSource.type !== 'local') {  // Don't duplicate local
+                                prismConfig.sources.push(newSource);
+                            }
+                        });
+                        savePrismConfig(prismConfig);
+                        renderPrismSources();
+                    }
+                    
+                    // Apply npm registry if specified
+                    if (data.prism_config.npm_registry) {
+                        prismConfig.npmRegistry = data.prism_config.npm_registry;
+                        savePrismConfig(prismConfig);
+                        
+                        const npmReg = document.getElementById('npmRegistry');
+                        if (npmReg) npmReg.value = data.prism_config.npm_registry;
+                        
+                        const settingsNpmReg = document.getElementById('settingsNpmRegistry');
+                        if (settingsNpmReg) settingsNpmReg.value = data.prism_config.npm_registry;
+                    }
+                    
+                    // Show notification that config was applied
+                    console.log(`✅ Prism configuration from ${packageName} applied successfully`);
+                } else {
+                    console.log(`ℹ️ No prism_config found in ${packageName}, using default configuration`);
+                }
+            } catch (error) {
+                console.error(`Failed to load prism_config for ${packageName}:`, error);
+                // Don't block - just use default config
+            }
         }
         
         // Load user info fields based on selected package
@@ -2104,6 +2170,44 @@ def get_user_fields(package_name):
         return jsonify({"fields": fields})
     except Exception as e:
         return jsonify({"fields": [], "error": str(e)})
+
+@app.route("/api/package/<package_name>/config")
+def get_package_config(package_name):
+    """Get prism_config from a package for meta-prism configuration"""
+    import sys
+    import yaml
+    sys.path.insert(0, str(Path(__file__).parent / "scripts"))
+    
+    try:
+        from package_manager import PackageManager
+        pm = PackageManager()
+        
+        # Find the package
+        packages = pm.discover_packages()
+        pkg = next((p for p in packages if p['name'] == package_name), None)
+        
+        if not pkg:
+            return jsonify({"prism_config": None, "error": "Package not found"})
+        
+        # Load package.yaml to get prism_config
+        pkg_path = Path(pkg['path'])
+        pkg_yaml_path = pkg_path / 'package.yaml'
+        
+        if not pkg_yaml_path.exists():
+            return jsonify({"prism_config": None, "error": "package.yaml not found"})
+        
+        with open(pkg_yaml_path) as f:
+            pkg_config = yaml.safe_load(f)
+        
+        # Get prism_config section
+        prism_config = pkg_config.get('prism_config', None)
+        
+        return jsonify({
+            "prism_config": prism_config,
+            "package_name": package_name
+        })
+    except Exception as e:
+        return jsonify({"prism_config": None, "error": str(e)})
 
 @app.route("/api/organizations")
 def get_organizations():

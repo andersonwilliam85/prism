@@ -1,0 +1,292 @@
+# ============================================================================
+# FORTUNE 500 PRISM - ENTERPRISE TEMPLATE
+# ============================================================================
+# Template for large enterprise organizations (Fortune 500)
+# Customize this for your company
+
+package:
+  name: "fortune500-prism"
+  version: "1.0.0"
+  description: "Fortune 500 enterprise prism - secure, compliant, multi-tier development environment"
+  author: "Enterprise DevOps Team"
+  homepage: "https://company.com/devtools"
+  support:
+    slack: "#engineering-support"
+    portal: "https://devportal.company.com"
+  
+  type: "enterprise"
+  
+  requires:
+    onboarding_version: ">=1.0.0"
+    python_version: ">=3.8"
+
+# PRISM META-CONFIGURATION
+prism_config:
+  theme: "midnight"  # Professional dark theme for enterprise
+  
+  sources:
+    - url: "local"
+      name: "Built-in Prisms"
+      type: "local"
+    
+    - url: "https://prism-registry.company.com"
+      name: "Company Internal Registry"
+      type: "remote"
+      auth_required: true
+  
+  npm_registry: "https://npm.company.com"
+  unpkg_url: "https://cdn.company.com/unpkg"
+  
+  # Corporate proxies
+  proxies:
+    http: "http://proxy.company.com:8080"
+    https: "http://proxy.company.com:8080"
+  
+  # Company branding
+  branding:
+    name: "Company Prism"
+    tagline: "Empowering Enterprise Development"
+    logo_url: "https://company.com/assets/logo.svg"
+    primary_color: "#1e3a8a"  # Corporate blue
+    secondary_color: "#f59e0b"  # Accent gold
+
+# BUNDLED SETUP PRISMS
+bundled_prisms:
+  # Base (required)
+  base:
+    - id: "enterprise-base"
+      name: "Enterprise Base Configuration"
+      description: "Core enterprise dev setup"
+      required: true
+      config: "base/enterprise.yaml"
+  
+  # Divisions (user selects one)
+  divisions:
+    - id: "technology"
+      name: "Technology Division"
+      description: "IT and software engineering"
+      config: "divisions/technology.yaml"
+    
+    - id: "digital"
+      name: "Digital Division"
+      description: "Digital products and platforms"
+      config: "divisions/digital.yaml"
+    
+    - id: "data-analytics"
+      name: "Data & Analytics"
+      description: "Data science and analytics"
+      config: "divisions/data-analytics.yaml"
+  
+  # Roles (user selects one)
+  roles:
+    - id: "software-engineer"
+      name: "Software Engineer"
+      description: "Full-stack or backend development"
+      config: "roles/software-engineer.yaml"
+      tools:
+        - ide
+        - docker
+        - kubernetes
+        - git-enterprise
+    
+    - id: "frontend-engineer"
+      name: "Frontend Engineer"
+      description: "UI/UX development"
+      config: "roles/frontend-engineer.yaml"
+      tools:
+        - vscode
+        - node
+        - npm
+    
+    - id: "devops-engineer"
+      name: "DevOps Engineer"
+      description: "Infrastructure and CI/CD"
+      config: "roles/devops-engineer.yaml"
+      tools:
+        - terraform
+        - ansible
+        - jenkins
+        - kubernetes
+    
+    - id: "data-engineer"
+      name: "Data Engineer"
+      description: "Data pipelines and warehousing"
+      config: "roles/data-engineer.yaml"
+      tools:
+        - spark
+        - airflow
+        - sql-clients
+    
+    - id: "security-engineer"
+      name: "Security Engineer"
+      description: "AppSec and security tooling"
+      config: "roles/security-engineer.yaml"
+      tools:
+        - burp-suite
+        - wireshark
+        - security-scanners
+  
+  # Business units (optional, multi-select)
+  business_units:
+    - id: "retail"
+      name: "Retail Division"
+      description: "Retail operations tech"
+      config: "business_units/retail.yaml"
+    
+    - id: "finance"
+      name: "Finance Division"
+      description: "Financial services tech"
+      config: "business_units/finance.yaml"
+    
+    - id: "healthcare"
+      name: "Healthcare Division"
+      description: "Healthcare tech (HIPAA compliant)"
+      config: "business_units/healthcare.yaml"
+
+# SETUP CONFIGURATION
+setup:
+  install:
+    target_dir: "config/"
+    
+    files:
+      - source: "welcome.yaml"
+        dest: "config/welcome.yaml"
+      
+      - source: "resources.yaml"
+        dest: "config/resources.yaml"
+      
+      - source: "compliance.yaml"
+        dest: "config/compliance.yaml"
+        description: "SOX, GDPR, HIPAA compliance guidelines"
+      
+      - source: "security.yaml"
+        dest: "config/security.yaml"
+        description: "InfoSec policies"
+    
+    directories:
+      - source: "base/"
+        dest: "config/base/"
+      
+      - source: "divisions/"
+        dest: "config/divisions/"
+      
+      - source: "roles/"
+        dest: "config/roles/"
+      
+      - source: "business_units/"
+        dest: "config/business_units/"
+  
+  post_install:
+    message: |
+      🎉 Welcome to [Company Name]!
+      
+      Your enterprise development environment is configured.
+      
+      🔐 Security & Compliance:
+      - All code must pass security scans
+      - Follow SOX/GDPR/HIPAA guidelines
+      - Use VPN for remote access
+      
+      📚 Resources:
+      - Developer Portal: https://devportal.company.com
+      - Support: #engineering-support on Slack
+      - Training: https://learning.company.com
+      
+      🚀 Next Steps:
+      1. Complete security training
+      2. Set up MFA on all accounts
+      3. Join your division's Slack channels
+      4. Review compliance docs
+      
+      Happy coding!
+
+# User info fields
+user_info_fields:
+  - id: "name"
+    label: "Full Name"
+    type: "text"
+    required: true
+    placeholder: "Jordan Enterprise"
+  
+  - id: "email"
+    label: "Corporate Email"
+    type: "email"
+    required: true
+    placeholder: "jordan@company.com"
+  
+  - id: "employee_id"
+    label: "Employee ID"
+    type: "text"
+    required: true
+    placeholder: "EMP123456"
+  
+  - id: "division"
+    label: "Division"
+    type: "select"
+    required: true
+    options:
+      - "Technology"
+      - "Digital"
+      - "Data & Analytics"
+      - "Other"
+  
+  - id: "role"
+    label: "Role"
+    type: "select"
+    required: true
+    options:
+      - "Software Engineer"
+      - "Frontend Engineer"
+      - "DevOps Engineer"
+      - "Data Engineer"
+      - "Security Engineer"
+      - "Other"
+  
+  - id: "manager_email"
+    label: "Manager Email"
+    type: "email"
+    required: true
+    placeholder: "manager@company.com"
+  
+  - id: "cost_center"
+    label: "Cost Center"
+    type: "text"
+    required: false
+    placeholder: "CC-1234"
+
+# Distribution
+distribution:
+  local:
+    path: "prisms/fortune500.prism/"
+    discoverable: true
+  
+  internal:
+    url: "https://prism-registry.company.com/fortune500"
+    auth_required: true
+
+# Metadata
+metadata:
+  tags:
+    - enterprise
+    - fortune-500
+    - secure
+    - compliant
+    - multi-tier
+  
+  keywords:
+    - enterprise
+    - corporate
+    - large-organization
+  
+  company_size: "enterprise"
+  regions: ["Global", "US", "EU", "APAC"]
+  
+  security:
+    classification: "internal-use-only"
+    compliance:
+      - sox
+      - gdpr
+      - hipaa
+      - pci-dss
+  
+  last_updated: "2026-03-04"

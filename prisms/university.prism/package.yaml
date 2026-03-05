@@ -1,0 +1,257 @@
+# ============================================================================
+# UNIVERSITY PRISM - ACADEMIC CONFIGURATION
+# ============================================================================
+# For universities, colleges, and academic institutions
+# Research, teaching, and learning focused
+
+package:
+  name: "university-prism"
+  version: "1.0.0"
+  description: "University prism - academic development environment for students and faculty"
+  author: "University IT Department"
+  homepage: "https://university.edu/it"
+  support:
+    helpdesk: "it-help@university.edu"
+    portal: "https://help.university.edu"
+  
+  type: "academic"
+  
+  requires:
+    onboarding_version: ">=1.0.0"
+    python_version: ">=3.8"
+
+# PRISM META-CONFIGURATION
+prism_config:
+  theme: "forest"  # Calming green theme for learning
+  
+  sources:
+    - url: "local"
+      name: "Built-in Prisms"
+      type: "local"
+    
+    - url: "https://prism.university.edu"
+      name: "University Prism Registry"
+      type: "remote"
+      auth_required: true  # Requires .edu login
+  
+  npm_registry: ""  # Use default
+  
+  # University branding
+  branding:
+    name: "University Prism"
+    tagline: "Empowering Learning & Research"
+    logo_url: "https://university.edu/assets/seal.svg"
+    primary_color: "#059669"  # University green
+    secondary_color: "#dc2626"  # School red
+
+# BUNDLED SETUP PRISMS
+bundled_prisms:
+  # Base
+  base:
+    - id: "university-base"
+      name: "University Base Setup"
+      description: "Core academic dev environment"
+      required: true
+      config: "base/university.yaml"
+  
+  # User type (student, faculty, staff)
+  user_type:
+    - id: "student"
+      name: "Student"
+      description: "Undergraduate or graduate student"
+      config: "users/student.yaml"
+      tools:
+        - vscode
+        - jupyter
+        - git
+    
+    - id: "faculty"
+      name: "Faculty"
+      description: "Professor or instructor"
+      config: "users/faculty.yaml"
+      tools:
+        - vscode
+        - jupyter
+        - latex
+        - git
+    
+    - id: "researcher"
+      name: "Researcher"
+      description: "PhD student or research scientist"
+      config: "users/researcher.yaml"
+      tools:
+        - vscode
+        - jupyter
+        - hpc-access
+        - git
+    
+    - id: "staff"
+      name: "IT Staff"
+      description: "University IT staff"
+      config: "users/staff.yaml"
+  
+  # Departments (optional, multi-select)
+  departments:
+    - id: "computer-science"
+      name: "Computer Science"
+      description: "CS department resources"
+      config: "departments/cs.yaml"
+    
+    - id: "engineering"
+      name: "Engineering"
+      description: "Engineering resources"
+      config: "departments/engineering.yaml"
+    
+    - id: "data-science"
+      name: "Data Science"
+      description: "Data science program"
+      config: "departments/data-science.yaml"
+    
+    - id: "math"
+      name: "Mathematics"
+      description: "Math department"
+      config: "departments/math.yaml"
+  
+  # Courses (optional, for students)
+  courses:
+    - id: "cs101"
+      name: "CS 101: Intro to Programming"
+      config: "courses/cs101.yaml"
+    
+    - id: "cs201"
+      name: "CS 201: Data Structures"
+      config: "courses/cs201.yaml"
+    
+    - id: "cs301"
+      name: "CS 301: Algorithms"
+      config: "courses/cs301.yaml"
+
+# SETUP CONFIGURATION
+setup:
+  install:
+    target_dir: "config/"
+    
+    files:
+      - source: "welcome.yaml"
+        dest: "config/welcome.yaml"
+      
+      - source: "resources.yaml"
+        dest: "config/resources.yaml"
+        description: "Library, HPC, canvas, etc."
+      
+      - source: "academic-integrity.yaml"
+        dest: "config/academic-integrity.yaml"
+        description: "Honor code and academic integrity"
+    
+    directories:
+      - source: "base/"
+        dest: "config/base/"
+      
+      - source: "users/"
+        dest: "config/users/"
+      
+      - source: "departments/"
+        dest: "config/departments/"
+  
+  post_install:
+    message: |
+      🎓 Welcome to [University Name]!
+      
+      Your academic development environment is ready.
+      
+      📚 Resources:
+      - Canvas: https://canvas.university.edu
+      - Library: https://library.university.edu
+      - HPC Cluster: hpc.university.edu
+      - IT Help: it-help@university.edu
+      
+      🚀 Next Steps:
+      1. Log in to Canvas
+      2. Join your course channels
+      3. Review academic integrity policy
+      4. Start learning!
+      
+      Good luck with your studies! 🎓
+
+# User info fields
+user_info_fields:
+  - id: "name"
+    label: "Full Name"
+    type: "text"
+    required: true
+    placeholder: "Taylor Student"
+  
+  - id: "email"
+    label: "University Email"
+    type: "email"
+    required: true
+    placeholder: "taylor@university.edu"
+  
+  - id: "student_id"
+    label: "Student/Employee ID"
+    type: "text"
+    required: true
+    placeholder: "12345678"
+  
+  - id: "user_type"
+    label: "I am a..."
+    type: "select"
+    required: true
+    options:
+      - "Student (Undergrad)"
+      - "Student (Graduate)"
+      - "Faculty"
+      - "Researcher"
+      - "Staff"
+  
+  - id: "department"
+    label: "Department"
+    type: "select"
+    required: true
+    options:
+      - "Computer Science"
+      - "Engineering"
+      - "Data Science"
+      - "Mathematics"
+      - "Other"
+  
+  - id: "year"
+    label: "Year (if student)"
+    type: "select"
+    required: false
+    options:
+      - "Freshman"
+      - "Sophomore"
+      - "Junior"
+      - "Senior"
+      - "Graduate"
+      - "N/A"
+
+# Distribution
+distribution:
+  local:
+    path: "prisms/university.prism/"
+    discoverable: true
+  
+  internal:
+    url: "https://prism.university.edu"
+    auth_required: true
+
+# Metadata
+metadata:
+  tags:
+    - university
+    - academic
+    - education
+    - research
+    - students
+  
+  keywords:
+    - higher-education
+    - university
+    - college
+  
+  company_size: "academic"
+  regions: ["Global"]
+  
+  last_updated: "2026-03-04"

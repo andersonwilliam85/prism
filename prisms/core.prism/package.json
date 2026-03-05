@@ -1,0 +1,26 @@
+{
+  "name": "@prism/core",
+  "version": "1.0.0",
+  "description": "Core prism - minimal default configuration for any developer",
+  "main": "package.yaml",
+  "files": [
+    "package.yaml",
+    "base/",
+    "welcome.yaml",
+    "resources.yaml",
+    "README.md"
+  ],
+  "keywords": [
+    "prism",
+    "onboarding",
+    "core",
+    "default",
+    "minimal"
+  ],
+  "author": "Prism Community",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prism/core"
+  }
+}

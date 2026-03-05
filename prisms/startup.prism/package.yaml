@@ -1,0 +1,175 @@
+# ============================================================================
+# STARTUP PRISM - FAST & LEAN CONFIGURATION
+# ============================================================================
+# For fast-moving startups (10-100 people)
+# Move fast, ship code, iterate quickly!
+
+package:
+  name: "startup-prism"
+  version: "1.0.0"
+  description: "Startup prism - fast, lean, and flexible dev environment"
+  author: "Engineering Team"
+  homepage: "https://startup.com"
+  support:
+    slack: "#engineering"
+  
+  type: "startup"
+  
+  requires:
+    onboarding_version: ">=1.0.0"
+    python_version: ">=3.8"
+
+# PRISM META-CONFIGURATION
+prism_config:
+  theme: "sunset"  # Energetic orange theme
+  
+  sources:
+    - url: "local"
+      name: "Built-in Prisms"
+      type: "local"
+  
+  npm_registry: ""  # Use default (fast!)
+  
+  # Startup branding
+  branding:
+    name: "[Startup] Prism"
+    tagline: "Ship fast, iterate faster"
+    primary_color: "#f97316"  # Orange
+    secondary_color: "#eab308"  # Yellow
+
+# BUNDLED SETUP PRISMS
+bundled_prisms:
+  # Base (minimal!)
+  base:
+    - id: "startup-base"
+      name: "Startup Base Setup"
+      description: "Minimal base configuration"
+      required: true
+      config: "base/startup.yaml"
+  
+  # Roles (flat structure)
+  roles:
+    - id: "full-stack"
+      name: "Full-Stack Engineer"
+      description: "Frontend + Backend"
+      config: "roles/full-stack.yaml"
+      tools:
+        - vscode
+        - docker
+        - git
+    
+    - id: "frontend"
+      name: "Frontend Engineer"
+      description: "React/Vue/Svelte"
+      config: "roles/frontend.yaml"
+      tools:
+        - vscode
+        - node
+        - npm
+    
+    - id: "backend"
+      name: "Backend Engineer"
+      description: "APIs and services"
+      config: "roles/backend.yaml"
+      tools:
+        - vscode
+        - docker
+        - postman
+  
+  # Stacks (optional)
+  stacks:
+    - id: "mern"
+      name: "MERN Stack"
+      description: "MongoDB, Express, React, Node"
+      config: "stacks/mern.yaml"
+    
+    - id: "jamstack"
+      name: "JAMstack"
+      description: "Next.js, Vercel, Serverless"
+      config: "stacks/jamstack.yaml"
+    
+    - id: "rails"
+      name: "Ruby on Rails"
+      description: "Rails + PostgreSQL"
+      config: "stacks/rails.yaml"
+
+# SETUP CONFIGURATION
+setup:
+  install:
+    target_dir: "config/"
+    
+    files:
+      - source: "welcome.yaml"
+        dest: "config/welcome.yaml"
+      
+      - source: "resources.yaml"
+        dest: "config/resources.yaml"
+    
+    directories:
+      - source: "base/"
+        dest: "config/base/"
+      
+      - source: "roles/"
+        dest: "config/roles/"
+  
+  post_install:
+    message: |
+      🚀 Welcome to the team!
+      
+      We move FAST here. Ship code on day 1!
+      
+      ⚡ Resources:
+      - Slack: #engineering
+      - Docs: Notion
+      - Deploy: Just push to main 😅
+      
+      Next:
+      1. Join Slack
+      2. Clone the repo
+      3. Ship it!
+
+# User info fields (minimal!)
+user_info_fields:
+  - id: "name"
+    label: "Name"
+    type: "text"
+    required: true
+    placeholder: "Alex"
+    description: "First name is fine!"
+  
+  - id: "email"
+    label: "Email"
+    type: "email"
+    required: true
+    placeholder: "alex@startup.com"
+  
+  - id: "github_username"
+    label: "GitHub"
+    type: "text"
+    required: true
+    placeholder: "alexcodes"
+  
+  - id: "slack_handle"
+    label: "Slack"
+    type: "text"
+    required: true
+    placeholder: "@alex"
+
+# Distribution
+distribution:
+  local:
+    path: "prisms/startup.prism/"
+    discoverable: true
+
+# Metadata
+metadata:
+  tags:
+    - startup
+    - fast
+    - lean
+    - agile
+  
+  company_size: "small"
+  regions: ["Global"]
+  
+  last_updated: "2026-03-04"
