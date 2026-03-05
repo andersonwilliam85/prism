@@ -1,0 +1,2 @@
+# This configuration has wrong data types
+company: "This should be a dictionary, not a string!"  # ERROR: Wrong type

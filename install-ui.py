@@ -390,7 +390,18 @@ INDEX_HTML = """
                 <!-- Populated by JS -->
             </div>
             
-            <div class="alert alert-warning">
+            <!-- Configuration Validation Section -->
+            <div id="configValidationSection" style="margin-top: 20px; display: none;">
+                <h3>Configuration Validation</h3>
+                <button class="btn-secondary" onclick="validateConfigs()" id="validateBtn">
+                    🔍 Validate Configurations
+                </button>
+                <div id="validationResults" style="margin-top: 15px;">
+                    <!-- Validation results will appear here -->
+                </div>
+            </div>
+            
+            <div class="alert alert-warning" style="margin-top: 20px;">
                 <strong>⚠️ Important:</strong> Make sure you're connected to VPN or company WiFi!
             </div>
             
@@ -569,6 +580,98 @@ INDEX_HTML = """
                 <p><strong>Organization:</strong> ${subOrg} / ${dept}</p>
                 <p style="margin-top: 20px;"><strong>Tools to install:</strong> ~15 selected</p>
             `;
+            
+            // Show validation section
+            document.getElementById('configValidationSection').style.display = 'block';
+        }
+        
+        async function validateConfigs() {
+            const btn = document.getElementById('validateBtn');
+            const resultsDiv = document.getElementById('validationResults');
+            
+            // Show loading state
+            btn.disabled = true;
+            btn.textContent = '⏳ Validating...';
+            resultsDiv.innerHTML = '<p style="color: #666;">Checking configurations...</p>';
+            
+            try {
+                const response = await fetch(`/api/package/${selectedPackage}/validate-configs`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    resultsDiv.innerHTML = `
+                        <div class="alert alert-warning">
+                            <strong>❌ Validation Error</strong><br>
+                            ${data.error}
+                        </div>
+                    `;
+                    btn.disabled = false;
+                    btn.textContent = '🔍 Validate Configurations';
+                    return;
+                }
+                
+                const summary = data.summary;
+                
+                if (data.valid) {
+                    // All configs valid
+                    resultsDiv.innerHTML = `
+                        <div class="alert alert-info" style="background: #d4edda; border-color: #c3e6cb; color: #155724;">
+                            <strong>✅ All Configurations Valid!</strong><br>
+                            <div style="margin-top: 10px; font-size: 0.9em;">
+                                📊 Validated ${summary.total_files} configuration file(s)<br>
+                                ${summary.total_warnings > 0 ? `⚠️ ${summary.total_warnings} warning(s) - review recommended` : ''}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Some configs invalid
+                    let errorDetails = '';
+                    if (data.results) {
+                        data.results.forEach(result => {
+                            if (!result.valid) {
+                                errorDetails += `
+                                    <div style="margin-top: 10px; padding: 10px; background: #f8d7da; border-left: 3px solid #dc3545; border-radius: 4px;">
+                                        <strong>📄 ${result.file}</strong>
+                                        <ul style="margin: 5px 0 0 20px; font-size: 0.9em;">
+                                            ${result.errors.map(err => `<li>${err}</li>`).join('')}
+                                        </ul>
+                                    </div>
+                                `;
+                            }
+                        });
+                    }
+                    
+                    resultsDiv.innerHTML = `
+                        <div class="alert alert-warning" style="background: #fff3cd; border-color: #ffc107; color: #856404;">
+                            <strong>⚠️ Configuration Validation Failed</strong><br>
+                            <div style="margin-top: 10px; font-size: 0.9em;">
+                                ❌ ${summary.invalid_files} of ${summary.total_files} files have errors<br>
+                                📋 ${summary.total_errors} error(s) found
+                            </div>
+                            <details style="margin-top: 15px;">
+                                <summary style="cursor: pointer; font-weight: 600;">📋 View Error Details</summary>
+                                ${errorDetails}
+                            </details>
+                            <div style="margin-top: 15px; padding: 10px; background: #fff; border-radius: 4px;">
+                                <strong>🔧 What to do:</strong><br>
+                                These configuration errors won't prevent installation, but may cause issues.
+                                Contact your admin or fix the configuration files before installing.
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <div class="alert alert-warning">
+                        <strong>❌ Failed to validate</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+            
+            // Re-enable button
+            btn.disabled = false;
+            btn.textContent = '🔍 Validate Configurations';
         }
         
         async function startInstall() {
@@ -913,6 +1016,42 @@ def get_packages():
         return jsonify({
             "packages": [],
             "invalid_packages": [],
+            "error": str(e)
+        })
+
+@app.route("/api/package/<package_id>/validate-configs")
+def validate_package_configs(package_id):
+    """Validate all configuration files in a package"""
+    import sys
+    sys.path.insert(0, str(Path(__file__).parent / "scripts"))
+    
+    try:
+        from config_validator import PackageConfigValidator
+        
+        packages_dir = ROOT_DIR / "config-packages"
+        package_path = packages_dir / package_id
+        
+        if not package_path.exists():
+            return jsonify({
+                "valid": False,
+                "error": f"Package not found: {package_id}"
+            })
+        
+        # Run validation
+        validator = PackageConfigValidator(package_path)
+        all_valid, results = validator.validate_package_configs()
+        summary = validator.get_summary(results)
+        
+        return jsonify({
+            "valid": all_valid,
+            "summary": summary,
+            "results": results
+        })
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            "valid": False,
             "error": str(e)
         })
 

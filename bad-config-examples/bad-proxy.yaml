@@ -1,0 +1,7 @@
+company:
+  name: "My Company"
+
+environment:
+  proxy:
+    http: "proxy.example.com:8080"  # Missing http:// or https:// protocol!
+    https: "socks5://proxy.example.com:1080"  # Wrong protocol - must be http:// or https://

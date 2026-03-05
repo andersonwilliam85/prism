@@ -1,0 +1,8 @@
+company:
+  name: "My Company"
+  domain: "example.com"
+
+git:
+  url: "ftp://invalid-protocol.com"  # Invalid protocol - must be http://, https://, or git@
+  enterprise:
+    enterprise_url: "not-a-valid-url"  # Invalid URL format

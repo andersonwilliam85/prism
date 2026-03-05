@@ -1,0 +1,7 @@
+company:
+  domain: "example.com"
+  # Missing 'name' field - will cause validation error!
+
+environment:
+  proxy:
+    http: "http://proxy.example.com:8080"
