@@ -39,6 +39,56 @@ INDEX_HTML = """
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prism Installer</title>
     <style>
+        :root {
+            /* Ocean Blue Theme (Default) */
+            --gradient-1: #0093E9;
+            --gradient-2: #80D0C7;
+            --gradient-3: #13547a;
+            --gradient-4: #009ffd;
+            --gradient-5: #2a2a72;
+        }
+        
+        /* Theme Definitions */
+        [data-theme="ocean"] {
+            --gradient-1: #0093E9;
+            --gradient-2: #80D0C7;
+            --gradient-3: #13547a;
+            --gradient-4: #009ffd;
+            --gradient-5: #2a2a72;
+        }
+        
+        [data-theme="purple"] {
+            --gradient-1: #667eea;
+            --gradient-2: #764ba2;
+            --gradient-3: #f093fb;
+            --gradient-4: #4facfe;
+            --gradient-5: #00f2fe;
+        }
+        
+        [data-theme="forest"] {
+            --gradient-1: #134E5E;
+            --gradient-2: #71B280;
+            --gradient-3: #56ab2f;
+            --gradient-4: #a8e063;
+            --gradient-5: #0f9b0f;
+        }
+        
+        [data-theme="sunset"] {
+            --gradient-1: #f12711;
+            --gradient-2: #f5af19;
+            --gradient-3: #ff6a00;
+            --gradient-4: #ee0979;
+            --gradient-5: #ff512f;
+        }
+        
+        [data-theme="midnight"] {
+            --gradient-1: #2c3e50;
+            --gradient-2: #3498db;
+            --gradient-3: #34495e;
+            --gradient-4: #2980b9;
+            --gradient-5: #1abc9c;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -47,7 +97,12 @@ INDEX_HTML = """
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            background: linear-gradient(135deg, 
+                var(--gradient-1) 0%, 
+                var(--gradient-2) 25%, 
+                var(--gradient-3) 50%, 
+                var(--gradient-4) 75%, 
+                var(--gradient-5) 100%);
             background-size: 400% 400%;
             animation: gradientShift 15s ease infinite;
             min-height: 100vh;
@@ -55,6 +110,7 @@ INDEX_HTML = """
             align-items: center;
             justify-content: center;
             padding: 20px;
+            transition: background 0.5s ease;
         }
         
         @keyframes gradientShift {
@@ -80,7 +136,12 @@ INDEX_HTML = """
         
         .header h1 {
             font-size: 2.5em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            background: linear-gradient(135deg, 
+                var(--gradient-1) 0%, 
+                var(--gradient-2) 25%, 
+                var(--gradient-3) 50%, 
+                var(--gradient-4) 75%, 
+                var(--gradient-5) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -175,7 +236,10 @@ INDEX_HTML = """
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background: linear-gradient(135deg, 
+                var(--gradient-1) 0%, 
+                var(--gradient-2) 50%, 
+                var(--gradient-3) 100%);
             color: white;
             position: relative;
             overflow: hidden;
@@ -183,7 +247,7 @@ INDEX_HTML = """
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
         
         .btn-secondary {
@@ -206,7 +270,12 @@ INDEX_HTML = """
         
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            background: linear-gradient(90deg,
+                var(--gradient-1) 0%, 
+                var(--gradient-2) 25%, 
+                var(--gradient-3) 50%, 
+                var(--gradient-4) 75%, 
+                var(--gradient-5) 100%);
             background-size: 200% 100%;
             animation: progressShimmer 2s ease infinite;
             transition: width 0.5s;
@@ -242,7 +311,7 @@ INDEX_HTML = """
         
         .spinner {
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
+            border-top: 4px solid var(--gradient-1);
             border-radius: 50%;
             width: 50px;
             height: 50px;
@@ -271,9 +340,73 @@ INDEX_HTML = """
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
+        
+        /* Theme Switcher Styles */
+        .theme-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 8px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .theme-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .theme-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .theme-btn.active {
+            box-shadow: 0 0 0 3px white, 0 0 0 5px var(--gradient-1);
+            transform: scale(1.05);
+        }
+        
+        .theme-btn[data-theme="ocean"] {
+            background: linear-gradient(135deg, #0093E9, #80D0C7);
+        }
+        
+        .theme-btn[data-theme="purple"] {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+        
+        .theme-btn[data-theme="forest"] {
+            background: linear-gradient(135deg, #134E5E, #71B280);
+        }
+        
+        .theme-btn[data-theme="sunset"] {
+            background: linear-gradient(135deg, #f12711, #f5af19);
+        }
+        
+        .theme-btn[data-theme="midnight"] {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+        }
     </style>
 </head>
 <body>
+    <!-- Theme Switcher -->
+    <div class="theme-switcher">
+        <button class="theme-btn active" data-theme="ocean" title="Ocean Blue" aria-label="Ocean Blue Theme"></button>
+        <button class="theme-btn" data-theme="purple" title="Purple Haze" aria-label="Purple Haze Theme"></button>
+        <button class="theme-btn" data-theme="forest" title="Forest Green" aria-label="Forest Green Theme"></button>
+        <button class="theme-btn" data-theme="sunset" title="Sunset Orange" aria-label="Sunset Orange Theme"></button>
+        <button class="theme-btn" data-theme="midnight" title="Midnight Dark" aria-label="Midnight Dark Theme"></button>
+    </div>
+    
     <div class="container">
         <div class="header">
             <h1>🔷 Prism</h1>
@@ -468,6 +601,39 @@ INDEX_HTML = """
     </div>
     
     <script>
+        // Theme Switcher Logic
+        (function() {
+            const themes = ['ocean', 'purple', 'forest', 'sunset', 'midnight'];
+            const savedTheme = localStorage.getItem('prismTheme') || 'ocean';
+            
+            // Apply saved theme on load
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            // Set active button
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                if (btn.dataset.theme === savedTheme) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+                
+                // Add click handler
+                btn.addEventListener('click', function() {
+                    const theme = this.dataset.theme;
+                    
+                    // Update DOM
+                    document.documentElement.setAttribute('data-theme', theme);
+                    
+                    // Update active button
+                    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Save to localStorage
+                    localStorage.setItem('prismTheme', theme);
+                });
+            });
+        })();
+        
         let currentStep = 1;
         const totalSteps = 7;
         let selectedPackage = null;

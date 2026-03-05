@@ -476,6 +476,9 @@ theme:
 extra_css:
     - assets/stylesheets/company.css
 
+extra_javascript:
+    - assets/javascripts/theme-switcher.js
+
 plugins:
   - search:
       lang: en
@@ -525,45 +528,132 @@ nav:
     return config_path
 
 def generate_company_css(docs_server):
-    """Generate company-branded CSS (loads from config if present)"""
-    css_content = """/* Company Brand Colors (customize in your config package) */
+    """Generate company-branded CSS with customizable themes"""
+    css_content = """/* Prism Documentation Themes - Customizable Color Schemes */
+
+/* Ocean Blue Theme (Default) */
 :root {
-  /* Primary Colors */
-  --md-primary-fg-color: #0053e2;        /* Blue.100 */
-  --md-primary-fg-color--light: #4080ff;
-  --md-primary-fg-color--dark: #003db3;
-  --md-accent-fg-color: #ffc220;         /* Spark.100 */
+  /* Ocean Blue Colors */
+  --prism-primary: #0093E9;
+  --prism-secondary: #80D0C7;
+  --prism-accent: #009ffd;
+  --prism-gradient-1: #0093E9;
+  --prism-gradient-2: #80D0C7;
+  --prism-gradient-3: #13547a;
+  --prism-gradient-4: #009ffd;
+  --prism-gradient-5: #2a2a72;
+  
+  /* MkDocs theme integration */
+  --md-primary-fg-color: var(--prism-primary);
+  --md-primary-fg-color--light: var(--prism-secondary);
+  --md-primary-fg-color--dark: var(--prism-gradient-3);
+  --md-accent-fg-color: var(--prism-accent);
   
   /* Background */
   --md-primary-bg-color: #ffffff;
   --md-default-bg-color: #fafafa;
   
   /* Text */
-  --md-default-fg-color: #4a4a4a;        /* Gray.160 */
+  --md-default-fg-color: #4a4a4a;
   --md-default-fg-color--light: #757575;
   
   /* Success/Error */
-  --md-success-fg-color: #2a8703;        /* Green.100 */
-  --md-error-fg-color: #ea1100;          /* Red.100 */
-  --md-warning-fg-color: #995213;        /* Spark.140 */
+  --md-success-fg-color: #10b981;
+  --md-error-fg-color: #ef4444;
+  --md-warning-fg-color: #f59e0b;
+}
+
+/* Purple Haze Theme */
+[data-prism-theme="purple"] {
+  --prism-primary: #667eea;
+  --prism-secondary: #764ba2;
+  --prism-accent: #f093fb;
+  --prism-gradient-1: #667eea;
+  --prism-gradient-2: #764ba2;
+  --prism-gradient-3: #f093fb;
+  --prism-gradient-4: #4facfe;
+  --prism-gradient-5: #00f2fe;
+  
+  --md-primary-fg-color: var(--prism-primary);
+  --md-primary-fg-color--light: var(--prism-secondary);
+  --md-primary-fg-color--dark: #4a5bb5;
+  --md-accent-fg-color: var(--prism-accent);
+}
+
+/* Forest Green Theme */
+[data-prism-theme="forest"] {
+  --prism-primary: #134E5E;
+  --prism-secondary: #71B280;
+  --prism-accent: #56ab2f;
+  --prism-gradient-1: #134E5E;
+  --prism-gradient-2: #71B280;
+  --prism-gradient-3: #56ab2f;
+  --prism-gradient-4: #a8e063;
+  --prism-gradient-5: #0f9b0f;
+  
+  --md-primary-fg-color: var(--prism-primary);
+  --md-primary-fg-color--light: var(--prism-secondary);
+  --md-primary-fg-color--dark: #0d3a47;
+  --md-accent-fg-color: var(--prism-accent);
+}
+
+/* Sunset Orange Theme */
+[data-prism-theme="sunset"] {
+  --prism-primary: #f12711;
+  --prism-secondary: #f5af19;
+  --prism-accent: #ff6a00;
+  --prism-gradient-1: #f12711;
+  --prism-gradient-2: #f5af19;
+  --prism-gradient-3: #ff6a00;
+  --prism-gradient-4: #ee0979;
+  --prism-gradient-5: #ff512f;
+  
+  --md-primary-fg-color: var(--prism-primary);
+  --md-primary-fg-color--light: var(--prism-secondary);
+  --md-primary-fg-color--dark: #c11f0e;
+  --md-accent-fg-color: var(--prism-accent);
+}
+
+/* Midnight Dark Theme */
+[data-prism-theme="midnight"] {
+  --prism-primary: #2c3e50;
+  --prism-secondary: #3498db;
+  --prism-accent: #1abc9c;
+  --prism-gradient-1: #2c3e50;
+  --prism-gradient-2: #3498db;
+  --prism-gradient-3: #34495e;
+  --prism-gradient-4: #2980b9;
+  --prism-gradient-5: #1abc9c;
+  
+  --md-primary-fg-color: var(--prism-primary);
+  --md-primary-fg-color--light: var(--prism-secondary);
+  --md-primary-fg-color--dark: #1a252f;
+  --md-accent-fg-color: var(--prism-accent);
 }
 
 /* Dark mode overrides */
 [data-md-color-scheme="slate"] {
-  --md-primary-fg-color: #4080ff;
-  --md-accent-fg-color: #ffc220;
-  --md-default-bg-color: #1a1a1a;
+  --md-primary-bg-color: #1a1a1a;
+  --md-default-bg-color: #121212;
   --md-default-fg-color: #e0e0e0;
+  --md-default-fg-color--light: #b0b0b0;
 }
 
-/* Custom header styling */
+/* Custom header with gradient */
 .md-header {
-  background-color: var(--md-primary-fg-color);
+  background: linear-gradient(135deg, 
+    var(--prism-gradient-1) 0%, 
+    var(--prism-gradient-2) 50%, 
+    var(--prism-gradient-3) 100%);
 }
 
-/* Spark accent on hover */
+/* Gradient accent on hover */
 .md-nav__link:hover {
   border-left: 3px solid var(--md-accent-fg-color);
+}
+
+.md-nav__link--active {
+  border-left: 3px solid var(--md-primary-fg-color);
 }
 
 /* Card grid for homepage */
@@ -579,12 +669,102 @@ def generate_company_css(docs_server):
   border-radius: 8px;
   padding: 1.5rem;
   transition: all 0.3s ease;
+  background: linear-gradient(135deg, 
+    rgba(0, 147, 233, 0.02) 0%, 
+    rgba(128, 208, 199, 0.02) 100%);
+}
+
+[data-prism-theme="purple"] .grid.cards > div {
+  background: linear-gradient(135deg, 
+    rgba(102, 126, 234, 0.02) 0%, 
+    rgba(240, 147, 251, 0.02) 100%);
+}
+
+[data-prism-theme="forest"] .grid.cards > div {
+  background: linear-gradient(135deg, 
+    rgba(19, 78, 94, 0.02) 0%, 
+    rgba(113, 178, 128, 0.02) 100%);
+}
+
+[data-prism-theme="sunset"] .grid.cards > div {
+  background: linear-gradient(135deg, 
+    rgba(241, 39, 17, 0.02) 0%, 
+    rgba(245, 175, 25, 0.02) 100%);
+}
+
+[data-prism-theme="midnight"] .grid.cards > div {
+  background: linear-gradient(135deg, 
+    rgba(44, 62, 80, 0.02) 0%, 
+    rgba(52, 152, 219, 0.02) 100%);
 }
 
 .grid.cards > div:hover {
   border-color: var(--md-accent-fg-color);
   transform: translateY(-4px);
-  box-shadow: 0 4px 12px rgba(0, 83, 226, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Theme Switcher (inject via JavaScript) */
+.prism-theme-switcher {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  padding: 8px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+}
+
+.prism-theme-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.prism-theme-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.prism-theme-btn.active {
+  box-shadow: 0 0 0 3px white, 0 0 0 5px var(--md-primary-fg-color);
+  transform: scale(1.05);
+}
+
+.prism-theme-btn[data-theme="ocean"] {
+  background: linear-gradient(135deg, #0093E9, #80D0C7);
+}
+
+.prism-theme-btn[data-theme="purple"] {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.prism-theme-btn[data-theme="forest"] {
+  background: linear-gradient(135deg, #134E5E, #71B280);
+}
+
+.prism-theme-btn[data-theme="sunset"] {
+  background: linear-gradient(135deg, #f12711, #f5af19);
+}
+
+.prism-theme-btn[data-theme="midnight"] {
+  background: linear-gradient(135deg, #2c3e50, #3498db);
+}
+
+/* Smooth theme transitions */
+:root,
+[data-prism-theme],
+.md-header,
+.grid.cards > div {
+  transition: background 0.5s ease, border-color 0.3s ease;
 }
 """
     
@@ -592,6 +772,90 @@ def generate_company_css(docs_server):
     css_path.write_text(css_content)
     
     return css_path
+
+def generate_theme_switcher_js(docs_server):
+    """Generate theme switcher JavaScript"""
+    js_content = """// Prism Theme Switcher for MkDocs
+(function() {
+    'use strict';
+    
+    const themes = [
+        { name: 'ocean', title: 'Ocean Blue' },
+        { name: 'purple', title: 'Purple Haze' },
+        { name: 'forest', title: 'Forest Green' },
+        { name: 'sunset', title: 'Sunset Orange' },
+        { name: 'midnight', title: 'Midnight Dark' }
+    ];
+    
+    // Get saved theme or default to ocean
+    const savedTheme = localStorage.getItem('prismDocsTheme') || 'ocean';
+    
+    // Apply theme on load
+    function applyTheme(themeName) {
+        document.documentElement.setAttribute('data-prism-theme', themeName);
+    }
+    
+    // Create theme switcher UI
+    function createThemeSwitcher() {
+        const switcher = document.createElement('div');
+        switcher.className = 'prism-theme-switcher';
+        switcher.setAttribute('role', 'group');
+        switcher.setAttribute('aria-label', 'Theme Switcher');
+        
+        themes.forEach(theme => {
+            const btn = document.createElement('button');
+            btn.className = 'prism-theme-btn';
+            btn.setAttribute('data-theme', theme.name);
+            btn.setAttribute('title', theme.title);
+            btn.setAttribute('aria-label', theme.title + ' Theme');
+            
+            if (theme.name === savedTheme) {
+                btn.classList.add('active');
+            }
+            
+            btn.addEventListener('click', function() {
+                const selectedTheme = this.getAttribute('data-theme');
+                
+                // Update theme
+                applyTheme(selectedTheme);
+                
+                // Update active state
+                document.querySelectorAll('.prism-theme-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                // Save preference
+                localStorage.setItem('prismDocsTheme', selectedTheme);
+            });
+            
+            switcher.appendChild(btn);
+        });
+        
+        document.body.appendChild(switcher);
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            applyTheme(savedTheme);
+            createThemeSwitcher();
+        });
+    } else {
+        applyTheme(savedTheme);
+        createThemeSwitcher();
+    }
+})();
+"""
+    
+    # Create javascripts directory
+    js_dir = docs_server / "overrides" / "assets" / "javascripts"
+    js_dir.mkdir(parents=True, exist_ok=True)
+    
+    js_path = js_dir / "theme-switcher.js"
+    js_path.write_text(js_content)
+    
+    return js_path
 
 def build_docs(docs_server):
     """Build the documentation site"""
@@ -703,6 +967,7 @@ def main():
     generate_career_dashboard(docs_server, user_profile)
     generate_mkdocs_config(docs_server, user_profile)
     generate_company_css(docs_server)
+    generate_theme_switcher_js(docs_server)
     
     # Create placeholder pages
     (docs_server / "docs" / "projects" / "index.md").write_text("# Projects\n\n*Auto-scanning your projects...*")
