@@ -5,9 +5,9 @@
 This onboarding package supports **multi-level config inheritance** for enterprise organizations with complex structures:
 
 ```
-Company (Walmart)
+Company (ACME Corp)
   ↓
-Sub-Organization (Walmart US, Sam's Club, Walmart International)
+Sub-Organization (ACME Corp US, Sam's Club, ACME Corp International)
   ↓
 Department (Supply Chain, E-commerce, Data Engineering)
   ↓
@@ -34,7 +34,7 @@ Edit `config/inheritance.yaml`:
 ```yaml
 chain:
   company:
-    file: "config/base/walmart.yaml"  # Required
+    file: "config/base/acme.yaml"  # Required
   
   sub_org:
     file: null  # Will prompt during install
@@ -51,10 +51,10 @@ chain:
 
 ### 2. Create Configs for Each Level
 
-**Company Base** (`config/base/walmart.yaml`):
+**Company Base** (`config/base/acme.yaml`):
 ```yaml
 company:
-  name: "Walmart"
+  name: "ACME Corp"
 
 environment:
   proxy:
@@ -65,11 +65,11 @@ tools_required:
   - kubectl
 ```
 
-**Sub-Org** (`config/orgs/walmart-us.yaml`):
+**Sub-Org** (`config/orgs/acme-us.yaml`):
 ```yaml
 sub_org:
-  id: "walmart-us"
-  name: "Walmart US"
+  id: "acme-us"
+  name: "ACME Corp US"
 
 # Inherits: proxy, git, kubectl
 # Adds:
@@ -104,7 +104,7 @@ tools_required:
 
 repositories:
   - name: "receiving-api"
-    url: "https://gecgithub01.walmart.com/supply-chain/receiving-api"
+    url: "https://github.acmecorp.com/supply-chain/receiving-api"
 ```
 
 ### 3. Configs Get Merged Automatically
@@ -191,14 +191,14 @@ environment:
 ```bash
 python3 install.py
 
-? Select your sub-organization: Walmart US
+? Select your sub-organization: ACME Corp US
 ? Select your department: Supply Chain Technology
 ? Select your team: Receiving Systems
 ```
 
 **Configs loaded:**
-1. `config/base/walmart.yaml` (company)
-2. `config/orgs/walmart-us.yaml` (sub-org)
+1. `config/base/acme.yaml` (company)
+2. `config/orgs/acme-us.yaml` (sub-org)
 3. `config/departments/supply-chain.yaml` (dept)
 4. `config/teams/receiving-systems.yaml` (team)
 5. `config/user-profile.yaml` (user)
@@ -216,14 +216,14 @@ tools_required:
   - kubectl
   - gh
 
-# From Walmart US:
+# From ACME Corp US:
 tools_required:
   - bq
   - gcloud
 
 cloud:
   gcp:
-    project_prefix: "walmart-us"
+    project_prefix: "acme-us"
 
 # From Supply Chain:
 tools_required:
@@ -240,7 +240,7 @@ tools_required:
 
 repositories:
   - name: "receiving-api"
-    url: "https://gecgithub01.walmart.com/supply-chain/receiving-api"
+    url: "https://github.acmecorp.com/supply-chain/receiving-api"
 
 team:
   manager: "Jane Smith"
@@ -250,7 +250,7 @@ team:
 git:
   user:
     name: "John Developer"
-    email: "john.developer@walmart.com"
+    email: "john.developer@acme.com"
 
 career:
   goals:
@@ -265,7 +265,7 @@ career:
 - **Total: 9 tools** (all inherited and merged!)
 
 **Documentation homepage shows:**
-- Company resources (DX, ME@Walmart, Code Puppy)
+- Company resources (DX, Internal Dev Portal, Code Puppy)
 - US resources (GCP Console, BigQuery)
 - Dept resources (Supply Chain Confluence, WMS Docs)
 - Team resources (Receiving API docs, Team Slack)
@@ -279,11 +279,11 @@ Use `${VAR}` placeholders in configs:
 ```yaml
 # In config file:
 repositories:
-  - url: "https://gecgithub01.walmart.com/${TEAM}/my-repo"
+  - url: "https://github.acmecorp.com/${TEAM}/my-repo"
 
 # At runtime:
 # export TEAM=receiving-systems
-# Result: https://gecgithub01.walmart.com/receiving-systems/my-repo
+# Result: https://github.acmecorp.com/receiving-systems/my-repo
 ```
 
 With defaults:
@@ -309,7 +309,7 @@ cloud:
 ### Setting Up Your Company
 
 1. **Fork this repo**
-2. **Edit `config/base/your-company.yaml`** (replace Walmart)
+2. **Edit `config/base/your-company.yaml`** (replace ACME Corp)
 3. **Create sub-org configs** in `config/orgs/`
 4. **Create department configs** in `config/departments/`
 5. **Create team configs** in `config/teams/`
@@ -353,8 +353,8 @@ from scripts.config_merger import load_merged_config
 
 # Load merged config
 config = load_merged_config(
-    company="config/base/walmart.yaml",
-    sub_org="config/orgs/walmart-us.yaml",
+    company="config/base/acme.yaml",
+    sub_org="config/orgs/acme-us.yaml",
     department="config/departments/supply-chain.yaml",
     team="config/teams/receiving-systems.yaml",
     user="config/user-profile.yaml"
@@ -380,8 +380,8 @@ python3 scripts/config_merger.py
 ## Examples
 
 See:
-- `config/base/walmart.yaml` - Company example
-- `config/orgs/walmart-us.yaml` - Sub-org example
+- `config/base/acme.yaml` - Company example
+- `config/orgs/acme-us.yaml` - Sub-org example
 - `config/departments/supply-chain.yaml` - Department example
 - `config/teams/receiving-systems.yaml` - Team example
 

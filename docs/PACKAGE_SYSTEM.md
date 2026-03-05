@@ -19,7 +19,7 @@ The Config Package System allows companies to create, distribute, and install co
 
 ## 📦 Available Packages
 
-### Walmart Config (Complete Example)
+### Example Configs (ACME Corp & Personal Dev)
 **Package:** `walmart-config`  
 **Type:** Company (large enterprise)  
 **Includes:**
