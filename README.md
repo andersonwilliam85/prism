@@ -102,7 +102,6 @@ The installer will:
 | Tool | Purpose | Status |
 |------|---------|--------|
 | **Code Puppy** | AI coding assistant | Available at puppy.walmart.com |
-| **Cortex** | Advanced AI features | Coming soon! |
 
 ## Folder Structure Created
 
@@ -204,8 +203,6 @@ career:
 All of this data appears in your **Career Dashboard** for easy access!
 
 ### Create Projects
-
-**Note:** Project scaffolding will be handled by **Cortex** (coming soon!).
 
 For now, manually create projects in the appropriate folder:
 
