@@ -170,11 +170,50 @@ def print_banner(platform_name, platform_detail):
 
 # Placeholder for now - we'll build the full installer in the next iteration
 def main():
-    parser = argparse.ArgumentParser(description="Dev Environment Setup")
+    parser = argparse.ArgumentParser(
+        description="Dev Environment Setup",
+        epilog="""Registry Configuration:
+  Use --npm-registry to specify custom npm registry
+  Use --unpkg-url to specify custom unpkg CDN URL
+  Or set environment variables:
+    PRISM_NPM_REGISTRY - Custom npm registry URL
+    PRISM_UNPKG_URL - Custom unpkg CDN URL
+  
+  Examples:
+    # Use custom corporate registry
+    python3 install.py --npm-registry https://npm.mycompany.com
+    
+    # Use custom CDN
+    python3 install.py --unpkg-url https://cdn.mycompany.com/npm
+    
+    # Use environment variables
+    export PRISM_NPM_REGISTRY=https://npm.mycompany.com
+    python3 install.py
+""",
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     parser.add_argument("--resume", action="store_true", help="Resume from last checkpoint")
     parser.add_argument("--status", action="store_true", help="Show current progress")
     parser.add_argument("--config", help="Use config file (non-interactive)")
+    parser.add_argument("--package", help="Specify config package to use (e.g., @prism/personal-dev-config)")
+    parser.add_argument(
+        "--npm-registry",
+        help="Custom npm registry URL (overrides PRISM_NPM_REGISTRY env var)"
+    )
+    parser.add_argument(
+        "--unpkg-url",
+        help="Custom unpkg CDN URL (overrides PRISM_UNPKG_URL env var)"
+    )
     args = parser.parse_args()
+    
+    # Set registry environment variables if provided via CLI
+    if args.npm_registry:
+        os.environ["PRISM_NPM_REGISTRY"] = args.npm_registry
+        print(f"📦 Using custom npm registry: {args.npm_registry}")
+    
+    if args.unpkg_url:
+        os.environ["PRISM_UNPKG_URL"] = args.unpkg_url
+        print(f"📦 Using custom unpkg CDN: {args.unpkg_url}")
     
     if args.status:
         show_progress()

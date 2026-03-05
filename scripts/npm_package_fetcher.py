@@ -21,9 +21,13 @@ from pathlib import Path
 import tempfile
 import shutil
 
-# NPM registry defaults
-UNPKG_BASE = "https://unpkg.com"
-NPM_REGISTRY = "https://registry.npmjs.org"
+# NPM registry defaults (can be overridden via env vars or CLI args)
+DEFAULT_UNPKG_BASE = "https://unpkg.com"
+DEFAULT_NPM_REGISTRY = "https://registry.npmjs.org"
+
+# Environment variable overrides
+UNPKG_BASE = os.environ.get("PRISM_UNPKG_URL", DEFAULT_UNPKG_BASE)
+NPM_REGISTRY = os.environ.get("PRISM_NPM_REGISTRY", DEFAULT_NPM_REGISTRY)
 
 # Prism package scope
 PRISM_SCOPE = "@prism"
@@ -40,7 +44,7 @@ AVAILABLE_PACKAGES = [
 ]
 
 
-def fetch_package_metadata(package_name: str) -> dict:
+def fetch_package_metadata(package_name: str, registry: str = None) -> dict:
     """
     Fetch package metadata from npm registry.
     
@@ -50,8 +54,10 @@ def fetch_package_metadata(package_name: str) -> dict:
     Returns:
         Package metadata dict
     """
-    url = f"{NPM_REGISTRY}/{package_name}"
-    print(f"📡 Fetching metadata from npm: {package_name}")
+    registry_url = registry or NPM_REGISTRY
+    url = f"{registry_url}/{package_name}"
+    print(f"📡 Fetching metadata from registry: {package_name}")
+    print(f"   Registry: {registry_url}")
     
     try:
         with urllib.request.urlopen(url, timeout=10) as response:
@@ -64,7 +70,7 @@ def fetch_package_metadata(package_name: str) -> dict:
         return None
 
 
-def fetch_package_file(package_name: str, file_path: str, version: str = "latest") -> str:
+def fetch_package_file(package_name: str, file_path: str, version: str = "latest", unpkg_url: str = None) -> str:
     """
     Fetch a specific file from a package via unpkg CDN.
     
@@ -76,7 +82,8 @@ def fetch_package_file(package_name: str, file_path: str, version: str = "latest
     Returns:
         File content as string
     """
-    url = f"{UNPKG_BASE}/{package_name}@{version}/{file_path}"
+    unpkg_base = unpkg_url or UNPKG_BASE
+    url = f"{unpkg_base}/{package_name}@{version}/{file_path}"
     print(f"📥 Downloading: {url}")
     
     try:
@@ -90,7 +97,7 @@ def fetch_package_file(package_name: str, file_path: str, version: str = "latest
         return None
 
 
-def fetch_package(package_name: str, version: str = "latest", dest_dir: str = None) -> str:
+def fetch_package(package_name: str, version: str = "latest", dest_dir: str = None, unpkg_url: str = None) -> str:
     """
     Fetch entire package and extract to directory.
     
@@ -105,7 +112,7 @@ def fetch_package(package_name: str, version: str = "latest", dest_dir: str = No
     print(f"\n🎁 Fetching package: {package_name}@{version}")
     
     # Try npm first
-    package_yaml = fetch_package_file(package_name, "package.yaml", version)
+    package_yaml = fetch_package_file(package_name, "package.yaml", version, unpkg_url)
     
     if package_yaml:
         # Success! Save to destination
@@ -120,7 +127,7 @@ def fetch_package(package_name: str, version: str = "latest", dest_dir: str = No
         
         # Try to fetch other common files
         for file in ["README.md", "package.json"]:
-            content = fetch_package_file(package_name, file, version)
+            content = fetch_package_file(package_name, file, version, unpkg_url)
             if content:
                 (dest_path / file).write_text(content)
         
@@ -174,7 +181,7 @@ def fetch_local_package(package_name: str) -> str:
     return None
 
 
-def list_available_packages(use_npm: bool = True) -> list:
+def list_available_packages(use_npm: bool = True, registry: str = None) -> list:
     """
     List all available Prism config packages.
     
@@ -191,7 +198,7 @@ def list_available_packages(use_npm: bool = True) -> list:
         print("=" * 60)
         
         for pkg_name in AVAILABLE_PACKAGES:
-            metadata = fetch_package_metadata(pkg_name)
+            metadata = fetch_package_metadata(pkg_name, registry)
             if metadata:
                 latest_version = metadata.get("dist-tags", {}).get("latest", "unknown")
                 description = metadata.get("description", "No description")
@@ -241,7 +248,25 @@ def list_available_packages(use_npm: bool = True) -> list:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Fetch Prism config packages from npm or local directory"
+        description="Fetch Prism config packages from npm or local directory",
+        epilog="""Registry Configuration:
+  Use --registry to specify custom npm registry
+  Use --unpkg to specify custom unpkg CDN URL
+  Or set environment variables:
+    PRISM_NPM_REGISTRY - Custom npm registry URL
+    PRISM_UNPKG_URL - Custom unpkg CDN URL
+""",
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    
+    # Global registry options
+    parser.add_argument(
+        "--registry",
+        help="Custom npm registry URL (default: https://registry.npmjs.org)"
+    )
+    parser.add_argument(
+        "--unpkg",
+        help="Custom unpkg CDN URL (default: https://unpkg.com)"
     )
     
     subparsers = parser.add_subparsers(dest="command", help="Command to run")
@@ -262,11 +287,20 @@ def main():
     
     args = parser.parse_args()
     
+    # Show registry configuration
+    if args.command and not getattr(args, 'local', False):
+        registry = args.registry or NPM_REGISTRY
+        unpkg = args.unpkg or UNPKG_BASE
+        print(f"📦 Registry Configuration:")
+        print(f"   npm registry: {registry}")
+        print(f"   unpkg CDN: {unpkg}")
+        print()
+    
     if args.command == "list":
-        list_available_packages(use_npm=not args.local)
+        list_available_packages(use_npm=not args.local, registry=args.registry)
     
     elif args.command == "fetch":
-        result = fetch_package(args.package, args.version, args.dest)
+        result = fetch_package(args.package, args.version, args.dest, args.unpkg)
         if result:
             sys.exit(0)
         else:

@@ -141,7 +141,19 @@ Choose from pre-built configurations published on npm:
 **Packages are fetched from npm** (via unpkg CDN) automatically!  
 No npm installation required. Works offline with local fallback.
 
-See [NPM Packages Documentation](docs/NPM_PACKAGES.md) for details.
+**Custom Registry Support:**  
+Use your own npm registry for corporate/air-gapped environments:
+
+```bash
+# Use custom registry
+python3 install.py --npm-registry https://npm.mycompany.com
+
+# Or set environment variable
+export PRISM_NPM_REGISTRY=https://npm.mycompany.com
+python3 install.py
+```
+
+See [Custom Registry Documentation](docs/CUSTOM_REGISTRY.md) for details.
 
 ### 📝 **Career Management**
 
