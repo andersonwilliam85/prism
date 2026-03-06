@@ -887,31 +887,16 @@ INDEX_HTML = """
             </div>
         </div>
         
-        <!-- Step 3: Organization -->
+        <!-- Step 3: Prism Tiers (bundled_prisms optional selections) -->
         <div class="step" id="step3">
-            <h2>Organization</h2>
-            
-            <div class="form-group">
-                <label for="subOrg">Sub-Organization</label>
-                <select id="subOrg">
-                    <option value="">Loading...</option>
-                </select>
+            <h2>Configuration Tiers</h2>
+            <p style="color: #666; margin-bottom: 20px;">Select your optional configuration layers. Required tiers are applied automatically.</p>
+
+            <div id="prismTiersContainer">
+                <!-- Populated dynamically by loadPrismTiers() -->
+                <p style="color: #999;">Loading tier options...</p>
             </div>
-            
-            <div class="form-group">
-                <label for="department">Department</label>
-                <select id="department">
-                    <option value="">Select sub-org first...</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="team">Team (Optional)</label>
-                <select id="team">
-                    <option value="">Select department first...</option>
-                </select>
-            </div>
-            
+
             <div class="buttons">
                 <button class="btn-secondary" onclick="prevStep()">← Back</button>
                 <button class="btn-primary" onclick="nextStep()">Next →</button>
@@ -1330,7 +1315,7 @@ INDEX_HTML = """
             
             // Load data for specific steps
             if (currentStep === 2) loadUserInfoFields();  // Load dynamic fields
-            if (currentStep === 3) loadOrganizations();
+            if (currentStep === 3) loadPrismTiers();
             if (currentStep === 4) loadTools();
             if (currentStep === 5) showSummary();
         }
@@ -1343,31 +1328,64 @@ INDEX_HTML = """
             updateProgress();
         }
         
-        async function loadOrganizations() {
-            // Get package-specific metadata
-            const metadataResponse = await fetch(`/api/package/${selectedPackage}/metadata`);
-            const metadata = await metadataResponse.json();
-            
-            // Check if THIS package has organizations/departments/teams
-            hasOrganizations = metadata.has_sub_orgs || metadata.has_departments || metadata.has_teams;
-            
-            if (!hasOrganizations) {
-                // Skip this step automatically - this package doesn't use orgs
-                nextStep();
-                return;
-            }
-            
-            // Load actual org data
-            const response = await fetch('/api/organizations');
-            const data = await response.json();
-            
-            const subOrgSelect = document.getElementById('subOrg');
-            subOrgSelect.innerHTML = '<option value="">None</option>';
-            
-            if (data.sub_orgs) {
-                data.sub_orgs.forEach(org => {
-                    subOrgSelect.innerHTML += `<option value="${org.id}">${org.name}</option>`;
+        // Track selected sub-prisms: { tierName: subPrismId }
+        const selectedSubPrisms = {};
+
+        async function loadPrismTiers() {
+            const container = document.getElementById('prismTiersContainer');
+
+            try {
+                const response = await fetch(`/api/package/${selectedPackage}/tiers`);
+                const data = await response.json();
+
+                if (data.error || !data.optional_tiers || data.optional_tiers.length === 0) {
+                    // No optional tiers — skip step automatically
+                    hasOrganizations = false;
+                    nextStep();
+                    return;
+                }
+
+                hasOrganizations = true;
+                container.innerHTML = '';
+
+                data.optional_tiers.forEach(tier => {
+                    const tierDiv = document.createElement('div');
+                    tierDiv.className = 'form-group';
+
+                    const label = document.createElement('label');
+                    label.textContent = tier.label + (tier.required ? ' *' : '');
+                    label.setAttribute('for', 'tier_' + tier.name);
+
+                    const select = document.createElement('select');
+                    select.id = 'tier_' + tier.name;
+                    select.setAttribute('data-tier', tier.name);
+
+                    const noneOpt = document.createElement('option');
+                    noneOpt.value = '';
+                    noneOpt.textContent = '(None)';
+                    select.appendChild(noneOpt);
+
+                    tier.options.forEach(opt => {
+                        const o = document.createElement('option');
+                        o.value = opt.id;
+                        o.textContent = opt.name + (opt.description ? ' — ' + opt.description : '');
+                        select.appendChild(o);
+                    });
+
+                    select.addEventListener('change', () => {
+                        if (select.value) {
+                            selectedSubPrisms[tier.name] = select.value;
+                        } else {
+                            delete selectedSubPrisms[tier.name];
+                        }
+                    });
+
+                    tierDiv.appendChild(label);
+                    tierDiv.appendChild(select);
+                    container.appendChild(tierDiv);
                 });
+            } catch (err) {
+                container.innerHTML = `<p style="color:#ef4444;">Failed to load tiers: ${err.message}</p>`;
             }
         }
         
@@ -1439,71 +1457,30 @@ INDEX_HTML = """
                 `;
             }
             
-            // Organization section (only if package has org hierarchy: sub_orgs or departments)
-            // Teams alone don't constitute "organizational units" - they're more like groups/squads
-            const hasOrgHierarchy = metadata.has_sub_orgs || metadata.has_departments;
-            
-            if (hasOrgHierarchy) {
-                const subOrg = document.getElementById('subOrg')?.selectedOptions[0]?.text;
-                const dept = document.getElementById('department')?.selectedOptions[0]?.text;
-                
-                let orgHTML = '<h4>🏢 Organization:</h4><div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">';
-                let hasOrgData = false;
-                
-                if (metadata.has_sub_orgs && subOrg && subOrg !== 'None') {
-                    orgHTML += `<p><strong>Sub-Organization:</strong> ${subOrg}</p>`;
-                    hasOrgData = true;
+            // Configuration Tiers section (bundled_prisms optional selections)
+            if (hasOrganizations && Object.keys(selectedSubPrisms).length > 0) {
+                let tierRows = '';
+                for (const [tierName, subId] of Object.entries(selectedSubPrisms)) {
+                    const select = document.getElementById('tier_' + tierName);
+                    const label = select ? (select.options[select.selectedIndex]?.text || subId) : subId;
+                    const tierLabel = tierName.charAt(0).toUpperCase() + tierName.slice(1).replace(/_/g, ' ');
+                    tierRows += `<p><strong>${tierLabel}:</strong> ${label}</p>`;
                 }
-                
-                if (metadata.has_departments && dept && dept !== 'None' && dept !== 'Select sub-org first...') {
-                    orgHTML += `<p><strong>Department:</strong> ${dept}</p>`;
-                    hasOrgData = true;
-                }
-                
-                // If package has teams AND org hierarchy, show teams here too
-                if (metadata.has_teams) {
-                    const teamCheckboxes = document.querySelectorAll('#teamsList input[type="checkbox"]:checked');
-                    if (teamCheckboxes.length > 0) {
-                        const teams = Array.from(teamCheckboxes).map(cb => cb.nextElementSibling?.textContent || '').filter(t => t);
-                        if (teams.length > 0) {
-                            orgHTML += `<p><strong>Teams:</strong> ${teams.join(', ')}</p>`;
-                            hasOrgData = true;
-                        }
-                    }
-                }
-                
-                orgHTML += '</div>';
-                
-                // Only show if we have actual org data selected
-                if (hasOrgData) {
-                    summaryHTML += orgHTML;
-                } else {
-                    // Has org structure but nothing selected
-                    summaryHTML += `
-                        <h4>🏢 Organization:</h4>
-                        <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
-                            <p style="color: #999;"><em>No organizational units selected</em></p>
-                        </div>
-                    `;
-                }
-            } else if (metadata.has_teams) {
-                // Package has teams but NO org hierarchy (e.g., startup-config)
-                // Only show teams section if teams were actually selected
-                const teamCheckboxes = document.querySelectorAll('#teamsList input[type="checkbox"]:checked');
-                if (teamCheckboxes.length > 0) {
-                    const teams = Array.from(teamCheckboxes).map(cb => cb.nextElementSibling?.textContent || '').filter(t => t);
-                    if (teams.length > 0) {
-                        summaryHTML += `
-                            <h4>👥 Teams:</h4>
-                            <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
-                                <p><strong>${teams.length} team(s) selected:</strong> ${teams.join(', ')}</p>
-                            </div>
-                        `;
-                    }
-                }
-                // If no teams selected, don't show anything (teams are optional)
+                summaryHTML += `
+                    <h4>🔷 Configuration Tiers:</h4>
+                    <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                        ${tierRows}
+                    </div>
+                `;
+            } else if (hasOrganizations) {
+                summaryHTML += `
+                    <h4>🔷 Configuration Tiers:</h4>
+                    <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px;">
+                        <p style="color: #999;"><em>No optional tiers selected (required tiers applied automatically)</em></p>
+                    </div>
+                `;
             }
-            
+
             // Tools section (only if package has tools)
             if (metadata.has_tools) {
                 const toolCheckboxes = document.querySelectorAll('#toolsList input[type="checkbox"]:checked');
@@ -1647,7 +1624,8 @@ INDEX_HTML = """
                         package: selectedPackage,
                         userInfo: userInfo,
                         registry: registry,
-                        unpkgUrl: unpkgUrl
+                        unpkgUrl: unpkgUrl,
+                        selectedSubPrisms: selectedSubPrisms
                     })
                 });
                 
@@ -2092,34 +2070,40 @@ def get_package_metadata(package_name):
         with open(pkg_yaml_path) as f:
             pkg_config = yaml.safe_load(f)
         
-        # Determine what's available in this package
-        contents = pkg_config.get('contents', {})
         package_section = pkg_config.get('package', {})
-        
-        # Check for organizations/departments/teams
-        has_sub_orgs = 'sub_orgs' in contents or 'organizations' in contents
-        has_departments = 'departments' in contents
-        has_teams = 'teams' in contents
-        
-        # Check for tools
-        has_tools = 'tools' in package_section or 'tools' in pkg_config
-        
+        bundled_prisms = pkg_config.get('bundled_prisms', {})
+
+        # Detect optional tiers (tiers where not all items are required)
+        has_tiers = bool(bundled_prisms)
+        has_optional_tiers = any(
+            any(not item.get('required', False) for item in items)
+            for items in bundled_prisms.values()
+            if isinstance(items, list)
+        )
+
+        # Check for tools in merged config
+        has_tools = 'tools_required' in pkg_config or 'tools_selected' in pkg_config or \
+                    'tools' in package_section or 'tools' in pkg_config
+
         # Get user info fields count
-        user_fields = package_section.get('user_info_fields', [])
-        
+        user_fields = pkg_config.get('user_info_fields', package_section.get('user_info_fields', []))
+
         # Get package display info
         display_name = package_section.get('name', package_name)
         description = package_section.get('description', '')
-        
+
         metadata = {
             'name': package_name,
             'display_name': display_name,
             'description': description,
-            'has_sub_orgs': has_sub_orgs,
-            'has_departments': has_departments,
-            'has_teams': has_teams,
+            'has_tiers': has_tiers,
+            'has_optional_tiers': has_optional_tiers,
+            # Legacy compat fields (always False now — use tiers API instead)
+            'has_sub_orgs': False,
+            'has_departments': False,
+            'has_teams': False,
             'has_tools': has_tools,
-            'user_fields_count': len(user_fields),
+            'user_fields_count': len(user_fields or []),
             'package_type': package_section.get('type', 'company')
         }
         
@@ -2128,6 +2112,64 @@ def get_package_metadata(package_name):
         import traceback
         traceback.print_exc()
         return jsonify({"error": str(e)})
+
+@app.route("/api/package/<package_name>/tiers")
+def get_package_tiers(package_name):
+    """Return the bundled_prisms tier structure for a package (optional tiers only)."""
+    import sys
+    import yaml
+    sys.path.insert(0, str(Path(__file__).parent / "scripts"))
+
+    try:
+        from package_manager import PackageManager
+        pm = PackageManager()
+
+        packages = pm.discover_packages()
+        pkg = next((p for p in packages if p['name'] == package_name), None)
+
+        if not pkg:
+            return jsonify({"error": "Package not found", "optional_tiers": []})
+
+        pkg_path = Path(pkg['path'])
+        pkg_yaml_path = pkg_path / 'package.yaml'
+
+        if not pkg_yaml_path.exists():
+            return jsonify({"error": "package.yaml not found", "optional_tiers": []})
+
+        with open(pkg_yaml_path) as f:
+            pkg_config = yaml.safe_load(f)
+
+        bundled_prisms = pkg_config.get('bundled_prisms', {})
+
+        # Collect optional tiers (tiers that have at least one non-required item)
+        optional_tiers = []
+        for tier_name, items in bundled_prisms.items():
+            if not isinstance(items, list):
+                continue
+            optional_items = [item for item in items if not item.get('required', False)]
+            if not optional_items:
+                continue  # skip fully-required tiers
+            optional_tiers.append({
+                'name': tier_name,
+                'label': tier_name.replace('_', ' ').title(),
+                'required': False,
+                'options': [
+                    {
+                        'id': item.get('id', ''),
+                        'name': item.get('name', item.get('id', '')),
+                        'description': item.get('description', ''),
+                    }
+                    for item in optional_items
+                ],
+            })
+
+        return jsonify({'optional_tiers': optional_tiers})
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": str(e), "optional_tiers": []})
+
 
 @app.route("/api/package/<package_name>/user-fields")
 def get_user_fields(package_name):
@@ -2262,47 +2304,49 @@ def install():
         from npm_package_fetcher import fetch_package
         from installer_engine import InstallationEngine
         
-        package_name = data.get('package')
+        prism_id = data.get('package')
         user_info = data.get('userInfo', {})
         registry = data.get('registry', None)
         unpkg_url = data.get('unpkgUrl', None)
-        
+        selected_sub_prisms = data.get('selectedSubPrisms', {})
+
         # Set registry env vars if provided
         if registry:
             os.environ['PRISM_NPM_REGISTRY'] = registry
         if unpkg_url:
             os.environ['PRISM_UNPKG_URL'] = unpkg_url
-        
-        # Fetch the package
-        if not package_name.startswith('@prism/'):
-            package_name = f"@prism/{package_name}-config"
-        
+
+        # Build the npm package name (no -config suffix appended)
+        if prism_id.startswith('@prism/'):
+            npm_name = prism_id
+        else:
+            npm_name = f"@prism/{prism_id}"
+
         # Try to fetch package (will fallback to local if needed)
-        dest_dir = ROOT_DIR / "temp_install" / package_name.split('/')[-1]
+        dest_dir = ROOT_DIR / "temp_install" / prism_id
         dest_dir.parent.mkdir(exist_ok=True)
-        
+
         package_path = None
-        
+
         try:
-            result = fetch_package(package_name, "latest", str(dest_dir), unpkg_url)
+            result = fetch_package(npm_name, "latest", str(dest_dir), unpkg_url)
             if result:
                 package_path = result
         except Exception as e:
             print(f"Package fetch failed: {e}, trying local...")
-            # Try local package
-            pkg_id = package_name.replace('@prism/', '').replace('-config', '')
-            local_path = ROOT_DIR / "prisms" / pkg_id
+            # Try local prism directory
+            local_path = ROOT_DIR / "prisms" / prism_id
             if local_path.exists():
                 package_path = str(local_path)
             else:
                 return jsonify({
                     "success": False,
-                    "error": f"Package not found: {package_name}"
+                    "error": f"Prism not found: {prism_id}"
                 }), 404
-        
+
         # Run full installation using shared engine
         progress_log = []
-        
+
         def progress_callback(step, message, level):
             """Collect progress messages"""
             progress_log.append({
@@ -2310,10 +2354,11 @@ def install():
                 "message": message,
                 "level": level
             })
-        
+
         engine = InstallationEngine(
             config_package=package_path,
             user_info=user_info,
+            selected_sub_prisms=selected_sub_prisms,
             progress_callback=progress_callback
         )
         

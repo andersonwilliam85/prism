@@ -1,0 +1,26 @@
+# ============================================================================
+# FULL-STACK ENGINEER ROLE
+# ============================================================================
+
+role:
+  id: "full-stack"
+  name: "Full-Stack Engineer"
+  description: "Frontend + Backend development"
+
+tools_required:
+  - vscode
+  - docker
+  - git
+  - nodejs
+  - python3
+
+tech_stack:
+  frontend:
+    - React
+    - TypeScript
+  backend:
+    - Node.js
+    - Python
+  databases:
+    - PostgreSQL
+    - Redis

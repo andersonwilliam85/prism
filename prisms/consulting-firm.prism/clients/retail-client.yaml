@@ -1,0 +1,21 @@
+# ============================================================================
+# RETAIL CLIENT CONFIGURATION
+# ============================================================================
+
+client:
+  id: "client-retail"
+  name: "Retail Client"
+  description: "Retail / e-commerce client engagement"
+
+compliance:
+  - pci-dss
+
+tools_required:
+  - nodejs
+  - docker
+
+tech_stack:
+  focus:
+    - E-commerce
+    - Payment processing
+    - Inventory systems

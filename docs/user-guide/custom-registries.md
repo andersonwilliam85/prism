@@ -301,7 +301,7 @@ cd prism
 python3 scripts/npm_package_fetcher.py list
 
 # Run installer
-python3 install.py --package @prism/fortune500-config
+python3 install.py --prism fortune500
 ```
 
 ---

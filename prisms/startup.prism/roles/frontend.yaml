@@ -1,0 +1,22 @@
+# ============================================================================
+# FRONTEND ENGINEER ROLE
+# ============================================================================
+
+role:
+  id: "frontend"
+  name: "Frontend Engineer"
+  description: "React/Vue/Svelte development"
+
+tools_required:
+  - vscode
+  - nodejs
+  - git
+
+tech_stack:
+  frontend:
+    - React
+    - TypeScript
+    - Tailwind CSS
+  tools:
+    - Figma
+    - Storybook

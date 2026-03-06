@@ -1,0 +1,13 @@
+# ============================================================================
+# IT STAFF USER TYPE
+# ============================================================================
+
+user_type:
+  id: "staff"
+  name: "IT Staff"
+  description: "University IT support and administration"
+
+tools_required:
+  - git
+  - docker
+  - python3

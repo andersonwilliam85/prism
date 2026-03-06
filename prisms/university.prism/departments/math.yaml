@@ -1,0 +1,17 @@
+# ============================================================================
+# MATHEMATICS DEPARTMENT
+# ============================================================================
+
+department:
+  id: "math"
+  name: "Mathematics"
+
+tools_required:
+  - python3
+  - git
+
+tech_stack:
+  tools:
+    - SageMath
+    - Mathematica
+    - LaTeX

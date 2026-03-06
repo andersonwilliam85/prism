@@ -1,0 +1,26 @@
+# ============================================================================
+# FINTECH CLIENT CONFIGURATION
+# ============================================================================
+
+client:
+  id: "client-fintech"
+  name: "FinTech Client"
+  description: "Financial technology client engagement"
+
+compliance:
+  - sox
+  - pci-dss
+
+security:
+  vpn_required: true
+  mfa_required: true
+  data_classification: "confidential"
+
+tools_required:
+  - docker
+  - python3
+
+environment:
+  vpn:
+    required: true
+    name: "FinTech Client VPN"

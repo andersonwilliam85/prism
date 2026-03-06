@@ -1,0 +1,17 @@
+# ============================================================================
+# STUDENT USER TYPE
+# ============================================================================
+
+user_type:
+  id: "student"
+  name: "Student"
+  description: "Undergraduate or graduate student"
+
+tools_required:
+  - vscode
+  - git
+  - python3
+
+tools_available:
+  - jupyter
+  - docker

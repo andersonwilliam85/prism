@@ -80,8 +80,8 @@ jobs:
       - name: Run CLI tests
         run: make test-cli
 
-  test-e2e:
-    name: E2E Tests
+  test-web:
+    name: Web API Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -96,27 +96,34 @@ jobs:
       - name: Install dependencies
         run: make install-dev
 
-      - name: Install Playwright browsers
-        run: python -m playwright install chromium --with-deps
+      - name: Run Flask web API tests
+        run: make test-web
 
-      - name: Run E2E tests
-        run: make test-e2e
+  test-integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: make install-dev
+
+      - name: Run integration tests
+        run: make test-integration
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-test-results
-          path: |
-            playwright-report/
-            test-results/
-
-      - name: Upload Playwright traces
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-traces
-          path: test-results/*/trace.zip
+          name: integration-test-results
+          path: .pytest_cache/
 
   coverage:
     name: Code Coverage
@@ -187,7 +194,7 @@ jobs:
   pr-summary:
     name: PR Summary
     runs-on: ubuntu-latest
-    needs: [lint, test-unit, test-cli, test-e2e, coverage]
+    needs: [lint, test-unit, test-cli, test-web, test-integration, coverage]
     if: always()
     steps:
       - name: Check all jobs
@@ -195,7 +202,8 @@ jobs:
           if [ "${{ needs.lint.result }}" != "success" ] || \
              [ "${{ needs.test-unit.result }}" != "success" ] || \
              [ "${{ needs.test-cli.result }}" != "success" ] || \
-             [ "${{ needs.test-e2e.result }}" != "success" ] || \
+             [ "${{ needs.test-web.result }}" != "success" ] || \
+             [ "${{ needs.test-integration.result }}" != "success" ] || \
              [ "${{ needs.coverage.result }}" != "success" ]; then
             echo "❌ Some checks failed!"
             exit 1

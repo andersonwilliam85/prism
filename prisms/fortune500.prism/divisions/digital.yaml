@@ -1,0 +1,24 @@
+# ============================================================================
+# DIGITAL DIVISION
+# ============================================================================
+
+division:
+  id: "digital"
+  name: "Digital Division"
+  description: "Digital products and platforms"
+
+tools_required:
+  - vscode
+  - nodejs
+  - docker
+
+tech_stack:
+  languages:
+    - TypeScript
+    - JavaScript
+  frameworks:
+    - React
+    - Next.js
+  platforms:
+    - Vercel
+    - AWS CloudFront

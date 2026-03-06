@@ -1,0 +1,18 @@
+# ============================================================================
+# CS 101: INTRO TO PROGRAMMING
+# ============================================================================
+
+course:
+  id: "cs101"
+  name: "CS 101: Introduction to Programming"
+  description: "Foundational programming course"
+
+tools_required:
+  - python3
+  - vscode
+  - git
+
+repositories:
+  - name: "cs101-assignments"
+    url: "https://github.com/university/cs101-assignments"
+    description: "Course assignment starter code"

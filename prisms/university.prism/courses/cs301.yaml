@@ -1,0 +1,18 @@
+# ============================================================================
+# CS 301: ALGORITHMS
+# ============================================================================
+
+course:
+  id: "cs301"
+  name: "CS 301: Algorithms"
+  description: "Algorithm design and complexity analysis"
+
+tools_required:
+  - python3
+  - vscode
+  - git
+
+repositories:
+  - name: "cs301-assignments"
+    url: "https://github.com/university/cs301-assignments"
+    description: "Algorithm assignment starter code"

@@ -1,0 +1,18 @@
+# ============================================================================
+# ENGINEERING DEPARTMENT
+# ============================================================================
+
+department:
+  id: "engineering"
+  name: "Engineering"
+
+tools_required:
+  - vscode
+  - python3
+  - git
+
+tech_stack:
+  tools:
+    - MATLAB
+    - ANSYS
+    - AutoCAD

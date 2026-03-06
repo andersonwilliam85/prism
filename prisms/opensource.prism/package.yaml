@@ -1,0 +1,138 @@
+# ============================================================================
+# OPEN SOURCE PRISM
+# ============================================================================
+# For open source project maintainers and contributors.
+# Community-driven, welcoming, transparent.
+
+package:
+  name: "opensource-prism"
+  version: "1.0.0"
+  description: "Open source contributor prism — minimal, welcoming, community-focused"
+  author: "Project Maintainers"
+  homepage: "https://github.com/your-project"
+  support:
+    github: "https://github.com/your-project/issues"
+    discord: "https://discord.gg/your-project"
+    discussions: "https://github.com/your-project/discussions"
+
+  type: "opensource"
+
+  requires:
+    onboarding_version: ">=1.0.0"
+    python_version: ">=3.8"
+
+# PRISM META-CONFIGURATION
+prism_config:
+  theme: "forest"
+
+  sources:
+    - url: "local"
+      name: "Built-in Prisms"
+      type: "local"
+
+  branding:
+    name: "Open Source Prism"
+    tagline: "Everyone is welcome. Every contribution counts."
+    primary_color: "#059669"
+    secondary_color: "#7c3aed"
+
+# BUNDLED SUB-PRISMS
+bundled_prisms:
+  base:
+    - id: "opensource-base"
+      name: "Open Source Base"
+      description: "Core open source contributor setup"
+      required: true
+      config: "base/opensource.yaml"
+
+# SETUP CONFIGURATION
+setup:
+  install:
+    target_dir: "config/"
+
+    files:
+      - source: "welcome.yaml"
+        dest: "config/welcome.yaml"
+      - source: "resources.yaml"
+        dest: "config/resources.yaml"
+
+    directories:
+      - source: "base/"
+        dest: "config/base/"
+
+  post_install:
+    message: |
+      🌟 Open source prism installed!
+
+      Welcome to the community! We're excited to have you.
+
+      First time contributing?
+      1. Read CONTRIBUTING.md
+      2. Look for "good first issue" labels
+      3. Join our Discord for help
+
+      Ready to contribute:
+      1. Fork the repo
+      2. Create a branch
+      3. Make your changes
+      4. Submit a PR!
+
+      Every contribution counts! 💚
+
+# User info fields (minimal — open to all!)
+user_info_fields:
+  - id: "name"
+    label: "Name"
+    type: "text"
+    required: true
+    placeholder: "Alex"
+    description: "How should we call you?"
+
+  - id: "email"
+    label: "Email"
+    type: "email"
+    required: true
+    placeholder: "alex@example.com"
+    description: "For git commits and notifications"
+
+  - id: "github_username"
+    label: "GitHub Username"
+    type: "text"
+    required: true
+    placeholder: "alexcodes"
+
+  - id: "timezone"
+    label: "Timezone"
+    type: "text"
+    required: false
+    placeholder: "UTC-5 (EST)"
+    description: "Helps with async collaboration"
+
+  - id: "contribution_interest"
+    label: "What interests you?"
+    type: "text"
+    required: false
+    placeholder: "Documentation, bug fixes, new features"
+
+distribution:
+  local:
+    path: "prisms/opensource.prism/"
+    discoverable: true
+
+  git:
+    url: "https://github.com/your-project/dev-setup"
+    branch: "main"
+
+metadata:
+  tags:
+    - recommended
+    - opensource
+    - community
+    - contributors
+    - welcoming
+
+  company_size: "community"
+  regions: ["Global"]
+  last_updated: "2026-03-05"
+  maintainers:
+    - "Open Source Community"
