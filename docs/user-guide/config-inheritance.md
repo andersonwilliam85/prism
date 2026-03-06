@@ -1,180 +1,140 @@
-# Hierarchical Config Inheritance System
+# 🌈 Sub-Prism Inheritance
 
 ## Overview
 
-This onboarding package supports **multi-level config inheritance** for enterprise organizations with complex structures:
+Every prism can contain a hierarchy of **sub-prisms** declared under `bundled_prisms`. Each sub-prism is a YAML config file that contributes settings to the final merged configuration. Like a prism refracting white light into a spectrum, this system refracts organizational complexity into layered, composable configurations.
 
-```
-Company (ACME Corp)
-  ↓
-Sub-Organization (ACME Corp US, Sam's Club, ACME Corp International)
-  ↓
-Department (Supply Chain, E-commerce, Data Engineering)
-  ↓
-Team (Receiving Systems, Checkout Frontend, Analytics Platform)
-  ↓
-Individual Developer
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#eef2ff', 'primaryTextColor': '#1e293b', 'primaryBorderColor': '#6366f1', 'lineColor': '#6366f1', 'secondaryColor': '#f0fdf4', 'tertiaryColor': '#faf5ff', 'background': '#ffffff', 'mainBkg': '#eef2ff', 'nodeBorder': '#6366f1', 'clusterBkg': '#f8faff', 'edgeLabelBackground': '#ffffff'}}}%%
+
+flowchart TD
+    P["💎 fortune500.prism"]
+
+    subgraph required["Required — applied to everyone"]
+        B["base\nEnterprise standards\nproxy · security · git"]
+    end
+
+    subgraph optional["Optional — user selects one per tier"]
+        D1["divisions / technology"]
+        D2["divisions / digital"]
+        D3["divisions / data"]
+        R1["roles / software-engineer"]
+        R2["roles / devops-engineer"]
+        R3["roles / data-engineer"]
+    end
+
+    subgraph result["Merged Result"]
+        M["merged-config.yaml\ntools_required · environment\nrepositories · security"]
+    end
+
+    P --> required
+    P --> optional
+    required --> result
+    D1 --> result
+    R2 --> result
+
+    style required fill:#f0fdf4,stroke:#22c55e,color:#1e293b
+    style optional fill:#eef2ff,stroke:#6366f1,color:#1e293b
+    style result fill:#faf5ff,stroke:#a855f7,color:#1e293b
+    style P fill:#fff7ed,stroke:#f97316,color:#1e293b
+    style B fill:#dcfce7,stroke:#22c55e,color:#1e293b
+    style M fill:#f3e8ff,stroke:#a855f7,color:#1e293b
 ```
 
-Each level **inherits and extends** from the previous level, allowing:
-- ✅ Company-wide standards (proxy, security, compliance)
-- ✅ Sub-org specific tools (region-specific cloud accounts)
-- ✅ Department tech stacks (Java vs Python vs Node)
-- ✅ Team conventions (specific repos, workflows, contacts)
-- ✅ Personal preferences (IDE, career tracking)
+Each layer **inherits and extends** from previous layers:
+
+- ✅ Base defines company-wide standards (proxy, security, required tools)
+- ✅ Division adds division-specific tools and tech stacks
+- ✅ Role adds role-specific tools and workflows
+- ✅ Business unit adds compliance and context-specific settings
 
 ---
 
-## How It Works
+## How Sub-Prism Merging Works
 
-### 1. Define Your Hierarchy
+When you install a prism, the engine:
 
-Edit `config/inheritance.yaml`:
+1. Loads all **required** sub-prisms automatically (the `base` tier)
+2. Applies any **user-selected** sub-prisms from optional tiers
+3. Deep-merges them in declaration order using `ConfigMerger`
+4. Writes the merged result to `config/merged-config.yaml`
 
-```yaml
-chain:
-  company:
-    file: "config/base/acme.yaml"  # Required
-  
-  sub_org:
-    file: null  # Will prompt during install
-  
-  department:
-    file: null  # Will prompt during install
-  
-  team:
-    file: null  # Will prompt during install
-  
-  user:
-    file: "config/user-profile.yaml"  # Required
+The merged config drives everything: which tools get installed, which repos get cloned, which proxy settings apply.
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#eef2ff', 'primaryTextColor': '#1e293b', 'primaryBorderColor': '#6366f1', 'lineColor': '#6366f1', 'secondaryColor': '#f0fdf4', 'tertiaryColor': '#faf5ff', 'background': '#ffffff', 'mainBkg': '#eef2ff', 'nodeBorder': '#6366f1', 'edgeLabelBackground': '#ffffff'}}}%%
+
+sequenceDiagram
+    participant E as InstallationEngine
+    participant B as base/company.yaml
+    participant D as divisions/technology.yaml
+    participant R as roles/devops-engineer.yaml
+    participant M as merged-config.yaml
+
+    E->>B: load (required)
+    B-->>E: tools=[git,docker] env={proxy}
+    E->>D: load (user selected)
+    D-->>E: tools=[vscode,kubectl] stack={...}
+    E->>R: load (user selected)
+    R-->>E: tools=[terraform,ansible]
+    Note over E: union merge tools_required
+    Note over E: deep_merge environment
+    E->>M: write final merged config
+    M-->>E: git·docker·vscode·kubectl·terraform·ansible
 ```
 
-### 2. Create Configs for Each Level
+### Merge Strategies
 
-**Company Base** (`config/base/acme.yaml`):
-```yaml
-company:
-  name: "ACME Corp"
+Controlled by `config/inheritance.yaml` (or the built-in defaults):
 
-environment:
-  proxy:
-    http: "http://sysproxy.wal-mart.com:8080"
-
-tools_required:
-  - git
-  - kubectl
-```
-
-**Sub-Org** (`config/orgs/acme-us.yaml`):
-```yaml
-sub_org:
-  id: "acme-us"
-  name: "ACME Corp US"
-
-# Inherits: proxy, git, kubectl
-# Adds:
-tools_required:
-  - bq        # BigQuery for US analytics
-  - gcloud
-```
-
-**Department** (`config/departments/supply-chain.yaml`):
-```yaml
-department:
-  id: "supply-chain"
-  name: "Supply Chain Technology"
-
-# Inherits: proxy, git, kubectl, bq, gcloud
-# Adds:
-tools_required:
-  - python    # Primary language
-  - dbeaver   # Database client
-```
-
-**Team** (`config/teams/receiving-systems.yaml`):
-```yaml
-team:
-  id: "receiving-systems"
-  name: "Receiving Systems Team"
-
-# Inherits all previous tools
-# Adds:
-tools_required:
-  - skaffold  # Team uses K8s dev workflow
-
-repositories:
-  - name: "receiving-api"
-    url: "https://github.acmecorp.com/supply-chain/receiving-api"
-```
-
-### 3. Configs Get Merged Automatically
-
-When you run `install.py`, the system:
-
-1. Loads company base
-2. Loads and merges sub-org (inherits company)
-3. Loads and merges department (inherits company + sub-org)
-4. Loads and merges team (inherits all previous)
-5. Loads and merges user profile (inherits all)
-
-**Result:** A single merged config with all inherited settings!
-
----
-
-## Merge Strategies
-
-Defin in `config/inheritance.yaml`:
-
-### Arrays (Lists)
-
+**Arrays (lists):**
 ```yaml
 merge_strategy:
   arrays:
-    tools_selected: "union"      # Combine, remove duplicates
-    resources: "append"          # Keep all, in order
-    onboarding_tasks: "append"   # All tasks from all levels
+    tools_required: "union"     # Combine, remove duplicates
+    resources: "append"         # Keep all, in order
+    onboarding_tasks: "append"
 ```
 
-**Example:**
-```yaml
-# Company
-tools_required: [git, kubectl]
-
-# Department
-tools_required: [python, dbeaver]
-
-# Merged (union):
-tools_required: [git, kubectl, python, dbeaver]
-```
-
-### Objects (Dictionaries)
-
+**Objects (dicts):**
 ```yaml
 merge_strategy:
   objects:
-    environment: "deep_merge"    # Recursively merge
-    git: "override"              # Later config wins
-    career: "user_only"          # Only user can set
+    environment: "deep_merge"   # Recursively merge
+    git: "override"             # Later layer wins
+    career: "user_only"         # Only the user can set this
 ```
 
-**Example (deep_merge):**
+**Example — union merge:**
 ```yaml
-# Company
+# Base sub-prism
+tools_required: [git, docker, kubectl]
+
+# Role sub-prism
+tools_required: [terraform, helm]
+
+# Merged result:
+tools_required: [git, docker, kubectl, terraform, helm]
+```
+
+**Example — deep_merge:**
+```yaml
+# Base
 environment:
   proxy:
-    http: "http://proxy.com:8080"
+    http: "http://proxy.company.com:8080"
   maven:
     url: "https://maven.company.com"
 
-# Department
+# Division
 environment:
   npm:
     registry: "https://npm.company.com"
 
-# Merged (deep_merge):
+# Merged:
 environment:
   proxy:
-    http: "http://proxy.com:8080"
+    http: "http://proxy.company.com:8080"
   maven:
     url: "https://maven.company.com"
   npm:
@@ -185,204 +145,187 @@ environment:
 
 ## Real-World Example
 
-### Scenario: New Developer Joins Receiving Systems Team
+### Scenario: New Developer at Fortune 500
 
-**During install:**
-```bash
-python3 install.py
-
-? Select your sub-organization: ACME Corp US
-? Select your department: Supply Chain Technology
-? Select your team: Receiving Systems
-```
-
-**Configs loaded:**
-1. `config/base/acme.yaml` (company)
-2. `config/orgs/acme-us.yaml` (sub-org)
-3. `config/departments/supply-chain.yaml` (dept)
-4. `config/teams/receiving-systems.yaml` (team)
-5. `config/user-profile.yaml` (user)
+**Selected sub-prisms:**
+- `base` → enterprise base (required, auto-applied)
+- `divisions/technology.yaml` → Technology Division
+- `roles/devops-engineer.yaml` → DevOps Engineer
 
 **Merged result:**
-
 ```yaml
-# From Company:
+# From base:
 environment:
   proxy:
-    http: "http://sysproxy.wal-mart.com:8080"
+    http: "http://proxy.company.com:8080"
+  vpn:
+    required: true
 
 tools_required:
   - git
+  - docker
   - kubectl
-  - gh
+  - python3
 
-# From ACME Corp US:
+security:
+  sso_required: true
+  mfa_required: true
+
+# From Technology Division:
 tools_required:
-  - bq
-  - gcloud
-
-cloud:
-  gcp:
-    project_prefix: "acme-us"
-
-# From Supply Chain:
-tools_required:
-  - python
-  - dbeaver
+  - vscode
+  - docker
+  - kubectl
 
 tech_stack:
-  primary_languages: [Python, Java, TypeScript]
+  languages: [Python, TypeScript, Java]
+  platforms: [Kubernetes, AWS, GCP]
 
-# From Receiving Systems Team:
+# From DevOps Engineer:
 tools_required:
-  - skaffold
-  - helm
-
-repositories:
-  - name: "receiving-api"
-    url: "https://github.acmecorp.com/supply-chain/receiving-api"
-
-team:
-  manager: "Jane Smith"
-  slack_channel: "#receiving-systems"
-
-# From User Profile:
-git:
-  user:
-    name: "John Developer"
-    email: "john.developer@acme.com"
-
-career:
-  goals:
-    - "Ship first feature in Q1"
+  - terraform
+  - ansible
+  - kubectl
+  - docker
+  - git
 ```
 
-**Tools installed:**
-- Company required: `git`, `kubectl`, `gh`
-- US required: `bq`, `gcloud`
-- Dept required: `python`, `dbeaver`
-- Team required: `skaffold`, `helm`
-- **Total: 9 tools** (all inherited and merged!)
-
-**Documentation homepage shows:**
-- Company resources (Internal Dev Portal, Documentation)
-- US resources (GCP Console, BigQuery)
-- Dept resources (Supply Chain Confluence, WMS Docs)
-- Team resources (Receiving API docs, Team Slack)
+**Final merged `tools_required`** (union): `git, docker, kubectl, python3, vscode, terraform, ansible`
 
 ---
 
-## Environment Variables
-
-Use `${VAR}` placeholders in configs:
+## Defining Sub-Prisms in `bundled_prisms`
 
 ```yaml
-# In config file:
-repositories:
-  - url: "https://github.acmecorp.com/${TEAM}/my-repo"
+bundled_prisms:
+  # Required tier — applied to every user
+  base:
+    - id: "company-base"
+      name: "Company Base"
+      description: "Company-wide settings: proxy, git, required tools"
+      required: true              # ← always included
+      config: "base/company.yaml"
 
-# At runtime:
-# export TEAM=receiving-systems
-# Result: https://github.acmecorp.com/receiving-systems/my-repo
+  # Optional tier — user picks one
+  divisions:
+    - id: "technology"
+      name: "Technology Division"
+      description: "IT and software engineering"
+      config: "divisions/technology.yaml"
+
+    - id: "digital"
+      name: "Digital Division"
+      description: "Digital products and platforms"
+      config: "divisions/digital.yaml"
+
+  # Optional tier — user picks one
+  roles:
+    - id: "software-engineer"
+      name: "Software Engineer"
+      config: "roles/software-engineer.yaml"
+
+    - id: "devops-engineer"
+      name: "DevOps Engineer"
+      config: "roles/devops-engineer.yaml"
 ```
 
-With defaults:
+---
+
+## Sub-Prism Config File Structure
+
+Each sub-prism is a plain YAML file. Any keys it contains are merged into the final config:
+
 ```yaml
+# base/company.yaml
+company:
+  name: "My Company"
+  domain: "mycompany.com"
+
+environment:
+  proxy:
+    http: "http://proxy.mycompany.com:8080"
+  vpn:
+    required: true
+
+tools_required:
+  - git
+  - docker
+  - kubectl
+
+security:
+  sso_required: true
+```
+
+```yaml
+# divisions/technology.yaml
+division:
+  id: "technology"
+  name: "Technology Division"
+
+tools_required:
+  - vscode
+  - kubernetes
+
+tech_stack:
+  languages: [Python, TypeScript]
+```
+
+```yaml
+# roles/devops-engineer.yaml
+role:
+  id: "devops-engineer"
+  name: "DevOps Engineer"
+
+tools_required:
+  - terraform
+  - ansible
+  - helm
+```
+
+---
+
+## Environment Variable Substitution
+
+Use `${VAR}` and `${VAR:-default}` placeholders in sub-prism configs:
+
+```yaml
+git:
+  user:
+    name: "${USER}"
+    email: "${USER}@mycompany.com"
+
 cloud:
-  region: "${REGION:-us-central1}"  # Defaults to us-central1
+  region: "${CLOUD_REGION:-us-central1}"
+```
+
+These are resolved at install time by the engine.
+
+---
+
+## Python API
+
+```python
+from scripts.config_merger import load_merged_config
+
+config = load_merged_config(
+    company="config/base/company.yaml",
+    sub_org="config/orgs/engineering.yaml",
+    department="config/departments/supply-chain.yaml",
+    team="config/teams/receiving-systems.yaml",
+    user="config/user-profile.yaml"
+)
+
+proxy = config["environment"]["proxy"]["http"]
+tools = config["tools_required"]
+repos = config.get("repositories", [])
 ```
 
 ---
 
 ## Benefits
 
-✅ **DRY** - Define once at company level, inherit everywhere  
-✅ **Flexible** - Teams can add/override as needed  
-✅ **Scalable** - Add new teams/depts without duplicating config  
-✅ **Maintainable** - Update company proxy once, affects everyone  
-✅ **Contextual** - Each dev gets exactly what they need  
-
----
-
-## For Enterprise Admins
-
-### Setting Up Your Company
-
-1. **Fork this repo**
-2. **Edit `config/base/your-company.yaml`** (replace ACME Corp)
-3. **Create sub-org configs** in `config/orgs/`
-4. **Create department configs** in `config/departments/`
-5. **Create team configs** in `config/teams/`
-6. **Update `config/inheritance.yaml`** with your structure
-7. **Distribute to teams!**
-
-### Managing Teams
-
-Each team can **maintain their own config**:
-
-```bash
-# Team owns their config file
-config/teams/my-team.yaml
-
-# Team updates:
-- Repositories
-- Contacts
-- Workflows
-- Conventions
-
-# Company IT owns:
-config/base/company.yaml
-
-# IT updates:
-- Proxy
-- Artifact repos
-- Security tools
-- Compliance
-```
-
-**IT changes propagate automatically!**
-
----
-
-## API
-
-### Python
-
-```python
-from scripts.config_merger import load_merged_config
-
-# Load merged config
-config = load_merged_config(
-    company="config/base/acme.yaml",
-    sub_org="config/orgs/acme-us.yaml",
-    department="config/departments/supply-chain.yaml",
-    team="config/teams/receiving-systems.yaml",
-    user="config/user-profile.yaml"
-)
-
-# Access merged settings
-proxy = config["environment"]["proxy"]["http"]
-tools = config["tools_required"]
-repos = config.get("repositories", [])
-```
-
-### CLI
-
-```bash
-# Test config merging
-python3 scripts/config_merger.py
-
-# Outputs merged JSON to stdout
-```
-
----
-
-## Examples
-
-See:
-- `config/base/acme.yaml` - Company example
-- `config/orgs/acme-us.yaml` - Sub-org example
-- `config/departments/supply-chain.yaml` - Department example
-- `config/teams/receiving-systems.yaml` - Team example
-
-Replace with your company structure!
+✅ **DRY** — define company standards once, inherit everywhere
+✅ **Flexible** — each layer can override or extend
+✅ **Scalable** — add new teams without duplicating config
+✅ **Maintainable** — update the base once, all users get the change
+✅ **Contextual** — each developer gets exactly what their role needs

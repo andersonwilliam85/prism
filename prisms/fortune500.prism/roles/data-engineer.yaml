@@ -1,0 +1,19 @@
+# ============================================================================
+# DATA ENGINEER ROLE
+# ============================================================================
+
+role:
+  id: "data-engineer"
+  name: "Data Engineer"
+  description: "Data pipelines and warehousing"
+
+tools_required:
+  - python3
+  - docker
+  - git
+
+tech_stack:
+  tools:
+    - Apache Spark
+    - Airflow
+    - dbt

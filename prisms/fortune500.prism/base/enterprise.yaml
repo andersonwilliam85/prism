@@ -1,0 +1,42 @@
+# ============================================================================
+# ENTERPRISE BASE CONFIGURATION
+# ============================================================================
+# Core setup applied to all Fortune 500 / enterprise users.
+
+company:
+  name: "[Company Name]"
+  domain: "company.com"
+  internal_domain: ".company.com"
+
+environment:
+  proxy:
+    enabled: true
+    http: "http://proxy.company.com:8080"
+    https: "http://proxy.company.com:8080"
+    no_proxy: "localhost,127.0.0.1,.company.com"
+  vpn:
+    required: true
+    name: "Company VPN"
+
+git:
+  user:
+    name: "${USER}"
+    email: "${USER}@company.com"
+  enterprise:
+    enabled: true
+    enterprise_url: "https://github.company.com"
+
+tools_required:
+  - git
+  - docker
+  - kubectl
+  - python3
+
+security:
+  sso_required: true
+  mfa_required: true
+  vpn_required: true
+
+compliance:
+  - sox
+  - gdpr

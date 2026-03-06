@@ -148,21 +148,21 @@ def print_banner(platform_name, platform_detail):
     """Print welcome banner"""
     if RICH_AVAILABLE:
         console.print(Panel(
-            f"[bold blue]🐶 Dev Environment Setup[/bold blue]\n\n"
+            f"[bold blue]💎 Prism Dev Environment Setup[/bold blue]\n\n"
             f"Platform: {platform_name.title()} ({platform_detail})\n\n"
             f"This installer will set up:\n"
-            f"  • Organized folder structure\n"
-            f"  • Development tools (git, kubectl, etc.)\n"
+            f"  • Organized workspace folder structure\n"
+            f"  • Development tools from your prism configuration\n"
             f"  • Git config + SSH keys\n"
-            f"  • Documentation server\n"
-            f"  • Career tracking system\n\n"
+            f"  • Repository cloning\n"
+            f"  • Merged prism configuration\n\n"
             f"[dim]Estimated time: 10-15 minutes[/dim]",
-            title="🚀 Dev Environment Setup",
+            title="💎 Prism — Refract complexity into clarity",
             border_style="blue"
         ))
     else:
         print("\n" + "="*60)
-        print("🐶 Dev Environment Setup")
+        print("💎 Prism Dev Environment Setup")
         print("="*60)
         print(f"\nPlatform: {platform_name.title()} ({platform_detail})")
         print("\nThis will set up your complete dev environment.")
@@ -195,7 +195,7 @@ def main():
     parser.add_argument("--resume", action="store_true", help="Resume from last checkpoint")
     parser.add_argument("--status", action="store_true", help="Show current progress")
     parser.add_argument("--config", help="Use config file (non-interactive)")
-    parser.add_argument("--package", help="Specify config package to use (e.g., @prism/personal-dev-config)")
+    parser.add_argument("--prism", dest="package", help="Specify prism to use (e.g., personal-dev, fortune500)")
     parser.add_argument(
         "--npm-registry",
         help="Custom npm registry URL (overrides PRISM_NPM_REGISTRY env var)"

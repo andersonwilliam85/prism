@@ -1,0 +1,30 @@
+# ============================================================================
+# OPEN SOURCE BASE CONFIGURATION
+# ============================================================================
+
+project:
+  type: "opensource"
+
+environment:
+  proxy:
+    enabled: false
+  vpn:
+    required: false
+
+git:
+  user:
+    name: "${USER}"
+    email: "${USER}@example.com"
+  config:
+    init.defaultBranch: main
+    pull.rebase: false
+
+tools_required:
+  - git
+  - gh
+
+tools_available:
+  - python3
+  - nodejs
+  - docker
+  - vscode

@@ -1,0 +1,23 @@
+# ============================================================================
+# JAMSTACK
+# ============================================================================
+
+stack:
+  id: "jamstack"
+  name: "JAMstack"
+  description: "Next.js, Vercel, Serverless"
+
+tools_required:
+  - nodejs
+  - git
+
+tech_stack:
+  frontend:
+    - Next.js
+    - TypeScript
+  deployment:
+    - Vercel
+    - Netlify
+  backend:
+    - Serverless Functions
+    - Edge Functions

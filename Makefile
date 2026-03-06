@@ -1,7 +1,7 @@
 # Prism Package Manager - Makefile
 # Comprehensive development and CI/CD commands
 
-.PHONY: help install install-dev test test-unit test-e2e test-cli test-integration test-all lint format clean build run docs serve-docs check pre-commit ci
+.PHONY: help install install-dev test test-unit test-e2e test-e2e-browser test-cli test-web test-integration test-all lint format clean build run docs serve-docs check pre-commit ci
 
 # Default target
 .DEFAULT_GOAL := help
@@ -58,32 +58,41 @@ install-playwright: ## Install Playwright browsers (uses system Chrome by defaul
 
 ##@ Testing
 
-test: test-unit test-cli ## Run unit and CLI tests (fast, no E2E)
+test: test-unit test-cli test-web ## Run unit, CLI, and web API tests (fast, no browser)
 	@echo "$(COLOR_GREEN)✅ Fast tests complete!$(COLOR_RESET)"
 
 test-unit: ## Run unit tests only
 	@echo "$(COLOR_BLUE)🧪 Running unit tests...$(COLOR_RESET)"
 	$(PYTEST) $(TEST_DIR)/unit/ -v --no-cov
 
-test-cli: ## Run CLI tests only
+test-cli: ## Run CLI subprocess tests
 	@echo "$(COLOR_BLUE)🖥️  Running CLI tests...$(COLOR_RESET)"
 	$(PYTEST) $(TEST_DIR)/e2e/test_cli_installer.py -v --no-cov
 
-test-e2e: ## Run E2E browser tests (requires server)
-	@echo "$(COLOR_BLUE)🎭 Running E2E tests...$(COLOR_RESET)"
+test-web: ## Run Flask web API tests (no browser required)
+	@echo "$(COLOR_BLUE)🌐 Running web API tests...$(COLOR_RESET)"
+	$(PYTEST) $(TEST_DIR)/e2e/test_web_api.py -v --no-cov
+
+test-e2e: test-cli test-web ## Run all E2E tests (CLI + web API, no browser)
+	@echo "$(COLOR_GREEN)✅ E2E tests complete!$(COLOR_RESET)"
+
+test-e2e-browser: ## Run browser E2E tests (requires running server + Playwright)
+	@echo "$(COLOR_BLUE)🎭 Running browser E2E tests...$(COLOR_RESET)"
 	$(PYTEST) $(TEST_DIR)/e2e/test_installer_flow.py $(TEST_DIR)/e2e/test_complete_installation.py -v --no-cov
 
 test-integration: ## Run integration tests
 	@echo "$(COLOR_BLUE)🔗 Running integration tests...$(COLOR_RESET)"
 	$(PYTEST) $(TEST_DIR)/integration/ -v --no-cov
 
-test-all: ## Run ALL tests (unit, CLI, E2E, integration)
+test-all: ## Run ALL tests (unit, CLI, web API, integration)
 	@echo "$(COLOR_BLUE)🚀 Running ALL tests...$(COLOR_RESET)"
-	$(PYTEST) $(TEST_DIR)/ -v --no-cov
+	$(PYTEST) $(TEST_DIR)/unit/ $(TEST_DIR)/integration/ $(TEST_DIR)/e2e/test_cli_installer.py $(TEST_DIR)/e2e/test_web_api.py -v --no-cov
 
-test-coverage: ## Run tests with coverage report
+test-coverage: ## Run tests with coverage report (unit + integration + web API)
 	@echo "$(COLOR_BLUE)📊 Running tests with coverage...$(COLOR_RESET)"
-	$(PYTEST) $(TEST_DIR)/ --cov=$(SRC_DIR) --cov-report=html --cov-report=term
+	$(PYTEST) $(TEST_DIR)/unit/ $(TEST_DIR)/integration/ $(TEST_DIR)/e2e/test_web_api.py \
+		--cov=$(SRC_DIR) --cov=installer_engine --cov=install_ui \
+		--cov-report=html --cov-report=term
 	@echo "$(COLOR_GREEN)✅ Coverage report: htmlcov/index.html$(COLOR_RESET)"
 
 test-report: ## Run tests and generate HTML report

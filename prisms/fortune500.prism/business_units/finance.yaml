@@ -1,0 +1,17 @@
+# ============================================================================
+# FINANCE DIVISION
+# ============================================================================
+
+business_unit:
+  id: "finance"
+  name: "Finance Division"
+  description: "Financial services technology"
+
+compliance:
+  - sox
+  - pci-dss
+  - gdpr
+
+security:
+  data_classification: "highly-confidential"
+  additional_mfa: true

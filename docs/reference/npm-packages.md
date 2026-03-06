@@ -1,15 +1,14 @@
 # NPM Package Distribution
 
-Prism config packages are published to the **npm public registry** under the `@prism` scope.
+Prism packages can be published to the **npm public registry** under the `@prism` scope, making them available to anyone via CDN without needing npm installed.
 
 ## Why npm?
 
-✅ **Universal Access** - Anyone can install, no custom registries  
-✅ **CDN Distribution** - unpkg.com provides fast global delivery  
-✅ **Versioning** - Built-in semver support  
-✅ **Discovery** - Searchable on npmjs.com  
-✅ **Trust** - npm's security and infrastructure  
-✅ **No Dependencies** - Fetch packages without installing npm!
+✅ **Universal Access** — Anyone can install, no custom registries
+✅ **CDN Distribution** — unpkg.com provides fast global delivery
+✅ **Versioning** — Built-in semver support
+✅ **Discovery** — Searchable on npmjs.com
+✅ **No Dependencies** — Fetch packages without installing npm!
 
 ---
 
@@ -17,75 +16,73 @@ Prism config packages are published to the **npm public registry** under the `@p
 
 All packages are published under the `@prism` scope:
 
-- `@prism/personal-dev-config` - For freelancers & indie developers
-- `@prism/startup-config` - For startups
-- `@prism/fortune500-config` - For large enterprises
-- `@prism/university-config` - For universities
-- `@prism/consulting-config` - For consulting firms
-- `@prism/opensource-config` - For open source projects
-- `@prism/acme-corp-config` - Template for companies
+- `@prism/personal-dev` — For freelancers & indie developers
+- `@prism/startup` — For startups (10–50 people)
+- `@prism/fortune500` — For large enterprises
+- `@prism/university` — For universities
+- `@prism/consulting-firm` — For consulting firms
+- `@prism/opensource` — For open source projects
+- `@prism/acme-corp` — Template for small companies
 
 ---
 
-## For Users: Installing Packages
+## For Users: Installing Prisms
 
 ### Method 1: Via Prism Installer (Recommended)
 
-The Prism installer automatically fetches packages from npm:
+The Prism installer automatically fetches prisms from npm:
 
 ```bash
 python3 install.py
-# Select package from the list - automatically fetched from npm!
+# Select a prism from the list — automatically fetched from npm!
+
+# Or specify directly:
+python3 install.py --prism fortune500
 ```
 
-### Method 2: Manual Fetch
+### Method 2: Manual fetch
 
 ```bash
-# List available packages
+# List available prisms
 python3 scripts/npm_package_fetcher.py list
 
-# Fetch a specific package
-python3 scripts/npm_package_fetcher.py fetch @prism/personal-dev-config
+# Fetch a specific prism
+python3 scripts/npm_package_fetcher.py fetch @prism/personal-dev
 
 # Fetch specific version
-python3 scripts/npm_package_fetcher.py fetch @prism/startup-config --version 1.0.0
+python3 scripts/npm_package_fetcher.py fetch @prism/startup --version 1.0.0
 ```
 
-### Method 3: Direct npm Install (if you have npm)
+### Method 3: Direct npm install (if you have npm)
 
 ```bash
-npm install @prism/personal-dev-config
+npm install @prism/personal-dev
 ```
 
-### Method 4: Direct CDN Access (no tools needed!)
-
-Fetch package files directly from unpkg CDN:
+### Method 4: Direct CDN access (no tools needed)
 
 ```bash
 # Download package.yaml
-curl https://unpkg.com/@prism/personal-dev-config@latest/package.yaml
-
-# Download entire package as tarball
-curl https://unpkg.com/@prism/personal-dev-config@latest/ > package.tgz
+curl https://unpkg.com/@prism/personal-dev@latest/package.yaml
 ```
 
 ---
 
-## For Maintainers: Publishing Packages
+## For Maintainers: Publishing Prisms
 
 ### Prerequisites
 
-1. **npm account** - Create at [npmjs.com](https://www.npmjs.com/signup)
-2. **@prism scope access** - Contact Will Anderson for access
+1. **npm account** — Create at [npmjs.com](https://www.npmjs.com/signup)
+2. **@prism scope access** — Request access via GitHub issues
 3. **npm CLI installed**:
    ```bash
    # Mac
    brew install node
-   
+
    # Linux
    curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
    sudo apt-get install -y nodejs
-   
+
    # Windows
    winget install OpenJS.NodeJS
    ```
@@ -94,108 +91,92 @@ curl https://unpkg.com/@prism/personal-dev-config@latest/ > package.tgz
 
 ```bash
 npm login
-# Enter your npm credentials
 ```
 
-### Publish a Package
+### Publish a prism
 
-#### Test First (Dry Run)
+#### Test first (dry run)
 
 ```bash
-# Test single package
 python3 scripts/publish_packages.py --package personal-dev --dry-run
-
-# Test all packages
 python3 scripts/publish_packages.py --all --dry-run
 ```
 
-#### Publish for Real
+#### Publish
 
 ```bash
-# Publish single package
 python3 scripts/publish_packages.py --package personal-dev
-
-# Publish all packages
 python3 scripts/publish_packages.py --all
 ```
 
-### Manual Publishing (if you prefer)
+### Manual publishing
 
 ```bash
-cd config-packages/personal-dev
+cd prisms/personal-dev
 npm publish --access public
 ```
 
 ---
 
-## Updating Packages
+## Updating Prisms
 
-### 1. Update Version
+### 1. Update version
 
-Edit `config-packages/PACKAGE_NAME/package.json`:
-
-```json
-{
-  "version": "1.1.0"  // Increment version
-}
+Edit `prisms/PRISM_NAME/package.yaml`:
+```yaml
+package:
+  version: "1.1.0"   # increment version
 ```
 
-### 2. Update Changelog
+### 2. Update changelog
 
-Add notes in `CHANGELOG.md` or package README
+Add notes in the prism's `README.md`.
 
 ### 3. Publish
 
 ```bash
-python3 scripts/publish_packages.py --package PACKAGE_NAME
+python3 scripts/publish_packages.py --package PRISM_NAME
 ```
 
 ---
 
-## Package Structure
+## Package Structure for npm
 
-Each package directory should contain:
+Each prism directory published to npm:
 
 ```
-config-packages/personal-dev/
-├── package.json      # npm metadata
-├── package.yaml      # Prism config
-├── README.md         # Package documentation
-├── config/           # Config files
-├── profiles/         # User profiles (optional)
-└── assets/           # Logo, colors, etc. (optional)
+prisms/personal-dev/
+├── package.json      # npm metadata (required for publishing)
+├── package.yaml      # Prism manifest
+├── README.md         # Prism documentation
+├── base/             # Base sub-prism configs
+├── profiles/         # Profile sub-prism configs (optional)
+└── welcome.yaml      # Welcome content (optional)
 ```
 
-### package.json Example
+### package.json example
 
 ```json
 {
-  "name": "@prism/personal-dev-config",
+  "name": "@prism/personal-dev",
   "version": "1.0.0",
-  "description": "Prism config for freelancers and indie developers",
+  "description": "Prism for freelancers and indie developers",
   "main": "package.yaml",
   "files": [
     "package.yaml",
-    "config/",
+    "base/",
     "profiles/",
-    "assets/",
+    "welcome.yaml",
+    "resources.yaml",
     "README.md"
   ],
-  "keywords": [
-    "prism",
-    "config",
-    "dev-environment",
-    "personal",
-    "freelancer"
-  ],
-  "author": "Will Anderson <andersonwilliam85@gmail.com>",
+  "keywords": ["prism", "dev-environment", "personal", "freelancer"],
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/andersonwilliam85/prism.git",
-    "directory": "config-packages/personal-dev"
-  },
-  "homepage": "https://github.com/andersonwilliam85/prism#readme"
+    "directory": "prisms/personal-dev"
+  }
 }
 ```
 
@@ -203,130 +184,85 @@ config-packages/personal-dev/
 
 ## How It Works
 
-### For Users:
+### For users
 
-1. **Prism installer starts** - User selects a package
-2. **Fetcher checks npm** - Queries unpkg CDN for package
-3. **Downloads package.yaml** - Fetches config from CDN
-4. **Falls back to local** - If npm unavailable, uses local copy
-5. **Applies config** - Installs tools, sets up environment
+1. Prism installer starts — user selects a prism
+2. Fetcher queries unpkg CDN for the prism's `package.yaml`
+3. Downloads and caches the prism locally
+4. Falls back to local `prisms/` directory if npm is unavailable
+5. Engine merges selected sub-prisms and installs the environment
 
-### For Maintainers:
+### For maintainers
 
-1. **Create/update package** - Edit config files
-2. **Update package.json** - Increment version
-3. **Test locally** - Use local copy for testing
-4. **Publish to npm** - Run publish script
-5. **Users get updates** - Automatically available via CDN
+1. Create or update the prism in `prisms/PRISM_NAME/`
+2. Increment `package.yaml` version and `package.json` version
+3. Test locally
+4. Run publish script → automatically available via CDN
 
 ---
 
 ## unpkg CDN URLs
 
-All published packages are available via unpkg:
-
 ```
-https://unpkg.com/@prism/PACKAGE-NAME@VERSION/FILE
+https://unpkg.com/@prism/PRISM-NAME@VERSION/FILE
 ```
 
-### Examples:
-
+Examples:
 ```bash
-# Latest version, specific file
-https://unpkg.com/@prism/personal-dev-config@latest/package.yaml
+# Latest version
+https://unpkg.com/@prism/personal-dev@latest/package.yaml
 
 # Specific version
-https://unpkg.com/@prism/startup-config@1.0.0/package.yaml
+https://unpkg.com/@prism/startup@1.0.0/package.yaml
 
-# Browse entire package
-https://unpkg.com/browse/@prism/fortune500-config@latest/
-
-# Get package.json metadata
-https://unpkg.com/@prism/university-config@latest/package.json
+# Browse entire prism
+https://unpkg.com/browse/@prism/fortune500@latest/
 ```
 
 ---
+
 ## Versioning Strategy
 
-We follow [Semantic Versioning](https://semver.org/):
+Follow [Semantic Versioning](https://semver.org/):
 
-- **MAJOR** (1.0.0 → 2.0.0): Breaking changes to package format
-- **MINOR** (1.0.0 → 1.1.0): New features, new tools added
-- **PATCH** (1.0.0 → 1.0.1): Bug fixes, documentation updates
+- **MAJOR** (1.0.0 → 2.0.0) — Breaking changes (restructured tiers, renamed fields)
+- **MINOR** (1.0.0 → 1.1.0) — New sub-prisms or tiers added
+- **PATCH** (1.0.0 → 1.0.1) — Bug fixes, typos, broken links
 
 ---
 
 ## Fallback Mechanism
-
-Prism installer has robust fallback:
 
 ```
 1. Try unpkg CDN (fast, global)
    ↓ if fails
 2. Try npm registry directly
    ↓ if fails
-3. Use local config-packages/ directory
+3. Use local prisms/ directory
    ↓ if fails
-4. Show error, offer to download manually
+4. Show error with manual download instructions
 ```
 
-This ensures **Prism works even without internet access** if you have the repo cloned!
-
----
-
-## Benefits Summary
-
-### For Users:
-- ✅ **No npm required** - Fetch via unpkg CDN
-- ✅ **Fast downloads** - Global CDN distribution
-- ✅ **Always latest** - Or pin specific versions
-- ✅ **Offline fallback** - Local packages work too
-
-### For Maintainers:
-- ✅ **Standard workflow** - npm publish, everyone knows it
-- ✅ **No custom infrastructure** - npm handles everything
-- ✅ **Easy versioning** - Built-in semver
-- ✅ **Discoverable** - People can find packages on npmjs.com
-
-### For Everyone:
-- ✅ **Open ecosystem** - Anyone can publish packages
-- ✅ **Trusted platform** - npm's security & infrastructure
-- ✅ **No vendor lock-in** - Standard package format
+Prism works even without internet access if you have the repo cloned locally.
 
 ---
 
 ## Troubleshooting
 
-### "403 Forbidden" when publishing
-
+**"403 Forbidden" when publishing**
 ```bash
-# Check you're logged in
-npm whoami
-
-# Login if needed
-npm login
-
-# Verify @prism scope access
-# Contact Will Anderson if you need access
+npm whoami    # check you're logged in
+npm login     # login if needed
 ```
 
-### "Package already exists"
+**"Package already exists"** — increment the version in `package.json` and `package.yaml`.
 
-```bash
-# Increment version in package.json
-# Then try publishing again
-```
-
-### "unpkg CDN unavailable"
-
-```bash
-# Installer will automatically fall back to local packages
-# Or manually install: python3 scripts/npm_package_fetcher.py fetch PACKAGE --local
-```
+**"unpkg CDN unavailable"** — the installer automatically falls back to local prisms.
 
 ---
 
-## Questions?
+## Resources
 
-Contact: **Will Anderson** <andersonwilliam85@gmail.com>  
-Repo: https://github.com/andersonwilliam85/prism
+- [Custom Registries](../user-guide/custom-registries.md) — private/air-gapped registry setup
+- [Prism System](package-system.md) — system internals
+- [GitHub Issues](https://github.com/andersonwilliam85/prism/issues) — report bugs

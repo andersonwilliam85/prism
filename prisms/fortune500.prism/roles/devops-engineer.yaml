@@ -1,0 +1,15 @@
+# ============================================================================
+# DEVOPS ENGINEER ROLE
+# ============================================================================
+
+role:
+  id: "devops-engineer"
+  name: "DevOps Engineer"
+  description: "Infrastructure and CI/CD"
+
+tools_required:
+  - terraform
+  - ansible
+  - kubectl
+  - docker
+  - git

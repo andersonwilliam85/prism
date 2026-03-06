@@ -1,0 +1,15 @@
+# ============================================================================
+# SOFTWARE ENGINEER ROLE
+# ============================================================================
+
+role:
+  id: "software-engineer"
+  name: "Software Engineer"
+  description: "Full-stack or backend development"
+
+tools_required:
+  - vscode
+  - docker
+  - kubectl
+  - git
+  - python3

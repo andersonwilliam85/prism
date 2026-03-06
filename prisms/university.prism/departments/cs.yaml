@@ -1,0 +1,20 @@
+# ============================================================================
+# COMPUTER SCIENCE DEPARTMENT
+# ============================================================================
+
+department:
+  id: "computer-science"
+  name: "Computer Science"
+
+tools_required:
+  - vscode
+  - python3
+  - git
+  - docker
+
+tech_stack:
+  languages:
+    - Python
+    - Java
+    - C++
+    - Haskell

@@ -1,90 +1,115 @@
 # ============================================================================
-# ACME CORP CONFIG PACKAGE (Example)
+# ACME CORP PRISM (Example / Template)
 # ============================================================================
-# Minimal example of a company config package
-# Use this as a template for your own company!
+# Use this as a template for your own company.
+# Demonstrates a 2-level hierarchy: sub-org → team
 
 package:
-  name: "acme-corp-config"
+  name: "acme-corp-prism"
   version: "1.0.0"
-  description: "ACME Corp development environment configuration (example template)"
+  description: "ACME Corp prism — example template for small-to-medium companies"
   author: "ACME Corp IT Team"
   homepage: "https://dev.acmecorp.com"
   support:
     email: "devops@acmecorp.com"
     slack: "#dev-support"
-  
+
   type: "company"
-  
+
   requires:
     onboarding_version: ">=1.0.0"
     python_version: ">=3.8"
-  
-  install:
-    target_dir: "config/"
-    
-    files:
-      - source: "welcome.yaml"
-        dest: "config/welcome.yaml"
-      
-      - source: "resources.yaml"
-        dest: "config/resources.yaml"
-    
-    directories:
-      - source: "base/"
-        dest: "config/base/"
-      
-      - source: "orgs/"
-        dest: "config/orgs/"
-      
-      - source: "teams/"
-        dest: "config/teams/"
-  
-  post_install:
-    message: |
-      🎉 ACME Corp config installed!
-      
-      Edit config/inheritance.yaml to customize for your team.
-      Then run: python3 install-ui.py
-  
-  # User info fields
-  user_info_fields:
-    - id: "name"
-      label: "Full Name"
-      type: "text"
-      required: true
-      placeholder: "Alice Smith"
-    
-    - id: "email"
-      label: "ACME Email"
-      type: "email"
-      required: true
-      placeholder: "alice@acmecorp.com"
-      validation:
-        pattern: ".*@acmecorp\\.com$"
-        message: "Must be an @acmecorp.com email"
-    
-    - id: "github_username"
-      label: "GitHub Enterprise Username"
-      type: "text"
-      required: true
-      placeholder: "asmith"
-      description: "Your username on GitHub Enterprise"
 
-contents:
-  base_config: "base/acme-corp.yaml"
-  welcome_page: "welcome.yaml"
-  resources: "resources.yaml"
-  
-  sub_orgs:
+# PRISM META-CONFIGURATION
+prism_config:
+  theme: "midnight"
+
+  sources:
+    - url: "local"
+      name: "Built-in Prisms"
+      type: "local"
+
+  branding:
+    name: "ACME Corp Prism"
+    tagline: "ACME developer environment"
+    primary_color: "#1e3a8a"
+    secondary_color: "#f59e0b"
+
+# BUNDLED SUB-PRISMS
+# Hierarchy: base → sub-org → team
+bundled_prisms:
+  base:
+    - id: "acme-base"
+      name: "ACME Corp Base"
+      description: "Company-wide settings: proxy, git, required tools"
+      required: true
+      config: "base/acme-corp.yaml"
+
+  orgs:
     - id: "acme-engineering"
       name: "ACME Engineering"
-      file: "orgs/acme-engineering.yaml"
-  
+      description: "Product engineering division"
+      config: "orgs/acme-engineering.yaml"
+
   teams:
     - id: "platform-team"
       name: "Platform Team"
-      file: "teams/platform-team.yaml"
+      description: "Platform engineering team"
+      config: "teams/platform-team.yaml"
+
+# SETUP CONFIGURATION
+setup:
+  install:
+    target_dir: "config/"
+
+    files:
+      - source: "welcome.yaml"
+        dest: "config/welcome.yaml"
+      - source: "resources.yaml"
+        dest: "config/resources.yaml"
+
+    directories:
+      - source: "base/"
+        dest: "config/base/"
+      - source: "orgs/"
+        dest: "config/orgs/"
+      - source: "teams/"
+        dest: "config/teams/"
+
+  post_install:
+    message: |
+      💎 ACME Corp prism installed!
+
+      This is a template — customize it for your company:
+        base/acme-corp.yaml      Company-wide settings
+        orgs/acme-engineering.yaml  Sub-org settings
+        teams/platform-team.yaml    Team settings
+
+      Next: python3 install-ui.py
+
+# User info fields
+user_info_fields:
+  - id: "name"
+    label: "Full Name"
+    type: "text"
+    required: true
+    placeholder: "Alice Smith"
+
+  - id: "email"
+    label: "ACME Email"
+    type: "email"
+    required: true
+    placeholder: "alice@acmecorp.com"
+    validation:
+      pattern: ".*@acmecorp\\.com$"
+      message: "Must be an @acmecorp.com email"
+
+  - id: "github_username"
+    label: "GitHub Enterprise Username"
+    type: "text"
+    required: true
+    placeholder: "asmith"
+    description: "Your username on GitHub Enterprise"
 
 distribution:
   local:
@@ -95,6 +120,8 @@ metadata:
   tags:
     - example
     - template
+    - company
     - minimal
+
   company_size: "medium"
-  last_updated: "2026-03-04"
+  last_updated: "2026-03-05"
