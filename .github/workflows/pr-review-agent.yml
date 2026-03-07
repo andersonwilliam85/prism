@@ -34,8 +34,10 @@ jobs:
             PR_NUMBER="${{ github.event.issue.number }}"
             BRANCH=$(gh pr view "$PR_NUMBER" --json headRefName -q '.headRefName')
           fi
+          REPO_NAME=$(echo "${{ github.repository }}" | cut -d'/' -f2)
           echo "number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
           echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+          echo "repo_name=$REPO_NAME" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -45,31 +47,37 @@ jobs:
           ref: ${{ steps.pr.outputs.branch }}
           fetch-depth: 0
 
-      - name: Bootstrap agent
+      - name: Set up deploy keys
         run: |
-          # Set up deploy key for private knowledge repo
           mkdir -p ~/.ssh
           echo "${{ secrets.KNOWLEDGE_DEPLOY_KEY }}" > ~/.ssh/knowledge_deploy_key
-          chmod 600 ~/.ssh/knowledge_deploy_key
+          echo "${{ secrets.SYNAPSE_DEPLOY_KEY }}" > ~/.ssh/synapse_deploy_key
+          chmod 600 ~/.ssh/knowledge_deploy_key ~/.ssh/synapse_deploy_key
           ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
-
-          # Configure SSH to use deploy key for knowledge repo
           cat >> ~/.ssh/config << 'SSHEOF'
           Host github-knowledge
             HostName github.com
             IdentityFile ~/.ssh/knowledge_deploy_key
             StrictHostKeyChecking no
+          Host github-synapse
+            HostName github.com
+            IdentityFile ~/.ssh/synapse_deploy_key
+            StrictHostKeyChecking no
           SSHEOF
 
-          # Clone knowledge base using deploy key
-          git clone --depth 1 git@github-knowledge:${{ github.repository_owner }}/knowledge.git "$HOME/knowledge"
+      - name: Bootstrap agent
+        run: |
+          # Clone knowledge base (read-only is fine)
+          git clone git@github-knowledge:${{ github.repository_owner }}/knowledge.git "$HOME/knowledge"
 
-          # Run bootstrapper in CI mode (non-interactive, full setup)
+          # Clone synapse (read-write — CI writes execution state)
+          git clone git@github-synapse:${{ github.repository_owner }}/synapse.git "$HOME/development/synapse"
+
+          # Run bootstrapper in CI mode
           chmod +x "$HOME/knowledge/bootstrap/install.sh"
           "$HOME/knowledge/bootstrap/install.sh" --ci
 
       - name: Collect review feedback
-        id: feedback
         run: |
           PR_NUMBER="${{ steps.pr.outputs.number }}"
 
@@ -87,7 +95,7 @@ jobs:
             REVIEW_BODY="${{ github.event.review.body }}"
           fi
 
-          # Write feedback to file (avoids shell escaping issues)
+          # Write feedback to file
           {
             echo "## Review Feedback"
             echo ""
@@ -109,16 +117,37 @@ jobs:
       - name: Run Claude Code
         run: |
           FEEDBACK=$(cat /tmp/feedback.md)
+          REPO_NAME="${{ steps.pr.outputs.repo_name }}"
+          PR_NUMBER="${{ steps.pr.outputs.number }}"
+
           claude -p "$(cat <<EOF
-          You are addressing PR review feedback on branch ${{ steps.pr.outputs.branch }}.
+          You are a CI agent addressing PR review feedback.
+          Repository: ${{ github.repository }}
+          Branch: ${{ steps.pr.outputs.branch }}
+          PR: #${PR_NUMBER}
+
           The knowledge base is at ~/knowledge/ with index at ~/knowledge/index.yaml.
 
           ## Instructions
-          1. Read ~/knowledge/index.yaml and load any relevant standards
+          1. Read ~/knowledge/index.yaml and load relevant standards for this task
           2. Read the review feedback below
-          3. Address each comment by making the requested changes
-          4. Do NOT push — changes will be committed and pushed in the next step
-          5. Do NOT modify CLAUDE.md or any agent config files
+          3. Address each comment by making the requested changes to the project code
+          4. After making changes, write a CI activity log to:
+             ~/development/synapse/executions/ci/${REPO_NAME}/pr-${PR_NUMBER}.yaml
+             with this format:
+               repo: ${{ github.repository }}
+               pr: ${PR_NUMBER}
+               branch: ${{ steps.pr.outputs.branch }}
+               timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+               trigger: review_feedback
+               feedback_summary: (1-2 sentence summary of what was requested)
+               changes_made:
+                 - file: path/to/file
+                   action: what you changed
+               status: completed
+          5. Do NOT push — changes will be committed and pushed in the next step
+          6. Do NOT modify CLAUDE.md or any agent config files
+          7. Do NOT merge any PRs
 
           ## Feedback
           ${FEEDBACK}
@@ -127,7 +156,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
-      - name: Commit and push changes
+      - name: Commit and push project changes
         run: |
           git config user.name "claude-code[bot]"
           git config user.email "claude-code[bot]@users.noreply.github.com"
@@ -144,19 +173,39 @@ jobs:
           EOF
             )"
             git push
+            echo "PROJECT_CHANGED=true" >> "$GITHUB_ENV"
           else
-            echo "No changes to commit"
+            echo "No project changes to commit"
+            echo "PROJECT_CHANGED=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: Push CI activity to synapse repo
+        if: always()
+        run: |
+          cd "$HOME/development/synapse"
+          git config user.name "claude-code[bot]"
+          git config user.email "claude-code[bot]@users.noreply.github.com"
+
+          if [ -n "$(git status --porcelain)" ]; then
+            git add -A
+            git commit -m "$(cat <<EOF
+          ci: activity log for ${{ github.repository }}#${{ steps.pr.outputs.number }}
+
+          Co-Authored-By: Claude Code <claude-code[bot]@users.noreply.github.com>
+          EOF
+            )"
+            git push
           fi
 
       - name: Comment on PR
         if: success()
         run: |
-          if [ -n "$(git log --oneline -1 --since='2 minutes ago')" ]; then
+          if [ "$PROJECT_CHANGED" = "true" ]; then
             gh pr comment "${{ steps.pr.outputs.number }}" \
-              --body "I've addressed the review feedback in $(git rev-parse --short HEAD). Please re-review."
+              --body "I've addressed the review feedback in $(git rev-parse --short HEAD). Activity logged to knowledge repo. Please re-review."
           else
             gh pr comment "${{ steps.pr.outputs.number }}" \
-              --body "I reviewed the feedback but found no changes needed."
+              --body "I reviewed the feedback but found no code changes needed. Activity logged to knowledge repo."
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
