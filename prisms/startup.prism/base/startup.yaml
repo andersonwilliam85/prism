@@ -1,0 +1,27 @@
+# ============================================================================
+# STARTUP BASE CONFIGURATION
+# ============================================================================
+# Core setup for fast-moving startups — minimal process, maximum velocity.
+
+environment:
+  proxy:
+    enabled: false
+  vpn:
+    required: false
+
+git:
+  user:
+    name: "${USER}"
+    email: "${USER}@startup.com"
+  config:
+    init.defaultBranch: main
+    pull.rebase: false
+
+tools_required:
+  - git
+  - docker
+
+tools_available:
+  - python3
+  - nodejs
+  - gh

@@ -1,0 +1,13 @@
+# ============================================================================
+# FRONTEND ENGINEER ROLE
+# ============================================================================
+
+role:
+  id: "frontend-engineer"
+  name: "Frontend Engineer"
+  description: "UI/UX development"
+
+tools_required:
+  - vscode
+  - nodejs
+  - git

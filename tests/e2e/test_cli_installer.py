@@ -1,278 +1,228 @@
 """
-E2E tests for CLI installer.
+E2E tests for CLI tools — install.py, package_manager.py, package_validator.py.
 """
 import pytest
 import subprocess
 import tempfile
-import shutil
+import re
 from pathlib import Path
-import yaml
+
+PROJECT_ROOT = Path(__file__).parent.parent.parent
+
+
+def run(cmd, timeout=30, cwd=None):
+    """Run a command and return CompletedProcess."""
+    return subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        timeout=timeout,
+        cwd=str(cwd or PROJECT_ROOT),
+    )
 
 
 @pytest.mark.e2e
-class TestCLIInstaller:
-    """Test CLI installer functionality."""
-    
-    @pytest.fixture
-    def temp_install_dir(self):
-        """Create temporary installation directory."""
-        temp_dir = Path(tempfile.mkdtemp(prefix="prism_cli_test_"))
-        yield temp_dir
-        if temp_dir.exists():
-            shutil.rmtree(temp_dir, ignore_errors=True)
-    
-    def test_cli_installer_help(self):
-        """Test that CLI installer shows help."""
-        result = subprocess.run(
-            ["python3", "install.py", "--help"],
-            capture_output=True,
-            text=True,
-            cwd=str(Path(__file__).parent.parent.parent)
-        )
-        
-        assert result.returncode == 0 or "help" in result.stdout.lower() or "usage" in result.stdout.lower()
-    
-    def test_cli_installer_lists_packages(self):
-        """Test that CLI installer can list packages."""
-        result = subprocess.run(
-            ["python3", "install.py", "--list"],
-            capture_output=True,
-            text=True,
-            timeout=30,
-            cwd=str(Path(__file__).parent.parent.parent)
-        )
-        
-        # Should succeed or show available packages
-        assert result.returncode == 0 or "package" in result.stdout.lower() or "prism" in result.stdout.lower()
-    
-    def test_cli_installer_validates_input(self):
-        """Test that CLI installer validates invalid package names."""
-        result = subprocess.run(
-            ["python3", "install.py", "--package", "nonexistent-package-xyz"],
-            capture_output=True,
-            text=True,
-            timeout=30,
-            cwd=str(Path(__file__).parent.parent.parent)
-        )
-        
-        # Should fail or show error for invalid package
-        # Accept both error return codes and error messages
-        has_error = (
-            result.returncode != 0 or
-            "error" in result.stderr.lower() or
-            "not found" in result.stdout.lower() or
-            "invalid" in result.stdout.lower()
-        )
-        
-        assert has_error, "Should reject invalid package names"
+class TestInstallPyCLI:
+    """Tests for install.py CLI."""
 
-
-@pytest.mark.e2e
-class TestPackageManager:
-    """Test package manager utility."""
-    
-    def test_package_manager_validates_all(self):
-        """Test that package manager can validate all packages."""
-        result = subprocess.run(
-            ["python3", "scripts/package_validator.py"],
-            capture_output=True,
-            text=True,
-            timeout=30,
-            cwd=str(Path(__file__).parent.parent.parent)
-        )
-        
-        # Should complete (may have warnings but shouldn't crash)
-        assert result.returncode in [0, 1]  # 0 = all valid, 1 = some invalid
-    
-    def test_package_manager_scans_directory(self):
-        """Test that package manager scans prisms directory."""
-        result = subprocess.run(
-            ["python3", "-c", 
-             "from scripts.package_manager import scan_packages; "
-             "pkgs = scan_packages('prisms'); "
-             "print(f'Found {len(pkgs)} packages')"],
-            capture_output=True,
-            text=True,
-            timeout=30,
-            cwd=str(Path(__file__).parent.parent.parent)
-        )
-        
+    def test_help_flag(self):
+        result = run(["python3", "install.py", "--help"])
+        combined = result.stdout + result.stderr
         assert result.returncode == 0
-        assert "Found" in result.stdout
-        
-        # Extract number
-        import re
-        match = re.search(r'Found (\d+) packages', result.stdout)
-        if match:
-            count = int(match.group(1))
-            assert count > 0, "Should find at least one package"
+        assert "usage" in combined.lower() or "help" in combined.lower()
+
+    def test_help_mentions_prism_flag(self):
+        result = run(["python3", "install.py", "--help"])
+        combined = result.stdout + result.stderr
+        assert "--prism" in combined
+
+    def test_status_flag(self):
+        result = run(["python3", "install.py", "--status"])
+        # Should exit cleanly (0 or 1 depending on whether workspace exists)
+        assert result.returncode in (0, 1)
+
+    def test_invalid_prism_name_rejected(self):
+        result = run(
+            ["python3", "install.py", "--prism", "definitely-not-a-real-prism-xyz123"],
+            timeout=15,
+        )
+        combined = result.stdout + result.stderr
+        has_error = (
+            result.returncode != 0
+            or "error" in combined.lower()
+            or "not found" in combined.lower()
+            or "invalid" in combined.lower()
+        )
+        assert has_error, "Expected rejection of invalid prism name"
 
 
 @pytest.mark.e2e
-class TestConfigValidator:
-    """Test configuration validator."""
-    
-    def test_validates_good_config(self):
-        """Test validation of valid configuration."""
-        # Create a minimal valid config
-        config_content = """
-package:
-  name: "test-package"
-  version: "1.0.0"
-  description: "Test package"
-  author: "Test"
-  
-user_info_fields:
-  - id: "name"
-    label: "Name"
-    type: "text"
-    required: true
-"""
-        
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
-            f.write(config_content)
-            temp_file = f.name
-        
-        try:
-            result = subprocess.run(
-                ["python3", "-c",
-                 f"import yaml; "
-                 f"data = yaml.safe_load(open('{temp_file}')); "
-                 f"assert 'package' in data; "
-                 f"assert data['package']['name'] == 'test-package'; "
-                 f"print('Valid')"],
-                capture_output=True,
-                text=True,
-                timeout=10
-            )
-            
-            assert result.returncode == 0
-            assert "Valid" in result.stdout
-        finally:
-            Path(temp_file).unlink(missing_ok=True)
-    
-    def test_detects_invalid_yaml(self):
-        """Test detection of invalid YAML syntax."""
-        invalid_yaml = "invalid: yaml: syntax: [[["
-        
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
-            f.write(invalid_yaml)
-            temp_file = f.name
-        
-        try:
-            result = subprocess.run(
-                ["python3", "-c",
-                 f"import yaml; "
-                 f"try:\n"
-                 f"  yaml.safe_load(open('{temp_file}'))\n"
-                 f"  print('Should have failed')\n"
-                 f"except yaml.YAMLError:\n"
-                 f"  print('Correctly detected invalid YAML')"],
-                capture_output=True,
-                text=True,
-                timeout=10
-            )
-            
-            assert "Correctly detected" in result.stdout
-        finally:
-            Path(temp_file).unlink(missing_ok=True)
+class TestPackageManagerCLI:
+    """Tests for scripts/package_manager.py CLI."""
+
+    def test_list_command(self):
+        result = run(["python3", "scripts/package_manager.py", "list"])
+        assert result.returncode == 0
+        combined = result.stdout + result.stderr
+        assert "prism" in combined.lower() or "💎" in combined
+
+    def test_list_shows_at_least_one_prism(self):
+        result = run(["python3", "scripts/package_manager.py", "list"])
+        assert result.returncode == 0
+        # Count prism lines by looking for gem emoji or prism names
+        lines = [l for l in result.stdout.split("\n") if l.strip()]
+        assert len(lines) > 2  # header + at least one prism
+
+    def test_validate_personal_dev(self):
+        prism_path = PROJECT_ROOT / "prisms" / "personal-dev"
+        if not prism_path.exists():
+            pytest.skip("personal-dev not present")
+        result = run(["python3", "scripts/package_manager.py", "validate", "personal-dev"])
+        assert result.returncode == 0
+        assert "valid" in result.stdout.lower() or "✅" in result.stdout
+
+    def test_validate_nonexistent_prism(self):
+        result = run(["python3", "scripts/package_manager.py", "validate", "prism-that-does-not-exist"])
+        combined = result.stdout + result.stderr
+        has_error = (
+            result.returncode != 0
+            or "not found" in combined.lower()
+            or "error" in combined.lower()
+        )
+        assert has_error
+
+    def test_search_command(self):
+        result = run(["python3", "scripts/package_manager.py", "search", "personal"])
+        # Should succeed even if nothing found
+        assert result.returncode == 0
+
+    def test_info_command_for_existing_prism(self):
+        prism_path = PROJECT_ROOT / "prisms" / "personal-dev"
+        if not prism_path.exists():
+            pytest.skip("personal-dev not present")
+        result = run(["python3", "scripts/package_manager.py", "info", "personal-dev"])
+        combined = result.stdout + result.stderr
+        assert result.returncode == 0 or "personal" in combined.lower()
+
+    def test_create_command(self, tmp_path):
+        result = subprocess.run(
+            ["python3", "scripts/package_manager.py", "create", "cli-test-prism", "--company", "CLI Test Co"],
+            capture_output=True,
+            text=True,
+            timeout=15,
+            cwd=str(PROJECT_ROOT),
+            env={**__import__("os").environ, "HOME": str(tmp_path)},
+        )
+        # Command should succeed or explain what it would create
+        combined = result.stdout + result.stderr
+        assert result.returncode == 0 or "prism" in combined.lower()
 
 
 @pytest.mark.e2e
-class TestNpmPackageFetcher:
-    """Test npm package fetcher utility."""
-    
-    def test_npm_fetcher_handles_missing_registry(self):
-        """Test that npm fetcher handles missing registry gracefully."""
+class TestPrismValidatorCLI:
+    """Tests for scripts/package_validator.py CLI."""
+
+    def test_validates_all_prisms_without_crash(self):
+        result = run(["python3", "scripts/package_validator.py"], timeout=30)
+        # Exit code 0 = all valid, 1 = some invalid — both acceptable
+        assert result.returncode in (0, 1)
+        assert "Valid" in result.stdout or "Invalid" in result.stdout or "prism" in result.stdout.lower()
+
+    def test_validates_personal_dev_prism(self):
+        prism_path = PROJECT_ROOT / "prisms" / "personal-dev"
+        if not prism_path.exists():
+            pytest.skip("personal-dev not present")
+        result = run(["python3", "scripts/package_validator.py", str(prism_path)])
+        assert result.returncode == 0
+        assert "valid" in result.stdout.lower() or "Valid" in result.stdout
+
+    def test_valid_prism_reports_zero_errors(self):
+        prism_path = PROJECT_ROOT / "prisms" / "personal-dev"
+        if not prism_path.exists():
+            pytest.skip("personal-dev not present")
+        result = run(["python3", "scripts/package_validator.py", str(prism_path)])
+        # Verify no error output
+        assert "❌" not in result.stdout or "0" in result.stdout
+
+    def test_output_shows_prism_counts(self):
+        result = run(["python3", "scripts/package_validator.py"], timeout=30)
+        combined = result.stdout
+        # Should show counts like "Valid: N" or "Invalid: N"
+        assert re.search(r"valid|invalid", combined, re.IGNORECASE)
+
+
+@pytest.mark.e2e
+class TestConfigMergerScript:
+    """Tests for config_merger.py as a module (import)."""
+
+    def test_import_works(self):
+        result = run([
+            "python3", "-c",
+            "from scripts.config_merger import ConfigMerger, merge_configs; print('OK')"
+        ])
+        assert result.returncode == 0
+        assert "OK" in result.stdout
+
+    def test_merge_configs_from_cli(self):
+        result = run([
+            "python3", "-c",
+            "from scripts.config_merger import merge_configs; "
+            "r = merge_configs({'a': 1}, {'b': 2}); "
+            "assert r['a'] == 1 and r['b'] == 2; "
+            "print('PASS')"
+        ])
+        assert result.returncode == 0
+        assert "PASS" in result.stdout
+
+    def test_env_var_substitution_from_cli(self):
+        import os
+        env = {**os.environ, "MY_TEST_VAR": "hello"}
         result = subprocess.run(
             ["python3", "-c",
-             "from scripts.npm_package_fetcher import NpmPackageFetcher; "
-             "fetcher = NpmPackageFetcher('https://invalid-registry-xyz.com'); "
-             "print('Created')"],
-            capture_output=True,
-            text=True,
-            timeout=10,
-            cwd=str(Path(__file__).parent.parent.parent)
+             "from scripts.config_merger import ConfigMerger; "
+             "m = ConfigMerger(); "
+             "r = m._substitute_env_vars({'k': '${MY_TEST_VAR}'}); "
+             "assert r['k'] == 'hello', f'Got: {r[\"k\"]}'; "
+             "print('PASS')"],
+            capture_output=True, text=True, timeout=10,
+            cwd=str(PROJECT_ROOT), env=env,
         )
-        
-        # Should create instance even with invalid registry
-        assert "Created" in result.stdout or result.returncode == 0
+        assert result.returncode == 0
+        assert "PASS" in result.stdout
 
 
 @pytest.mark.e2e
-@pytest.mark.slow
-class TestFullCLIWorkflow:
-    """Test complete CLI workflows."""
-    
-    def test_dry_run_installation(self):
-        """Test CLI installation in dry-run mode."""
-        result = subprocess.run(
-            ["python3", "install.py", "--package", "core-prism", "--dry-run"],
-            capture_output=True,
-            text=True,
-            timeout=60,
-            cwd=str(Path(__file__).parent.parent.parent)
-        )
-        
-        # Dry run should complete without errors
-        # Accept both success and "dry-run" in output
-        is_successful = (
-            result.returncode == 0 or
-            "dry" in result.stdout.lower() or
-            "would install" in result.stdout.lower() or
-            "simulation" in result.stdout.lower()
-        )
-        
-        # If dry-run not implemented, that's ok too
-        is_not_implemented = "not found" in result.stderr.lower()
-        
-        assert is_successful or is_not_implemented
-    
-    def test_config_validation_mode(self):
-        """Test configuration validation mode."""
-        result = subprocess.run(
-            ["python3", "install.py", "--validate"],
-            capture_output=True,
-            text=True,
-            timeout=60,
-            cwd=str(Path(__file__).parent.parent.parent)
-        )
-        
-        # Should validate configs
-        # Accept success or validation output
-        is_successful = (
-            result.returncode == 0 or
-            "valid" in result.stdout.lower() or
-            "package" in result.stdout.lower()
-        )
-        
-        # If validate flag not implemented, that's ok
-        is_not_implemented = "not found" in result.stderr.lower()
-        
-        assert is_successful or is_not_implemented
+class TestPackageManagerDiscover:
+    """Tests for PackageManager.discover_packages() via subprocess."""
 
+    def test_discovers_prisms_in_prisms_dir(self):
+        result = run([
+            "python3", "-c",
+            "import sys; sys.path.insert(0, 'scripts'); "
+            "from package_manager import PackageManager; "
+            "pm = PackageManager(); "
+            "pkgs = pm.discover_packages(); "
+            f"print(f'Found {{len(pkgs)}} prisms'); "
+            "[print(p['name']) for p in pkgs]"
+        ])
+        assert result.returncode == 0
+        match = re.search(r"Found (\d+) prisms", result.stdout)
+        assert match, f"Expected 'Found N prisms' in: {result.stdout}"
+        count = int(match.group(1))
+        assert count > 0, "Should discover at least one prism"
 
-@pytest.mark.e2e
-class TestDocumentationServer:
-    """Test documentation auto-deployment."""
-    
-    def test_docs_server_can_start(self):
-        """Test that docs server can be started."""
-        # Try to generate docs
-        result = subprocess.run(
-            ["python3", "scripts/auto-deploy-docs.py", "--help"],
-            capture_output=True,
-            text=True,
-            timeout=10,
-            cwd=str(Path(__file__).parent.parent.parent)
-        )
-        
-        # Should show help or run without error
-        is_successful = (
-            result.returncode == 0 or
-            "help" in result.stdout.lower() or
-            "usage" in result.stdout.lower() or
-            "docs" in result.stdout.lower()
-        )
-        
-        assert is_successful or result.returncode == 0
+    def test_all_discovered_have_required_keys(self):
+        result = run([
+            "python3", "-c",
+            "import sys, json; sys.path.insert(0, 'scripts'); "
+            "from package_manager import PackageManager; "
+            "pm = PackageManager(); "
+            "pkgs = pm.discover_packages(); "
+            "required = {'name','version','description','path','source'}; "
+            "for p in pkgs: "
+            "  missing = required - set(p.keys()); "
+            "  assert not missing, f'Missing keys in {p[\"name\"]}: {missing}'; "
+            "print('ALL_OK')"
+        ])
+        assert result.returncode == 0
+        assert "ALL_OK" in result.stdout

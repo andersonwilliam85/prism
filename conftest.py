@@ -5,6 +5,7 @@ import pytest
 import sys
 import tempfile
 import shutil
+import yaml
 from pathlib import Path
 from typing import Generator
 
@@ -28,60 +29,105 @@ def sample_user_info() -> dict:
     return {
         "name": "Test User",
         "email": "test@example.com",
-        "git_username": "testuser"
     }
 
 
 @pytest.fixture
-def test_package_dir(temp_dir: Path) -> Path:
-    """Create a test package directory."""
-    pkg_dir = temp_dir / "test-package"
+def prism_dir(temp_dir: Path) -> Path:
+    """
+    Create a fully valid prism directory with bundled_prisms format.
+    Includes a base sub-prism config file on disk.
+    """
+    pkg_dir = temp_dir / "test-prism"
     pkg_dir.mkdir(parents=True)
-    
-    # Create minimal package.yaml
-    (pkg_dir / "package.yaml").write_text("""
-package:
-  name: "test-package"
-  version: "1.0.0"
-  description: "Test package for unit tests"
-  author: "Test Author"
-  
-user_info_fields:
-  - id: "name"
-    label: "Name"
-    type: "text"
-    required: true
-""")
-    
+    (pkg_dir / "base").mkdir()
+    (pkg_dir / "teams").mkdir()
+
+    # Write package.yaml
+    (pkg_dir / "package.yaml").write_text(yaml.dump({
+        "package": {
+            "name": "test-prism",
+            "version": "1.0.0",
+            "description": "Test prism for unit tests",
+            "type": "company",
+        },
+        "prism_config": {
+            "theme": "ocean",
+            "branding": {"name": "Test Prism"},
+        },
+        "bundled_prisms": {
+            "base": [
+                {
+                    "id": "base",
+                    "name": "Test Base",
+                    "description": "Company-wide defaults",
+                    "required": True,
+                    "config": "base/test.yaml",
+                }
+            ],
+            "teams": [
+                {
+                    "id": "platform",
+                    "name": "Platform Team",
+                    "config": "teams/platform.yaml",
+                },
+                {
+                    "id": "backend",
+                    "name": "Backend Team",
+                    "config": "teams/backend.yaml",
+                },
+            ],
+        },
+        "setup": {
+            "install": {
+                "target_dir": "config/",
+                "directories": [{"source": "base/", "dest": "config/base/"}],
+            }
+        },
+        "user_info_fields": [
+            {"id": "name", "label": "Full Name", "type": "text", "required": True},
+            {"id": "email", "label": "Email", "type": "email", "required": True},
+        ],
+        "distribution": {"local": {"path": "prisms/test-prism/", "discoverable": True}},
+        "metadata": {"tags": ["test"], "company_size": "small"},
+    }))
+
+    # Write base sub-prism config
+    (pkg_dir / "base" / "test.yaml").write_text(yaml.dump({
+        "company": {"name": "Test Corp", "domain": "test.com"},
+        "tools_required": ["git", "docker"],
+        "git": {"user": {"email": "${USER}@test.com"}},
+        "security": {"sso_required": False},
+    }))
+
+    # Write team sub-prism configs
+    (pkg_dir / "teams" / "platform.yaml").write_text(yaml.dump({
+        "tools_required": ["kubectl", "terraform"],
+        "repositories": [{"name": "infra", "url": "https://github.com/test/infra"}],
+    }))
+    (pkg_dir / "teams" / "backend.yaml").write_text(yaml.dump({
+        "tools_required": ["python", "postgresql"],
+    }))
+
+    # Write README
+    (pkg_dir / "README.md").write_text("# Test Prism\n")
+
     return pkg_dir
 
 
-@pytest.fixture(scope="session")
-def browser_type_launch_args(browser_type_launch_args):
-    """Override browser launch args to use system Chrome."""
-    return {
-        **browser_type_launch_args,
-        "channel": "chrome",  # Use system Chrome
-        "headless": False,
-    }
+# Legacy alias for tests that still use the old fixture name
+@pytest.fixture
+def test_package_dir(prism_dir: Path) -> Path:
+    return prism_dir
 
 
-@pytest.fixture(scope="session")
-def playwright_browser_args():
-    """Browser arguments for Playwright tests."""
-    return [
-        "--disable-dev-shm-usage",
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-    ]
+@pytest.fixture
+def mock_progress_callback():
+    """A progress callback that records all calls."""
+    log = []
 
+    def callback(step, message, level="info"):
+        log.append({"step": step, "message": message, "level": level})
 
-@pytest.fixture(scope="session")
-def playwright_launch_options(playwright_browser_args):
-    """Launch options for Playwright - use system Chrome."""
-    return {
-        "headless": True,  # Use headless for faster tests
-        "args": playwright_browser_args,
-        "slow_mo": 0,  # No delay for speed
-        "channel": "chrome",  # Use system Chrome instead of downloading browsers
-    }
+    callback.log = log
+    return callback

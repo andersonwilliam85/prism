@@ -1,0 +1,14 @@
+# ============================================================================
+# FACULTY USER TYPE
+# ============================================================================
+
+user_type:
+  id: "faculty"
+  name: "Faculty"
+  description: "Professor or instructor"
+
+tools_required:
+  - vscode
+  - git
+  - python3
+  - jupyter

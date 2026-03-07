@@ -1,0 +1,28 @@
+# ============================================================================
+# CONSULTING FIRM BASE CONFIGURATION
+# ============================================================================
+
+firm:
+  name: "[Consulting Firm Name]"
+  domain: "consultingfirm.com"
+
+environment:
+  proxy:
+    enabled: false
+  vpn:
+    required: false
+
+git:
+  user:
+    name: "${USER}"
+    email: "${USER}@consultingfirm.com"
+
+tools_required:
+  - git
+  - docker
+  - python3
+
+tools_available:
+  - vscode
+  - postman
+  - terraform

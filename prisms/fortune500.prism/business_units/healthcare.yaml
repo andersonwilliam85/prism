@@ -1,0 +1,18 @@
+# ============================================================================
+# HEALTHCARE DIVISION
+# ============================================================================
+
+business_unit:
+  id: "healthcare"
+  name: "Healthcare Division"
+  description: "Healthcare technology (HIPAA compliant)"
+
+compliance:
+  - hipaa
+  - gdpr
+  - sox
+
+security:
+  data_classification: "phi"  # Protected Health Information
+  encryption_required: true
+  audit_logging: true

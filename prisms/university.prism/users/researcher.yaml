@@ -1,0 +1,21 @@
+# ============================================================================
+# RESEARCHER USER TYPE
+# ============================================================================
+
+user_type:
+  id: "researcher"
+  name: "Researcher"
+  description: "PhD student or research scientist"
+
+tools_required:
+  - vscode
+  - git
+  - python3
+  - jupyter
+  - docker
+
+tech_stack:
+  focus:
+    - High-performance computing
+    - Machine learning
+    - Data analysis

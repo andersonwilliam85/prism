@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
 """
-Config Package Manager
+Prism Manager
 
-Manages config packages (install, list, search, info, validate).
-Auto-discovers prisms in prisms/ directory.
+Manages prism packages (list, search, info, install, validate, create).
+Auto-discovers prisms in the prisms/ directory.
+
+A prism is a YAML-based configuration package that defines:
+  - prism_config:    Prism tool settings (theme, proxy, registry, branding)
+  - bundled_prisms:  Hierarchical sub-prisms (base + optional tiers)
+  - user_info_fields: Info collected from the user at install time
 
 Usage:
     python3 scripts/package_manager.py list
     python3 scripts/package_manager.py search <query>
-    python3 scripts/package_manager.py info <package-name>
-    python3 scripts/package_manager.py install <package-name>
-    python3 scripts/package_manager.py validate <package-name>
-    python3 scripts/package_manager.py create <new-package-name>
+    python3 scripts/package_manager.py info <prism-name>
+    python3 scripts/package_manager.py install <prism-name>
+    python3 scripts/package_manager.py validate <prism-name>
+    python3 scripts/package_manager.py create <new-prism-name>
 """
 
 import yaml
@@ -24,7 +29,7 @@ from datetime import datetime
 
 
 class PackageManager:
-    """Manages config package installation"""
+    """Manages prism discovery, installation, and scaffolding"""
     
     def __init__(self, root_dir: Path = None):
         """Initialize package manager"""
@@ -34,51 +39,63 @@ class PackageManager:
     
     def discover_packages(self) -> List[Dict]:
         """
-        Auto-discover all prisms in prisms/ directory
-        
+        Auto-discover all prisms in prisms/ directory.
+
         Returns:
-            List of package metadata dicts
+            List of prism metadata dicts, sorted by name.
         """
         packages = []
-        
+
         if not self.packages_dir.exists():
             return packages
-        
-        # Scan all subdirectories
-        for pkg_dir in self.packages_dir.iterdir():
-            if not pkg_dir.is_dir():
+
+        for pkg_dir in sorted(self.packages_dir.iterdir()):
+            if not pkg_dir.is_dir() or pkg_dir.name.startswith("."):
                 continue
-            
-            # Look for package.yaml
+
             package_yaml = pkg_dir / "package.yaml"
             if not package_yaml.exists():
                 continue
-            
+
             try:
                 with open(package_yaml) as f:
-                    metadata = yaml.safe_load(f)
-                    
-                    # Check if discoverable
-                    dist = metadata.get("distribution", {})
-                    if not dist.get("local", {}).get("discoverable", True):
-                        continue
-                    
-                    pkg_info = metadata["package"]
-                    packages.append({
-                        "name": pkg_info["name"],
-                        "version": pkg_info["version"],
-                        "description": pkg_info["description"],
-                        "type": pkg_info["type"],
-                        "author": pkg_info.get("author", "Unknown"),
-                        "source": "local",
-                        "path": str(pkg_dir),
-                        "tags": metadata.get("metadata", {}).get("tags", []),
-                        "company_size": metadata.get("metadata", {}).get("company_size", "unknown")
-                    })
+                    metadata = yaml.safe_load(f) or {}
+
+                # Check if discoverable
+                dist = metadata.get("distribution", {})
+                if not dist.get("local", {}).get("discoverable", True):
+                    continue
+
+                pkg_info = metadata.get("package", {})
+                bundled = metadata.get("bundled_prisms", {})
+                prism_cfg = metadata.get("prism_config", {})
+
+                # Build sub-prism tier summary
+                tiers = {}
+                for tier_name, tier_items in bundled.items():
+                    if isinstance(tier_items, list):
+                        tiers[tier_name] = [
+                            {"id": p.get("id"), "name": p.get("name"), "required": p.get("required", False)}
+                            for p in tier_items if isinstance(p, dict)
+                        ]
+
+                packages.append({
+                    "name": pkg_info.get("name", pkg_dir.name),
+                    "version": pkg_info.get("version", "unknown"),
+                    "description": pkg_info.get("description", "No description"),
+                    "type": pkg_info.get("type", "unknown"),
+                    "author": pkg_info.get("author", "Unknown"),
+                    "source": "local",
+                    "path": str(pkg_dir),
+                    "tags": metadata.get("metadata", {}).get("tags", []),
+                    "company_size": metadata.get("metadata", {}).get("company_size", "unknown"),
+                    "has_bundled_prisms": bool(bundled),
+                    "tiers": tiers,
+                    "theme": prism_cfg.get("theme", "ocean"),
+                })
             except Exception as e:
                 print(f"  ⚠️  Warning: Could not load {pkg_dir.name}: {e}")
-                continue
-        
+
         return packages
     
     def list_packages(self) -> List[Dict]:
@@ -109,8 +126,12 @@ class PackageManager:
         with open(metadata_path) as f:
             metadata = yaml.safe_load(f)
         
-        # Install files
-        install_config = metadata["package"]["install"]
+        # Install files — support both new (setup.install) and legacy (package.install) formats
+        install_config = (
+            metadata.get("setup", {}).get("install")
+            or metadata.get("package", {}).get("install")
+            or {}
+        )
         
         print(f"  ⚙️  Installing files...")
         
@@ -262,22 +283,43 @@ class PackageManager:
         
         # Create directory structure
         (pkg_dir / "base").mkdir(parents=True)
-        (pkg_dir / "orgs").mkdir(parents=True)
         (pkg_dir / "teams").mkdir(parents=True)
-        
+
+        safe_name = package_name.replace("-config", "")
+
         # Create package.yaml
-        package_yaml_content = f"""# Package metadata
-package:
-  name: "{package_name}"
+        package_yaml_content = f"""package:
+  name: "{safe_name}-prism"
   version: "1.0.0"
-  description: "{company_name} development environment configuration"
+  description: "{company_name} development environment"
+  type: "company"
   author: "{company_name} IT Team"
   homepage: "https://dev.example.com"
-  type: "company"
-  
-  requires:
-    onboarding_version: ">=1.0.0"
-  
+
+prism_config:
+  theme: "midnight"
+  branding:
+    name: "{company_name} Prism"
+    tagline: "Empowering {company_name} Development"
+    primary_color: "#1e3a8a"
+
+bundled_prisms:
+  base:
+    - id: "base"
+      name: "{company_name} Base"
+      description: "Company-wide settings: proxy, git, required tools"
+      required: true
+      config: "base/{safe_name}.yaml"
+
+  teams:
+    - id: "platform"
+      name: "Platform Team"
+      config: "teams/platform.yaml"
+    - id: "backend"
+      name: "Backend Team"
+      config: "teams/backend.yaml"
+
+setup:
   install:
     target_dir: "config/"
     files:
@@ -288,28 +330,33 @@ package:
     directories:
       - source: "base/"
         dest: "config/base/"
-      - source: "orgs/"
-        dest: "config/orgs/"
       - source: "teams/"
         dest: "config/teams/"
-  
   post_install:
     message: |
-      🎉 {company_name} config installed!
-      Edit config/inheritance.yaml to customize.
+      💎 {company_name} prism installed!
 
-contents:
-  base_config: "base/{package_name.replace('-config', '')}.yaml"
-  welcome_page: "welcome.yaml"
-  resources: "resources.yaml"
+user_info_fields:
+  - id: "name"
+    label: "Full Name"
+    type: "text"
+    required: true
+  - id: "email"
+    label: "Company Email"
+    type: "email"
+    required: true
+    validation:
+      pattern: ".*@example\\.com$"
+      message: "Must be a @example.com email"
 
 distribution:
   local:
-            path: "prisms/{package_name.replace('-config', '')}/"
+    path: "prisms/{safe_name}/"
     discoverable: true
 
 metadata:
   tags: ["company", "template"]
+  company_size: "medium"
   last_updated: "{datetime.now().strftime('%Y-%m-%d')}"
 """
         (pkg_dir / "package.yaml").write_text(package_yaml_content)
@@ -334,9 +381,15 @@ tools_required:
   - git
   - docker
 """
-        base_file = pkg_dir / "base" / f"{package_name.replace('-config', '')}.yaml"
+        base_file = pkg_dir / "base" / f"{safe_name}.yaml"
         base_file.write_text(base_config)
         print(f"  ✅ Created {base_file.name}")
+
+        # Create placeholder team configs
+        for team_name in ["platform", "backend"]:
+            team_file = pkg_dir / "teams" / f"{team_name}.yaml"
+            team_file.write_text(f"# {team_name.title()} Team sub-prism\n\ntools_required: []\n")
+        print(f"  ✅ Created teams/platform.yaml and teams/backend.yaml")
         
         # Create minimal welcome.yaml
         welcome_content = f"""company:
@@ -366,38 +419,45 @@ resources:
         print(f"  ✅ Created resources.yaml")
         
         # Create README
-        readme_content = f"""# {company_name} Config Package
+        readme_content = f"""# 💎 {company_name} Prism
 
 **Version:** 1.0.0
 
-Development environment configuration for {company_name}.
+Development environment prism for {company_name}.
 
 ## Installation
 
 ```bash
-python3 scripts/package_manager.py install {package_name}
+python3 install.py --prism {safe_name}
+# or via Web UI:
+python3 install-ui.py
 ```
 
 ## Customization
 
 Edit the files in this directory to customize for your company:
 
-- `base/*.yaml` - Company-wide settings
-- `orgs/*.yaml` - Add your sub-organizations
-- `teams/*.yaml` - Add your teams
-- `welcome.yaml` - Customize welcome page
-- `resources.yaml` - Add your internal links
+- `base/{safe_name}.yaml` — Company-wide settings (applied to everyone)
+- `teams/*.yaml` — Team-specific tool sets and repositories
+- `welcome.yaml` — Customize the welcome page
+- `resources.yaml` — Add your internal links and tools
+
+## Validate
+
+```bash
+python3 scripts/package_manager.py validate {safe_name}
+```
 """
         (pkg_dir / "README.md").write_text(readme_content)
         print(f"  ✅ Created README.md")
         
-        print(f"\n✅ Package scaffold created at: {pkg_dir}")
+        print(f"\n✅ Prism scaffold created at: {pkg_dir}")
         print(f"\nNext steps:")
-        print(f"  1. Edit {pkg_dir}/package.yaml")
-        print(f"  2. Customize configs in {pkg_dir}/base/")
-        print(f"  3. Add your orgs/teams")
-        print(f"  4. Test: python3 scripts/package_manager.py validate {package_name}")
-        print(f"  5. Install: python3 scripts/package_manager.py install {package_name}")
+        print(f"  1. Edit {pkg_dir}/package.yaml  — update branding, add tiers")
+        print(f"  2. Customize {pkg_dir}/base/{safe_name}.yaml  — company-wide settings")
+        print(f"  3. Edit team sub-prisms in {pkg_dir}/teams/")
+        print(f"  4. Validate: python3 scripts/package_manager.py validate {safe_name}")
+        print(f"  5. Install:  python3 install.py --prism {safe_name}")
         
         return True
     
@@ -471,22 +531,28 @@ Examples:
     # Commands
     if args.command == "list":
         packages = pm.list_packages()
-        print("\n📦 Available Config Packages\n")
+        print("\n💎 Available Prisms\n")
         print("="*70)
-        
+
         if not packages:
             print("  No prisms found in prisms/")
             print("\n  Create one with: python3 scripts/package_manager.py create <name>")
         else:
             for pkg in packages:
-                print(f"\n  📦 {pkg['name']} (v{pkg['version']})")
+                bundled_flag = " 🌈" if pkg.get("has_bundled_prisms") else ""
+                print(f"\n  💎 {pkg['name']} (v{pkg['version']}){bundled_flag}")
                 print(f"     {pkg['description']}")
-                print(f"     Type: {pkg['type']} | Size: {pkg['company_size']} | Author: {pkg['author']}")
-                if pkg['tags']:
+                print(f"     Type: {pkg['type']} | Size: {pkg['company_size']} | Theme: {pkg.get('theme', 'ocean')}")
+                if pkg.get("tiers"):
+                    tier_summary = ", ".join(f"{k} ({len(v)})" for k, v in pkg["tiers"].items())
+                    print(f"     Sub-prism tiers: {tier_summary}")
+                if pkg["tags"]:
                     print(f"     Tags: {', '.join(pkg['tags'])}")
-        
+
         print("\n" + "="*70)
-        print(f"  Total: {len(packages)} package(s)\n")
+        print(f"  Total: {len(packages)} prism(s)\n")
+        if packages:
+            print("  🌈 = has hierarchical sub-prisms\n")
     
     elif args.command == "info":
         info = pm.get_package_info(args.package)
