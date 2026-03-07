@@ -520,9 +520,9 @@ For work:
 
 ---
 
-## 🐶 Contributing
+## 💎 Contributing
 
-Want to improve this package? PRs welcome!
+Want to improve this prism? PRs welcome!
 
 **Ideas:**
 - Add more platform profiles (Codeberg, SourceHut)

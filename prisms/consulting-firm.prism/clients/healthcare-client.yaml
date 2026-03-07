@@ -1,0 +1,23 @@
+# ============================================================================
+# HEALTHCARE CLIENT CONFIGURATION
+# ============================================================================
+
+client:
+  id: "client-healthcare"
+  name: "Healthcare Client"
+  description: "Healthcare technology client engagement"
+
+compliance:
+  - hipaa
+  - gdpr
+
+security:
+  vpn_required: true
+  mfa_required: true
+  data_classification: "phi"
+  encryption_required: true
+
+environment:
+  vpn:
+    required: true
+    name: "Healthcare Client VPN"

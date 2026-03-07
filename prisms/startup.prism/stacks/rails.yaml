@@ -1,0 +1,21 @@
+# ============================================================================
+# RUBY ON RAILS STACK
+# ============================================================================
+
+stack:
+  id: "rails"
+  name: "Ruby on Rails"
+  description: "Rails + PostgreSQL"
+
+tools_required:
+  - docker
+  - git
+
+tech_stack:
+  backend:
+    - Ruby on Rails
+  databases:
+    - PostgreSQL
+  tools:
+    - Bundler
+    - RSpec

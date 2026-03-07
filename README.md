@@ -31,7 +31,7 @@ Prism provides:
 
 ✅ **Configuration inheritance** - Define once at company level, override per team  
 ✅ **Multi-level hierarchies** - Support structures from flat (startups) to 5+ levels (enterprise)  
-✅ **Beautiful web UI** - Visual package selection and installation wizard  
+✅ **Beautiful web UI** - Visual prism selection and installation wizard
 ✅ **CLI tools** - Scriptable, automatable, CI/CD friendly  
 ✅ **NPM distribution** - Packages published to npm, no custom infrastructure  
 ✅ **Validation system** - Catch errors before deployment  
@@ -88,7 +88,7 @@ See [Creating Configurations](docs/user-guide/creating-configurations.md) for de
 
 ### 🌐 Web UI Installer
 
-- **Package gallery** with visual cards showing all configurations
+- **Prism gallery** with visual cards showing all configurations
 - **Step-by-step wizard** with progress tracking
 - **Live installation updates** via Server-Sent Events
 - **Theme system** (5 beautiful themes with localStorage persistence)
@@ -121,21 +121,21 @@ Configurations merge intelligently:
 
 See [Config Inheritance](docs/user-guide/config-inheritance.md).
 
-### 📦 Package System
+### 💎 Prism System
 
-**Built-in configurations:**
+**Built-in prisms:**
 
-| Package | Use Case | Hierarchy | Users |
-|---------|----------|-----------|-------|
+| Prism | Use Case | Hierarchy | Users |
+|-------|----------|-----------|-------|
 | `personal-dev` | Freelancers, indie devs | Flat | 1 |
-| `startup` | Seed/Series A startups | 1 level | 10-50 |
-| `acme-corp` | Template for companies | 2 levels | 100-1K |
+| `startup` | Seed/Series A startups | 1 level | 10–50 |
+| `acme-corp` | Template for companies | 2 levels | 100–1K |
 | `consulting-firm` | Multi-client work | By client | Variable |
 | `fortune500` | Enterprise | 5 levels | 50K+ |
 | `university` | Academic institutions | Dept → Lab | Variable |
 | `opensource` | Community projects | Flat | Community |
 
-See [Choosing a Package](docs/user-guide/choosing-a-package.md).
+See [Choosing a Prism](docs/user-guide/choosing-a-prism.md).
 
 ### 🔧 NPM Distribution
 
@@ -143,7 +143,7 @@ Packages are published to npm under the `@prism` scope:
 
 ```bash
 # Packages auto-fetch from npm via unpkg CDN
-python3 install.py --package @prism/personal-dev-config
+python3 install.py --prism personal-dev
 
 # Use custom registry (corporate/air-gapped)
 python3 install.py --npm-registry https://npm.mycompany.com
@@ -198,12 +198,11 @@ See [Testing](docs/development/testing.md) and [CI/CD](docs/development/ci-cd.md
 ### Getting Started
 
 - [Installation](docs/getting-started/installation.md) - Setup and dependencies
-- [Quickstart](docs/getting-started/quickstart.md) - Your first Prism package
-- [First Configuration](docs/getting-started/first-configuration.md) - Step-by-step guide
+- [Quickstart](docs/getting-started/quickstart.md) - Up and running in minutes
 
 ### User Guide
 
-- [Choosing a Package](docs/user-guide/choosing-a-package.md) - Which config is right for you?
+- [Choosing a Prism](docs/user-guide/choosing-a-prism.md) - Which prism is right for you?
 - [Creating Configurations](docs/user-guide/creating-configurations.md) - Build your own
 - [Config Inheritance](docs/user-guide/config-inheritance.md) - How merging works
 - [Custom Registries](docs/user-guide/custom-registries.md) - Corporate npm registries
@@ -216,7 +215,7 @@ See [Testing](docs/development/testing.md) and [CI/CD](docs/development/ci-cd.md
 
 ### Reference
 
-- [Package System](docs/reference/package-system.md) - Technical architecture
+- [Prism System](docs/reference/package-system.md) - Technical architecture
 - [NPM Packages](docs/reference/npm-packages.md) - Distribution system
 - [Configuration Schema](docs/reference/configuration-schema.md) - YAML structure
 
@@ -237,7 +236,7 @@ prism/
 │   ├── package_validator.py # Package schema validation
 │   ├── package_manager.py  # Package operations
 │   └── npm_package_fetcher.py # NPM integration
-├── prisms/                # Configuration packages
+├── prisms/                # Prism configurations
 │   ├── personal-dev/
 │   ├── startup/
 │   ├── acme-corp/
@@ -270,7 +269,7 @@ result = merge_configs(base, team)
 # - Nested dicts merged
 ```
 
-See [Package System](docs/reference/package-system.md) for technical details.
+See [Prism System](docs/reference/package-system.md) for technical details.
 
 ---
 

@@ -1,60 +1,111 @@
 # ============================================================================
-# PERSONAL DEV CONFIG PACKAGE
+# PERSONAL DEV PRISM
 # ============================================================================
-# Perfect for freelancers, indie developers, small teams, and personal projects
-# Supports: GitHub, GitLab, Bitbucket, Gitea, and more!
+# Perfect for freelancers, indie developers, and personal projects.
+# Supports GitHub, GitLab, Bitbucket, Gitea, and multi-platform setups.
 
 package:
-  name: "personal-dev-config"
+  name: "personal-dev-prism"
   version: "1.0.0"
-  description: "Personal development environment for freelancers and indie developers"
-  author: "Dev Onboarding Community"
+  description: "Personal developer prism — minimal setup for freelancers and indie developers"
+  author: "Prism Community"
   homepage: "https://github.com/prism/personal-config"
   support:
     github: "https://github.com/prism/personal-config/issues"
     community: "https://discord.gg/prism"
-  
-  type: "personal"  # Not a company - personal/freelance
-  
+
+  type: "personal"
+
   requires:
     onboarding_version: ">=1.0.0"
     python_version: ">=3.8"
-  
+
+# PRISM META-CONFIGURATION
+prism_config:
+  theme: "ocean"
+
+  sources:
+    - url: "local"
+      name: "Built-in Prisms"
+      type: "local"
+
+  branding:
+    name: "Personal Dev Prism"
+    tagline: "Your environment, your way"
+    primary_color: "#0093e9"
+    secondary_color: "#80d0c7"
+
+# BUNDLED SUB-PRISMS
+# base is required; profiles let the user pick their git platform
+bundled_prisms:
+  base:
+    - id: "personal-base"
+      name: "Personal Base"
+      description: "Core personal developer setup"
+      required: true
+      config: "base/personal-dev.yaml"
+
+  profiles:
+    - id: "github"
+      name: "GitHub (Personal/Public)"
+      description: "Using GitHub.com for personal projects"
+      config: "profiles/github.yaml"
+
+    - id: "gitlab"
+      name: "GitLab"
+      description: "Using GitLab.com or self-hosted GitLab"
+      config: "profiles/gitlab.yaml"
+
+    - id: "bitbucket"
+      name: "Bitbucket"
+      description: "Using Bitbucket for repositories"
+      config: "profiles/bitbucket.yaml"
+
+    - id: "gitea"
+      name: "Gitea (Self-hosted)"
+      description: "Using a self-hosted Gitea instance"
+      config: "profiles/gitea.yaml"
+
+    - id: "multi"
+      name: "Multiple Platforms"
+      description: "Using multiple git platforms simultaneously"
+      config: "profiles/multi-platform.yaml"
+
+# SETUP CONFIGURATION
+setup:
   install:
     target_dir: "config/"
-    
+
     files:
       - source: "welcome.yaml"
         dest: "config/welcome.yaml"
-        description: "Welcome page for personal devs"
-      
+        description: "Welcome message for personal devs"
       - source: "resources.yaml"
         dest: "config/resources.yaml"
         description: "Free developer resources"
-    
+
     directories:
       - source: "base/"
         dest: "config/base/"
         description: "Base personal dev config"
-      
       - source: "profiles/"
         dest: "config/profiles/"
-        description: "Pre-configured profiles (GitHub, GitLab, etc.)"
-  
+        description: "Pre-configured platform profiles"
+
   post_install:
     message: |
-      🎉 Personal Dev config installed!
-      
-      Choose your git platform profile:
-      1. GitHub (public)   - profiles/github.yaml
-      2. GitLab            - profiles/gitlab.yaml
-      3. Bitbucket         - profiles/bitbucket.yaml
-      4. Gitea (self-host) - profiles/gitea.yaml
-      5. Multiple/Custom   - Edit config/base/personal-dev.yaml
-      
+      💎 Personal Dev prism installed!
+
+      Choose your git platform profile from:
+        github     — GitHub.com
+        gitlab     — GitLab.com or self-hosted
+        bitbucket  — Bitbucket
+        gitea      — Self-hosted Gitea
+        multi      — Multiple platforms
+
       Next steps:
-      1. Copy chosen profile to config/user-profile.yaml
-      2. Run: python3 install-ui.py
+      1. Select your platform profile
+      2. Add SSH key to your git provider
       3. Start coding! 🚀
 
 # User info fields (minimal for indie devs!)
@@ -65,21 +116,21 @@ user_info_fields:
     required: true
     placeholder: "Jane Developer"
     description: "Your name (for git commits)"
-  
+
   - id: "email"
     label: "Email"
     type: "email"
     required: true
     placeholder: "jane@example.com"
-    description: "Your email (for git commits & platform)"
-  
+    description: "Your email (for git commits)"
+
   - id: "username"
     label: "Username"
     type: "text"
     required: true
     placeholder: "janedev"
-    description: "Your username on chosen git platform (GitHub/GitLab/etc.)"
-  
+    description: "Your username on chosen git platform"
+
   - id: "portfolio_url"
     label: "Portfolio/Website"
     type: "url"
@@ -87,50 +138,15 @@ user_info_fields:
     placeholder: "https://janedev.com"
     description: "Your portfolio or personal website (optional)"
 
-# Package contents
-contents:
-  base_config: "base/personal-dev.yaml"
-  welcome_page: "welcome.yaml"
-  resources: "resources.yaml"
-  
-  # Pre-configured profiles
-  profiles:
-    - id: "github"
-      name: "GitHub (Personal/Public)"
-      file: "profiles/github.yaml"
-      description: "Using GitHub.com for personal projects"
-    
-    - id: "gitlab"
-      name: "GitLab (Self-hosted or GitLab.com)"
-      file: "profiles/gitlab.yaml"
-      description: "Using GitLab for repositories"
-    
-    - id: "bitbucket"
-      name: "Bitbucket"
-      file: "profiles/bitbucket.yaml"
-      description: "Using Bitbucket for repositories"
-    
-    - id: "gitea"
-      name: "Gitea (Self-hosted)"
-      file: "profiles/gitea.yaml"
-      description: "Using self-hosted Gitea"
-    
-    - id: "multi"
-      name: "Multiple Platforms"
-      file: "profiles/multi-platform.yaml"
-      description: "Using multiple git platforms"
-
-# Distribution
 distribution:
   local:
     path: "prisms/personal-dev/"
     discoverable: true
-  
+
   git:
     url: "https://github.com/prism/personal-config"
     branch: "main"
 
-# Metadata
 metadata:
   tags:
     - recommended
@@ -143,17 +159,9 @@ metadata:
     - gitlab
     - bitbucket
     - gitea
-  
-  keywords:
-    - freelancer
-    - indie-developer
-    - personal-projects
-    - side-projects
-    - open-source
-  
-  company_size: "personal"  # Not a company!
+
+  company_size: "personal"
   regions: ["Global"]
-  
-  last_updated: "2026-03-04"
+  last_updated: "2026-03-05"
   maintainers:
-    - "Dev Onboarding Community"
+    - "Prism Community"

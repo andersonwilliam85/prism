@@ -1,0 +1,28 @@
+# ============================================================================
+# UNIVERSITY BASE CONFIGURATION
+# ============================================================================
+# Core academic development environment for all users.
+
+institution:
+  name: "[University Name]"
+  domain: "university.edu"
+
+environment:
+  vpn:
+    required: false
+  proxy:
+    enabled: false
+
+git:
+  user:
+    name: "${USER}"
+    email: "${USER}@university.edu"
+
+tools_required:
+  - git
+  - python3
+
+tools_available:
+  - vscode
+  - jupyter
+  - docker

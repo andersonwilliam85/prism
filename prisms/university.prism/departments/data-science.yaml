@@ -1,0 +1,23 @@
+# ============================================================================
+# DATA SCIENCE DEPARTMENT
+# ============================================================================
+
+department:
+  id: "data-science"
+  name: "Data Science"
+
+tools_required:
+  - python3
+  - jupyter
+  - git
+
+tech_stack:
+  languages:
+    - Python
+    - R
+    - SQL
+  tools:
+    - Jupyter
+    - Pandas
+    - scikit-learn
+    - TensorFlow

@@ -1,0 +1,19 @@
+# ============================================================================
+# SECURITY ENGINEER ROLE
+# ============================================================================
+
+role:
+  id: "security-engineer"
+  name: "Security Engineer"
+  description: "AppSec and security tooling"
+
+tools_required:
+  - git
+  - python3
+  - docker
+
+security:
+  tools:
+    - Burp Suite
+    - Wireshark
+    - OWASP ZAP

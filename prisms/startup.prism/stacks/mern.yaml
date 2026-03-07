@@ -1,0 +1,22 @@
+# ============================================================================
+# MERN STACK
+# ============================================================================
+
+stack:
+  id: "mern"
+  name: "MERN Stack"
+  description: "MongoDB, Express, React, Node.js"
+
+tools_required:
+  - nodejs
+  - docker
+
+tech_stack:
+  frontend:
+    - React
+    - JavaScript
+  backend:
+    - Node.js
+    - Express
+  databases:
+    - MongoDB

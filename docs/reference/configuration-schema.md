@@ -1,183 +1,289 @@
-# Configuration Schema
+# 💎 Prism Configuration Schema
 
-Complete YAML schema reference for Prism configuration packages.
+Complete YAML schema reference for `package.yaml` — the manifest for every prism.
 
 ---
 
 ## Overview
 
-Prism configurations are defined in YAML files with a well-defined schema. This document describes all available fields, their types, and usage.
+Every prism lives in its own directory inside `prisms/` and must have a `package.yaml` file. The schema has five top-level sections:
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#eef2ff', 'primaryTextColor': '#1e293b', 'primaryBorderColor': '#6366f1', 'lineColor': '#6366f1', 'secondaryColor': '#f0fdf4', 'tertiaryColor': '#faf5ff', 'background': '#ffffff', 'mainBkg': '#eef2ff', 'nodeBorder': '#6366f1', 'clusterBkg': '#f8faff', 'edgeLabelBackground': '#ffffff'}}}%%
+
+flowchart LR
+    PY["package.yaml"]
+
+    PY --> PKG["package\nIdentity\nname · version · type · support"]
+    PY --> PC["prism_config\nTool settings\ntheme · proxy · registry · branding"]
+    PY --> BP["bundled_prisms\nSub-prism tiers\nbase + optional layers"]
+    PY --> SU["setup\nFile installation\nfiles · directories · post_install"]
+    PY --> UIF["user_info_fields\nUser input\nname · email · role · team"]
+    PY --> DI["distribution\nSource\nlocal · remote · discoverable"]
+    PY --> ME["metadata\nDiscovery\ntags · keywords · org_size"]
+
+    style PY fill:#fff7ed,stroke:#f97316,color:#1e293b,font-weight:bold
+    style PKG fill:#eef2ff,stroke:#6366f1,color:#1e293b
+    style PC fill:#eef2ff,stroke:#6366f1,color:#1e293b
+    style BP fill:#f0fdf4,stroke:#22c55e,color:#1e293b
+    style SU fill:#eef2ff,stroke:#6366f1,color:#1e293b
+    style UIF fill:#faf5ff,stroke:#a855f7,color:#1e293b
+    style DI fill:#eef2ff,stroke:#6366f1,color:#1e293b
+    style ME fill:#eef2ff,stroke:#6366f1,color:#1e293b
+```
+
+```yaml
+package:          # 🔷 Identity — name, version, type, support
+prism_config:     # ⚙️  Prism tool settings — theme, proxy, registry, branding
+bundled_prisms:   # 🌈 Hierarchical sub-prisms — base + optional tiers
+setup:            # 📁 File installation steps
+user_info_fields: # 👤 Info collected from the user at install time
+distribution:     # 📦 Where this prism is sourced from
+metadata:         # 🏷️  Tags, keywords, company size
+```
 
 ---
 
-## Package Metadata (`package.yaml`)
+## `package` — Identity
 
-### Required Fields
+### Required
 
 ```yaml
 package:
-  name: string              # Package identifier (kebab-case)
-  version: string           # Semantic version (1.0.0)
-  description: string       # Short description
+  name: "my-company-prism"    # kebab-case identifier
+  version: "1.0.0"            # semantic version
+  description: "..."          # one-sentence description
 ```
 
-### Optional Fields
+### Optional
 
 ```yaml
 package:
-  # Brand assets
-  assets:
-    logo: string           # Path to logo file
-    colors: string         # Path to colors.yaml
-  
-  # Branding
+  type: "company"             # personal | company | consulting | enterprise | academic | opensource | core
+  author: "IT Team"
+  homepage: "https://dev.mycompany.com"
+
+  support:
+    email: "devops@mycompany.com"
+    slack: "#dev-support"
+    github: "https://github.com/org/repo/issues"
+
+  requires:
+    onboarding_version: ">=1.0.0"
+    python_version: ">=3.8"
+    network: "company-vpn"    # optional — warn user if not met
+```
+
+---
+
+## `prism_config` — Prism Tool Settings
+
+Controls how the Prism tool itself behaves. Applied before any sub-prism merging.
+
+```yaml
+prism_config:
+  theme: "ocean"    # ocean | purple | forest | sunset | midnight
+
+  sources:
+    - url: "local"
+      name: "Built-in Prisms"
+      type: "local"
+    - url: "https://prism-registry.mycompany.com"
+      name: "Internal Registry"
+      type: "remote"
+      auth_required: true
+
+  npm_registry: "https://npm.mycompany.com"   # empty = npmjs.org
+  unpkg_url: "https://cdn.mycompany.com/npm"  # empty = unpkg.com
+
+  proxies:
+    http: "http://proxy.mycompany.com:8080"
+    https: "http://proxy.mycompany.com:8080"
+    no_proxy: "localhost,127.0.0.1,.mycompany.com"
+
   branding:
-    primary_color: string  # Hex color (#0066cc)
-    secondary_color: string
-    company_name: string
-  
-  # User info fields to collect
-  user_info_fields:
-    - name: string         # Field identifier
-      label: string        # Display label
-      type: string         # text|email|select|number|checkbox
-      required: boolean
-      options: [string]    # For select type
-      validation: string   # Regex pattern
-      placeholder: string
-      min: number          # For number type
-      max: number
-  
-  # Tools to install
-  tools:
-    - string               # Simple: "git"
-    - name: string         # Complex: with version
-      version: string
-      install_command: string
-      platforms: [string]  # macOS, Windows, Linux
-  
-  # Repositories to clone
-  repositories:
-    - url: string          # Git URL
-      path: string         # Local path
-      branch: string       # Optional branch
-      depth: number        # Shallow clone depth
-      post_clone: [string] # Post-clone commands
-  
-  # Security settings
-  security:
-    sso_required: boolean
-    vpn_required: boolean
-    mfa_enabled: boolean
-  
-  # Compliance
-  compliance: [string]     # ["SOX", "GDPR", "HIPAA"]
+    name: "My Company Prism"
+    tagline: "Empowering [Company] Development"
+    logo_url: "https://mycompany.com/assets/logo.svg"
+    primary_color: "#1e3a8a"    # hex color
+    secondary_color: "#f59e0b"
 ```
 
 ---
 
-## Field Types
+## `bundled_prisms` — Hierarchical Sub-Prisms
 
-### String
-
-Plain text value:
+The heart of the inheritance system. Each key is a **tier** — a category of selectable sub-prisms. Tiers are merged in declaration order.
 
 ```yaml
-name: "my-package"
-description: "My package description"
+bundled_prisms:
+  # Base tier — REQUIRED sub-prisms, always applied
+  base:
+    - id: "company-base"
+      name: "Company Base"
+      description: "Company-wide settings"
+      required: true                  # ← marks this as auto-applied
+      config: "base/company.yaml"     # path relative to prism directory
+
+  # Example optional tier — user picks one
+  divisions:
+    - id: "technology"
+      name: "Technology Division"
+      description: "IT and software engineering"
+      config: "divisions/technology.yaml"
+
+    - id: "digital"
+      name: "Digital Division"
+      config: "divisions/digital.yaml"
+
+  # Another optional tier
+  roles:
+    - id: "software-engineer"
+      name: "Software Engineer"
+      config: "roles/software-engineer.yaml"
+      tools:                          # informational — shown in UI
+        - docker
+        - kubernetes
+
+  # Optional multi-select tier
+  business_units:
+    - id: "retail"
+      name: "Retail Division"
+      config: "business_units/retail.yaml"
 ```
 
-### Boolean
+### Sub-prism config file structure
 
-True or false:
-
-```yaml
-required: true
-sso_required: false
-```
-
-### Number
-
-Integer or float:
+Each config file referenced by `bundled_prisms` is plain YAML. Any keys it contains are deep-merged into the final configuration:
 
 ```yaml
-version: 1.0
-min: 100000
-max: 999999
-depth: 1
-```
+# base/company.yaml
+environment:
+  proxy:
+    http: "http://proxy.mycompany.com:8080"
+  vpn:
+    required: true
 
-### Array
+git:
+  user:
+    name: "${USER}"
+    email: "${USER}@mycompany.com"
 
-List of values:
-
-```yaml
-tools:
+tools_required:
   - git
   - docker
-  - python
+  - kubectl
 
-compliance:
-  - "SOX"
-  - "GDPR"
+security:
+  sso_required: true
+  mfa_required: true
 ```
 
-### Object
-
-Nested key-value pairs:
-
 ```yaml
-branding:
-  primary_color: "#0066cc"
-  secondary_color: "#ff9900"
-  company_name: "My Company"
+# roles/devops-engineer.yaml
+role:
+  id: "devops-engineer"
+  name: "DevOps Engineer"
+
+tools_required:
+  - terraform
+  - ansible
+  - helm
+
+repositories:
+  - name: "infrastructure"
+    url: "https://github.mycompany.com/platform/infrastructure"
 ```
 
 ---
 
-## User Info Fields
+## `setup` — File Installation
 
-### Text Input
+Controls which files are copied from the prism directory to `config/` when the prism is installed.
+
+```yaml
+setup:
+  install:
+    target_dir: "config/"
+
+    files:
+      - source: "welcome.yaml"
+        dest: "config/welcome.yaml"
+        description: "Welcome message"
+
+      - source: "resources.yaml"
+        dest: "config/resources.yaml"
+
+    directories:
+      - source: "base/"
+        dest: "config/base/"
+      - source: "roles/"
+        dest: "config/roles/"
+
+  post_install:
+    message: |
+      💎 Prism installed!
+      Next steps: ...
+```
+
+---
+
+## `user_info_fields` — User Input
+
+Defines what information to collect from the user during installation.
+
+### Text input
 
 ```yaml
 user_info_fields:
-  - name: "full_name"
+  - id: "name"
     label: "Full Name"
     type: "text"
     required: true
-    placeholder: "John Doe"
+    placeholder: "Jane Developer"
+    description: "Used for git commits"
 ```
 
-### Email Input
+### Email input
 
 ```yaml
-user_info_fields:
-  - name: "email"
-    label: "Email Address"
+  - id: "email"
+    label: "Company Email"
     type: "email"
     required: true
-    validation: "^[a-z0-9._%+-]+@company\\.com$"
+    placeholder: "jane@mycompany.com"
+    validation:
+      pattern: ".*@mycompany\\.com$"
+      message: "Must be a @mycompany.com email"
 ```
 
-### Select Dropdown
+### Select dropdown
 
 ```yaml
-user_info_fields:
-  - name: "department"
-    label: "Department"
+  - id: "role"
+    label: "Role"
     type: "select"
-    options:
-      - "Engineering"
-      - "Product"
-      - "Design"
     required: true
+    options:
+      - "Software Engineer"
+      - "DevOps Engineer"
+      - "Data Engineer"
 ```
 
-### Number Input
+### URL input
 
 ```yaml
-user_info_fields:
-  - name: "employee_id"
+  - id: "portfolio_url"
+    label: "Portfolio URL"
+    type: "url"
+    required: false
+    placeholder: "https://janedev.com"
+```
+
+### Number input
+
+```yaml
+  - id: "employee_id"
     label: "Employee ID"
     type: "number"
     required: true
@@ -188,8 +294,7 @@ user_info_fields:
 ### Checkbox
 
 ```yaml
-user_info_fields:
-  - name: "agree_to_terms"
+  - id: "agree_to_terms"
     label: "I agree to the terms"
     type: "checkbox"
     required: true
@@ -197,408 +302,155 @@ user_info_fields:
 
 ---
 
-## Tools Configuration
-
-### Simple Format
+## `distribution` — Where the Prism Lives
 
 ```yaml
-tools:
-  - git
-  - docker
-  - python
-  - nodejs
-```
+distribution:
+  local:
+    path: "prisms/my-company/"
+    discoverable: true    # false = hidden from list
 
-### Complex Format
+  git:
+    url: "https://github.com/mycompany/prism-config"
+    branch: "main"
 
-```yaml
-tools:
-  # With version
-  - name: "python"
-    version: "3.11"
-  
-  # With custom install command
-  - name: "kubectl"
-    install_command: "brew install kubectl"
-  
-  # Platform-specific
-  - name: "xcode"
-    platforms: ["macOS"]
-  
-  - name: "wsl"
-    platforms: ["Windows"]
+  internal:
+    url: "https://prism-registry.mycompany.com/my-company"
+    auth_required: true
 ```
 
 ---
 
-## Repositories Configuration
-
-### Basic Clone
+## `metadata` — Tags and Search
 
 ```yaml
-repositories:
-  - url: "git@github.com:mycompany/backend.git"
-    path: "~/Development/projects/backend"
-```
+metadata:
+  tags:
+    - company
+    - template
+    - enterprise
 
-### With Branch
+  keywords:
+    - my-company
+    - onboarding
 
-```yaml
-repositories:
-  - url: "git@github.com:mycompany/frontend.git"
-    path: "~/Development/projects/frontend"
-    branch: "develop"
-```
+  company_size: "medium"    # personal | small | medium | large | enterprise | academic | community
 
-### With Post-Clone Setup
+  regions: ["Global", "US", "EU"]
 
-```yaml
-repositories:
-  - url: "git@github.com:mycompany/api.git"
-    path: "~/Development/projects/api"
-    post_clone:
-      - "npm install"
-      - "cp .env.example .env"
-```
-
-### Shallow Clone
-
-```yaml
-repositories:
-  - url: "git@github.com:mycompany/docs.git"
-    path: "~/Development/docs"
-    depth: 1
-```
-
----
-
-## Assets Configuration
-
-### Logo
-
-```yaml
-package:
-  assets:
-    logo: "assets/logo.png"
-```
-
-Supported formats: PNG, JPG, SVG  
-Recommended size: 200x200px
-
-### Colors
-
-```yaml
-# package.yaml
-package:
-  assets:
-    colors: "assets/colors.yaml"
-
-# assets/colors.yaml
-colors:
-  primary: "#0066cc"
-  secondary: "#ff9900"
-  accent: "#00cc66"
-  background: "#ffffff"
-  text: "#333333"
-```
-
----
-
-## Branding Configuration
-
-```yaml
-package:
-  branding:
-    primary_color: "#0066cc"      # Main brand color
-    secondary_color: "#ff9900"    # Accent color
-    company_name: "My Company Inc."
-```
-
----
-
-## Security Configuration
-
-```yaml
-package:
   security:
-    sso_required: true    # Single sign-on required
-    vpn_required: true    # VPN connection required
-    mfa_enabled: true     # Multi-factor authentication
+    classification: "internal-use-only"
+    compliance:
+      - sox
+      - gdpr
+      - hipaa
+
+  last_updated: "2026-03-05"
+  maintainers:
+    - "DevOps Team"
 ```
 
 ---
 
-## Compliance Configuration
+## Minimal Complete Example
 
 ```yaml
 package:
-  compliance:
-    - "SOX"      # Sarbanes-Oxley
-    - "GDPR"     # General Data Protection Regulation
-    - "HIPAA"    # Health Insurance Portability
-    - "PCI-DSS"  # Payment Card Industry
-```
-
----
-
-## Configuration Hierarchy
-
-### Base Configuration
-
-```yaml
-# prisms/company/base/company.yaml
-package:
-  name: "company-base"
-  
-  tools:
-    - git
-    - docker
-  
-  security:
-    sso: true
-    vpn: true
-```
-
-### Organization Override
-
-```yaml
-# prisms/company/orgs/engineering.yaml
-package:
-  name: "engineering-org"
-  
-  # Adds to base tools
-  tools:
-    - kubernetes
-    - terraform
-```
-
-### Team Override
-
-```yaml
-# prisms/company/teams/platform.yaml
-package:
-  name: "platform-team"
-  
-  # Adds team-specific tools
-  tools:
-    - helm
-    - istio
-```
-
-See [Config Inheritance](../user-guide/config-inheritance.md) for merge rules.
-
----
-
-## Resources Configuration
-
-```yaml
-# resources.yaml
-resources:
-  documentation:
-    - name: "Developer Portal"
-      url: "https://dev.company.com"
-    - name: "API Docs"
-      url: "https://api.company.com/docs"
-  
-  tools:
-    - name: "Jira"
-      url: "https://company.atlassian.net"
-    - name: "Confluence"
-      url: "https://company.atlassian.net/wiki"
-  
-  communication:
-    - name: "Slack"
-      url: "https://company.slack.com"
-```
-
----
-
-## Welcome Message
-
-```yaml
-# welcome.yaml
-welcome:
-  title: "Welcome to My Company!"
-  message: |
-    Welcome to the team! This setup will configure your
-    development environment with all the tools and
-    repositories you need to get started.
-  
-  getting_started:
-    - "Review the developer portal"
-    - "Join #engineering on Slack"
-    - "Attend team standup (daily at 10am)"
-    - "Read the contributing guide"
-```
-
----
-
-## NPM Package Metadata (`package.json`)
-
-```json
-{
-  "name": "@prism/my-company-config",
-  "version": "1.0.0",
-  "description": "My Company Prism configuration",
-  "main": "package.yaml",
-  "keywords": ["prism", "config", "dev-environment"],
-  "author": "Your Name",
-  "license": "MIT",
-  "prism": {
-    "configFile": "package.yaml",
-    "type": "enterprise"
-  }
-}
-```
-
----
-
-## Validation Rules
-
-### Required Fields
-
-- `package.name` - Must be present
-- `package.version` - Must be semver format
-- `package.description` - Must be present
-
-### Field Constraints
-
-- `name` - Lowercase, hyphens allowed, no spaces
-- `version` - Must match `\d+\.\d+\.\d+` pattern
-- `primary_color` - Must be valid hex color (#RRGGBB)
-- `email` validation - Must match RFC 5322 format
-
-### File References
-
-- `assets.logo` - File must exist
-- `assets.colors` - File must exist and be valid YAML
-
----
-
-## Examples
-
-### Minimal Configuration
-
-```yaml
-package:
-  name: "my-setup"
+  name: "my-company-prism"
   version: "1.0.0"
-  description: "My personal dev setup"
-  
-  tools:
-    - git
-    - python
-```
+  description: "My Company developer environment"
+  type: "company"
 
-### Complete Configuration
-
-```yaml
-package:
-  name: "my-company"
-  version: "1.0.0"
-  description: "My Company dev environment"
-  
-  assets:
-    logo: "assets/logo.png"
-    colors: "assets/colors.yaml"
-  
+prism_config:
+  theme: "midnight"
   branding:
-    primary_color: "#0066cc"
-    secondary_color: "#ff9900"
-    company_name: "My Company Inc."
-  
-  user_info_fields:
-    - name: "full_name"
-      label: "Full Name"
-      type: "text"
+    name: "My Company Prism"
+    primary_color: "#1e3a8a"
+
+bundled_prisms:
+  base:
+    - id: "base"
+      name: "My Company Base"
       required: true
-    - name: "email"
-      label: "Email"
-      type: "email"
-      required: true
-    - name: "department"
-      label: "Department"
-      type: "select"
-      options: ["Engineering", "Product", "Design"]
-      required: true
-  
-  tools:
-    - git
-    - docker
-    - name: "python"
-      version: "3.11"
-    - name: "kubectl"
-      platforms: ["macOS", "Linux"]
-  
-  repositories:
-    - url: "git@github.com:mycompany/backend.git"
-      path: "~/Development/backend"
-      post_clone:
-        - "npm install"
-  
-  security:
-    sso_required: true
-    vpn_required: true
-    mfa_enabled: true
-  
-  compliance:
-    - "SOX"
-    - "GDPR"
+      config: "base/my-company.yaml"
+
+  teams:
+    - id: "platform"
+      name: "Platform Team"
+      config: "teams/platform.yaml"
+
+setup:
+  install:
+    target_dir: "config/"
+    files:
+      - source: "welcome.yaml"
+        dest: "config/welcome.yaml"
+    directories:
+      - source: "base/"
+        dest: "config/base/"
+
+user_info_fields:
+  - id: "name"
+    label: "Full Name"
+    type: "text"
+    required: true
+  - id: "email"
+    label: "Email"
+    type: "email"
+    required: true
+
+distribution:
+  local:
+    path: "prisms/my-company/"
+    discoverable: true
+
+metadata:
+  tags: ["company", "template"]
+  company_size: "medium"
+  last_updated: "2026-03-05"
 ```
 
 ---
 
 ## Validation
 
-### Validate Package
-
 ```bash
+# Validate a single prism
 python3 scripts/package_validator.py prisms/my-company
+
+# Validate all prisms
+python3 scripts/package_validator.py
+
+# Using package manager
+python3 scripts/package_manager.py validate my-company
 ```
 
 ### Common Errors
 
-**Error:** `Missing required field: name`
+**`Missing required field: package.name`**
 ```yaml
-# Fix: Add package.name
+# Fix: add package.name
 package:
-  name: "my-package"  # ← Add this
+  name: "my-prism"
 ```
 
-**Error:** `Invalid version format`
-```yaml
-# Wrong
-version: "1.0"
-
-# Right
-version: "1.0.0"
-```
-
-**Error:** `Asset not found: assets/logo.png`
+**`Sub-prism config not found: roles/engineer.yaml`**
 ```bash
-# Fix: Ensure file exists
-ls prisms/my-company/assets/logo.png
+# Fix: create the referenced file
+touch prisms/my-company/roles/engineer.yaml
 ```
 
----
-
-## Best Practices
-
-1. **Use semantic versioning** - `MAJOR.MINOR.PATCH`
-2. **Keep descriptions concise** - 1-2 sentences
-3. **Validate references** - Ensure asset files exist
-4. **Document custom fields** - Add descriptions to complex configs
-5. **Test configurations** - Validate before deploying
+**`Unknown theme 'blue'`**
+```yaml
+# Fix: use a supported theme
+prism_config:
+  theme: "ocean"   # ocean | purple | forest | sunset | midnight
+```
 
 ---
 
 ## Resources
 
-- [Creating Configurations](../user-guide/creating-configurations.md)
-- [Config Inheritance](../user-guide/config-inheritance.md)
-- [Package System](package-system.md)
-- [NPM Packages](npm-packages.md)
-
----
-
-**Questions?** [Open an issue](https://github.com/andersonwilliam85/prism/issues)
+- [Sub-Prism Inheritance](../user-guide/config-inheritance.md)
+- [Choosing a Prism](../user-guide/choosing-a-prism.md)
+- [Creating Prisms](../user-guide/creating-configurations.md)

@@ -1,30 +1,29 @@
 # English (US) UI Strings
 # Future: All UI text will be extracted here for i18n
 
-# Placeholder for future i18n implementation
-
 ui:
-  welcome: "Welcome to Dev Onboarding!"
-  getting_started: "Let's set up your development environment"
-  
+  welcome: "💎 Welcome to Prism!"
+  getting_started: "Refract complexity into clarity — set up your development environment"
+
   steps:
-    package_selection: "Choose Your Config Package"
+    prism_selection: "Choose Your Prism"
     user_info: "Your Information"
-    organization: "Organization"
+    sub_prism_selection: "Configure Your Setup"
     tools: "Tools"
     confirmation: "Confirmation"
     installing: "Installing"
     complete: "Complete"
-  
+
   buttons:
     next: "Next"
     back: "Back"
     install: "Install"
     finish: "Finish"
-  
-  messages:
-    select_package: "Please select a config package"
-    installation_complete: "Installation complete!"
-    error: "An error occurred"
 
-# Note: Currently not used - implementation in Phase 2
+  messages:
+    select_prism: "Please select a prism"
+    installation_complete: "Installation complete! Your environment is ready. 💎"
+    error: "An error occurred"
+    no_prisms_found: "No prisms found — add one to the prisms/ directory"
+
+# Note: Implementation in Phase 2 — strings are currently inline in install-ui.py

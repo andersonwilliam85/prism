@@ -1,0 +1,25 @@
+# ============================================================================
+# BACKEND ENGINEER ROLE
+# ============================================================================
+
+role:
+  id: "backend"
+  name: "Backend Engineer"
+  description: "APIs and services"
+
+tools_required:
+  - vscode
+  - docker
+  - python3
+  - git
+
+tech_stack:
+  backend:
+    - Python + FastAPI
+    - Node.js + Express
+  databases:
+    - PostgreSQL
+    - Redis
+  tools:
+    - Postman
+    - Docker Compose

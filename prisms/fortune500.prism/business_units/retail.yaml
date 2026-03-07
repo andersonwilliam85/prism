@@ -1,0 +1,17 @@
+# ============================================================================
+# RETAIL DIVISION
+# ============================================================================
+
+business_unit:
+  id: "retail"
+  name: "Retail Division"
+  description: "Retail operations technology"
+
+tech_stack:
+  focus:
+    - E-commerce platforms
+    - Point-of-sale systems
+    - Inventory management
+
+compliance:
+  - pci-dss
