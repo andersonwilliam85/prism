@@ -805,8 +805,8 @@ INDEX_HTML = """
     
     <div class="container">
         <div class="header">
-            <h1>🔷 Prism</h1>
-            <p class="subtitle">Light refracts through configuration - infinite possibilities</p>
+            <h1 id="brandingTitle">🔷 Prism</h1>
+            <p class="subtitle" id="brandingTagline">Light refracts through configuration - infinite possibilities</p>
         </div>
         
         <div class="progress-bar">
@@ -1890,6 +1890,29 @@ INDEX_HTML = """
                         if (settingsNpmReg) settingsNpmReg.value = data.prism_config.npm_registry;
                     }
                     
+                    // Apply branding if specified
+                    if (data.prism_config.branding) {
+                        const branding = data.prism_config.branding;
+
+                        if (branding.name) {
+                            document.getElementById('brandingTitle').textContent = branding.name;
+                            document.title = branding.name + ' Installer';
+                        }
+
+                        if (branding.tagline) {
+                            document.getElementById('brandingTagline').textContent = branding.tagline;
+                        }
+
+                        if (branding.primary_color) {
+                            document.documentElement.style.setProperty('--gradient-1', branding.primary_color);
+                            document.documentElement.style.setProperty('--gradient-4', branding.primary_color);
+                        }
+
+                        if (branding.secondary_color) {
+                            document.documentElement.style.setProperty('--gradient-2', branding.secondary_color);
+                        }
+                    }
+
                     // Show notification that config was applied
                     console.log(`✅ Prism configuration from ${packageName} applied successfully`);
                 } else {
