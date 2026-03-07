@@ -473,6 +473,37 @@ class InstallationEngine:
         shutil.copytree(package_path, dest)
         self.log("config_package", f"Prism files copied to {dest.relative_to(self.home)}", "success")
 
+        # Process setup.install directives (files and directories)
+        try:
+            with open(package_path / "package.yaml") as f:
+                pkg_data = yaml.safe_load(f) or {}
+            setup_install = pkg_data.get("setup", {}).get("install", {})
+
+            # Copy individual files
+            for file_entry in setup_install.get("files", []):
+                src = package_path / file_entry.get("source", "")
+                file_dest = self.workspace / file_entry.get("dest", "")
+                if src.exists() and src.is_file():
+                    file_dest.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(src, file_dest)
+                    self.log("config_package", f"Copied file: {file_entry['dest']}", "success")
+                else:
+                    self.log("config_package", f"Source file not found: {file_entry.get('source')}", "warning")
+
+            # Copy directories
+            for dir_entry in setup_install.get("directories", []):
+                src = package_path / dir_entry.get("source", "")
+                dir_dest = self.workspace / dir_entry.get("dest", "")
+                if src.exists() and src.is_dir():
+                    if dir_dest.exists():
+                        shutil.rmtree(dir_dest)
+                    shutil.copytree(src, dir_dest)
+                    self.log("config_package", f"Copied directory: {dir_entry['dest']}", "success")
+                else:
+                    self.log("config_package", f"Source directory not found: {dir_entry.get('source')}", "warning")
+        except Exception as e:
+            self.log("config_package", f"Error processing setup.install: {e}", "warning")
+
         # Save user info alongside config
         user_config_file = dest / "user-info.yaml"
         with open(user_config_file, "w") as f:

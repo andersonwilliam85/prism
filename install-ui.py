@@ -1946,6 +1946,23 @@ INDEX_HTML = """
 # Flask Routes
 # ============================================================================
 
+def _find_package(package_name):
+    """Find a package by name or directory name. Returns (pkg_dict, pkg_path) or (None, None)."""
+    import sys
+    sys.path.insert(0, str(Path(__file__).parent / "scripts"))
+    from package_manager import PackageManager
+    pm = PackageManager(root_dir=ROOT_DIR)
+    packages = pm.discover_packages()
+    # Try exact name match first, then directory name match
+    pkg = next((p for p in packages if p['name'] == package_name), None)
+    if not pkg:
+        pkg = next((p for p in packages if Path(p['path']).name == package_name), None)
+    if not pkg:
+        return None, None
+    pkg_path = Path(pkg['path'])
+    return pkg, pkg_path
+
+
 @app.route("/")
 def index():
     """Main installer UI"""
@@ -2045,23 +2062,15 @@ def validate_package_configs(package_id):
 @app.route("/api/package/<package_name>/metadata")
 def get_package_metadata(package_name):
     """Get package metadata (what sections/features are available)"""
-    import sys
     import yaml
-    sys.path.insert(0, str(Path(__file__).parent / "scripts"))
-    
+
     try:
-        from package_manager import PackageManager
-        pm = PackageManager()
-        
-        # Find the package
-        packages = pm.discover_packages()
-        pkg = next((p for p in packages if p['name'] == package_name), None)
-        
+        pkg, pkg_path = _find_package(package_name)
+
         if not pkg:
             return jsonify({"error": "Package not found"})
-        
+
         # Load package.yaml
-        pkg_path = Path(pkg['path'])
         pkg_yaml_path = pkg_path / 'package.yaml'
         
         if not pkg_yaml_path.exists():
@@ -2116,21 +2125,14 @@ def get_package_metadata(package_name):
 @app.route("/api/package/<package_name>/tiers")
 def get_package_tiers(package_name):
     """Return the bundled_prisms tier structure for a package (optional tiers only)."""
-    import sys
     import yaml
-    sys.path.insert(0, str(Path(__file__).parent / "scripts"))
 
     try:
-        from package_manager import PackageManager
-        pm = PackageManager()
-
-        packages = pm.discover_packages()
-        pkg = next((p for p in packages if p['name'] == package_name), None)
+        pkg, pkg_path = _find_package(package_name)
 
         if not pkg:
             return jsonify({"error": "Package not found", "optional_tiers": []})
 
-        pkg_path = Path(pkg['path'])
         pkg_yaml_path = pkg_path / 'package.yaml'
 
         if not pkg_yaml_path.exists():
@@ -2174,23 +2176,15 @@ def get_package_tiers(package_name):
 @app.route("/api/package/<package_name>/user-fields")
 def get_user_fields(package_name):
     """Get user info fields for a specific package"""
-    import sys
     import yaml
-    sys.path.insert(0, str(Path(__file__).parent / "scripts"))
-    
+
     try:
-        from package_manager import PackageManager
-        pm = PackageManager()
-        
-        # Find the package
-        packages = pm.discover_packages()
-        pkg = next((p for p in packages if p['name'] == package_name), None)
-        
+        pkg, pkg_path = _find_package(package_name)
+
         if not pkg:
             return jsonify({"fields": [], "error": "Package not found"})
-        
+
         # Load package.yaml to get user_info_fields
-        pkg_path = Path(pkg['path'])
         pkg_yaml_path = pkg_path / 'package.yaml'
         
         if not pkg_yaml_path.exists():
@@ -2216,23 +2210,15 @@ def get_user_fields(package_name):
 @app.route("/api/package/<package_name>/config")
 def get_package_config(package_name):
     """Get prism_config from a package for meta-prism configuration"""
-    import sys
     import yaml
-    sys.path.insert(0, str(Path(__file__).parent / "scripts"))
-    
+
     try:
-        from package_manager import PackageManager
-        pm = PackageManager()
-        
-        # Find the package
-        packages = pm.discover_packages()
-        pkg = next((p for p in packages if p['name'] == package_name), None)
-        
+        pkg, pkg_path = _find_package(package_name)
+
         if not pkg:
             return jsonify({"prism_config": None, "error": "Package not found"})
-        
+
         # Load package.yaml to get prism_config
-        pkg_path = Path(pkg['path'])
         pkg_yaml_path = pkg_path / 'package.yaml'
         
         if not pkg_yaml_path.exists():
@@ -2304,11 +2290,15 @@ def install():
         from npm_package_fetcher import fetch_package
         from installer_engine import InstallationEngine
         
-        prism_id = data.get('package')
+        prism_id = (data.get('package') or '').strip()
         user_info = data.get('userInfo', {})
         registry = data.get('registry', None)
         unpkg_url = data.get('unpkgUrl', None)
         selected_sub_prisms = data.get('selectedSubPrisms', {})
+
+        # Reject empty prism id immediately
+        if not prism_id:
+            return jsonify({"success": False, "error": "No prism specified"}), 400
 
         # Set registry env vars if provided
         if registry:
@@ -2316,33 +2306,28 @@ def install():
         if unpkg_url:
             os.environ['PRISM_UNPKG_URL'] = unpkg_url
 
-        # Build the npm package name (no -config suffix appended)
-        if prism_id.startswith('@prism/'):
-            npm_name = prism_id
-        else:
-            npm_name = f"@prism/{prism_id}"
-
-        # Try to fetch package (will fallback to local if needed)
-        dest_dir = ROOT_DIR / "temp_install" / prism_id
-        dest_dir.parent.mkdir(exist_ok=True)
-
+        # Resolve package path: try local first, then remote fetch
+        local_path = ROOT_DIR / "prisms" / prism_id
         package_path = None
 
-        try:
-            result = fetch_package(npm_name, "latest", str(dest_dir), unpkg_url)
-            if result:
-                package_path = result
-        except Exception as e:
-            print(f"Package fetch failed: {e}, trying local...")
-            # Try local prism directory
-            local_path = ROOT_DIR / "prisms" / prism_id
-            if local_path.exists():
-                package_path = str(local_path)
-            else:
-                return jsonify({
-                    "success": False,
-                    "error": f"Prism not found: {prism_id}"
-                }), 404
+        if local_path.exists() and (local_path / "package.yaml").exists():
+            package_path = str(local_path)
+        else:
+            npm_name = prism_id if prism_id.startswith('@prism/') else f"@prism/{prism_id}"
+            dest_dir = ROOT_DIR / "temp_install" / prism_id
+            dest_dir.parent.mkdir(exist_ok=True)
+            try:
+                result = fetch_package(npm_name, "latest", str(dest_dir), unpkg_url)
+                if result:
+                    package_path = result
+            except Exception as e:
+                print(f"Package fetch failed: {e}")
+
+        if not package_path:
+            return jsonify({
+                "success": False,
+                "error": f"Prism not found: {prism_id}"
+            }), 404
 
         # Run full installation using shared engine
         progress_log = []
