@@ -1,0 +1,170 @@
+name: PR Review Agent
+
+on:
+  pull_request_review:
+    types: [submitted]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: read
+
+jobs:
+  address-review:
+    # Trigger on: changes_requested reviews, or PR comments starting with /claude
+    if: >
+      (github.event_name == 'pull_request_review' &&
+       github.event.review.state == 'changes_requested') ||
+      (github.event_name == 'issue_comment' &&
+       github.event.issue.pull_request &&
+       startsWith(github.event.comment.body, '/claude'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Get PR details
+        id: pr
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request_review" ]; then
+            PR_NUMBER="${{ github.event.pull_request.number }}"
+            BRANCH="${{ github.event.pull_request.head.ref }}"
+          else
+            PR_NUMBER="${{ github.event.issue.number }}"
+            BRANCH=$(gh pr view "$PR_NUMBER" --json headRefName -q '.headRefName')
+          fi
+          echo "number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr.outputs.branch }}
+          fetch-depth: 0
+
+      - name: Bootstrap agent
+        run: |
+          # Set up deploy key for private knowledge repo
+          mkdir -p ~/.ssh
+          echo "${{ secrets.KNOWLEDGE_DEPLOY_KEY }}" > ~/.ssh/knowledge_deploy_key
+          chmod 600 ~/.ssh/knowledge_deploy_key
+          ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+
+          # Configure SSH to use deploy key for knowledge repo
+          cat >> ~/.ssh/config << 'SSHEOF'
+          Host github-knowledge
+            HostName github.com
+            IdentityFile ~/.ssh/knowledge_deploy_key
+            StrictHostKeyChecking no
+          SSHEOF
+
+          # Clone knowledge base using deploy key
+          git clone --depth 1 git@github-knowledge:${{ github.repository_owner }}/knowledge.git "$HOME/knowledge"
+
+          # Run bootstrapper in CI mode (non-interactive, full setup)
+          chmod +x "$HOME/knowledge/bootstrap/install.sh"
+          "$HOME/knowledge/bootstrap/install.sh" --ci
+
+      - name: Collect review feedback
+        id: feedback
+        run: |
+          PR_NUMBER="${{ steps.pr.outputs.number }}"
+
+          # Get all review comments (code-level)
+          REVIEW_COMMENTS=$(gh api "repos/${{ github.repository }}/pulls/${PR_NUMBER}/comments" \
+            --jq '[.[] | {author: .user.login, path: .path, line: .line, body: .body}]')
+
+          # Get conversation comments
+          CONV_COMMENTS=$(gh api "repos/${{ github.repository }}/issues/${PR_NUMBER}/comments" \
+            --jq '[.[] | {author: .user.login, body: .body}]')
+
+          # Get latest review body (if changes_requested)
+          REVIEW_BODY=""
+          if [ "${{ github.event_name }}" = "pull_request_review" ]; then
+            REVIEW_BODY="${{ github.event.review.body }}"
+          fi
+
+          # Write feedback to file (avoids shell escaping issues)
+          {
+            echo "## Review Feedback"
+            echo ""
+            echo "### Review Body"
+            echo "$REVIEW_BODY"
+            echo ""
+            echo "### Code Review Comments"
+            echo "$REVIEW_COMMENTS"
+            echo ""
+            echo "### Conversation Comments"
+            echo "$CONV_COMMENTS"
+          } > /tmp/feedback.md
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run Claude Code
+        run: |
+          FEEDBACK=$(cat /tmp/feedback.md)
+          claude -p "$(cat <<EOF
+          You are addressing PR review feedback on branch ${{ steps.pr.outputs.branch }}.
+          The knowledge base is at ~/knowledge/ with index at ~/knowledge/index.yaml.
+
+          ## Instructions
+          1. Read ~/knowledge/index.yaml and load any relevant standards
+          2. Read the review feedback below
+          3. Address each comment by making the requested changes
+          4. Do NOT push — changes will be committed and pushed in the next step
+          5. Do NOT modify CLAUDE.md or any agent config files
+
+          ## Feedback
+          ${FEEDBACK}
+          EOF
+          )"
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "claude-code[bot]"
+          git config user.email "claude-code[bot]@users.noreply.github.com"
+
+          # Remove CLAUDE.md if we created it (don't commit agent config)
+          git checkout -- CLAUDE.md 2>/dev/null || true
+
+          if [ -n "$(git status --porcelain)" ]; then
+            git add -A
+            git commit -m "$(cat <<'EOF'
+          address PR review feedback
+
+          Co-Authored-By: Claude Code <claude-code[bot]@users.noreply.github.com>
+          EOF
+            )"
+            git push
+          else
+            echo "No changes to commit"
+          fi
+
+      - name: Comment on PR
+        if: success()
+        run: |
+          if [ -n "$(git log --oneline -1 --since='2 minutes ago')" ]; then
+            gh pr comment "${{ steps.pr.outputs.number }}" \
+              --body "I've addressed the review feedback in $(git rev-parse --short HEAD). Please re-review."
+          else
+            gh pr comment "${{ steps.pr.outputs.number }}" \
+              --body "I reviewed the feedback but found no changes needed."
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on failure
+        if: failure()
+        run: |
+          gh pr comment "${{ steps.pr.outputs.number }}" \
+            --body "I encountered an error while trying to address the review feedback. Please check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
