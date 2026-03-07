@@ -2295,6 +2295,8 @@ def install():
         registry = data.get('registry', None)
         unpkg_url = data.get('unpkgUrl', None)
         selected_sub_prisms = data.get('selectedSubPrisms', {})
+        tools_selected = data.get('toolsSelected', [])
+        tools_excluded = data.get('toolsExcluded', [])
 
         # Reject empty prism id immediately
         if not prism_id:
@@ -2344,6 +2346,8 @@ def install():
             config_package=package_path,
             user_info=user_info,
             selected_sub_prisms=selected_sub_prisms,
+            tools_selected=tools_selected,
+            tools_excluded=tools_excluded,
             progress_callback=progress_callback
         )
         

@@ -38,7 +38,8 @@ except ImportError:
 class InstallationEngine:
     """Core installation engine for Prism setup"""
 
-    def __init__(self, config_package=None, user_info=None, selected_sub_prisms=None, progress_callback=None):
+    def __init__(self, config_package=None, user_info=None, selected_sub_prisms=None,
+                 tools_selected=None, tools_excluded=None, progress_callback=None):
         """
         Initialize installation engine.
 
@@ -48,12 +49,16 @@ class InstallationEngine:
             selected_sub_prisms: Dict mapping tier name → sub-prism id the user chose.
                                  e.g. {"roles": "full-stack", "stacks": "mern"}
                                  Required sub-prisms (base tier) are always included automatically.
+            tools_selected:      Optional list of tool names to install (whitelist). If set, only these tools are installed.
+            tools_excluded:      Optional list of tool names to skip (blacklist). Applied after tools_selected.
             progress_callback:   Optional callable(step, message, level) for UI progress updates.
         """
         self.root_dir = Path(__file__).parent
         self.config_package = config_package
         self.user_info = user_info or {}
         self.selected_sub_prisms = selected_sub_prisms or {}
+        self.tools_selected = tools_selected or []
+        self.tools_excluded = tools_excluded or []
         self.progress_callback = progress_callback
         self.platform_name, self.platform_detail = self._detect_platform()
         self.home = Path.home()
@@ -225,6 +230,7 @@ class InstallationEngine:
         """Run the full installation process."""
         steps = [
             ("platform",         self.step_detect_platform),
+            ("preflight",        self.step_preflight_check),
             ("prism_config",     self.step_apply_prism_config),
             ("package_manager",  self.step_install_package_manager),
             ("folder_structure", self.step_create_folder_structure),
@@ -258,8 +264,93 @@ class InstallationEngine:
         if self.platform_name == "unknown":
             raise Exception("Unsupported platform")
 
+    def step_preflight_check(self):
+        """Step 2: Validate package.requires before proceeding with installation."""
+        if not self.config_package:
+            return
+
+        package_yaml = Path(self.config_package) / "package.yaml"
+        if not package_yaml.exists():
+            return
+
+        try:
+            with open(package_yaml) as f:
+                pkg_data = yaml.safe_load(f) or {}
+        except Exception:
+            return
+
+        requires = pkg_data.get("package", {}).get("requires", {})
+        if not requires:
+            self.log("preflight", "No requirements specified — skipping preflight", "info")
+            return
+
+        failures = []
+
+        # Check python_version
+        python_req = requires.get("python_version")
+        if python_req:
+            current = f"{sys.version_info.major}.{sys.version_info.minor}"
+            if not self._version_satisfies(current, python_req):
+                failures.append(f"Python {python_req} required, found {current}")
+            else:
+                self.log("preflight", f"Python {current} satisfies {python_req}", "success")
+
+        # Check git
+        git_req = requires.get("git")
+        if git_req:
+            git_path = shutil.which("git")
+            if not git_path:
+                failures.append("git is required but not found")
+            else:
+                self.log("preflight", "git found", "success")
+
+        # Check arbitrary commands (e.g. node, docker)
+        for key, value in requires.items():
+            if key in ("python_version", "git", "onboarding_version"):
+                continue
+            # Treat as a command that must be available
+            if shutil.which(key):
+                self.log("preflight", f"{key} found", "success")
+            else:
+                failures.append(f"{key} is required but not found")
+
+        if failures:
+            for f in failures:
+                self.log("preflight", f, "error")
+            raise Exception(f"Preflight check failed: {'; '.join(failures)}")
+
+        self.log("preflight", "All requirements satisfied", "success")
+
+    def _version_satisfies(self, current, requirement):
+        """Check if current version satisfies a requirement like '>=3.8'."""
+        req = requirement.strip()
+        if req.startswith(">="):
+            return self._compare_versions(current, req[2:]) >= 0
+        elif req.startswith(">"):
+            return self._compare_versions(current, req[1:]) > 0
+        elif req.startswith("<="):
+            return self._compare_versions(current, req[2:]) <= 0
+        elif req.startswith("<"):
+            return self._compare_versions(current, req[1:]) < 0
+        elif req.startswith("=="):
+            return self._compare_versions(current, req[2:]) == 0
+        return True  # Unknown format — don't block
+
+    def _compare_versions(self, a, b):
+        """Compare two version strings. Returns -1, 0, or 1."""
+        a_parts = [int(x) for x in a.strip().split(".")]
+        b_parts = [int(x) for x in b.strip().split(".")]
+        for i in range(max(len(a_parts), len(b_parts))):
+            av = a_parts[i] if i < len(a_parts) else 0
+            bv = b_parts[i] if i < len(b_parts) else 0
+            if av < bv:
+                return -1
+            if av > bv:
+                return 1
+        return 0
+
     def step_apply_prism_config(self):
-        """Step 2: Apply prism meta-configuration (proxy, registry, theme)."""
+        """Step 3: Apply prism meta-configuration (proxy, registry, theme)."""
         if not self.prism_meta:
             self.log("prism_config", "No prism_config found — using defaults", "info")
             return
@@ -382,24 +473,42 @@ class InstallationEngine:
         """
         Get the tools list from the merged sub-prism configuration.
         Falls back to the old package.tools format for backward compatibility.
+        Applies tools_selected (whitelist) and tools_excluded (blacklist) filters.
         """
         # New format: tools_required in merged sub-configs
         tools = self.merged_config.get("tools_required", [])
-        if tools:
-            return tools
 
-        # Old format: package.tools in package.yaml
-        if not self.config_package:
+        if not tools:
+            # Old format: package.tools in package.yaml
+            if not self.config_package:
+                return []
+            package_yaml = Path(self.config_package) / "package.yaml"
+            if not package_yaml.exists():
+                return []
+            try:
+                with open(package_yaml) as f:
+                    pkg_config = yaml.safe_load(f) or {}
+                tools = pkg_config.get("package", {}).get("tools", []) or pkg_config.get("tools", [])
+            except Exception:
+                return []
+
+        if not tools:
             return []
-        package_yaml = Path(self.config_package) / "package.yaml"
-        if not package_yaml.exists():
-            return []
-        try:
-            with open(package_yaml) as f:
-                pkg_config = yaml.safe_load(f) or {}
-            return pkg_config.get("package", {}).get("tools", []) or pkg_config.get("tools", [])
-        except Exception:
-            return []
+
+        def tool_name(t):
+            return t if isinstance(t, str) else t.get("name", "")
+
+        # Whitelist: if tools_selected is set, only include those
+        if self.tools_selected:
+            selected = set(self.tools_selected)
+            tools = [t for t in tools if tool_name(t) in selected]
+
+        # Blacklist: always exclude these
+        if self.tools_excluded:
+            excluded = set(self.tools_excluded)
+            tools = [t for t in tools if tool_name(t) not in excluded]
+
+        return tools
 
     def _install_tool(self, tool):
         """Install a single tool by name."""
