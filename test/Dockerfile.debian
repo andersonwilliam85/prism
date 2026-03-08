@@ -1,0 +1,12 @@
+ARG PYTHON_VERSION=3.11
+FROM python:${PYTHON_VERSION}-slim-bookworm
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git openssh-client curl sudo \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN useradd -m -s /bin/bash testuser
+COPY --chown=testuser:testuser . /home/testuser/prism/
+USER testuser
+WORKDIR /home/testuser/prism
+RUN pip install --user --no-cache-dir flask pyyaml requests pytest

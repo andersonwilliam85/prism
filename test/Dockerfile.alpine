@@ -1,0 +1,10 @@
+ARG PYTHON_VERSION=3.11
+FROM python:${PYTHON_VERSION}-alpine
+
+RUN apk add --no-cache git openssh-client curl bash sudo
+
+RUN adduser -D -s /bin/bash testuser
+COPY --chown=testuser:testuser . /home/testuser/prism/
+USER testuser
+WORKDIR /home/testuser/prism
+RUN pip install --user --no-cache-dir flask pyyaml requests pytest

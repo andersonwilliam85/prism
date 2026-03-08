@@ -1,0 +1,73 @@
+# Test matrix: 4 Linux distros x 2 Python versions = 8 containers
+# Run all:    docker compose -f docker-compose.test.yml up --build
+# Run one:    docker compose -f docker-compose.test.yml up --build ubuntu-py311
+# Tear down:  docker compose -f docker-compose.test.yml down
+
+x-common: &common
+  working_dir: /home/testuser/prism
+  command: ["python3", "-m", "pytest", "tests/unit/", "tests/e2e/test_full_install_flow.py", "-v", "--tb=short", "-o", "addopts="]
+
+services:
+  ubuntu-py311:
+    <<: *common
+    build:
+      context: .
+      dockerfile: test/Dockerfile.ubuntu
+      args:
+        PYTHON_VERSION: "3.11"
+
+  ubuntu-py39:
+    <<: *common
+    build:
+      context: .
+      dockerfile: test/Dockerfile.ubuntu
+      args:
+        PYTHON_VERSION: "3.9"
+
+  debian-py311:
+    <<: *common
+    build:
+      context: .
+      dockerfile: test/Dockerfile.debian
+      args:
+        PYTHON_VERSION: "3.11"
+
+  debian-py39:
+    <<: *common
+    build:
+      context: .
+      dockerfile: test/Dockerfile.debian
+      args:
+        PYTHON_VERSION: "3.9"
+
+  fedora-39:
+    <<: *common
+    build:
+      context: .
+      dockerfile: test/Dockerfile.fedora
+      args:
+        FEDORA_VERSION: "39"
+
+  fedora-40:
+    <<: *common
+    build:
+      context: .
+      dockerfile: test/Dockerfile.fedora
+      args:
+        FEDORA_VERSION: "40"
+
+  alpine-py311:
+    <<: *common
+    build:
+      context: .
+      dockerfile: test/Dockerfile.alpine
+      args:
+        PYTHON_VERSION: "3.11"
+
+  alpine-py39:
+    <<: *common
+    build:
+      context: .
+      dockerfile: test/Dockerfile.alpine
+      args:
+        PYTHON_VERSION: "3.9"
