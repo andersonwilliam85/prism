@@ -1,0 +1,137 @@
+# ============================================================================
+# PRISM — DEFAULT PRODUCT CONFIGURATION
+# ============================================================================
+# This is the default prism that ships with Prism. It auto-loads on startup
+# and provides the base developer onboarding experience. Users can switch
+# to a different prism at any time, but this is the out-of-box default.
+
+package:
+  name: "prism"
+  version: "1.0.0"
+  description: "Default Prism configuration — developer onboarding out of the box"
+  author: "Prism"
+  homepage: "https://github.com/prism/prism"
+  support:
+    github: "https://github.com/prism/prism/issues"
+    community: "https://discord.gg/prism"
+
+  type: "default"
+
+  requires:
+    onboarding_version: ">=1.0.0"
+    python_version: ">=3.8"
+
+# PRISM META-CONFIGURATION
+prism_config:
+  theme: "ocean"
+  default: true  # Marks this as the product default prism
+
+  sources:
+    - url: "local"
+      name: "Built-in Prisms"
+      type: "local"
+
+  npm_registry: ""
+  unpkg_url: ""
+
+  branding:
+    name: "Prism"
+    tagline: "Refract complexity into clarity"
+
+# BUNDLED SUB-PRISMS
+# base is required; users pick their environment profile
+bundled_prisms:
+  base:
+    - id: "prism-base"
+      name: "Prism Base"
+      description: "Core developer environment setup"
+      required: true
+      config: "base/prism-base.yaml"
+
+  environment:
+    - id: "personal"
+      name: "Personal / Freelance"
+      description: "Solo developer, personal projects"
+      config: "profiles/personal.yaml"
+
+    - id: "team"
+      name: "Small Team"
+      description: "Small team with shared conventions"
+      config: "profiles/team.yaml"
+
+    - id: "enterprise"
+      name: "Enterprise"
+      description: "Corporate environment with compliance requirements"
+      config: "profiles/enterprise.yaml"
+
+# SETUP CONFIGURATION
+setup:
+  install:
+    target_dir: "config/"
+
+    files:
+      - source: "welcome.yaml"
+        dest: "config/welcome.yaml"
+        description: "Welcome message"
+
+    directories:
+      - source: "base/"
+        dest: "config/base/"
+        description: "Base configuration files"
+
+  post_install:
+    message: |
+      Welcome to Prism!
+
+      Your development environment is ready.
+
+      Next steps:
+      1. Review your configuration in config/
+      2. Install additional prisms from the menu
+      3. Start developing!
+
+# User info fields
+user_info_fields:
+  - id: "name"
+    label: "Your Name"
+    type: "text"
+    required: true
+    placeholder: "Jane Developer"
+    description: "Your full name (for git commits)"
+
+  - id: "email"
+    label: "Email"
+    type: "email"
+    required: true
+    placeholder: "jane@example.com"
+    description: "Your email address (for git commits)"
+
+  - id: "git_username"
+    label: "Git Username"
+    type: "text"
+    required: true
+    placeholder: "janedev"
+    description: "Your git username"
+
+# Distribution
+distribution:
+  local:
+    path: "prisms/prism.prism/"
+    discoverable: true
+
+# Metadata
+metadata:
+  tags:
+    - default
+    - recommended
+    - core
+    - universal
+  keywords:
+    - default
+    - starter
+    - onboarding
+  company_size: "any"
+  regions: ["Global"]
+  last_updated: "2026-03-08"
+  maintainers:
+    - "Prism"

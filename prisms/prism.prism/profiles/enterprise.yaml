@@ -1,0 +1,26 @@
+# Enterprise Profile
+# Corporate environment with compliance requirements
+
+git_config:
+  default_branch: "main"
+  pull_rebase: true
+
+proxy:
+  http: ""
+  https: ""
+  no_proxy: "localhost,127.0.0.1"
+
+tools_required:
+  - name: "git"
+    description: "Version control"
+    platforms:
+      mac: "brew install git"
+      ubuntu: "sudo apt-get install -y git"
+      linux: "sudo apt-get install -y git"
+
+  - name: "curl"
+    description: "HTTP client"
+    platforms:
+      mac: "brew install curl"
+      ubuntu: "sudo apt-get install -y curl"
+      linux: "sudo apt-get install -y curl"

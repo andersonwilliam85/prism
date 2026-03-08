@@ -80,6 +80,14 @@ Thumbs.db
 node_modules/
 package-lock.json
 
+# Internal planning/proprietary docs (NOT for public repo)
+.reports/
+temp_install/
+
+# Mypy/ruff caches
+.mypy_cache/
+.ruff_cache/
+
 # Documentation builds
 docs/_build/
 site/

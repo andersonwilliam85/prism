@@ -1,0 +1,26 @@
+# Prism Base Configuration
+# Applied to all environments by default
+
+git_config:
+  default_branch: "main"
+  pull_rebase: true
+  init_default_branch: "main"
+  core_autocrlf: "input"
+
+workspace:
+  root: "~/workspace"
+  structure:
+    - projects
+    - experiments
+    - learning
+    - archived
+    - docs
+    - tooling
+
+tools_required:
+  - name: "git"
+    description: "Version control"
+    platforms:
+      mac: "brew install git"
+      ubuntu: "sudo apt-get install -y git"
+      linux: "sudo apt-get install -y git"

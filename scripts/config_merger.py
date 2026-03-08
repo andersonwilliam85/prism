@@ -162,8 +162,16 @@ class ConfigMerger:
             array_strategy = self._get_array_strategy(key)
 
             if array_strategy == "union":
-                # Combine, remove duplicates
-                return list(set(base_value + overlay_value))
+                # Combine, remove duplicates (fall back to append if items are unhashable)
+                try:
+                    return list(set(base_value + overlay_value))
+                except TypeError:
+                    # Items are dicts or other unhashable types — deduplicate by value
+                    seen = []
+                    for item in base_value + overlay_value:
+                        if item not in seen:
+                            seen.append(item)
+                    return seen
             elif array_strategy == "append":
                 # Keep all, in order
                 return base_value + overlay_value

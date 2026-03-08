@@ -1,0 +1,21 @@
+# Small Team Profile
+# Shared conventions for small teams
+
+git_config:
+  default_branch: "main"
+  pull_rebase: true
+
+tools_required:
+  - name: "git"
+    description: "Version control"
+    platforms:
+      mac: "brew install git"
+      ubuntu: "sudo apt-get install -y git"
+      linux: "sudo apt-get install -y git"
+
+  - name: "curl"
+    description: "HTTP client"
+    platforms:
+      mac: "brew install curl"
+      ubuntu: "sudo apt-get install -y curl"
+      linux: "sudo apt-get install -y curl"

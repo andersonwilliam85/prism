@@ -216,6 +216,7 @@ class PrismValidator:
                 }
 
             pkg = config.get("package", {})
+            prism_config = config.get("prism_config", {})
             return {
                 "id": package_path.name,
                 "name": pkg.get("name", package_path.name),
@@ -223,7 +224,8 @@ class PrismValidator:
                 "description": pkg.get("description", "No description"),
                 "type": pkg.get("type", "unknown"),
                 "has_bundled_prisms": "bundled_prisms" in config,
-                "theme": config.get("prism_config", {}).get("theme", "ocean"),
+                "theme": prism_config.get("theme", "ocean"),
+                "default": prism_config.get("default", False),
                 "error": False,
             }
         except Exception as e:

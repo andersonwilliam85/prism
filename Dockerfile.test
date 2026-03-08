@@ -1,0 +1,26 @@
+FROM python:3.11-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    openssh-client \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up a test user (don't run as root)
+RUN useradd -m -s /bin/bash testuser
+USER testuser
+WORKDIR /home/testuser
+
+# Copy project
+COPY --chown=testuser:testuser . /home/testuser/prism/
+WORKDIR /home/testuser/prism
+
+# Install Python dependencies
+RUN pip install --user --no-cache-dir flask pyyaml requests pytest
+
+# Expose web UI port
+EXPOSE 5555
+
+# Default: run the e2e test script
+CMD ["python3", "-m", "pytest", "tests/", "-v", "--tb=short"]

@@ -39,6 +39,8 @@ INDEX_HTML = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prism Installer</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/branding/prism_dark_32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/branding/prism_dark_16.png">
     <style>
         :root {
             /* Ocean Blue Theme (Default) */
@@ -806,8 +808,11 @@ INDEX_HTML = """
     
     <div class="container">
         <div class="header">
-            <h1 id="brandingTitle">🔷 Prism</h1>
-            <p class="subtitle" id="brandingTagline">Light refracts through configuration - infinite possibilities</p>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                <img src="/assets/branding/prism_light_128.png" alt="Prism" id="brandingLogo" style="height: 48px; width: auto;">
+                <h1 id="brandingTitle" style="margin: 0;">Prism</h1>
+            </div>
+            <p class="subtitle" id="brandingTagline">Refract complexity into clarity</p>
         </div>
         
         <div class="progress-bar">
@@ -1728,8 +1733,15 @@ INDEX_HTML = """
                 // Render valid packages
                 if (data.packages && data.packages.length > 0) {
                     packagesList.innerHTML = '';
-                    
-                    data.packages.forEach(pkg => {
+
+                    // Sort: default prism first, then alphabetical
+                    const sorted = [...data.packages].sort((a, b) => {
+                        if (a.default && !b.default) return -1;
+                        if (!a.default && b.default) return 1;
+                        return a.name.localeCompare(b.name);
+                    });
+
+                    sorted.forEach(pkg => {
                         const displayName = pkg.displayName || pkg.name || pkg.id;
                         const description = pkg.description || 'No description available';
                         const version = pkg.version || 'latest';
@@ -1779,6 +1791,12 @@ INDEX_HTML = """
                     `;
                 }
                 
+                // Auto-select the default prism if one exists
+                const defaultPkg = data.packages.find(pkg => pkg.default);
+                if (defaultPkg) {
+                    await selectPackage(defaultPkg.id);
+                }
+
                 // Render invalid packages section
                 if (data.invalid_packages && data.invalid_packages.length > 0) {
                     const invalidSection = document.getElementById('invalidPackagesSection');
@@ -1990,6 +2008,12 @@ def _find_package(package_name):
     return pkg, pkg_path
 
 
+@app.route("/assets/<path:filename>")
+def serve_assets(filename):
+    """Serve static assets (branding, etc.)"""
+    return send_from_directory(ROOT_DIR / "assets", filename)
+
+
 @app.route("/")
 def index():
     """Main installer UI"""
@@ -2022,6 +2046,7 @@ def get_packages():
                     "source": "local",
                     "path": pkg["path"],
                     "warnings": pkg.get("warnings", []),
+                    "default": pkg.get("default", False),
                 }
             )
 

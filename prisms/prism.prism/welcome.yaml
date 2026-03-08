@@ -1,0 +1,21 @@
+# Welcome to Prism
+#
+# Your development environment has been configured.
+# This file was created during onboarding.
+
+welcome:
+  title: "Welcome to Prism"
+  message: |
+    Your development environment is ready.
+
+    Getting started:
+    - Your workspace is at ~/workspace
+    - Projects go in ~/workspace/projects
+    - Your git config has been set up
+    - SSH keys are ready (check ~/.ssh/)
+
+  resources:
+    - name: "Prism Documentation"
+      url: "https://github.com/andersonwilliam85/prism"
+    - name: "Report Issues"
+      url: "https://github.com/andersonwilliam85/prism/issues"
