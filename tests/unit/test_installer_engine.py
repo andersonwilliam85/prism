@@ -1,13 +1,15 @@
 """
 Unit tests for InstallationEngine.
 """
+
 import os
+import sys
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
 import pytest
 import yaml
-from pathlib import Path
-from unittest.mock import patch, MagicMock
 
-import sys
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from installer_engine import InstallationEngine
 
@@ -225,12 +227,18 @@ class TestGetToolsFromMergedConfig:
         """When merged_config is empty, falls back to package.tools."""
         pkg_dir = temp_dir / "legacy-prism"
         pkg_dir.mkdir()
-        (pkg_dir / "package.yaml").write_text(yaml.dump({
-            "package": {
-                "name": "legacy", "version": "1.0.0", "description": "Legacy",
-                "tools": ["git", "vim"],
-            }
-        }))
+        (pkg_dir / "package.yaml").write_text(
+            yaml.dump(
+                {
+                    "package": {
+                        "name": "legacy",
+                        "version": "1.0.0",
+                        "description": "Legacy",
+                        "tools": ["git", "vim"],
+                    }
+                }
+            )
+        )
         engine = InstallationEngine(
             config_package=str(pkg_dir),
             user_info=sample_user_info,
@@ -251,8 +259,8 @@ class TestGitConfig:
         with patch.object(engine, "run_command") as mock_run:
             engine.step_configure_git()
             calls = [str(c) for c in mock_run.call_args_list]
-            assert any("Test User" in c for c in calls)
-            assert any("test@example.com" in c for c in calls)
+            assert any("Jane Doe" in c for c in calls)
+            assert any("jane@example.com" in c for c in calls)
 
     def test_skips_git_config_when_no_user_info(self, mock_progress_callback):
         engine = InstallationEngine(
@@ -336,9 +344,7 @@ class TestStepCloneRepositories:
         existing_dir = tmp_path / "workspace" / "projects" / "myrepo"
         existing_dir.mkdir()
 
-        engine.merged_config = {
-            "repositories": [{"name": "myrepo", "url": "https://github.com/example/myrepo"}]
-        }
+        engine.merged_config = {"repositories": [{"name": "myrepo", "url": "https://github.com/example/myrepo"}]}
         with patch.object(engine, "run_command") as mock_run:
             engine.step_clone_repositories()
             mock_run.assert_not_called()
@@ -353,9 +359,7 @@ class TestStepCloneRepositories:
         engine.workspace.mkdir(parents=True)
         (engine.workspace / "projects").mkdir()
 
-        engine.merged_config = {
-            "repositories": ["https://github.com/example/myrepo.git"]
-        }
+        engine.merged_config = {"repositories": ["https://github.com/example/myrepo.git"]}
         with patch.object(engine, "run_command") as mock_run:
             engine.step_clone_repositories()
             assert mock_run.called
@@ -370,9 +374,7 @@ class TestStepCloneRepositories:
         engine.workspace.mkdir(parents=True)
         (engine.workspace / "projects").mkdir()
 
-        engine.merged_config = {
-            "repositories": [{"name": "infra", "url": "https://github.com/example/infra"}]
-        }
+        engine.merged_config = {"repositories": [{"name": "infra", "url": "https://github.com/example/infra"}]}
         with patch.object(engine, "run_command") as mock_run:
             engine.step_clone_repositories()
             assert mock_run.called
@@ -387,9 +389,7 @@ class TestStepCloneRepositories:
         engine.workspace.mkdir(parents=True)
         (engine.workspace / "projects").mkdir()
 
-        engine.merged_config = {
-            "repositories": [{"name": "broken", "url": "https://invalid.example.com/broken"}]
-        }
+        engine.merged_config = {"repositories": [{"name": "broken", "url": "https://invalid.example.com/broken"}]}
         with patch.object(engine, "run_command", side_effect=Exception("clone failed")):
             # Should not raise — failure is logged as warning
             engine.step_clone_repositories()

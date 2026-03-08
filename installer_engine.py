@@ -18,14 +18,14 @@ Installation flow:
   4. Use merged config to drive tool install, git setup, repo cloning
 """
 
-import os
-import sys
-import platform
-import subprocess
-import shutil
-from pathlib import Path
-from datetime import datetime
 import json
+import os
+import platform
+import shutil
+import subprocess
+import sys
+from datetime import datetime
+from pathlib import Path
 
 try:
     import yaml
@@ -38,8 +38,15 @@ except ImportError:
 class InstallationEngine:
     """Core installation engine for Prism setup"""
 
-    def __init__(self, config_package=None, user_info=None, selected_sub_prisms=None,
-                 tools_selected=None, tools_excluded=None, progress_callback=None):
+    def __init__(
+        self,
+        config_package=None,
+        user_info=None,
+        selected_sub_prisms=None,
+        tools_selected=None,
+        tools_excluded=None,
+        progress_callback=None,
+    ):
         """
         Initialize installation engine.
 
@@ -65,8 +72,8 @@ class InstallationEngine:
         self.workspace = self.home / "workspace"
 
         # These are populated by _load_prism_config()
-        self.prism_meta = {}    # prism_config section: theme, proxy, registry, branding
-        self.merged_config = {} # deep-merged result of all selected sub-prisms
+        self.prism_meta = {}  # prism_config section: theme, proxy, registry, branding
+        self.merged_config = {}  # deep-merged result of all selected sub-prisms
 
         if config_package:
             self._load_prism_config()
@@ -111,6 +118,7 @@ class InstallationEngine:
 
         try:
             from config_merger import ConfigMerger
+
             merger = ConfigMerger.__new__(ConfigMerger)
             merger.rules = merger._default_rules()
         except Exception as e:
@@ -229,18 +237,18 @@ class InstallationEngine:
     def install(self):
         """Run the full installation process."""
         steps = [
-            ("platform",         self.step_detect_platform),
-            ("preflight",        self.step_preflight_check),
-            ("prism_config",     self.step_apply_prism_config),
-            ("package_manager",  self.step_install_package_manager),
+            ("platform", self.step_detect_platform),
+            ("preflight", self.step_preflight_check),
+            ("prism_config", self.step_apply_prism_config),
+            ("package_manager", self.step_install_package_manager),
             ("folder_structure", self.step_create_folder_structure),
-            ("git",              self.step_install_git),
-            ("git_config",       self.step_configure_git),
-            ("ssh_keys",         self.step_generate_ssh_keys),
-            ("tools",            self.step_install_tools),
-            ("repositories",     self.step_clone_repositories),
-            ("config_package",   self.step_apply_config_package),
-            ("finalize",         self.step_finalize),
+            ("git", self.step_install_git),
+            ("git_config", self.step_configure_git),
+            ("ssh_keys", self.step_generate_ssh_keys),
+            ("tools", self.step_install_tools),
+            ("repositories", self.step_clone_repositories),
+            ("config_package", self.step_apply_config_package),
+            ("finalize", self.step_finalize),
         ]
 
         for step_name, step_func in steps:
@@ -371,7 +379,9 @@ class InstallationEngine:
                 self.log("package_manager", "Homebrew already installed", "success")
                 return
             self.log("package_manager", "Installing Homebrew...")
-            install_cmd = '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+            install_cmd = (
+                '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+            )
             self.run_command(install_cmd, shell=True)
 
         elif self.platform_name == "windows":
@@ -381,8 +391,8 @@ class InstallationEngine:
             self.log("package_manager", "Installing Chocolatey...")
             install_cmd = (
                 'powershell -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; '
-                '[System.Net.ServicePointManager]::SecurityProtocol = '
-                '[System.Net.ServicePointManager]::SecurityProtocol -bor 3072; '
+                "[System.Net.ServicePointManager]::SecurityProtocol = "
+                "[System.Net.ServicePointManager]::SecurityProtocol -bor 3072; "
                 "iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))\""
             )
             self.run_command(install_cmd, shell=True)
@@ -635,13 +645,18 @@ class InstallationEngine:
     def step_finalize(self):
         """Step 11: Write installation marker and show next steps."""
         marker = self.workspace / ".prism_installed"
-        marker.write_text(json.dumps({
-            "installed_at": datetime.now().isoformat(),
-            "platform": self.platform_name,
-            "prism": str(self.config_package) if self.config_package else None,
-            "selected_sub_prisms": self.selected_sub_prisms,
-            "user": self.user_info.get("name", self.user_info.get("full_name", "Unknown")),
-        }, indent=2))
+        marker.write_text(
+            json.dumps(
+                {
+                    "installed_at": datetime.now().isoformat(),
+                    "platform": self.platform_name,
+                    "prism": str(self.config_package) if self.config_package else None,
+                    "selected_sub_prisms": self.selected_sub_prisms,
+                    "user": self.user_info.get("name", self.user_info.get("full_name", "Unknown")),
+                },
+                indent=2,
+            )
+        )
 
         self.log("finalize", "Installation complete! 🎉", "success")
         self.log("finalize", f"Workspace: {self.workspace}", "info")
@@ -652,10 +667,9 @@ class InstallationEngine:
             try:
                 with open(package_yaml) as f:
                     pkg_data = yaml.safe_load(f) or {}
-                msg = (
-                    pkg_data.get("setup", {}).get("post_install", {}).get("message")
-                    or pkg_data.get("package", {}).get("post_install", {}).get("message")
-                )
+                msg = pkg_data.get("setup", {}).get("post_install", {}).get("message") or pkg_data.get(
+                    "package", {}
+                ).get("post_install", {}).get("message")
                 if msg:
                     print(f"\n{msg}")
             except Exception:

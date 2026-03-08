@@ -14,12 +14,12 @@ Usage:
 import argparse
 import json
 import os
-import sys
-import urllib.request
-import urllib.error
-from pathlib import Path
-import tempfile
 import shutil
+import sys
+import tempfile
+import urllib.error
+import urllib.request
+from pathlib import Path
 
 # NPM registry defaults (can be overridden via env vars or CLI args)
 DEFAULT_UNPKG_BASE = "https://unpkg.com"
@@ -47,10 +47,10 @@ AVAILABLE_PACKAGES = [
 def fetch_package_metadata(package_name: str, registry: str = None) -> dict:
     """
     Fetch package metadata from npm registry.
-    
+
     Args:
         package_name: Full package name (e.g., @prism/personal-dev-config)
-    
+
     Returns:
         Package metadata dict
     """
@@ -58,7 +58,7 @@ def fetch_package_metadata(package_name: str, registry: str = None) -> dict:
     url = f"{registry_url}/{package_name}"
     print(f"📡 Fetching metadata from registry: {package_name}")
     print(f"   Registry: {registry_url}")
-    
+
     try:
         with urllib.request.urlopen(url, timeout=10) as response:
             return json.loads(response.read())
@@ -73,22 +73,22 @@ def fetch_package_metadata(package_name: str, registry: str = None) -> dict:
 def fetch_package_file(package_name: str, file_path: str, version: str = "latest", unpkg_url: str = None) -> str:
     """
     Fetch a specific file from a package via unpkg CDN.
-    
+
     Args:
         package_name: Full package name
         file_path: Path to file within package (e.g., package.yaml)
         version: Package version (default: latest)
-    
+
     Returns:
         File content as string
     """
     unpkg_base = unpkg_url or UNPKG_BASE
     url = f"{unpkg_base}/{package_name}@{version}/{file_path}"
     print(f"📥 Downloading: {url}")
-    
+
     try:
         with urllib.request.urlopen(url, timeout=30) as response:
-            return response.read().decode('utf-8')
+            return response.read().decode("utf-8")
     except urllib.error.URLError as e:
         print(f"⚠️  unpkg CDN unavailable: {e}")
         return None
@@ -100,40 +100,40 @@ def fetch_package_file(package_name: str, file_path: str, version: str = "latest
 def fetch_package(package_name: str, version: str = "latest", dest_dir: str = None, unpkg_url: str = None) -> str:
     """
     Fetch entire package and extract to directory.
-    
+
     Args:
         package_name: Full package name
         version: Package version
         dest_dir: Destination directory (default: temp dir)
-    
+
     Returns:
         Path to extracted package directory
     """
     print(f"\n🎁 Fetching package: {package_name}@{version}")
-    
+
     # Try npm first
     package_yaml = fetch_package_file(package_name, "package.yaml", version, unpkg_url)
-    
+
     if package_yaml:
         # Success! Save to destination
         if dest_dir is None:
             dest_dir = tempfile.mkdtemp(prefix="prism-pkg-")
-        
+
         dest_path = Path(dest_dir)
         dest_path.mkdir(parents=True, exist_ok=True)
-        
+
         # Write package.yaml
         (dest_path / "package.yaml").write_text(package_yaml)
-        
+
         # Try to fetch other common files
         for file in ["README.md", "package.json"]:
             content = fetch_package_file(package_name, file, version, unpkg_url)
             if content:
                 (dest_path / file).write_text(content)
-        
+
         print(f"✅ Package downloaded to: {dest_path}")
         return str(dest_path)
-    
+
     # Fallback to local packages
     print(f"⚠️  npm unavailable, checking local packages...")
     return fetch_local_package(package_name)
@@ -142,16 +142,16 @@ def fetch_package(package_name: str, version: str = "latest", dest_dir: str = No
 def fetch_local_package(package_name: str) -> str:
     """
     Fallback: Load prism from local prisms directory.
-    
+
     Args:
         package_name: Full package name (e.g., @prism/personal-dev-config)
-    
+
     Returns:
         Path to local package directory
     """
     # Strip @prism/ prefix and map to local directory
     local_name = package_name.replace("@prism/", "").replace("-config", "")
-    
+
     # Try common name variations
     variations = [
         local_name,
@@ -159,22 +159,22 @@ def fetch_local_package(package_name: str) -> str:
         local_name.replace("-", "_"),
         local_name.replace("-", "_") + "-config",
     ]
-    
+
     # Special cases
     if package_name == "@prism/consulting-config":
         variations.insert(0, "consulting-firm-config")
     elif package_name == "@prism/opensource-config":
         variations.insert(0, "opensource-project-config")
-    
+
     script_dir = Path(__file__).parent.parent
     config_packages_dir = script_dir / "prisms"
-    
+
     for variant in variations:
         local_path = config_packages_dir / variant
         if local_path.exists() and (local_path / "package.yaml").exists():
             print(f"✅ Using local package: {local_path}")
             return str(local_path)
-    
+
     print(f"❌ Package not found: {package_name}")
     print(f"   Looked in: {config_packages_dir}")
     print(f"   Tried: {variations}")
@@ -184,30 +184,27 @@ def fetch_local_package(package_name: str) -> str:
 def list_available_packages(use_npm: bool = True, registry: str = None) -> list:
     """
     List all available Prism config packages.
-    
+
     Args:
         use_npm: Try to fetch from npm registry (default: True)
-    
+
     Returns:
         List of package dicts with metadata
     """
     packages = []
-    
+
     if use_npm:
         print("\n📦 Available Prism Config Packages (from npm):")
         print("=" * 60)
-        
+
         for pkg_name in AVAILABLE_PACKAGES:
             metadata = fetch_package_metadata(pkg_name, registry)
             if metadata:
                 latest_version = metadata.get("dist-tags", {}).get("latest", "unknown")
                 description = metadata.get("description", "No description")
-                packages.append({
-                    "name": pkg_name,
-                    "version": latest_version,
-                    "description": description,
-                    "source": "npm"
-                })
+                packages.append(
+                    {"name": pkg_name, "version": latest_version, "description": description, "source": "npm"}
+                )
                 print(f"\n  {pkg_name}")
                 print(f"    Version: {latest_version}")
                 print(f"    {description}")
@@ -215,34 +212,31 @@ def list_available_packages(use_npm: bool = True, registry: str = None) -> list:
                 # Fallback to local
                 local_path = fetch_local_package(pkg_name)
                 if local_path:
-                    packages.append({
-                        "name": pkg_name,
-                        "version": "local",
-                        "description": "Local package",
-                        "source": "local",
-                        "path": local_path
-                    })
-    
+                    packages.append(
+                        {
+                            "name": pkg_name,
+                            "version": "local",
+                            "description": "Local package",
+                            "source": "local",
+                            "path": local_path,
+                        }
+                    )
+
     else:
         # Local only
         print("\n📦 Available Prism Config Packages (local):")
         print("=" * 60)
-        
+
         for pkg_name in AVAILABLE_PACKAGES:
             local_path = fetch_local_package(pkg_name)
             if local_path:
-                packages.append({
-                    "name": pkg_name,
-                    "version": "local",
-                    "source": "local",
-                    "path": local_path
-                })
+                packages.append({"name": pkg_name, "version": "local", "source": "local", "path": local_path})
                 print(f"\n  {pkg_name}")
                 print(f"    Path: {local_path}")
-    
+
     print("\n" + "=" * 60)
     print(f"Total: {len(packages)} packages\n")
-    
+
     return packages
 
 
@@ -256,56 +250,46 @@ def main():
     PRISM_NPM_REGISTRY - Custom npm registry URL
     PRISM_UNPKG_URL - Custom unpkg CDN URL
 """,
-        formatter_class=argparse.RawDescriptionHelpFormatter
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    
+
     # Global registry options
-    parser.add_argument(
-        "--registry",
-        help="Custom npm registry URL (default: https://registry.npmjs.org)"
-    )
-    parser.add_argument(
-        "--unpkg",
-        help="Custom unpkg CDN URL (default: https://unpkg.com)"
-    )
-    
+    parser.add_argument("--registry", help="Custom npm registry URL (default: https://registry.npmjs.org)")
+    parser.add_argument("--unpkg", help="Custom unpkg CDN URL (default: https://unpkg.com)")
+
     subparsers = parser.add_subparsers(dest="command", help="Command to run")
-    
+
     # List command
     list_parser = subparsers.add_parser("list", help="List available packages")
-    list_parser.add_argument(
-        "--local",
-        action="store_true",
-        help="Only show local packages"
-    )
-    
+    list_parser.add_argument("--local", action="store_true", help="Only show local packages")
+
     # Fetch command
     fetch_parser = subparsers.add_parser("fetch", help="Fetch a package")
     fetch_parser.add_argument("package", help="Package name (e.g., @prism/personal-dev-config)")
     fetch_parser.add_argument("--version", default="latest", help="Package version")
     fetch_parser.add_argument("--dest", help="Destination directory")
-    
+
     args = parser.parse_args()
-    
+
     # Show registry configuration
-    if args.command and not getattr(args, 'local', False):
+    if args.command and not getattr(args, "local", False):
         registry = args.registry or NPM_REGISTRY
         unpkg = args.unpkg or UNPKG_BASE
         print(f"📦 Registry Configuration:")
         print(f"   npm registry: {registry}")
         print(f"   unpkg CDN: {unpkg}")
         print()
-    
+
     if args.command == "list":
         list_available_packages(use_npm=not args.local, registry=args.registry)
-    
+
     elif args.command == "fetch":
         result = fetch_package(args.package, args.version, args.dest, args.unpkg)
         if result:
             sys.exit(0)
         else:
             sys.exit(1)
-    
+
     else:
         parser.print_help()
         sys.exit(1)

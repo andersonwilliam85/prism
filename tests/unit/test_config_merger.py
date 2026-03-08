@@ -1,12 +1,14 @@
 """
 Unit tests for ConfigMerger — hierarchical config merging engine.
 """
+
 import os
-import pytest
-import yaml
+import sys
 from pathlib import Path
 
-import sys
+import pytest
+import yaml
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
 from config_merger import ConfigMerger, merge_configs
 
@@ -253,14 +255,22 @@ class TestConfigMergerClass:
     def test_load_merged_config_with_files(self, tmp_path):
         base_yaml = tmp_path / "base.yaml"
         team_yaml = tmp_path / "team.yaml"
-        base_yaml.write_text(yaml.dump({
-            "company": {"name": "ACME"},
-            "tools_required": ["git", "docker"],
-        }))
-        team_yaml.write_text(yaml.dump({
-            "tools_required": ["kubectl"],
-            "team": {"name": "Platform"},
-        }))
+        base_yaml.write_text(
+            yaml.dump(
+                {
+                    "company": {"name": "ACME"},
+                    "tools_required": ["git", "docker"],
+                }
+            )
+        )
+        team_yaml.write_text(
+            yaml.dump(
+                {
+                    "tools_required": ["kubectl"],
+                    "team": {"name": "Platform"},
+                }
+            )
+        )
         merger = ConfigMerger()
         result = merger.load_merged_config(
             company=str(base_yaml),
@@ -313,9 +323,7 @@ class TestEnvVarSubstitution:
 
     def test_substitution_in_nested_dict(self):
         merger = ConfigMerger()
-        result = merger._substitute_env_vars({
-            "git": {"user": {"email": "${PRISM_TEST_VAR}@example.com"}}
-        })
+        result = merger._substitute_env_vars({"git": {"user": {"email": "${PRISM_TEST_VAR}@example.com"}}})
         assert result["git"]["user"]["email"] == "test_value@example.com"
 
     def test_substitution_in_list(self):
@@ -333,9 +341,7 @@ class TestEnvVarSubstitution:
 
     def test_multiple_vars_in_one_string(self):
         merger = ConfigMerger()
-        result = merger._substitute_env_vars({
-            "url": "https://${PRISM_TEST_VAR}.example.com/${PRISM_UNSET_VAR:-path}"
-        })
+        result = merger._substitute_env_vars({"url": "https://${PRISM_TEST_VAR}.example.com/${PRISM_UNSET_VAR:-path}"})
         assert result["url"] == "https://test_value.example.com/path"
 
 

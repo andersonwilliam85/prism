@@ -3,13 +3,14 @@ E2E tests for the Flask web API (install-ui.py).
 
 Uses Flask test client — no browser required.
 """
-import pytest
-import sys
-import yaml
-from pathlib import Path
 
 # Make install-ui.py importable (hyphenated filename requires importlib)
 import importlib.util
+import sys
+from pathlib import Path
+
+import pytest
+import yaml
 
 ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(ROOT))
@@ -38,6 +39,7 @@ def client(app):
 # ---------------------------------------------------------------------------
 # /api/packages
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.e2e
 class TestPackagesEndpoint:
@@ -72,6 +74,7 @@ class TestPackagesEndpoint:
 # /api/package/<name>/user-fields
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.e2e
 class TestUserFieldsEndpoint:
     def test_personal_dev_returns_fields(self, client):
@@ -105,6 +108,7 @@ class TestUserFieldsEndpoint:
 # ---------------------------------------------------------------------------
 # /api/package/<name>/metadata
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.e2e
 class TestMetadataEndpoint:
@@ -142,6 +146,7 @@ class TestMetadataEndpoint:
 # ---------------------------------------------------------------------------
 # /api/package/<name>/tiers
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.e2e
 class TestTiersEndpoint:
@@ -191,17 +196,22 @@ class TestTiersEndpoint:
         prisms_dir.mkdir()
         pkg_dir = prisms_dir / "all-required"
         pkg_dir.mkdir()
-        (pkg_dir / "package.yaml").write_text(yaml.dump({
-            "package": {"name": "all-required", "version": "1.0.0", "description": "Test"},
-            "bundled_prisms": {
-                "base": [{"id": "b", "name": "Base", "required": True, "config": "base/b.yaml"}],
-            }
-        }))
+        (pkg_dir / "package.yaml").write_text(
+            yaml.dump(
+                {
+                    "package": {"name": "all-required", "version": "1.0.0", "description": "Test"},
+                    "bundled_prisms": {
+                        "base": [{"id": "b", "name": "Base", "required": True, "config": "base/b.yaml"}],
+                    },
+                }
+            )
+        )
 
         # We can't easily inject tmp_path into the running Flask app, so
         # validate the logic via package_manager directly
         sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
         from package_manager import PackageManager
+
         pm = PackageManager(root_dir=tmp_path)
         packages = pm.discover_packages()
         assert len(packages) == 1
@@ -216,6 +226,7 @@ class TestTiersEndpoint:
 # ---------------------------------------------------------------------------
 # /api/package/<name>/config
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.e2e
 class TestPackageConfigEndpoint:
@@ -239,6 +250,7 @@ class TestPackageConfigEndpoint:
 # /api/tools
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.e2e
 class TestToolsEndpoint:
     def test_returns_tools_list(self, client):
@@ -253,32 +265,42 @@ class TestToolsEndpoint:
 # /api/install (POST)
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.e2e
 class TestInstallEndpoint:
     def test_missing_package_returns_error(self, client):
-        resp = client.post("/api/install", json={
-            "package": "",
-            "userInfo": {},
-        })
+        resp = client.post(
+            "/api/install",
+            json={
+                "package": "",
+                "userInfo": {},
+            },
+        )
         data = resp.get_json()
         # Either 404/500 or success=False
         assert resp.status_code != 200 or data.get("success") is False
 
     def test_invalid_package_returns_error(self, client):
-        resp = client.post("/api/install", json={
-            "package": "prism-that-absolutely-does-not-exist-xyz999",
-            "userInfo": {"name": "Test", "email": "test@example.com"},
-        })
+        resp = client.post(
+            "/api/install",
+            json={
+                "package": "prism-that-absolutely-does-not-exist-xyz999",
+                "userInfo": {"name": "Test", "email": "test@example.com"},
+            },
+        )
         data = resp.get_json()
         assert data.get("success") is False or "error" in data
 
     def test_selected_sub_prisms_accepted(self, client):
         """Endpoint should accept selectedSubPrisms without error on the param."""
-        resp = client.post("/api/install", json={
-            "package": "prism-that-absolutely-does-not-exist-xyz999",
-            "userInfo": {},
-            "selectedSubPrisms": {"teams": "platform"},
-        })
+        resp = client.post(
+            "/api/install",
+            json={
+                "package": "prism-that-absolutely-does-not-exist-xyz999",
+                "userInfo": {},
+                "selectedSubPrisms": {"teams": "platform"},
+            },
+        )
         data = resp.get_json()
         # Doesn't matter if it fails — we just check it doesn't 500 on the new param
         assert data is not None
@@ -287,6 +309,7 @@ class TestInstallEndpoint:
 # ---------------------------------------------------------------------------
 # Root route
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.e2e
 class TestRootRoute:

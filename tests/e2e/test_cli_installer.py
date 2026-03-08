@@ -1,11 +1,13 @@
 """
 E2E tests for CLI tools — install.py, package_manager.py, package_validator.py.
 """
-import pytest
+
+import re
 import subprocess
 import tempfile
-import re
 from pathlib import Path
+
+import pytest
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
@@ -84,11 +86,7 @@ class TestPackageManagerCLI:
     def test_validate_nonexistent_prism(self):
         result = run(["python3", "scripts/package_manager.py", "validate", "prism-that-does-not-exist"])
         combined = result.stdout + result.stderr
-        has_error = (
-            result.returncode != 0
-            or "not found" in combined.lower()
-            or "error" in combined.lower()
-        )
+        has_error = result.returncode != 0 or "not found" in combined.lower() or "error" in combined.lower()
         assert has_error
 
     def test_search_command(self):
@@ -156,36 +154,43 @@ class TestConfigMergerScript:
     """Tests for config_merger.py as a module (import)."""
 
     def test_import_works(self):
-        result = run([
-            "python3", "-c",
-            "from scripts.config_merger import ConfigMerger, merge_configs; print('OK')"
-        ])
+        result = run(["python3", "-c", "from scripts.config_merger import ConfigMerger, merge_configs; print('OK')"])
         assert result.returncode == 0
         assert "OK" in result.stdout
 
     def test_merge_configs_from_cli(self):
-        result = run([
-            "python3", "-c",
-            "from scripts.config_merger import merge_configs; "
-            "r = merge_configs({'a': 1}, {'b': 2}); "
-            "assert r['a'] == 1 and r['b'] == 2; "
-            "print('PASS')"
-        ])
+        result = run(
+            [
+                "python3",
+                "-c",
+                "from scripts.config_merger import merge_configs; "
+                "r = merge_configs({'a': 1}, {'b': 2}); "
+                "assert r['a'] == 1 and r['b'] == 2; "
+                "print('PASS')",
+            ]
+        )
         assert result.returncode == 0
         assert "PASS" in result.stdout
 
     def test_env_var_substitution_from_cli(self):
         import os
+
         env = {**os.environ, "MY_TEST_VAR": "hello"}
         result = subprocess.run(
-            ["python3", "-c",
-             "from scripts.config_merger import ConfigMerger; "
-             "m = ConfigMerger(); "
-             "r = m._substitute_env_vars({'k': '${MY_TEST_VAR}'}); "
-             "assert r['k'] == 'hello', f'Got: {r[\"k\"]}'; "
-             "print('PASS')"],
-            capture_output=True, text=True, timeout=10,
-            cwd=str(PROJECT_ROOT), env=env,
+            [
+                "python3",
+                "-c",
+                "from scripts.config_merger import ConfigMerger; "
+                "m = ConfigMerger(); "
+                "r = m._substitute_env_vars({'k': '${MY_TEST_VAR}'}); "
+                "assert r['k'] == 'hello', f'Got: {r[\"k\"]}'; "
+                "print('PASS')",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            cwd=str(PROJECT_ROOT),
+            env=env,
         )
         assert result.returncode == 0
         assert "PASS" in result.stdout
@@ -196,15 +201,18 @@ class TestPackageManagerDiscover:
     """Tests for PackageManager.discover_packages() via subprocess."""
 
     def test_discovers_prisms_in_prisms_dir(self):
-        result = run([
-            "python3", "-c",
-            "import sys; sys.path.insert(0, 'scripts'); "
-            "from package_manager import PackageManager; "
-            "pm = PackageManager(); "
-            "pkgs = pm.discover_packages(); "
-            f"print(f'Found {{len(pkgs)}} prisms'); "
-            "[print(p['name']) for p in pkgs]"
-        ])
+        result = run(
+            [
+                "python3",
+                "-c",
+                "import sys; sys.path.insert(0, 'scripts'); "
+                "from package_manager import PackageManager; "
+                "pm = PackageManager(); "
+                "pkgs = pm.discover_packages(); "
+                f"print(f'Found {{len(pkgs)}} prisms'); "
+                "[print(p['name']) for p in pkgs]",
+            ]
+        )
         assert result.returncode == 0
         match = re.search(r"Found (\d+) prisms", result.stdout)
         assert match, f"Expected 'Found N prisms' in: {result.stdout}"
@@ -212,17 +220,20 @@ class TestPackageManagerDiscover:
         assert count > 0, "Should discover at least one prism"
 
     def test_all_discovered_have_required_keys(self):
-        result = run([
-            "python3", "-c",
-            "import sys, json; sys.path.insert(0, 'scripts'); "
-            "from package_manager import PackageManager; "
-            "pm = PackageManager(); "
-            "pkgs = pm.discover_packages(); "
-            "required = {'name','version','description','path','source'}; "
-            "for p in pkgs: "
-            "  missing = required - set(p.keys()); "
-            "  assert not missing, f'Missing keys in {p[\"name\"]}: {missing}'; "
-            "print('ALL_OK')"
-        ])
+        result = run(
+            [
+                "python3",
+                "-c",
+                "import sys, json; sys.path.insert(0, 'scripts'); "
+                "from package_manager import PackageManager; "
+                "pm = PackageManager(); "
+                "pkgs = pm.discover_packages(); "
+                "required = {'name','version','description','path','source'}; "
+                "for p in pkgs: "
+                "  missing = required - set(p.keys()); "
+                "  assert not missing, f'Missing keys in {p[\"name\"]}: {missing}'; "
+                "print('ALL_OK')",
+            ]
+        )
         assert result.returncode == 0
         assert "ALL_OK" in result.stdout

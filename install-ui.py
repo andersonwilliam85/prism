@@ -7,19 +7,20 @@ Much more user-friendly than pure CLI!
 
 Usage:
     python3 install-ui.py
-    
+
     Opens browser to: http://localhost:5555
 """
 
 import os
-import sys
-import webbrowser
-import yaml
 import subprocess
-from pathlib import Path
-from flask import Flask, render_template_string, request, jsonify, send_from_directory
+import sys
 import threading
 import time
+import webbrowser
+from pathlib import Path
+
+import yaml
+from flask import Flask, jsonify, render_template_string, request, send_from_directory
 
 app = Flask(__name__)
 
@@ -1969,20 +1970,23 @@ INDEX_HTML = """
 # Flask Routes
 # ============================================================================
 
+
 def _find_package(package_name):
     """Find a package by name or directory name. Returns (pkg_dict, pkg_path) or (None, None)."""
     import sys
+
     sys.path.insert(0, str(Path(__file__).parent / "scripts"))
     from package_manager import PackageManager
+
     pm = PackageManager(root_dir=ROOT_DIR)
     packages = pm.discover_packages()
     # Try exact name match first, then directory name match
-    pkg = next((p for p in packages if p['name'] == package_name), None)
+    pkg = next((p for p in packages if p["name"] == package_name), None)
     if not pkg:
-        pkg = next((p for p in packages if Path(p['path']).name == package_name), None)
+        pkg = next((p for p in packages if Path(p["path"]).name == package_name), None)
     if not pkg:
         return None, None
-    pkg_path = Path(pkg['path'])
+    pkg_path = Path(pkg["path"])
     return pkg, pkg_path
 
 
@@ -1991,96 +1995,95 @@ def index():
     """Main installer UI"""
     return render_template_string(INDEX_HTML)
 
+
 @app.route("/api/packages")
 def get_packages():
     """Get available config packages with validation"""
     import sys
+
     sys.path.insert(0, str(Path(__file__).parent / "scripts"))
-    
+
     try:
         from package_validator import validate_all_packages
-        
+
         packages_dir = ROOT_DIR / "prisms"
         valid_packages, invalid_packages = validate_all_packages(packages_dir)
-        
+
         # Format valid packages
         formatted_valid = []
         for pkg in valid_packages:
-            formatted_valid.append({
-                "id": pkg['id'],
-                "name": pkg['name'],
-                "displayName": pkg['name'].replace('-config', '').replace('-', ' ').title(),
-                "description": pkg['description'],
-                "version": pkg['version'],
-                "source": "local",
-                "path": pkg['path'],
-                "warnings": pkg.get('warnings', [])
-            })
-        
+            formatted_valid.append(
+                {
+                    "id": pkg["id"],
+                    "name": pkg["name"],
+                    "displayName": pkg["name"].replace("-config", "").replace("-", " ").title(),
+                    "description": pkg["description"],
+                    "version": pkg["version"],
+                    "source": "local",
+                    "path": pkg["path"],
+                    "warnings": pkg.get("warnings", []),
+                }
+            )
+
         # Format invalid packages
         formatted_invalid = []
         for pkg in invalid_packages:
-            formatted_invalid.append({
-                "id": pkg['id'],
-                "name": pkg['name'],
-                "description": pkg['description'],
-                "errors": pkg['errors'],
-                "path": pkg['path']
-            })
-        
-        return jsonify({
-            "packages": formatted_valid,
-            "invalid_packages": formatted_invalid,
-            "stats": {
-                "valid": len(valid_packages),
-                "invalid": len(invalid_packages),
-                "total": len(valid_packages) + len(invalid_packages)
+            formatted_invalid.append(
+                {
+                    "id": pkg["id"],
+                    "name": pkg["name"],
+                    "description": pkg["description"],
+                    "errors": pkg["errors"],
+                    "path": pkg["path"],
+                }
+            )
+
+        return jsonify(
+            {
+                "packages": formatted_valid,
+                "invalid_packages": formatted_invalid,
+                "stats": {
+                    "valid": len(valid_packages),
+                    "invalid": len(invalid_packages),
+                    "total": len(valid_packages) + len(invalid_packages),
+                },
             }
-        })
+        )
     except Exception as e:
         import traceback
+
         traceback.print_exc()
-        return jsonify({
-            "packages": [],
-            "invalid_packages": [],
-            "error": str(e)
-        })
+        return jsonify({"packages": [], "invalid_packages": [], "error": str(e)})
+
 
 @app.route("/api/package/<package_id>/validate-configs")
 def validate_package_configs(package_id):
     """Validate all configuration files in a package"""
     import sys
+
     sys.path.insert(0, str(Path(__file__).parent / "scripts"))
-    
+
     try:
         from config_validator import PackageConfigValidator
-        
+
         packages_dir = ROOT_DIR / "prisms"
         package_path = packages_dir / package_id
-        
+
         if not package_path.exists():
-            return jsonify({
-                "valid": False,
-                "error": f"Package not found: {package_id}"
-            })
-        
+            return jsonify({"valid": False, "error": f"Package not found: {package_id}"})
+
         # Run validation
         validator = PackageConfigValidator(package_path)
         all_valid, results = validator.validate_package_configs()
         summary = validator.get_summary(results)
-        
-        return jsonify({
-            "valid": all_valid,
-            "summary": summary,
-            "results": results
-        })
+
+        return jsonify({"valid": all_valid, "summary": summary, "results": results})
     except Exception as e:
         import traceback
+
         traceback.print_exc()
-        return jsonify({
-            "valid": False,
-            "error": str(e)
-        })
+        return jsonify({"valid": False, "error": str(e)})
+
 
 @app.route("/api/package/<package_name>/metadata")
 def get_package_metadata(package_name):
@@ -2094,56 +2097,62 @@ def get_package_metadata(package_name):
             return jsonify({"error": "Package not found"})
 
         # Load package.yaml
-        pkg_yaml_path = pkg_path / 'package.yaml'
-        
+        pkg_yaml_path = pkg_path / "package.yaml"
+
         if not pkg_yaml_path.exists():
             return jsonify({"error": "package.yaml not found"})
-        
+
         with open(pkg_yaml_path) as f:
             pkg_config = yaml.safe_load(f)
-        
-        package_section = pkg_config.get('package', {})
-        bundled_prisms = pkg_config.get('bundled_prisms', {})
+
+        package_section = pkg_config.get("package", {})
+        bundled_prisms = pkg_config.get("bundled_prisms", {})
 
         # Detect optional tiers (tiers where not all items are required)
         has_tiers = bool(bundled_prisms)
         has_optional_tiers = any(
-            any(not item.get('required', False) for item in items)
+            any(not item.get("required", False) for item in items)
             for items in bundled_prisms.values()
             if isinstance(items, list)
         )
 
         # Check for tools in merged config
-        has_tools = 'tools_required' in pkg_config or 'tools_selected' in pkg_config or \
-                    'tools' in package_section or 'tools' in pkg_config
+        has_tools = (
+            "tools_required" in pkg_config
+            or "tools_selected" in pkg_config
+            or "tools" in package_section
+            or "tools" in pkg_config
+        )
 
         # Get user info fields count
-        user_fields = pkg_config.get('user_info_fields', package_section.get('user_info_fields', []))
+        user_fields = pkg_config.get("user_info_fields", package_section.get("user_info_fields", []))
 
         # Get package display info
-        display_name = package_section.get('name', package_name)
-        description = package_section.get('description', '')
+        display_name = package_section.get("name", package_name)
+        description = package_section.get("description", "")
 
         metadata = {
-            'name': package_name,
-            'display_name': display_name,
-            'description': description,
-            'has_tiers': has_tiers,
-            'has_optional_tiers': has_optional_tiers,
+            "name": package_name,
+            "display_name": display_name,
+            "description": description,
+            "has_tiers": has_tiers,
+            "has_optional_tiers": has_optional_tiers,
             # Legacy compat fields (always False now — use tiers API instead)
-            'has_sub_orgs': False,
-            'has_departments': False,
-            'has_teams': False,
-            'has_tools': has_tools,
-            'user_fields_count': len(user_fields or []),
-            'package_type': package_section.get('type', 'company')
+            "has_sub_orgs": False,
+            "has_departments": False,
+            "has_teams": False,
+            "has_tools": has_tools,
+            "user_fields_count": len(user_fields or []),
+            "package_type": package_section.get("type", "company"),
         }
-        
+
         return jsonify(metadata)
     except Exception as e:
         import traceback
+
         traceback.print_exc()
         return jsonify({"error": str(e)})
+
 
 @app.route("/api/package/<package_name>/tiers")
 def get_package_tiers(package_name):
@@ -2156,7 +2165,7 @@ def get_package_tiers(package_name):
         if not pkg:
             return jsonify({"error": "Package not found", "optional_tiers": []})
 
-        pkg_yaml_path = pkg_path / 'package.yaml'
+        pkg_yaml_path = pkg_path / "package.yaml"
 
         if not pkg_yaml_path.exists():
             return jsonify({"error": "package.yaml not found", "optional_tiers": []})
@@ -2164,34 +2173,37 @@ def get_package_tiers(package_name):
         with open(pkg_yaml_path) as f:
             pkg_config = yaml.safe_load(f)
 
-        bundled_prisms = pkg_config.get('bundled_prisms', {})
+        bundled_prisms = pkg_config.get("bundled_prisms", {})
 
         # Collect optional tiers (tiers that have at least one non-required item)
         optional_tiers = []
         for tier_name, items in bundled_prisms.items():
             if not isinstance(items, list):
                 continue
-            optional_items = [item for item in items if not item.get('required', False)]
+            optional_items = [item for item in items if not item.get("required", False)]
             if not optional_items:
                 continue  # skip fully-required tiers
-            optional_tiers.append({
-                'name': tier_name,
-                'label': tier_name.replace('_', ' ').title(),
-                'required': False,
-                'options': [
-                    {
-                        'id': item.get('id', ''),
-                        'name': item.get('name', item.get('id', '')),
-                        'description': item.get('description', ''),
-                    }
-                    for item in optional_items
-                ],
-            })
+            optional_tiers.append(
+                {
+                    "name": tier_name,
+                    "label": tier_name.replace("_", " ").title(),
+                    "required": False,
+                    "options": [
+                        {
+                            "id": item.get("id", ""),
+                            "name": item.get("name", item.get("id", "")),
+                            "description": item.get("description", ""),
+                        }
+                        for item in optional_items
+                    ],
+                }
+            )
 
-        return jsonify({'optional_tiers': optional_tiers})
+        return jsonify({"optional_tiers": optional_tiers})
 
     except Exception as e:
         import traceback
+
         traceback.print_exc()
         return jsonify({"error": str(e), "optional_tiers": []})
 
@@ -2208,27 +2220,34 @@ def get_user_fields(package_name):
             return jsonify({"fields": [], "error": "Package not found"})
 
         # Load package.yaml to get user_info_fields
-        pkg_yaml_path = pkg_path / 'package.yaml'
-        
+        pkg_yaml_path = pkg_path / "package.yaml"
+
         if not pkg_yaml_path.exists():
             return jsonify({"fields": [], "error": "package.yaml not found"})
-        
+
         with open(pkg_yaml_path) as f:
             pkg_config = yaml.safe_load(f)
-        
+
         # Get user_info_fields from package config (can be at root or under 'package')
-        fields = pkg_config.get('user_info_fields', pkg_config.get('package', {}).get('user_info_fields', []))
-        
+        fields = pkg_config.get("user_info_fields", pkg_config.get("package", {}).get("user_info_fields", []))
+
         # If no fields defined, use defaults
         if not fields:
             fields = [
                 {"id": "name", "label": "Full Name", "type": "text", "required": True, "placeholder": "John Doe"},
-                {"id": "email", "label": "Email", "type": "email", "required": True, "placeholder": "john.doe@example.com"}
+                {
+                    "id": "email",
+                    "label": "Email",
+                    "type": "email",
+                    "required": True,
+                    "placeholder": "john.doe@example.com",
+                },
             ]
-        
+
         return jsonify({"fields": fields})
     except Exception as e:
         return jsonify({"fields": [], "error": str(e)})
+
 
 @app.route("/api/package/<package_name>/config")
 def get_package_config(package_name):
@@ -2242,84 +2261,90 @@ def get_package_config(package_name):
             return jsonify({"prism_config": None, "error": "Package not found"})
 
         # Load package.yaml to get prism_config
-        pkg_yaml_path = pkg_path / 'package.yaml'
-        
+        pkg_yaml_path = pkg_path / "package.yaml"
+
         if not pkg_yaml_path.exists():
             return jsonify({"prism_config": None, "error": "package.yaml not found"})
-        
+
         with open(pkg_yaml_path) as f:
             pkg_config = yaml.safe_load(f)
-        
+
         # Get prism_config section
-        prism_config = pkg_config.get('prism_config', None)
-        
-        return jsonify({
-            "prism_config": prism_config,
-            "package_name": package_name
-        })
+        prism_config = pkg_config.get("prism_config", None)
+
+        return jsonify({"prism_config": prism_config, "package_name": package_name})
     except Exception as e:
         return jsonify({"prism_config": None, "error": str(e)})
+
 
 @app.route("/api/organizations")
 def get_organizations():
     """Get available organizations from config"""
     # Load from inheritance.yaml
     inheritance_path = CONFIG_DIR / "inheritance.yaml"
-    
+
     if not inheritance_path.exists():
         return jsonify({"sub_orgs": [], "departments": [], "teams": []})
-    
+
     with open(inheritance_path) as f:
         config = yaml.safe_load(f)
-    
-    return jsonify({
-        "sub_orgs": config.get("available_sub_orgs", []),
-        "departments": config.get("available_departments", []),
-        "teams": config.get("available_teams", [])
-    })
+
+    return jsonify(
+        {
+            "sub_orgs": config.get("available_sub_orgs", []),
+            "departments": config.get("available_departments", []),
+            "teams": config.get("available_teams", []),
+        }
+    )
+
 
 @app.route("/api/tools")
 def get_tools():
     """Get available tools"""
     # Load from tools.yaml
     tools_path = CONFIG_DIR / "tools.yaml"
-    
+
     if not tools_path.exists():
         return jsonify({"tools": []})
-    
+
     with open(tools_path) as f:
         config = yaml.safe_load(f)
-    
+
     tools = []
     for tool_id, tool_config in config.get("tools", {}).items():
-        tools.append({
-            "id": tool_id,
-            "name": tool_id.replace("-", " ").title(),
-            "description": tool_config.get("description", ""),
-            "required": tool_config.get("required", False)
-        })
-    
+        tools.append(
+            {
+                "id": tool_id,
+                "name": tool_id.replace("-", " ").title(),
+                "description": tool_config.get("description", ""),
+                "required": tool_config.get("required", False),
+            }
+        )
+
     return jsonify({"tools": tools})
+
 
 @app.route("/api/install", methods=["POST"])
 def install():
     """Run the actual installation"""
     data = request.json
-    
+
     try:
         import sys
+
         sys.path.insert(0, str(ROOT_DIR / "scripts"))
         sys.path.insert(0, str(ROOT_DIR))
         from npm_package_fetcher import fetch_package
+
         from installer_engine import InstallationEngine
-        
-        prism_id = (data.get('package') or '').strip()
-        user_info = data.get('userInfo', {})
-        registry = data.get('registry', None)
-        unpkg_url = data.get('unpkgUrl', None)
-        selected_sub_prisms = data.get('selectedSubPrisms', {})
-        tools_selected = data.get('toolsSelected', [])
-        tools_excluded = data.get('toolsExcluded', [])
+
+        prism_id = (data.get("package") or "").strip()
+        user_info = data.get("userInfo", {})
+        registry = data.get("registry", None)
+        unpkg_url = data.get("unpkgUrl", None)
+        selected_sub_prisms = data.get("selectedSubPrisms", {})
+        tools_selected = data.get("toolsSelected", [])
+        tools_excluded = data.get("toolsExcluded", [])
 
         # Reject empty prism id immediately
         if not prism_id:
@@ -2327,9 +2352,9 @@ def install():
 
         # Set registry env vars if provided
         if registry:
-            os.environ['PRISM_NPM_REGISTRY'] = registry
+            os.environ["PRISM_NPM_REGISTRY"] = registry
         if unpkg_url:
-            os.environ['PRISM_UNPKG_URL'] = unpkg_url
+            os.environ["PRISM_UNPKG_URL"] = unpkg_url
 
         # Resolve package path: try local first, then remote fetch
         local_path = ROOT_DIR / "prisms" / prism_id
@@ -2338,7 +2363,7 @@ def install():
         if local_path.exists() and (local_path / "package.yaml").exists():
             package_path = str(local_path)
         else:
-            npm_name = prism_id if prism_id.startswith('@prism/') else f"@prism/{prism_id}"
+            npm_name = prism_id if prism_id.startswith("@prism/") else f"@prism/{prism_id}"
             dest_dir = ROOT_DIR / "temp_install" / prism_id
             dest_dir.parent.mkdir(exist_ok=True)
             try:
@@ -2349,21 +2374,14 @@ def install():
                 print(f"Package fetch failed: {e}")
 
         if not package_path:
-            return jsonify({
-                "success": False,
-                "error": f"Prism not found: {prism_id}"
-            }), 404
+            return jsonify({"success": False, "error": f"Prism not found: {prism_id}"}), 404
 
         # Run full installation using shared engine
         progress_log = []
 
         def progress_callback(step, message, level):
             """Collect progress messages"""
-            progress_log.append({
-                "step": step,
-                "message": message,
-                "level": level
-            })
+            progress_log.append({"step": step, "message": message, "level": level})
 
         engine = InstallationEngine(
             config_package=package_path,
@@ -2371,39 +2389,45 @@ def install():
             selected_sub_prisms=selected_sub_prisms,
             tools_selected=tools_selected,
             tools_excluded=tools_excluded,
-            progress_callback=progress_callback
+            progress_callback=progress_callback,
         )
-        
+
         # Run installation
         engine.install()
-        
-        return jsonify({
-            "success": True,
-            "message": "Installation completed successfully!",
-            "workspace": str(engine.workspace),
-            "progress": progress_log
-        })
-        
+
+        return jsonify(
+            {
+                "success": True,
+                "message": "Installation completed successfully!",
+                "workspace": str(engine.workspace),
+                "progress": progress_log,
+            }
+        )
+
     except Exception as e:
         import traceback
+
         traceback.print_exc()
         return jsonify({"success": False, "error": str(e)}), 500
+
 
 # ============================================================================
 # Main
 # ============================================================================
+
 
 def open_browser():
     """Open browser after short delay"""
     time.sleep(1.5)
     webbrowser.open("http://localhost:5555")
 
+
 if __name__ == "__main__":
     print("\n🌐 Starting Dev Onboarding UI...")
     print("   🔗 Opening browser to http://localhost:5555\n")
-    
+
     # Open browser in background
     threading.Thread(target=open_browser, daemon=True).start()
-    
+
     # Run Flask
     app.run(host="localhost", port=5555, debug=False)

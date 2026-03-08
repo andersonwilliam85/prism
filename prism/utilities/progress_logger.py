@@ -5,7 +5,7 @@ Extracted from installer_engine.py:187-192. Stateless formatting + callback disp
 
 from __future__ import annotations
 
-from typing import Callable
+from typing import Callable, Optional
 
 LEVEL_PREFIXES = {
     "info": "\u2139\ufe0f",
@@ -14,7 +14,7 @@ LEVEL_PREFIXES = {
     "warning": "\u26a0\ufe0f",
 }
 
-ProgressCallback = Callable[[str, str, str], None] | None
+ProgressCallback = Optional[Callable[[str, str, str], None]]
 
 
 def log(

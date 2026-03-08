@@ -1,13 +1,15 @@
 """
 Pytest configuration and shared fixtures.
 """
-import pytest
+
+import shutil
 import sys
 import tempfile
-import shutil
-import yaml
 from pathlib import Path
 from typing import Generator
+
+import pytest
+import yaml
 
 # Add project root to path
 project_root = Path(__file__).parent
@@ -44,70 +46,86 @@ def prism_dir(temp_dir: Path) -> Path:
     (pkg_dir / "teams").mkdir()
 
     # Write package.yaml
-    (pkg_dir / "package.yaml").write_text(yaml.dump({
-        "package": {
-            "name": "test-prism",
-            "version": "1.0.0",
-            "description": "Test prism for unit tests",
-            "type": "company",
-        },
-        "prism_config": {
-            "theme": "ocean",
-            "branding": {"name": "Test Prism"},
-        },
-        "bundled_prisms": {
-            "base": [
-                {
-                    "id": "base",
-                    "name": "Test Base",
-                    "description": "Company-wide defaults",
-                    "required": True,
-                    "config": "base/test.yaml",
-                }
-            ],
-            "teams": [
-                {
-                    "id": "platform",
-                    "name": "Platform Team",
-                    "config": "teams/platform.yaml",
+    (pkg_dir / "package.yaml").write_text(
+        yaml.dump(
+            {
+                "package": {
+                    "name": "test-prism",
+                    "version": "1.0.0",
+                    "description": "Test prism for unit tests",
+                    "type": "company",
                 },
-                {
-                    "id": "backend",
-                    "name": "Backend Team",
-                    "config": "teams/backend.yaml",
+                "prism_config": {
+                    "theme": "ocean",
+                    "branding": {"name": "Test Prism"},
                 },
-            ],
-        },
-        "setup": {
-            "install": {
-                "target_dir": "config/",
-                "directories": [{"source": "base/", "dest": "config/base/"}],
+                "bundled_prisms": {
+                    "base": [
+                        {
+                            "id": "base",
+                            "name": "Test Base",
+                            "description": "Company-wide defaults",
+                            "required": True,
+                            "config": "base/test.yaml",
+                        }
+                    ],
+                    "teams": [
+                        {
+                            "id": "platform",
+                            "name": "Platform Team",
+                            "config": "teams/platform.yaml",
+                        },
+                        {
+                            "id": "backend",
+                            "name": "Backend Team",
+                            "config": "teams/backend.yaml",
+                        },
+                    ],
+                },
+                "setup": {
+                    "install": {
+                        "target_dir": "config/",
+                        "directories": [{"source": "base/", "dest": "config/base/"}],
+                    }
+                },
+                "user_info_fields": [
+                    {"id": "name", "label": "Full Name", "type": "text", "required": True},
+                    {"id": "email", "label": "Email", "type": "email", "required": True},
+                ],
+                "distribution": {"local": {"path": "prisms/test-prism/", "discoverable": True}},
+                "metadata": {"tags": ["test"], "company_size": "small"},
             }
-        },
-        "user_info_fields": [
-            {"id": "name", "label": "Full Name", "type": "text", "required": True},
-            {"id": "email", "label": "Email", "type": "email", "required": True},
-        ],
-        "distribution": {"local": {"path": "prisms/test-prism/", "discoverable": True}},
-        "metadata": {"tags": ["test"], "company_size": "small"},
-    }))
+        )
+    )
 
     # Write base sub-prism config
-    (pkg_dir / "base" / "test.yaml").write_text(yaml.dump({
-        "company": {"name": "Test Corp", "domain": "test.com"},
-        "tools_required": ["git", "docker"],
-        "git": {"user": {"email": "${USER}@test.com"}},
-        "security": {"sso_required": False},
-    }))
+    (pkg_dir / "base" / "test.yaml").write_text(
+        yaml.dump(
+            {
+                "company": {"name": "Test Corp", "domain": "test.com"},
+                "tools_required": ["git", "docker"],
+                "git": {"user": {"email": "${USER}@test.com"}},
+                "security": {"sso_required": False},
+            }
+        )
+    )
 
     # Write team sub-prism configs
-    (pkg_dir / "teams" / "platform.yaml").write_text(yaml.dump({
-        "tools_required": ["kubectl", "terraform"],
-        "repositories": [{"name": "infra", "url": "https://github.com/test/infra"}],
-    }))
-    (pkg_dir / "teams" / "backend.yaml").write_text(yaml.dump({
-        "tools_required": ["python", "postgresql"],
-    }))
+    (pkg_dir / "teams" / "platform.yaml").write_text(
+        yaml.dump(
+            {
+                "tools_required": ["kubectl", "terraform"],
+                "repositories": [{"name": "infra", "url": "https://github.com/test/infra"}],
+            }
+        )
+    )
+    (pkg_dir / "teams" / "backend.yaml").write_text(
+        yaml.dump(
+            {
+                "tools_required": ["python", "postgresql"],
+            }
+        )
+    )
 
     # Write README
     (pkg_dir / "README.md").write_text("# Test Prism\n")
