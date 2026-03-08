@@ -24,7 +24,7 @@ import shutil
 import subprocess
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import yaml
 
@@ -133,7 +133,7 @@ class PackageManager:
         # Install files — support both new (setup.install) and legacy (package.install) formats
         install_config = metadata.get("setup", {}).get("install") or metadata.get("package", {}).get("install") or {}
 
-        print(f"  ⚙️  Installing files...")
+        print("  ⚙️  Installing files...")
 
         # Copy files
         for file_spec in install_config.get("files", []):
@@ -171,7 +171,7 @@ class PackageManager:
         if "script" in post_install:
             script_path = package_dir / post_install["script"]
             if script_path.exists():
-                print(f"  ⚙️  Running post-install script...")
+                print("  ⚙️  Running post-install script...")
                 subprocess.run(["bash", str(script_path)], cwd=self.root_dir)
 
         # Show message
@@ -360,7 +360,7 @@ metadata:
   last_updated: "{datetime.now().strftime('%Y-%m-%d')}"
 """
         (pkg_dir / "package.yaml").write_text(package_yaml_content)
-        print(f"  ✅ Created package.yaml")
+        print("  ✅ Created package.yaml")
 
         # Create minimal base config
         base_config = f"""company:
@@ -389,7 +389,7 @@ tools_required:
         for team_name in ["platform", "backend"]:
             team_file = pkg_dir / "teams" / f"{team_name}.yaml"
             team_file.write_text(f"# {team_name.title()} Team sub-prism\n\ntools_required: []\n")
-        print(f"  ✅ Created teams/platform.yaml and teams/backend.yaml")
+        print("  ✅ Created teams/platform.yaml and teams/backend.yaml")
 
         # Create minimal welcome.yaml
         welcome_content = f"""company:
@@ -403,7 +403,7 @@ branding:
   footer_text: "Built by {company_name}"
 """
         (pkg_dir / "welcome.yaml").write_text(welcome_content)
-        print(f"  ✅ Created welcome.yaml")
+        print("  ✅ Created welcome.yaml")
 
         # Create minimal resources.yaml
         resources_content = f"""company:
@@ -416,7 +416,7 @@ resources:
       description: "Source code"
 """
         (pkg_dir / "resources.yaml").write_text(resources_content)
-        print(f"  ✅ Created resources.yaml")
+        print("  ✅ Created resources.yaml")
 
         # Create README
         readme_content = f"""# 💎 {company_name} Prism
@@ -449,10 +449,10 @@ python3 scripts/package_manager.py validate {safe_name}
 ```
 """
         (pkg_dir / "README.md").write_text(readme_content)
-        print(f"  ✅ Created README.md")
+        print("  ✅ Created README.md")
 
         print(f"\n✅ Prism scaffold created at: {pkg_dir}")
-        print(f"\nNext steps:")
+        print("\nNext steps:")
         print(f"  1. Edit {pkg_dir}/package.yaml  — update branding, add tiers")
         print(f"  2. Customize {pkg_dir}/base/{safe_name}.yaml  — company-wide settings")
         print(f"  3. Edit team sub-prisms in {pkg_dir}/teams/")
@@ -574,7 +574,7 @@ Examples:
 
         # Support
         if "support" in pkg_info:
-            print(f"\n  🆘 Support:")
+            print("\n  🆘 Support:")
             for key, val in pkg_info["support"].items():
                 print(f"     {key}: {val}")
 
@@ -605,7 +605,7 @@ Examples:
 
         # Metadata
         if metadata:
-            print(f"\n  🏷️  Metadata:")
+            print("\n  🏷️  Metadata:")
             if "tags" in metadata:
                 print(f"     Tags: {', '.join(metadata['tags'])}")
             if "company_size" in metadata:

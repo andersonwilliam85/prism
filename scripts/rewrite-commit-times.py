@@ -4,7 +4,6 @@ Rewrite git commit timestamps to reflect a late-night coding session.
 March 4th 2026, 10pm CST -> March 5th 2026, 3am CST
 """
 
-import re
 import subprocess
 import sys
 from datetime import datetime, timedelta
@@ -55,11 +54,10 @@ def rewrite_commit_dates():
         print(f"  {i+1:2d}. {commit_time.strftime('%b %d %I:%M%p')} - {commit_msg[:60]}")
 
         filter_script.append(
-            f"if [ $GIT_COMMIT = {commit_hash} ]; then export GIT_AUTHOR_DATE='{date_str}'; export GIT_COMMITTER_DATE='{date_str}'; fi"
+            f"if [ $GIT_COMMIT = {commit_hash} ]; then "
+            f"export GIT_AUTHOR_DATE='{date_str}'; "
+            f"export GIT_COMMITTER_DATE='{date_str}'; fi"
         )
-
-    # Write filter script
-    script_content = "\n".join(filter_script)
 
     print("\n⚠️  This will rewrite git history. Make sure you have a backup!")
     response = input("Continue? (yes/no): ")

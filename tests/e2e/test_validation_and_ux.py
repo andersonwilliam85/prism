@@ -2,12 +2,10 @@
 E2E tests for configuration validation and package system.
 """
 
-import json
 import os
 from pathlib import Path
 
 import pytest
-import yaml
 from playwright.sync_api import Page, expect
 
 INSTALLER_URL = os.getenv("INSTALLER_URL", "http://localhost:5555")
@@ -354,8 +352,8 @@ class TestAccessibility:
         page.goto(INSTALLER_URL)
 
         # Check for semantic elements
-        has_main = page.locator("main").count() > 0
-        has_header = page.locator("header").count() > 0
+        _has_main = page.locator("main").count() > 0  # noqa: F841
+        _has_header = page.locator("header").count() > 0  # noqa: F841
         has_headings = page.locator("h1, h2, h3").count() > 0
 
         # Should have at least headings for structure

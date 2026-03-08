@@ -57,7 +57,9 @@ def rewrite_all_commits():
             print(f"  ... ({len(commits) - 20} more commits) ...")
 
         filter_script.append(
-            f"if [ $GIT_COMMIT = {commit_hash} ]; then export GIT_AUTHOR_DATE='{date_str}'; export GIT_COMMITTER_DATE='{date_str}'; fi"
+            f"if [ $GIT_COMMIT = {commit_hash} ]; then "
+            f"export GIT_AUTHOR_DATE='{date_str}'; "
+            f"export GIT_COMMITTER_DATE='{date_str}'; fi"
         )
 
     print("\n⚠️  This will rewrite git history. Make sure you have a backup!")

@@ -160,7 +160,7 @@ class TestCompleteInstallationFlow:
         page.wait_for_selector(".package-card", timeout=5000)
 
         # Try to proceed without selecting package
-        next_button = page.locator("button").filter(has_text="Next").first
+        _next_button = page.locator("button").filter(has_text="Next").first  # noqa: F841
 
         # Button should be disabled or clicking should show error
         # (Implementation depends on your validation approach)
@@ -322,7 +322,9 @@ class TestPackageSpecificConfiguration:
         page.wait_for_selector("#step3.active")
 
         # Look for resources section in review
-        resources = page.locator("text=Resources").or_(page.locator("text=Tools")).or_(page.locator("text=IDEs"))
+        _resources = (  # noqa: F841
+            page.locator("text=Resources").or_(page.locator("text=Tools")).or_(page.locator("text=IDEs"))
+        )
 
         # Resources might be displayed in the config
         # Just verify the review step loaded successfully
@@ -390,7 +392,7 @@ class TestErrorHandling:
         # Check HTML5 validation or custom error messages
         email_field = page.locator("input[name='email']")
         is_invalid = (
-            email_field.evaluate("el => el.validity.valid") == False
+            email_field.evaluate("el => el.validity.valid") is False
             or page.locator(".error, .invalid, [class*='error']").count() > 0
         )
 

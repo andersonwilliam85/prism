@@ -192,7 +192,7 @@ def main():
         print("=" * 60)
 
     # Summary
-    print(f"\n🎯 Summary:")
+    print("\n🎯 Summary:")
     print(f"  ✅ Success: {success_count}")
     print(f"  ❌ Failed: {fail_count}")
 

@@ -296,7 +296,7 @@ if __name__ == "__main__":
         # Validate all prisms
         valid, invalid = validate_all_packages(package_path)
 
-        print(f"\n💎 Prism Validation Results\n")
+        print("\n💎 Prism Validation Results\n")
         print(f"✅ Valid:   {len(valid)}")
         print(f"❌ Invalid: {len(invalid)}")
 

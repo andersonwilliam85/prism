@@ -2,15 +2,16 @@
 Unit tests for ConfigMerger — hierarchical config merging engine.
 """
 
-import os
 import sys
 from pathlib import Path
 
-import pytest
-import yaml
-
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
-from config_merger import ConfigMerger, merge_configs
+
+import os  # noqa: E402
+
+import pytest  # noqa: E402
+import yaml  # noqa: E402
+from config_merger import ConfigMerger, merge_configs  # noqa: E402
 
 
 @pytest.mark.unit
