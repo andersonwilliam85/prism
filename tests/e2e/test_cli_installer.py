@@ -4,7 +4,6 @@ E2E tests for CLI tools — install.py, package_manager.py, package_validator.py
 
 import re
 import subprocess
-import tempfile
 from pathlib import Path
 
 import pytest
@@ -72,7 +71,7 @@ class TestPackageManagerCLI:
         result = run(["python3", "scripts/package_manager.py", "list"])
         assert result.returncode == 0
         # Count prism lines by looking for gem emoji or prism names
-        lines = [l for l in result.stdout.split("\n") if l.strip()]
+        lines = [line for line in result.stdout.split("\n") if line.strip()]
         assert len(lines) > 2  # header + at least one prism
 
     def test_validate_personal_dev(self):
@@ -209,7 +208,7 @@ class TestPackageManagerDiscover:
                 "from package_manager import PackageManager; "
                 "pm = PackageManager(); "
                 "pkgs = pm.discover_packages(); "
-                f"print(f'Found {{len(pkgs)}} prisms'); "
+                "print('Found ' + str(len(pkgs)) + ' prisms'); "
                 "[print(p['name']) for p in pkgs]",
             ]
         )
@@ -229,9 +228,9 @@ class TestPackageManagerDiscover:
                 "pm = PackageManager(); "
                 "pkgs = pm.discover_packages(); "
                 "required = {'name','version','description','path','source'}; "
-                "for p in pkgs: "
-                "  missing = required - set(p.keys()); "
-                "  assert not missing, f'Missing keys in {p[\"name\"]}: {missing}'; "
+                "for p in pkgs:\n"
+                "  missing = required - set(p.keys())\n"
+                "  assert not missing, f'Missing keys in {p[\"name\"]}: {missing}'\n"
                 "print('ALL_OK')",
             ]
         )

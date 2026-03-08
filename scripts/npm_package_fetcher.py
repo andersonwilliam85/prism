@@ -14,7 +14,6 @@ Usage:
 import argparse
 import json
 import os
-import shutil
 import sys
 import tempfile
 import urllib.error
@@ -135,7 +134,7 @@ def fetch_package(package_name: str, version: str = "latest", dest_dir: str = No
         return str(dest_path)
 
     # Fallback to local packages
-    print(f"⚠️  npm unavailable, checking local packages...")
+    print("⚠️  npm unavailable, checking local packages...")
     return fetch_local_package(package_name)
 
 
@@ -275,7 +274,7 @@ def main():
     if args.command and not getattr(args, "local", False):
         registry = args.registry or NPM_REGISTRY
         unpkg = args.unpkg or UNPKG_BASE
-        print(f"📦 Registry Configuration:")
+        print("📦 Registry Configuration:")
         print(f"   npm registry: {registry}")
         print(f"   unpkg CDN: {unpkg}")
         print()

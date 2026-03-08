@@ -2,16 +2,18 @@
 Unit tests for InstallationEngine.
 """
 
-import os
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
-
-import pytest
-import yaml
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-from installer_engine import InstallationEngine
+
+import os  # noqa: E402
+from unittest.mock import patch  # noqa: E402
+
+import pytest  # noqa: E402
+import yaml  # noqa: E402
+
+from installer_engine import InstallationEngine  # noqa: E402
 
 
 @pytest.mark.unit

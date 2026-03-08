@@ -5,11 +5,11 @@ Unit tests for PrismValidator.
 import sys
 from pathlib import Path
 
-import pytest
-import yaml
-
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
-from package_validator import VALID_FIELD_TYPES, VALID_THEMES, PrismValidator, validate_all_packages
+
+import pytest  # noqa: E402
+import yaml  # noqa: E402
+from package_validator import VALID_FIELD_TYPES, VALID_THEMES, PrismValidator, validate_all_packages  # noqa: E402
 
 
 @pytest.mark.unit

@@ -5,11 +5,11 @@ Unit tests for PackageManager.
 import sys
 from pathlib import Path
 
-import pytest
-import yaml
-
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
-from package_manager import PackageManager
+
+import pytest  # noqa: E402
+import yaml  # noqa: E402
+from package_manager import PackageManager  # noqa: E402
 
 
 @pytest.mark.unit

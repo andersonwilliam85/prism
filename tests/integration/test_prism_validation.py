@@ -6,10 +6,10 @@ Ensures every shipped prism is structurally valid according to PrismValidator.
 import sys
 from pathlib import Path
 
-import pytest
-
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
-from package_validator import PrismValidator
+
+import pytest  # noqa: E402
+from package_validator import PrismValidator  # noqa: E402
 
 PRISMS_DIR = Path(__file__).parent.parent.parent / "prisms"
 

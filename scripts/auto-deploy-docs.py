@@ -8,8 +8,6 @@ Fully standalone documentation generator!
 Run after initial setup completes, or manually: python3 auto-deploy-docs.py
 """
 
-import os
-import shutil
 import subprocess
 import sys
 import time
@@ -22,8 +20,6 @@ import yaml
 try:
     from rich.console import Console
     from rich.panel import Panel
-    from rich.progress import Progress, SpinnerColumn, TextColumn
-    from rich.prompt import Confirm
 
     RICH_AVAILABLE = True
 except ImportError:
@@ -104,7 +100,6 @@ def install_python_packages():
     packages = ["mkdocs-material", "pymdown-extensions", "mkdocs-mermaid2-plugin", "GitPython", "pyyaml", "watchdog"]
 
     # Check if proxy configured in package (company-specific)
-    env = os.environ.copy()
     # Proxy settings should come from package config, not hardcoded
     # if "proxy" in config:
     #     env["HTTP_PROXY"] = config["proxy"]["http"]
@@ -197,9 +192,6 @@ def generate_index_page(docs_server, user_profile, resources_config, welcome_con
 
     # Welcome content from config
     welcome = welcome_config.get("welcome", {})
-    title = welcome.get("title", "Welcome to Your Dev Environment")
-    subtitle = welcome.get("subtitle", "Your development environment is ready!")
-    hero_message = welcome.get("hero_message", "This is your personal knowledge base.")
 
     # Getting Started section
     getting_started_html = ""
@@ -552,21 +544,21 @@ def generate_company_css(docs_server):
   --prism-gradient-3: #13547a;
   --prism-gradient-4: #009ffd;
   --prism-gradient-5: #2a2a72;
-  
+
   /* MkDocs theme integration */
   --md-primary-fg-color: var(--prism-primary);
   --md-primary-fg-color--light: var(--prism-secondary);
   --md-primary-fg-color--dark: var(--prism-gradient-3);
   --md-accent-fg-color: var(--prism-accent);
-  
+
   /* Background */
   --md-primary-bg-color: #ffffff;
   --md-default-bg-color: #fafafa;
-  
+
   /* Text */
   --md-default-fg-color: #4a4a4a;
   --md-default-fg-color--light: #757575;
-  
+
   /* Success/Error */
   --md-success-fg-color: #10b981;
   --md-error-fg-color: #ef4444;
@@ -583,7 +575,7 @@ def generate_company_css(docs_server):
   --prism-gradient-3: #f093fb;
   --prism-gradient-4: #4facfe;
   --prism-gradient-5: #00f2fe;
-  
+
   --md-primary-fg-color: var(--prism-primary);
   --md-primary-fg-color--light: var(--prism-secondary);
   --md-primary-fg-color--dark: #4a5bb5;
@@ -600,7 +592,7 @@ def generate_company_css(docs_server):
   --prism-gradient-3: #56ab2f;
   --prism-gradient-4: #a8e063;
   --prism-gradient-5: #0f9b0f;
-  
+
   --md-primary-fg-color: var(--prism-primary);
   --md-primary-fg-color--light: var(--prism-secondary);
   --md-primary-fg-color--dark: #0d3a47;
@@ -617,7 +609,7 @@ def generate_company_css(docs_server):
   --prism-gradient-3: #ff6a00;
   --prism-gradient-4: #ee0979;
   --prism-gradient-5: #ff512f;
-  
+
   --md-primary-fg-color: var(--prism-primary);
   --md-primary-fg-color--light: var(--prism-secondary);
   --md-primary-fg-color--dark: #c11f0e;
@@ -634,7 +626,7 @@ def generate_company_css(docs_server):
   --prism-gradient-3: #34495e;
   --prism-gradient-4: #2980b9;
   --prism-gradient-5: #1abc9c;
-  
+
   --md-primary-fg-color: var(--prism-primary);
   --md-primary-fg-color--light: var(--prism-secondary);
   --md-primary-fg-color--dark: #1a252f;
@@ -651,9 +643,9 @@ def generate_company_css(docs_server):
 
 /* Custom header with gradient */
 .md-header {
-  background: linear-gradient(135deg, 
-    var(--prism-gradient-1) 0%, 
-    var(--prism-gradient-2) 50%, 
+  background: linear-gradient(135deg,
+    var(--prism-gradient-1) 0%,
+    var(--prism-gradient-2) 50%,
     var(--prism-gradient-3) 100%);
 }
 
@@ -679,32 +671,32 @@ def generate_company_css(docs_server):
   border-radius: 8px;
   padding: 1.5rem;
   transition: all 0.3s ease;
-  background: linear-gradient(135deg, 
-    rgba(0, 147, 233, 0.02) 0%, 
+  background: linear-gradient(135deg,
+    rgba(0, 147, 233, 0.02) 0%,
     rgba(128, 208, 199, 0.02) 100%);
 }
 
 [data-prism-theme="purple"] .grid.cards > div {
-  background: linear-gradient(135deg, 
-    rgba(102, 126, 234, 0.02) 0%, 
+  background: linear-gradient(135deg,
+    rgba(102, 126, 234, 0.02) 0%,
     rgba(240, 147, 251, 0.02) 100%);
 }
 
 [data-prism-theme="forest"] .grid.cards > div {
-  background: linear-gradient(135deg, 
-    rgba(19, 78, 94, 0.02) 0%, 
+  background: linear-gradient(135deg,
+    rgba(19, 78, 94, 0.02) 0%,
     rgba(113, 178, 128, 0.02) 100%);
 }
 
 [data-prism-theme="sunset"] .grid.cards > div {
-  background: linear-gradient(135deg, 
-    rgba(241, 39, 17, 0.02) 0%, 
+  background: linear-gradient(135deg,
+    rgba(241, 39, 17, 0.02) 0%,
     rgba(245, 175, 25, 0.02) 100%);
 }
 
 [data-prism-theme="midnight"] .grid.cards > div {
-  background: linear-gradient(135deg, 
-    rgba(44, 62, 80, 0.02) 0%, 
+  background: linear-gradient(135deg,
+    rgba(44, 62, 80, 0.02) 0%,
     rgba(52, 152, 219, 0.02) 100%);
 }
 
@@ -789,7 +781,7 @@ def generate_theme_switcher_js(docs_server):
     js_content = """// Prism Theme Switcher for MkDocs
 (function() {
     'use strict';
-    
+
     const themes = [
         { name: 'ocean', title: 'Ocean Blue' },
         { name: 'purple', title: 'Purple Haze' },
@@ -797,55 +789,55 @@ def generate_theme_switcher_js(docs_server):
         { name: 'sunset', title: 'Sunset Orange' },
         { name: 'midnight', title: 'Midnight Dark' }
     ];
-    
+
     // Get saved theme or default to ocean
     const savedTheme = localStorage.getItem('prismDocsTheme') || 'ocean';
-    
+
     // Apply theme on load
     function applyTheme(themeName) {
         document.documentElement.setAttribute('data-prism-theme', themeName);
     }
-    
+
     // Create theme switcher UI
     function createThemeSwitcher() {
         const switcher = document.createElement('div');
         switcher.className = 'prism-theme-switcher';
         switcher.setAttribute('role', 'group');
         switcher.setAttribute('aria-label', 'Theme Switcher');
-        
+
         themes.forEach(theme => {
             const btn = document.createElement('button');
             btn.className = 'prism-theme-btn';
             btn.setAttribute('data-theme', theme.name);
             btn.setAttribute('title', theme.title);
             btn.setAttribute('aria-label', theme.title + ' Theme');
-            
+
             if (theme.name === savedTheme) {
                 btn.classList.add('active');
             }
-            
+
             btn.addEventListener('click', function() {
                 const selectedTheme = this.getAttribute('data-theme');
-                
+
                 // Update theme
                 applyTheme(selectedTheme);
-                
+
                 // Update active state
                 document.querySelectorAll('.prism-theme-btn').forEach(b => {
                     b.classList.remove('active');
                 });
                 this.classList.add('active');
-                
+
                 // Save preference
                 localStorage.setItem('prismDocsTheme', selectedTheme);
             });
-            
+
             switcher.appendChild(btn);
         });
-        
+
         document.body.appendChild(switcher);
     }
-    
+
     // Initialize when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
