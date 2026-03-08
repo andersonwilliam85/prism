@@ -98,7 +98,7 @@ class ConfigMerger:
             chain.append(("user", self._load_config(user)))
 
         # Start with empty config
-        merged = {}
+        merged: dict = {}
 
         # Merge each level in order
         for level_name, config in chain:

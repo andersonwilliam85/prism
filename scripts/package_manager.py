@@ -32,7 +32,7 @@ import yaml
 class PackageManager:
     """Manages prism discovery, installation, and scaffolding"""
 
-    def __init__(self, root_dir: Path = None):
+    def __init__(self, root_dir: Optional[Path] = None):
         """Initialize package manager"""
         self.root_dir = root_dir or Path.cwd()
         self.packages_dir = self.root_dir / "prisms"
@@ -45,7 +45,7 @@ class PackageManager:
         Returns:
             List of prism metadata dicts, sorted by name.
         """
-        packages = []
+        packages: list = []
 
         if not self.packages_dir.exists():
             return packages
@@ -106,7 +106,7 @@ class PackageManager:
         """List all available config packages (wrapper for discover)"""
         return self.discover_packages()
 
-    def install_package(self, package_name: str, source: str = None) -> bool:
+    def install_package(self, package_name: str, source: Optional[str] = None) -> bool:
         """
         Install a config package
 
@@ -258,7 +258,7 @@ class PackageManager:
 
         return len(errors) == 0, errors
 
-    def create_package_scaffold(self, package_name: str, company_name: str = None) -> bool:
+    def create_package_scaffold(self, package_name: str, company_name: Optional[str] = None) -> bool:
         """
         Create a new package scaffold from template
 
@@ -461,7 +461,7 @@ python3 scripts/package_manager.py validate {safe_name}
 
         return True
 
-    def _find_package(self, package_name: str, source: str = None) -> Optional[Path]:
+    def _find_package(self, package_name: str, source: Optional[str] = None) -> Optional[Path]:
         """Find package directory"""
         # Try exact match first
         for pkg in self.discover_packages():

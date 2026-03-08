@@ -19,6 +19,7 @@ import tempfile
 import urllib.error
 import urllib.request
 from pathlib import Path
+from typing import Optional
 
 # NPM registry defaults (can be overridden via env vars or CLI args)
 DEFAULT_UNPKG_BASE = "https://unpkg.com"
@@ -43,7 +44,7 @@ AVAILABLE_PACKAGES = [
 ]
 
 
-def fetch_package_metadata(package_name: str, registry: str = None) -> dict:
+def fetch_package_metadata(package_name: str, registry: Optional[str] = None) -> Optional[dict]:
     """
     Fetch package metadata from npm registry.
 
@@ -69,7 +70,9 @@ def fetch_package_metadata(package_name: str, registry: str = None) -> dict:
         return None
 
 
-def fetch_package_file(package_name: str, file_path: str, version: str = "latest", unpkg_url: str = None) -> str:
+def fetch_package_file(
+    package_name: str, file_path: str, version: str = "latest", unpkg_url: Optional[str] = None
+) -> Optional[str]:
     """
     Fetch a specific file from a package via unpkg CDN.
 
@@ -96,7 +99,9 @@ def fetch_package_file(package_name: str, file_path: str, version: str = "latest
         return None
 
 
-def fetch_package(package_name: str, version: str = "latest", dest_dir: str = None, unpkg_url: str = None) -> str:
+def fetch_package(
+    package_name: str, version: str = "latest", dest_dir: Optional[str] = None, unpkg_url: Optional[str] = None
+) -> Optional[str]:
     """
     Fetch entire package and extract to directory.
 
@@ -138,7 +143,7 @@ def fetch_package(package_name: str, version: str = "latest", dest_dir: str = No
     return fetch_local_package(package_name)
 
 
-def fetch_local_package(package_name: str) -> str:
+def fetch_local_package(package_name: str) -> Optional[str]:
     """
     Fallback: Load prism from local prisms directory.
 
@@ -180,7 +185,7 @@ def fetch_local_package(package_name: str) -> str:
     return None
 
 
-def list_available_packages(use_npm: bool = True, registry: str = None) -> list:
+def list_available_packages(use_npm: bool = True, registry: Optional[str] = None) -> list:
     """
     List all available Prism config packages.
 
