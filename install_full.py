@@ -14,25 +14,27 @@ Usage:
     python3 install.py --status           # Show current progress
 """
 
-import os
-import sys
-import platform
-import subprocess
 import argparse
-from pathlib import Path
-from datetime import datetime
-import yaml
-import shutil
 import getpass
+import os
+import platform
+import shutil
+import subprocess
+import sys
+from datetime import datetime
+from pathlib import Path
+
+import yaml
 
 # Try to import rich/questionary for better UX
 try:
+    from rich import print as rprint
     from rich.console import Console
     from rich.panel import Panel
-    from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
-    from rich.prompt import Prompt, Confirm, IntPrompt
+    from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
+    from rich.prompt import Confirm, IntPrompt, Prompt
     from rich.table import Table
-    from rich import print as rprint
+
     RICH_AVAILABLE = True
     console = Console()
 except ImportError:
@@ -40,6 +42,7 @@ except ImportError:
 
 try:
     import questionary
+
     QUESTIONARY_AVAILABLE = True
 except ImportError:
     QUESTIONARY_AVAILABLE = False
@@ -55,26 +58,21 @@ RESOURCES_CONFIG_PATH = CONFIG_DIR / "resources.yaml"
 # Utility Functions
 # ============================================================================
 
+
 def run_command(cmd, cwd=None, check=False, capture=True):
     """Run shell command and return result (IDEMPOTENT - returns status)"""
     try:
         if capture:
-            result = subprocess.run(
-                cmd,
-                shell=True,
-                cwd=cwd,
-                capture_output=True,
-                text=True,
-                check=check
-            )
+            result = subprocess.run(cmd, shell=True, cwd=cwd, capture_output=True, text=True, check=check)
             return result.returncode == 0, result.stdout, result.stderr
         else:
             result = subprocess.run(cmd, shell=True, cwd=cwd, check=check)
             return result.returncode == 0, "", ""
     except subprocess.CalledProcessError as e:
-        return False, getattr(e, 'stdout', ''), getattr(e, 'stderr', '')
+        return False, getattr(e, "stdout", ""), getattr(e, "stderr", "")
     except Exception as e:
         return False, "", str(e)
+
 
 def print_step(message, emoji="➡️"):
     """Print a step message"""
@@ -83,12 +81,14 @@ def print_step(message, emoji="➡️"):
     else:
         print(f"\n{emoji} {message}")
 
+
 def print_success(message):
     """Print success message"""
     if RICH_AVAILABLE:
         console.print(f"[green]✅ {message}[/green]")
     else:
         print(f"✅ {message}")
+
 
 def print_error(message):
     """Print error message"""
@@ -97,6 +97,7 @@ def print_error(message):
     else:
         print(f"❌ {message}")
 
+
 def print_warning(message):
     """Print warning message"""
     if RICH_AVAILABLE:
@@ -104,14 +105,16 @@ def print_warning(message):
     else:
         print(f"⚠️  {message}")
 
+
 # ============================================================================
 # Platform Detection
 # ============================================================================
 
+
 def detect_platform():
     """Detect operating system"""
     system = platform.system().lower()
-    
+
     if system == "darwin":
         machine = platform.machine()
         return "mac", "Apple Silicon" if machine == "arm64" else "Intel"
@@ -128,19 +131,22 @@ def detect_platform():
     else:
         return "unknown", ""
 
+
 # ============================================================================
 # Progress Tracking (IDEMPOTENT)
 # ============================================================================
+
 
 def load_progress():
     """Load setup progress from user profile"""
     if not USER_PROFILE_PATH.exists():
         return None
-    
+
     with open(USER_PROFILE_PATH) as f:
         profile = yaml.safe_load(f)
-    
+
     return profile.get("setup_progress", {})
+
 
 def save_progress(task_name, notes="", success=True):
     """Save task completion to progress tracker"""
@@ -153,57 +159,55 @@ def save_progress(task_name, notes="", success=True):
         template_path = CONFIG_DIR / "user-profile.yaml"
         with open(template_path) as f:
             profile = yaml.safe_load(f)
-    
+
     if "setup_progress" not in profile:
-        profile["setup_progress"] = {
-            "status": "in_progress",
-            "started_at": datetime.now().isoformat(),
-            "tasks": {}
-        }
-    
+        profile["setup_progress"] = {"status": "in_progress", "started_at": datetime.now().isoformat(), "tasks": {}}
+
     profile["setup_progress"]["tasks"][task_name] = {
         "completed": success,
         "timestamp": datetime.now().isoformat(),
-        "notes": notes
+        "notes": notes,
     }
     profile["setup_progress"]["last_updated"] = datetime.now().isoformat()
-    
+
     # Save
     USER_PROFILE_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(USER_PROFILE_PATH, 'w') as f:
+    with open(USER_PROFILE_PATH, "w") as f:
         yaml.dump(profile, f, default_flow_style=False, sort_keys=False)
+
 
 def is_task_completed(task_name):
     """Check if a task is already completed (IDEMPOTENT)"""
     progress = load_progress()
     if not progress:
         return False
-    
+
     task = progress.get("tasks", {}).get(task_name, {})
     return task.get("completed", False)
+
 
 def show_progress():
     """Display current setup progress"""
     progress = load_progress()
-    
+
     if not progress or not progress.get("tasks"):
         print("❌ No setup progress found. Run: python3 install.py")
         return
-    
+
     if RICH_AVAILABLE:
         table = Table(title="📊 Setup Progress")
         table.add_column("Task", style="cyan")
         table.add_column("Status", style="green")
         table.add_column("Completed", style="dim")
-        
+
         for task, data in progress.get("tasks", {}).items():
             status = "✅" if data.get("completed") else "⏳"
             timestamp = data.get("timestamp", "")
             if timestamp:
                 timestamp = datetime.fromisoformat(timestamp).strftime("%Y-%m-%d %H:%M")
-            
+
             table.add_row(task.replace("_", " ").title(), status, timestamp)
-        
+
         console.print(table)
     else:
         print("\n📊 Setup Progress:\n")
@@ -211,5 +215,6 @@ def show_progress():
             status = "✅" if data.get("completed") else "⏳"
             print(f"  {status} {task.replace('_', ' ').title()}")
         print()
+
 
 # I'll continue in the next message due to length...

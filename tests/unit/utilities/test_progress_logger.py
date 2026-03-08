@@ -2,7 +2,7 @@
 
 from unittest.mock import MagicMock
 
-from prism.utilities.progress_logger import log, LEVEL_PREFIXES
+from prism.utilities.progress_logger import LEVEL_PREFIXES, log
 
 
 class TestLog:

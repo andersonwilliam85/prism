@@ -1,11 +1,13 @@
 """
 Unit tests for PackageManager.
 """
-import pytest
-import yaml
-from pathlib import Path
 
 import sys
+from pathlib import Path
+
+import pytest
+import yaml
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
 from package_manager import PackageManager
 
@@ -29,9 +31,13 @@ class TestDiscoverPackages:
         for i in range(3):
             pkg_dir = prisms_dir / f"prism-{i}"
             pkg_dir.mkdir()
-            (pkg_dir / "package.yaml").write_text(yaml.dump({
-                "package": {"name": f"prism-{i}", "version": "1.0.0", "description": f"Prism {i}"},
-            }))
+            (pkg_dir / "package.yaml").write_text(
+                yaml.dump(
+                    {
+                        "package": {"name": f"prism-{i}", "version": "1.0.0", "description": f"Prism {i}"},
+                    }
+                )
+            )
 
         pm = PackageManager(root_dir=temp_dir)
         packages = pm.discover_packages()
@@ -50,10 +56,14 @@ class TestDiscoverPackages:
         prisms_dir.mkdir()
         pkg_dir = prisms_dir / "hidden-prism"
         pkg_dir.mkdir()
-        (pkg_dir / "package.yaml").write_text(yaml.dump({
-            "package": {"name": "hidden-prism", "version": "1.0.0", "description": "Hidden"},
-            "distribution": {"local": {"path": "prisms/hidden-prism/", "discoverable": False}},
-        }))
+        (pkg_dir / "package.yaml").write_text(
+            yaml.dump(
+                {
+                    "package": {"name": "hidden-prism", "version": "1.0.0", "description": "Hidden"},
+                    "distribution": {"local": {"path": "prisms/hidden-prism/", "discoverable": False}},
+                }
+            )
+        )
         pm = PackageManager(root_dir=temp_dir)
         packages = pm.discover_packages()
         assert len(packages) == 0
@@ -63,13 +73,17 @@ class TestDiscoverPackages:
         prisms_dir.mkdir()
         pkg_dir = prisms_dir / "tiered"
         pkg_dir.mkdir()
-        (pkg_dir / "package.yaml").write_text(yaml.dump({
-            "package": {"name": "tiered", "version": "1.0.0", "description": "Tiered"},
-            "bundled_prisms": {
-                "base": [{"id": "base", "name": "Base", "required": True, "config": "base/base.yaml"}],
-                "roles": [{"id": "dev", "name": "Developer", "config": "roles/dev.yaml"}],
-            },
-        }))
+        (pkg_dir / "package.yaml").write_text(
+            yaml.dump(
+                {
+                    "package": {"name": "tiered", "version": "1.0.0", "description": "Tiered"},
+                    "bundled_prisms": {
+                        "base": [{"id": "base", "name": "Base", "required": True, "config": "base/base.yaml"}],
+                        "roles": [{"id": "dev", "name": "Developer", "config": "roles/dev.yaml"}],
+                    },
+                }
+            )
+        )
         pm = PackageManager(root_dir=temp_dir)
         packages = pm.discover_packages()
         assert len(packages) == 1
@@ -84,10 +98,14 @@ class TestDiscoverPackages:
         prisms_dir.mkdir()
         pkg_dir = prisms_dir / "bundled"
         pkg_dir.mkdir()
-        (pkg_dir / "package.yaml").write_text(yaml.dump({
-            "package": {"name": "bundled", "version": "1.0.0", "description": "Bundled"},
-            "bundled_prisms": {"base": [{"id": "b", "name": "B", "config": "b/b.yaml"}]},
-        }))
+        (pkg_dir / "package.yaml").write_text(
+            yaml.dump(
+                {
+                    "package": {"name": "bundled", "version": "1.0.0", "description": "Bundled"},
+                    "bundled_prisms": {"base": [{"id": "b", "name": "B", "config": "b/b.yaml"}]},
+                }
+            )
+        )
         pm = PackageManager(root_dir=temp_dir)
         packages = pm.discover_packages()
         assert packages[0]["has_bundled_prisms"] is True
@@ -97,9 +115,13 @@ class TestDiscoverPackages:
         prisms_dir.mkdir()
         pkg_dir = prisms_dir / "simple"
         pkg_dir.mkdir()
-        (pkg_dir / "package.yaml").write_text(yaml.dump({
-            "package": {"name": "simple", "version": "1.0.0", "description": "Simple"},
-        }))
+        (pkg_dir / "package.yaml").write_text(
+            yaml.dump(
+                {
+                    "package": {"name": "simple", "version": "1.0.0", "description": "Simple"},
+                }
+            )
+        )
         pm = PackageManager(root_dir=temp_dir)
         packages = pm.discover_packages()
         assert packages[0]["has_bundled_prisms"] is False
@@ -121,9 +143,13 @@ class TestDiscoverPackages:
         for name in ["zebra", "alpha", "middle"]:
             pkg_dir = prisms_dir / name
             pkg_dir.mkdir()
-            (pkg_dir / "package.yaml").write_text(yaml.dump({
-                "package": {"name": name, "version": "1.0.0", "description": name},
-            }))
+            (pkg_dir / "package.yaml").write_text(
+                yaml.dump(
+                    {
+                        "package": {"name": name, "version": "1.0.0", "description": name},
+                    }
+                )
+            )
         pm = PackageManager(root_dir=temp_dir)
         packages = pm.discover_packages()
         names = [p["name"] for p in packages]
@@ -134,10 +160,14 @@ class TestDiscoverPackages:
         prisms_dir.mkdir()
         pkg_dir = prisms_dir / "themed"
         pkg_dir.mkdir()
-        (pkg_dir / "package.yaml").write_text(yaml.dump({
-            "package": {"name": "themed", "version": "1.0.0", "description": "Themed"},
-            "prism_config": {"theme": "midnight"},
-        }))
+        (pkg_dir / "package.yaml").write_text(
+            yaml.dump(
+                {
+                    "package": {"name": "themed", "version": "1.0.0", "description": "Themed"},
+                    "prism_config": {"theme": "midnight"},
+                }
+            )
+        )
         pm = PackageManager(root_dir=temp_dir)
         packages = pm.discover_packages()
         assert packages[0]["theme"] == "midnight"

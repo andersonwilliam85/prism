@@ -1,16 +1,17 @@
 """
 Integration tests for InstallationEngine with real prism packages.
 """
-import pytest
-import yaml
+
 import shutil
+import sys
 from pathlib import Path
 
-import sys
+import pytest
+import yaml
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
 from installer_engine import InstallationEngine
-
 
 PRISMS_DIR = Path(__file__).parent.parent.parent / "prisms"
 
@@ -72,16 +73,20 @@ class TestEngineWithRealPrisms:
         prism_path.mkdir()
         (prism_path / "base").mkdir()
         (prism_path / "teams").mkdir()
-        (prism_path / "package.yaml").write_text(yaml.dump({
-            "package": {"name": "test", "version": "1.0.0", "description": "Test"},
-            "bundled_prisms": {
-                "base": [{"id": "b", "name": "Base", "required": True, "config": "base/b.yaml"}],
-                "teams": [
-                    {"id": "platform", "name": "Platform", "config": "teams/platform.yaml"},
-                    {"id": "backend", "name": "Backend", "config": "teams/backend.yaml"},
-                ],
-            }
-        }))
+        (prism_path / "package.yaml").write_text(
+            yaml.dump(
+                {
+                    "package": {"name": "test", "version": "1.0.0", "description": "Test"},
+                    "bundled_prisms": {
+                        "base": [{"id": "b", "name": "Base", "required": True, "config": "base/b.yaml"}],
+                        "teams": [
+                            {"id": "platform", "name": "Platform", "config": "teams/platform.yaml"},
+                            {"id": "backend", "name": "Backend", "config": "teams/backend.yaml"},
+                        ],
+                    },
+                }
+            )
+        )
         (prism_path / "base" / "b.yaml").write_text(yaml.dump({"tools_required": ["git"]}))
         (prism_path / "teams" / "platform.yaml").write_text(yaml.dump({"tools_required": ["kubectl"]}))
         (prism_path / "teams" / "backend.yaml").write_text(yaml.dump({"tools_required": ["python"]}))
@@ -107,24 +112,36 @@ class TestSubPrismMerging:
         (prism_path / "base").mkdir()
         (prism_path / "roles").mkdir()
 
-        (prism_path / "package.yaml").write_text(yaml.dump({
-            "package": {"name": "mergetest", "version": "1.0.0", "description": "Test"},
-            "bundled_prisms": {
-                "base": [{"id": "b", "name": "Base", "required": True, "config": "base/b.yaml"}],
-                "roles": [
-                    {"id": "devops", "name": "DevOps", "config": "roles/devops.yaml"},
-                ],
-            }
-        }))
-        (prism_path / "base" / "b.yaml").write_text(yaml.dump({
-            "tools_required": ["git", "docker"],
-            "security": {"sso_required": True},
-            "environment": {"proxy": {"http": "http://proxy:8080"}},
-        }))
-        (prism_path / "roles" / "devops.yaml").write_text(yaml.dump({
-            "tools_required": ["terraform", "ansible"],
-            "environment": {"ci": {"tool": "jenkins"}},
-        }))
+        (prism_path / "package.yaml").write_text(
+            yaml.dump(
+                {
+                    "package": {"name": "mergetest", "version": "1.0.0", "description": "Test"},
+                    "bundled_prisms": {
+                        "base": [{"id": "b", "name": "Base", "required": True, "config": "base/b.yaml"}],
+                        "roles": [
+                            {"id": "devops", "name": "DevOps", "config": "roles/devops.yaml"},
+                        ],
+                    },
+                }
+            )
+        )
+        (prism_path / "base" / "b.yaml").write_text(
+            yaml.dump(
+                {
+                    "tools_required": ["git", "docker"],
+                    "security": {"sso_required": True},
+                    "environment": {"proxy": {"http": "http://proxy:8080"}},
+                }
+            )
+        )
+        (prism_path / "roles" / "devops.yaml").write_text(
+            yaml.dump(
+                {
+                    "tools_required": ["terraform", "ansible"],
+                    "environment": {"ci": {"tool": "jenkins"}},
+                }
+            )
+        )
 
         engine = InstallationEngine(
             config_package=str(prism_path),
@@ -153,19 +170,23 @@ class TestSubPrismMerging:
         (prism_path / "base").mkdir()
         (prism_path / "roles").mkdir()
 
-        (prism_path / "package.yaml").write_text(yaml.dump({
-            "package": {"name": "repotest", "version": "1.0.0", "description": "Test"},
-            "bundled_prisms": {
-                "base": [{"id": "b", "name": "Base", "required": True, "config": "base/b.yaml"}],
-                "roles": [{"id": "dev", "name": "Dev", "config": "roles/dev.yaml"}],
-            }
-        }))
-        (prism_path / "base" / "b.yaml").write_text(yaml.dump({
-            "repositories": [{"name": "shared", "url": "https://github.com/example/shared"}]
-        }))
-        (prism_path / "roles" / "dev.yaml").write_text(yaml.dump({
-            "repositories": [{"name": "project", "url": "https://github.com/example/project"}]
-        }))
+        (prism_path / "package.yaml").write_text(
+            yaml.dump(
+                {
+                    "package": {"name": "repotest", "version": "1.0.0", "description": "Test"},
+                    "bundled_prisms": {
+                        "base": [{"id": "b", "name": "Base", "required": True, "config": "base/b.yaml"}],
+                        "roles": [{"id": "dev", "name": "Dev", "config": "roles/dev.yaml"}],
+                    },
+                }
+            )
+        )
+        (prism_path / "base" / "b.yaml").write_text(
+            yaml.dump({"repositories": [{"name": "shared", "url": "https://github.com/example/shared"}]})
+        )
+        (prism_path / "roles" / "dev.yaml").write_text(
+            yaml.dump({"repositories": [{"name": "project", "url": "https://github.com/example/project"}]})
+        )
 
         engine = InstallationEngine(
             config_package=str(prism_path),
@@ -184,19 +205,21 @@ class TestSubPrismMerging:
         (prism_path / "base").mkdir()
         (prism_path / "roles").mkdir()
 
-        (prism_path / "package.yaml").write_text(yaml.dump({
-            "package": {"name": "dedup", "version": "1.0.0", "description": "Test"},
-            "bundled_prisms": {
-                "base": [{"id": "b", "name": "Base", "required": True, "config": "base/b.yaml"}],
-                "roles": [{"id": "dev", "name": "Dev", "config": "roles/dev.yaml"}],
-            }
-        }))
-        (prism_path / "base" / "b.yaml").write_text(yaml.dump({
-            "tools_required": ["git", "docker", "kubectl"]
-        }))
-        (prism_path / "roles" / "dev.yaml").write_text(yaml.dump({
-            "tools_required": ["docker", "vscode"]  # docker is duplicate
-        }))
+        (prism_path / "package.yaml").write_text(
+            yaml.dump(
+                {
+                    "package": {"name": "dedup", "version": "1.0.0", "description": "Test"},
+                    "bundled_prisms": {
+                        "base": [{"id": "b", "name": "Base", "required": True, "config": "base/b.yaml"}],
+                        "roles": [{"id": "dev", "name": "Dev", "config": "roles/dev.yaml"}],
+                    },
+                }
+            )
+        )
+        (prism_path / "base" / "b.yaml").write_text(yaml.dump({"tools_required": ["git", "docker", "kubectl"]}))
+        (prism_path / "roles" / "dev.yaml").write_text(
+            yaml.dump({"tools_required": ["docker", "vscode"]})  # docker is duplicate
+        )
 
         engine = InstallationEngine(
             config_package=str(prism_path),
@@ -223,6 +246,7 @@ class TestFinalize:
         marker = temp_dir / "workspace" / ".prism_installed"
         assert marker.exists()
         import json
+
         data = json.loads(marker.read_text())
         assert "installed_at" in data
         assert "platform" in data
@@ -275,4 +299,4 @@ class TestFinalize:
         user_info_file = temp_dir / "workspace" / "docs" / "config" / "user-info.yaml"
         assert user_info_file.exists()
         data = yaml.safe_load(user_info_file.read_text())
-        assert data["name"] == sample_user_info["name"]
+        assert data["full_name"] == sample_user_info["full_name"]

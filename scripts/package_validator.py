@@ -16,9 +16,10 @@ Optional but validated when present:
   - metadata: tags is a list
 """
 
-import yaml
 from pathlib import Path
-from typing import Dict, List, Tuple, Any
+from typing import Any, Dict, List, Tuple
+
+import yaml
 
 VALID_THEMES = {"ocean", "purple", "forest", "sunset", "midnight"}
 VALID_FIELD_TYPES = {"text", "email", "url", "select", "number", "checkbox"}
@@ -89,8 +90,7 @@ class PrismValidator:
 
         # Must have EITHER bundled_prisms (new format) OR package.install (legacy)
         has_bundled_prisms = "bundled_prisms" in config
-        has_legacy_install = isinstance(config.get("package", {}), dict) and \
-                             "install" in config.get("package", {})
+        has_legacy_install = isinstance(config.get("package", {}), dict) and "install" in config.get("package", {})
         has_setup = "setup" in config and "install" in config.get("setup", {})
 
         if not has_bundled_prisms and not has_legacy_install and not has_setup:
@@ -110,8 +110,7 @@ class PrismValidator:
             self._validate_bundled_prisms(bundled, package_path)
 
         # Validate user_info_fields (can be at top level or inside package:)
-        user_fields = config.get("user_info_fields") or \
-                      config.get("package", {}).get("user_info_fields", [])
+        user_fields = config.get("user_info_fields") or config.get("package", {}).get("user_info_fields", [])
         if user_fields:
             self._validate_user_info_fields(user_fields)
         else:
@@ -136,9 +135,7 @@ class PrismValidator:
         """Validate the prism_config section."""
         theme = prism_config.get("theme")
         if theme and theme not in VALID_THEMES:
-            self.warnings.append(
-                f"Unknown theme '{theme}' — valid themes: {', '.join(sorted(VALID_THEMES))}"
-            )
+            self.warnings.append(f"Unknown theme '{theme}' — valid themes: {', '.join(sorted(VALID_THEMES))}")
 
         sources = prism_config.get("sources", [])
         if sources and not isinstance(sources, list):
@@ -168,8 +165,7 @@ class PrismValidator:
                     config_file = package_path / item["config"]
                     if not config_file.exists():
                         self.errors.append(
-                            f"Sub-prism config not found: {item['config']} "
-                            f"(bundled_prisms.{tier_name}[{idx}])"
+                            f"Sub-prism config not found: {item['config']} " f"(bundled_prisms.{tier_name}[{idx}])"
                         )
 
     def _validate_user_info_fields(self, user_fields: list):
@@ -199,15 +195,25 @@ class PrismValidator:
         try:
             package_yaml = package_path / "package.yaml"
             if not package_yaml.exists():
-                return {"id": package_path.name, "name": package_path.name,
-                        "version": "unknown", "description": "No package.yaml found", "error": True}
+                return {
+                    "id": package_path.name,
+                    "name": package_path.name,
+                    "version": "unknown",
+                    "description": "No package.yaml found",
+                    "error": True,
+                }
 
             with open(package_yaml) as f:
                 config = yaml.safe_load(f)
 
             if not config:
-                return {"id": package_path.name, "name": package_path.name,
-                        "version": "unknown", "description": "Empty package.yaml", "error": True}
+                return {
+                    "id": package_path.name,
+                    "name": package_path.name,
+                    "version": "unknown",
+                    "description": "Empty package.yaml",
+                    "error": True,
+                }
 
             pkg = config.get("package", {})
             return {
@@ -221,8 +227,13 @@ class PrismValidator:
                 "error": False,
             }
         except Exception as e:
-            return {"id": package_path.name, "name": package_path.name,
-                    "version": "unknown", "description": f"Error: {e}", "error": True}
+            return {
+                "id": package_path.name,
+                "name": package_path.name,
+                "version": "unknown",
+                "description": f"Error: {e}",
+                "error": True,
+            }
 
 
 def validate_all_packages(packages_dir: Path) -> Tuple[List[Dict], List[Dict]]:

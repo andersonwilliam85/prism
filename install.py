@@ -14,24 +14,26 @@ Usage:
     python3 install.py --status           # Show current progress
 """
 
-import os
-import sys
-import platform
-import subprocess
 import argparse
-from pathlib import Path
-from datetime import datetime
-import yaml
+import os
+import platform
 import shutil
+import subprocess
+import sys
+from datetime import datetime
+from pathlib import Path
+
+import yaml
 
 # Try to import rich for better UX
 try:
+    from rich import print as rprint
     from rich.console import Console
     from rich.panel import Panel
-    from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
-    from rich.prompt import Prompt, Confirm, IntPrompt
+    from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
+    from rich.prompt import Confirm, IntPrompt, Prompt
     from rich.table import Table
-    from rich import print as rprint
+
     RICH_AVAILABLE = True
     console = Console()
 except ImportError:
@@ -49,10 +51,11 @@ TOOLS_CONFIG_PATH = CONFIG_DIR / "tools.yaml"
 # Platform Detection
 # ============================================================================
 
+
 def detect_platform():
     """Detect operating system"""
     system = platform.system().lower()
-    
+
     if system == "darwin":
         machine = platform.machine()
         return "mac", "Apple Silicon" if machine == "arm64" else "Intel"
@@ -70,19 +73,22 @@ def detect_platform():
     else:
         return "unknown", ""
 
+
 # ============================================================================
 # Progress Tracking
 # ============================================================================
+
 
 def load_progress():
     """Load setup progress from user profile"""
     if not USER_PROFILE_PATH.exists():
         return None
-    
+
     with open(USER_PROFILE_PATH) as f:
         profile = yaml.safe_load(f)
-    
+
     return profile.get("setup_progress", {})
+
 
 def save_progress(task_name, notes="", success=True):
     """Save task completion to progress tracker"""
@@ -92,46 +98,43 @@ def save_progress(task_name, notes="", success=True):
     else:
         with open(USER_PROFILE_PATH) as f:
             profile = yaml.safe_load(f)
-    
+
     if "setup_progress" not in profile:
-        profile["setup_progress"] = {
-            "status": "in_progress",
-            "started_at": datetime.now().isoformat(),
-            "tasks": {}
-        }
-    
+        profile["setup_progress"] = {"status": "in_progress", "started_at": datetime.now().isoformat(), "tasks": {}}
+
     profile["setup_progress"]["tasks"][task_name] = {
         "completed": success,
         "timestamp": datetime.now().isoformat(),
-        "notes": notes
+        "notes": notes,
     }
     profile["setup_progress"]["last_updated"] = datetime.now().isoformat()
-    
-    with open(USER_PROFILE_PATH, 'w') as f:
+
+    with open(USER_PROFILE_PATH, "w") as f:
         yaml.dump(profile, f, default_flow_style=False, sort_keys=False)
+
 
 def show_progress():
     """Display current setup progress"""
     progress = load_progress()
-    
+
     if not progress or not progress.get("tasks"):
         print("❌ No setup progress found. Run: python3 install.py")
         return
-    
+
     if RICH_AVAILABLE:
         table = Table(title="📊 Setup Progress")
         table.add_column("Task", style="cyan")
         table.add_column("Status", style="green")
         table.add_column("Completed", style="dim")
-        
+
         for task, data in progress.get("tasks", {}).items():
             status = "✅" if data.get("completed") else "⏳"
             timestamp = data.get("timestamp", "")
             if timestamp:
                 timestamp = datetime.fromisoformat(timestamp).strftime("%Y-%m-%d %H:%M")
-            
+
             table.add_row(task.replace("_", " ").title(), status, timestamp)
-        
+
         console.print(table)
     else:
         print("\n📊 Setup Progress:\n")
@@ -140,33 +143,38 @@ def show_progress():
             print(f"  {status} {task.replace('_', ' ').title()}")
         print()
 
+
 # ============================================================================
 # Banner
 # ============================================================================
 
+
 def print_banner(platform_name, platform_detail):
     """Print welcome banner"""
     if RICH_AVAILABLE:
-        console.print(Panel(
-            f"[bold blue]💎 Prism Dev Environment Setup[/bold blue]\n\n"
-            f"Platform: {platform_name.title()} ({platform_detail})\n\n"
-            f"This installer will set up:\n"
-            f"  • Organized workspace folder structure\n"
-            f"  • Development tools from your prism configuration\n"
-            f"  • Git config + SSH keys\n"
-            f"  • Repository cloning\n"
-            f"  • Merged prism configuration\n\n"
-            f"[dim]Estimated time: 10-15 minutes[/dim]",
-            title="💎 Prism — Refract complexity into clarity",
-            border_style="blue"
-        ))
+        console.print(
+            Panel(
+                f"[bold blue]💎 Prism Dev Environment Setup[/bold blue]\n\n"
+                f"Platform: {platform_name.title()} ({platform_detail})\n\n"
+                f"This installer will set up:\n"
+                f"  • Organized workspace folder structure\n"
+                f"  • Development tools from your prism configuration\n"
+                f"  • Git config + SSH keys\n"
+                f"  • Repository cloning\n"
+                f"  • Merged prism configuration\n\n"
+                f"[dim]Estimated time: 10-15 minutes[/dim]",
+                title="💎 Prism — Refract complexity into clarity",
+                border_style="blue",
+            )
+        )
     else:
-        print("\n" + "="*60)
+        print("\n" + "=" * 60)
         print("💎 Prism Dev Environment Setup")
-        print("="*60)
+        print("=" * 60)
         print(f"\nPlatform: {platform_name.title()} ({platform_detail})")
         print("\nThis will set up your complete dev environment.")
         print("Estimated time: 10-15 minutes\n")
+
 
 # Placeholder for now - we'll build the full installer in the next iteration
 def main():
@@ -190,71 +198,66 @@ def main():
     export PRISM_NPM_REGISTRY=https://npm.mycompany.com
     python3 install.py
 """,
-        formatter_class=argparse.RawDescriptionHelpFormatter
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument("--resume", action="store_true", help="Resume from last checkpoint")
     parser.add_argument("--status", action="store_true", help="Show current progress")
     parser.add_argument("--config", help="Use config file (non-interactive)")
     parser.add_argument("--prism", dest="package", help="Specify prism to use (e.g., personal-dev, fortune500)")
-    parser.add_argument(
-        "--npm-registry",
-        help="Custom npm registry URL (overrides PRISM_NPM_REGISTRY env var)"
-    )
-    parser.add_argument(
-        "--unpkg-url",
-        help="Custom unpkg CDN URL (overrides PRISM_UNPKG_URL env var)"
-    )
+    parser.add_argument("--npm-registry", help="Custom npm registry URL (overrides PRISM_NPM_REGISTRY env var)")
+    parser.add_argument("--unpkg-url", help="Custom unpkg CDN URL (overrides PRISM_UNPKG_URL env var)")
     args = parser.parse_args()
-    
+
     # Set registry environment variables if provided via CLI
     if args.npm_registry:
         os.environ["PRISM_NPM_REGISTRY"] = args.npm_registry
         print(f"📦 Using custom npm registry: {args.npm_registry}")
-    
+
     if args.unpkg_url:
         os.environ["PRISM_UNPKG_URL"] = args.unpkg_url
         print(f"📦 Using custom unpkg CDN: {args.unpkg_url}")
-    
+
     if args.status:
         show_progress()
         return
-    
+
     # Detect platform
     platform_name, platform_detail = detect_platform()
-    
+
     if platform_name == "unknown":
         print("❌ Unsupported platform")
         sys.exit(1)
-    
+
     # Show banner
     print_banner(platform_name, platform_detail)
-    
+
     # Import installation engine
     from installer_engine import InstallationEngine
-    
+
     # Gather user info (interactive)
     user_info = {}
     if not args.config:
         print("\n👤 Let's get your information:\n")
-        user_info['name'] = input("Your name: ").strip()
-        user_info['email'] = input("Your email: ").strip()
-    
+        user_info["name"] = input("Your name: ").strip()
+        user_info["email"] = input("Your email: ").strip()
+
     # Get or fetch package
     package_path = None
     if args.package:
         # Try to fetch the package
         import sys
+
         sys.path.insert(0, str(SCRIPT_DIR / "scripts"))
         from npm_package_fetcher import fetch_package
-        
+
         package_name = args.package
-        if not package_name.startswith('@prism/'):
+        if not package_name.startswith("@prism/"):
             package_name = f"@prism/{package_name}-config"
-        
+
         print(f"\n📦 Fetching package: {package_name}")
-        
+
         try:
-            dest = SCRIPT_DIR / "temp_install" / package_name.split('/')[-1]
+            dest = SCRIPT_DIR / "temp_install" / package_name.split("/")[-1]
             result = fetch_package(package_name, "latest", str(dest))
             if result:
                 package_path = result
@@ -262,25 +265,21 @@ def main():
         except Exception as e:
             print(f"⚠️  Could not fetch from npm: {e}")
             # Try local
-            pkg_id = package_name.replace('@prism/', '').replace('-config', '')
+            pkg_id = package_name.replace("@prism/", "").replace("-config", "")
             local_path = SCRIPT_DIR / "prisms" / pkg_id
             if local_path.exists():
                 package_path = str(local_path)
                 print(f"📁 Using local package: {package_path}")
-    
+
     # Run installation
     print("\n🚀 Starting installation...\n")
-    
+
     def progress_callback(step, message, level):
         """Print progress updates"""
         pass  # Already printed by engine
-    
-    engine = InstallationEngine(
-        config_package=package_path,
-        user_info=user_info,
-        progress_callback=progress_callback
-    )
-    
+
+    engine = InstallationEngine(config_package=package_path, user_info=user_info, progress_callback=progress_callback)
+
     try:
         engine.install()
         print("\n✅ Installation complete! 🎉")
@@ -293,8 +292,10 @@ def main():
     except Exception as e:
         print(f"\n❌ Installation failed: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
