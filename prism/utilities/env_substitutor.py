@@ -18,9 +18,7 @@ def substitute(value: Any) -> Any:
     Supports strings, dicts, and lists. Non-string leaves pass through unchanged.
     """
     if isinstance(value, str):
-        return _PATTERN.sub(
-            lambda m: os.environ.get(m.group(1), m.group(2) or ""), value
-        )
+        return _PATTERN.sub(lambda m: os.environ.get(m.group(1), m.group(2) or ""), value)
     elif isinstance(value, dict):
         return {k: substitute(v) for k, v in value.items()}
     elif isinstance(value, list):

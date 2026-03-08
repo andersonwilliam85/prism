@@ -1,26 +1,31 @@
-"""Manager interfaces — 4 managers with 9 facets.
+"""Manager interfaces — one per manager.
 
-Each manager is a thin orchestrator. Facets split the interface by volatility
-so consumers only depend on the rate-of-change they care about.
+Managers are thin orchestrators. Each interface groups all operations
+for a single manager. Faceting is deferred until observed volatility
+divergence justifies the split.
+
+Volatility analysis:
+  InstallationManager  — low-vol (pipeline step order is stable)
+  PackageDiscoveryManager — med-vol (query + validation evolve with schema)
+  UserInfoManager — med-vol (field schema + validation evolve with UX)
+  PreflightManager — low-vol (environment checks are stable)
 """
 
 from __future__ import annotations
 
 from typing import Protocol, runtime_checkable
 
-from prism.models.installation import InstallationPlan, InstallationResult
+from prism.models.installation import InstallationResult
 from prism.models.package_info import PackageInfo, TierInfo, UserField
 from prism.models.prism_config import PrismConfig
 
 
-# ---------------------------------------------------------------------------
-# InstallationManager — 3 facets
-# ---------------------------------------------------------------------------
-
-
 @runtime_checkable
-class IInstallationSequence(Protocol):
-    """Low-vol: step ordering rarely changes."""
+class IInstallationManager(Protocol):
+    """Orchestrates the multi-step installation pipeline.
+
+    Volatility: low — step ordering and pipeline structure rarely change.
+    """
 
     def install(
         self,
@@ -31,22 +36,6 @@ class IInstallationSequence(Protocol):
         tools_excluded: list[str] | None = None,
     ) -> InstallationResult: ...
 
-
-@runtime_checkable
-class IInstallationProgress(Protocol):
-    """Med-vol: progress reporting format may change."""
-
-    def set_progress_callback(
-        self, callback: object | None
-    ) -> None: ...
-
-    def log(self, step: str, message: str, level: str = "info") -> None: ...
-
-
-@runtime_checkable
-class IInstallationConfig(Protocol):
-    """Med-vol: how prism config is loaded/merged may change."""
-
     def load_prism_config(self, package_name: str) -> PrismConfig: ...
 
     def merge_tiers(
@@ -55,15 +44,18 @@ class IInstallationConfig(Protocol):
         selected_sub_prisms: dict[str, str],
     ) -> dict: ...
 
+    def set_progress_callback(self, callback: object | None) -> None: ...
 
-# ---------------------------------------------------------------------------
-# PackageDiscoveryManager — 2 facets
-# ---------------------------------------------------------------------------
+    def log(self, step: str, message: str, level: str = "info") -> None: ...
 
 
 @runtime_checkable
-class IPackageQuery(Protocol):
-    """Low-vol: listing and getting packages is stable."""
+class IPackageDiscoveryManager(Protocol):
+    """Orchestrates package browsing, metadata, and validation.
+
+    Volatility: medium — query interface stable, but validation rules
+    evolve as the prism schema gains new fields.
+    """
 
     def list_packages(self) -> list[PackageInfo]: ...
 
@@ -73,48 +65,33 @@ class IPackageQuery(Protocol):
 
     def get_user_fields(self, package_name: str) -> list[UserField]: ...
 
-
-@runtime_checkable
-class IPackageValidation(Protocol):
-    """Med-vol: validation rules evolve with schema."""
-
     def validate(self, package_name: str) -> tuple[bool, list[str], list[str]]: ...
 
     def validate_all(self) -> dict[str, tuple[bool, list[str], list[str]]]: ...
 
 
-# ---------------------------------------------------------------------------
-# UserInfoManager — 2 facets
-# ---------------------------------------------------------------------------
-
-
 @runtime_checkable
-class IUserInfoSchema(Protocol):
-    """Med-vol: field definitions evolve with UX."""
+class IUserInfoManager(Protocol):
+    """Orchestrates user info schema retrieval and input validation.
+
+    Volatility: medium — field definitions and validation rules evolve
+    with UX changes and new field types.
+    """
 
     def get_fields(self, package_name: str) -> list[UserField]: ...
 
     def get_defaults(self, package_name: str) -> dict[str, str]: ...
 
-
-@runtime_checkable
-class IUserInfoValidation(Protocol):
-    """Med-vol: validation rules change with field types."""
-
-    def validate(
-        self, data: dict[str, str], fields: list[UserField]
-    ) -> tuple[bool, list[str]]: ...
-
-
-# ---------------------------------------------------------------------------
-# PreflightManager — 1 facet
-# ---------------------------------------------------------------------------
+    def validate(self, data: dict[str, str], fields: list[UserField]) -> tuple[bool, list[str]]: ...
 
 
 @runtime_checkable
-class IPreflightValidation(Protocol):
-    """Low-vol: environment checks are stable."""
+class IPreflightManager(Protocol):
+    """Orchestrates environment prerequisite checking.
 
-    def check(
-        self, requirements: dict,
-    ) -> tuple[bool, list[str]]: ...
+    Volatility: low — check sequence and pass/fail criteria are stable.
+    Separate from InstallationManager because preflight can run
+    independently (e.g., UI "is my machine ready?" preview).
+    """
+
+    def check(self, requirements: dict) -> tuple[bool, list[str]]: ...

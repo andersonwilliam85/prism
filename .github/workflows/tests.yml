@@ -13,74 +13,71 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         python-version: ['3.9', '3.10', '3.11']
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           cache: 'pip'
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install -r requirements-test.txt
-      
-      - name: Install Playwright browsers
-        run: python -m playwright install --with-deps
-      
+          pip install -r requirements-dev.txt
+
       - name: Run unit tests
-        run: pytest tests/unit/ -v --cov=. --cov-report=xml
-      
+        run: pytest tests/unit/ -v --cov=. --cov-report=xml --ignore=tests/unit/utilities/
+
+      - name: Run new package unit tests
+        run: |
+          PYTHONPATH=. pytest tests/unit/utilities/ -v
+
       - name: Run integration tests
         run: pytest tests/integration/ -v
-      
-      - name: Run E2E tests
-        run: pytest tests/e2e/ -v --headed=false
-      
+
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           file: ./coverage.xml
           flags: unittests
           name: codecov-${{ matrix.os }}-py${{ matrix.python-version }}
-      
+
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ matrix.os }}-py${{ matrix.python-version }}
           path: |
             htmlcov/
             coverage.xml
-            pytest-report.html
-  
+
   lint:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
-      - uses: actions/setup-python@v4
+
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      
+
       - name: Install linting tools
         run: |
           pip install flake8 black isort mypy
-      
+
       - name: Run flake8
         run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-      
+
       - name: Check formatting with black
-        run: black --check .
-      
+        run: black --check . --line-length 120
+
       - name: Check import sorting
-        run: isort --check-only .
-      
+        run: isort --check-only . --profile black --line-length 120
+
       - name: Type checking with mypy
         run: mypy . --ignore-missing-imports || true

@@ -6,7 +6,7 @@ Full Harmonic Design application to Prism: VBD (backend), EBD (frontend), BDT (t
 
 **Current state:** Two monoliths — `install-ui.py` (2409 lines, inline HTML/CSS/JS + Flask routes + API logic) and `installer_engine.py` (662 lines, Manager + Engine + Accessor mixed). Tests use `sys.path` hacks. No component boundaries. 15 VBD communication violations identified.
 
-**Target state:** 5 Managers, 10 Engines, 9 Accessors, 4 Utilities. 7 UI Experiences decomposed into 17 Flows and 50+ Interactions. BDT test suite aligned to architectural tiers.
+**Target state:** 4 Managers, 7 Engines, 8 Accessors, 3 Utilities. 7 UI Experiences decomposed into 17 Flows and 50+ Interactions. BDT test suite aligned to architectural tiers. Interface count reduced from 28 to 19 after volatility analysis — consolidated manager facets, merged engines and accessors that share the same volatility axis.
 
 ---
 
@@ -538,13 +538,13 @@ Replace BL-006 with:
 
 | Tier | Count | Status |
 |------|-------|--------|
-| Managers | 4 (9 facets) | 0 extracted |
-| Engines | 10 | 2 partially extracted (ConfigMerger, Validator) |
-| Accessors | 9 | 0 extracted |
-| Utilities | 4 | 0 extracted |
-| Models | 5 | 0 defined |
+| Managers | 4 (no facets — facet when volatility diverges) | Interfaces defined |
+| Engines | 7 (consolidated by volatility axis) | Interfaces defined |
+| Accessors | 8 (consolidated by I/O boundary) | Interfaces defined |
+| Utilities | 3 | Extracted + tested |
+| Models | 5 (9 dataclasses) | Defined |
 | UI Experiences | 7 | 0 separated |
 | UI Flows | 17 | 0 separated |
 | UI Interactions | 11+ | 0 separated |
 | UI Utilities | 6 | 0 separated |
-| **Total components** | **~73** | |
+| **Total components** | **~63** | |
