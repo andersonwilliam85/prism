@@ -1,7 +1,7 @@
 # Prism Package Manager - Makefile
 # Comprehensive development and CI/CD commands
 
-.PHONY: help install install-dev test test-unit test-e2e test-e2e-browser test-cli test-web test-integration test-all lint format clean build run docs serve-docs check pre-commit ci
+.PHONY: help install install-dev test test-unit test-e2e test-e2e-browser test-cli test-web test-integration test-all lint format clean build run docs serve-docs check pre-commit ci verify
 
 # Default target
 .DEFAULT_GOAL := help
@@ -91,7 +91,7 @@ test-all: ## Run ALL tests (unit, CLI, web API, integration)
 test-coverage: ## Run tests with coverage report (unit + integration + web API)
 	@echo "$(COLOR_BLUE)📊 Running tests with coverage...$(COLOR_RESET)"
 	$(PYTEST) $(TEST_DIR)/unit/ $(TEST_DIR)/integration/ $(TEST_DIR)/e2e/test_web_api.py \
-		--cov=$(SRC_DIR) --cov=installer_engine --cov=install_ui \
+		--cov=$(SRC_DIR) --cov=installer_engine.py --cov=install-ui.py \
 		--cov-report=html --cov-report=term
 	@echo "$(COLOR_GREEN)✅ Coverage report: htmlcov/index.html$(COLOR_RESET)"
 
@@ -211,6 +211,9 @@ ci-coverage: install-dev check test-coverage ## CI with coverage report
 ##@ Quick Commands
 
 dev: install-dev run ## Quick start: install deps and run server
+
+verify: format lint test-all ## Pre-commit quality gate (format + lint + test)
+	@echo "$(COLOR_GREEN)✅ All quality gates passed!$(COLOR_RESET)"
 
 test-quick: test-unit ## Quick test (unit tests only)
 	@echo "$(COLOR_GREEN)✅ Quick tests complete!$(COLOR_RESET)"
