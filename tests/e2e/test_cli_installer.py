@@ -219,20 +219,18 @@ class TestPackageManagerDiscover:
         assert count > 0, "Should discover at least one prism"
 
     def test_all_discovered_have_required_keys(self):
-        result = run(
-            [
-                "python3",
-                "-c",
-                "import sys, json; sys.path.insert(0, 'scripts'); "
-                "from package_manager import PackageManager; "
-                "pm = PackageManager(); "
-                "pkgs = pm.discover_packages(); "
-                "required = {'name','version','description','path','source'}; "
-                "for p in pkgs:\n"
-                "  missing = required - set(p.keys())\n"
-                "  assert not missing, f'Missing keys in {p[\"name\"]}: {missing}'\n"
-                "print('ALL_OK')",
-            ]
+        script = (
+            "import sys\n"
+            "sys.path.insert(0, 'scripts')\n"
+            "from package_manager import PackageManager\n"
+            "pm = PackageManager()\n"
+            "pkgs = pm.discover_packages()\n"
+            "required = {'name','version','description','path','source'}\n"
+            "for p in pkgs:\n"
+            "    missing = required - set(p.keys())\n"
+            "    assert not missing, f'Missing keys in {p[\"name\"]}: {missing}'\n"
+            "print('ALL_OK')\n"
         )
+        result = run(["python3", "-c", script])
         assert result.returncode == 0
         assert "ALL_OK" in result.stdout

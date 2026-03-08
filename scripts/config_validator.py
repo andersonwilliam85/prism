@@ -218,8 +218,8 @@ class PackageConfigValidator:
     def __init__(self, package_path: Path):
         self.package_path = package_path
         self.validator = ConfigValidator()
-        self.all_errors = []
-        self.all_warnings = []
+        self.all_errors: list = []
+        self.all_warnings: list = []
 
     def validate_package_configs(self) -> Tuple[bool, List[Dict[str, Any]]]:
         """
