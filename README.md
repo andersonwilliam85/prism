@@ -223,21 +223,6 @@ See [Contributing Guide](docs/contributor-guide/contributing.md).
 
 ---
 
-## Part of the Neural Platform
-
-<p align="center">
-  <img src="assets/branding/family_transparent.png" alt="Neural Platform" width="512">
-</p>
-
-Prism is part of the **Neural Platform** — a suite of tools for developer productivity and agent coordination:
-
-- **Prism** — Developer onboarding and configuration inheritance
-- **Cortex** — Agent runtime and orchestration
-- **Synapse** — Shared coordination state
-- **Axon** — GitHub event bridge
-
----
-
 ## License
 
 MIT License — See [LICENSE](LICENSE)

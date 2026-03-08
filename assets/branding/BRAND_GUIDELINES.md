@@ -1,4 +1,4 @@
-# 💎 Prism Brand Guidelines
+# Prism Brand Guidelines
 
 **Tagline:** *"Refract complexity into clarity"*
 

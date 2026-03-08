@@ -1,4 +1,4 @@
-# 💎 Choosing a Prism
+# Choosing a Prism
 
 Complete guide to selecting the right Prism configuration for your organization.
 
@@ -10,13 +10,13 @@ Complete guide to selecting the right Prism configuration for your organization.
 
 | Organization Type | Prism | Team Size | Hierarchy | Complexity |
 |---|---|---|---|---|
-| 🏠 Freelancer / Indie Dev | `personal-dev` | 1 | Flat | Low |
-| 🚀 Startup | `startup` | 10–50 | Roles + Stacks | Low |
-| 🏢 Small/Medium Company | `acme-corp` | 100–1K | Org → Team | Medium |
-| 🎯 Consulting Firm | `consulting-firm` | Variable | By client | Medium |
-| 🌐 Fortune 500 | `fortune500` | 50K+ | Division → Role | High |
-| 🎓 University | `university` | Variable | Dept → User type | Medium |
-| 🌟 Open Source | `opensource` | Community | Flat | Low |
+| Freelancer / Indie Dev | `personal-dev` | 1 | Flat | Low |
+| Startup | `startup` | 10–50 | Roles + Stacks | Low |
+| Small/Medium Company | `acme-corp` | 100–1K | Org → Team | Medium |
+| Consulting Firm | `consulting-firm` | Variable | By client | Medium |
+| Fortune 500 | `fortune500` | 50K+ | Division → Role | High |
+| University | `university` | Variable | Dept → User type | Medium |
+| Open Source | `opensource` | Community | Flat | Low |
 
 ---
 
@@ -30,7 +30,7 @@ Each prism contains:
 During installation, required sub-prisms (like the base configuration) are applied automatically. Optional tiers (like roles, divisions, or teams) let you pick the one that matches your context. All selected sub-prisms are **deep-merged** in order, so each layer inherits and extends the previous one.
 
 ```
-💎 Prism
+Prism
  ├── prism_config   (theme, proxy, registry)
  └── bundled_prisms
       ├── base       → always applied
@@ -42,7 +42,7 @@ During installation, required sub-prisms (like the base configuration) are appli
 
 ## Available Prisms
 
-### 1. 🏠 Personal Developer (`personal-dev`)
+### 1. Personal Developer (`personal-dev`)
 
 **Perfect for:** Freelancers, indie developers, students, personal projects
 
@@ -62,7 +62,7 @@ python3 install.py --prism personal-dev
 
 ---
 
-### 2. 🚀 Startup (`startup`)
+### 2. Startup (`startup`)
 
 **Perfect for:** Seed/Series A startups, fast-moving teams
 
@@ -83,7 +83,7 @@ python3 install.py --prism startup
 
 ---
 
-### 3. 🏢 Small/Medium Company (`acme-corp`)
+### 3. Small/Medium Company (`acme-corp`)
 
 **Perfect for:** Growing companies (100–1000 employees)
 
@@ -111,7 +111,7 @@ python3 install.py --prism acme-corp
 
 ---
 
-### 4. 🎯 Consulting Firm (`consulting-firm`)
+### 4. Consulting Firm (`consulting-firm`)
 
 **Perfect for:** Consulting firms, agencies, professional services
 
@@ -131,7 +131,7 @@ python3 install.py --prism consulting-firm
 
 ---
 
-### 5. 🌐 Fortune 500 (`fortune500`)
+### 5. Fortune 500 (`fortune500`)
 
 **Perfect for:** Enterprise corporations (50,000+ employees)
 
@@ -153,7 +153,7 @@ python3 install.py --prism fortune500
 
 ---
 
-### 6. 🎓 University (`university`)
+### 6. University (`university`)
 
 **Perfect for:** Universities, research institutions, academic labs
 
@@ -175,7 +175,7 @@ python3 install.py --prism university
 
 ---
 
-### 7. 🌟 Open Source (`opensource`)
+### 7. Open Source (`opensource`)
 
 **Perfect for:** Open source project maintainers and contributors
 

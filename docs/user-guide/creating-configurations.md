@@ -1,4 +1,4 @@
-# 💎 Creating Prisms
+# Creating Prisms
 
 Step-by-step guide to authoring a custom prism for your organization.
 

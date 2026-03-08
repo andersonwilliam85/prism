@@ -1,4 +1,4 @@
-# 🚀 Quickstart
+# Quickstart
 
 Get your development environment configured in minutes with Prism.
 

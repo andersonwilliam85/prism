@@ -5,7 +5,7 @@
 
 This is a **minimal example** of a company configuration package. Use it as a template to create your own!
 
-## 📚 What's Included
+## What's Included
 
 ### Minimal Structure
 - **Base company config** - Proxy, VPN, Git, tools
@@ -14,7 +14,7 @@ This is a **minimal example** of a company configuration package. Use it as a te
 - **Welcome page** - Company-specific welcome content
 - **Resources** - Internal links and tools
 
-## 🚀 How to Use as Template
+## How to Use as Template
 
 ### 1. Copy this package
 ```bash
@@ -65,7 +65,7 @@ cd ../../  # Back to prism root
 python3 scripts/package_manager.py install your-company-config
 ```
 
-## 📋 Package Structure
+## Package Structure
 
 ```
 acme-corp/
@@ -81,7 +81,7 @@ acme-corp/
     └── platform-team.yaml
 ```
 
-## 🎯 Minimal vs Complete
+## Minimal vs Complete
 
 **This package (minimal):**
 - 1 base config

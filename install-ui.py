@@ -39,8 +39,8 @@ INDEX_HTML = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prism Installer</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/branding/prism_dark_32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/branding/prism_dark_16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/branding/prism_transparent_32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/branding/prism_transparent_16.png">
     <style>
         :root {
             /* Ocean Blue Theme (Default) */

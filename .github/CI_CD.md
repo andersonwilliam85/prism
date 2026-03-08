@@ -4,7 +4,7 @@ Comprehensive CI/CD setup for Prism Package Manager using GitHub Actions.
 
 ---
 
-## 🎯 Overview
+## Overview
 
 ### Branch Strategy
 
@@ -29,7 +29,7 @@ feature/xyz (work)
 
 ---
 
-## 🛠️ Makefile Commands
+## Makefile Commands
 
 ### Quick Reference
 
@@ -64,7 +64,7 @@ make clean-all         # Deep clean (includes venv)
 
 ---
 
-## 🔄 CI Workflow (`ci.yml`)
+## CI Workflow (`ci.yml`)
 
 ### Triggered On:
 - Pull requests to `dev`, `stage`, or `main`
@@ -140,7 +140,7 @@ Purpose: Final gate - fail if any check fails
 
 ---
 
-## 🔵 Dev Deployment (`deploy-dev.yml`)
+## Dev Deployment (`deploy-dev.yml`)
 
 ### Triggered On:
 - Push to `dev` branch
@@ -158,7 +158,7 @@ Purpose: Final gate - fail if any check fails
 
 ---
 
-## 🟡 Stage Deployment (`deploy-stage.yml`)
+## Stage Deployment (`deploy-stage.yml`)
 
 ### Triggered On:
 - Push to `stage` branch
@@ -178,7 +178,7 @@ Purpose: Final gate - fail if any check fails
 
 ---
 
-## 🔴 Main Deployment (`deploy-main.yml`)
+## Main Deployment (`deploy-main.yml`)
 
 ### Triggered On:
 - Push to `main` branch
@@ -217,7 +217,7 @@ git push origin v1.0.0
 
 ---
 
-## 🔒 Branch Protection Rules
+## Branch Protection Rules
 
 See `.github/BRANCH_PROTECTION.md` for detailed configuration.
 
@@ -242,7 +242,7 @@ See `.github/BRANCH_PROTECTION.md` for detailed configuration.
 
 ---
 
-## 📝 Pull Request Process
+## Pull Request Process
 
 ### 1. Create Feature Branch
 ```bash
@@ -296,7 +296,7 @@ git push origin feature/my-awesome-feature
 
 ---
 
-## 🚀 Release Process
+## Release Process
 
 ### Standard Release (dev → stage → main)
 
@@ -352,7 +352,7 @@ git push origin dev
 
 ---
 
-## 📊 Monitoring & Artifacts
+## Monitoring & Artifacts
 
 ### View Workflow Runs
 ```bash
@@ -379,7 +379,7 @@ gh run download <run-id> -n prism-release-v1.0.0
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### CI Failing?
 
@@ -432,7 +432,7 @@ Check:
 
 ---
 
-## 🔐 Secrets Management
+## Secrets Management
 
 ### Required Secrets (set in GitHub repo settings):
 
@@ -457,7 +457,7 @@ gh secret set DEPLOY_SSH_KEY < ~/.ssh/deploy_key
 
 ---
 
-## 📚 Additional Resources
+## Additional Resources
 
 - [GitHub Actions Docs](https://docs.github.com/en/actions)
 - [Makefile Docs](https://www.gnu.org/software/make/manual/)
@@ -467,7 +467,7 @@ gh secret set DEPLOY_SSH_KEY < ~/.ssh/deploy_key
 
 ---
 
-## ✅ Quick Checklist
+## Quick Checklist
 
 ### For Developers:
 - [ ] Run `make pre-commit` before pushing

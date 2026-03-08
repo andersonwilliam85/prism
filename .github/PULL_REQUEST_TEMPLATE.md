@@ -1,4 +1,4 @@
-## 📝 Description
+## Description
 
 <!-- Provide a clear and concise description of what this PR does -->
 
@@ -12,7 +12,7 @@
 
 ---
 
-## 🔗 Related Issues
+## Related Issues
 
 <!-- Link to related issues using keywords: Fixes #123, Closes #456, Related to #789 -->
 
@@ -20,7 +20,7 @@ Fixes #
 
 ---
 
-## 🧪 Type of Change
+## Type of Change
 
 <!-- Mark the relevant option with an 'x' -->
 
@@ -35,7 +35,7 @@ Fixes #
 
 ---
 
-## ✅ Checklist
+## Checklist
 
 <!-- Mark completed items with an 'x' -->
 
@@ -70,7 +70,7 @@ Fixes #
 
 ---
 
-## 🧪 Testing Instructions
+## Testing Instructions
 
 <!-- Describe how reviewers can test this PR -->
 
@@ -86,7 +86,7 @@ Fixes #
 
 ---
 
-## 📸 Screenshots (if applicable)
+## Screenshots (if applicable)
 
 <!-- Add screenshots for UI changes -->
 
@@ -96,7 +96,7 @@ Fixes #
 
 ---
 
-## 💡 Additional Context
+## Additional Context
 
 <!-- Any additional information that reviewers should know -->
 
@@ -116,7 +116,7 @@ Fixes #
 
 ---
 
-## 📦 Deployment Notes
+## Deployment Notes
 
 <!-- Special deployment considerations -->
 
@@ -128,7 +128,7 @@ Fixes #
 
 ---
 
-## 👀 Reviewers
+## Reviewers
 
 <!-- Tag specific reviewers if needed -->
 
@@ -137,7 +137,7 @@ Fixes #
 ---
 
 <!-- 
-## 🤖 For Maintainers
+## For Maintainers
 
 ### Merge Checklist:
 - [ ] All CI checks passing

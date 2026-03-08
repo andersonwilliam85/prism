@@ -1,4 +1,4 @@
-# 💎 Prism System
+# Prism System
 
 **Modular, distributable, version-controlled development environment configurations.**
 

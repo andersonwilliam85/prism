@@ -1,4 +1,4 @@
-# 🌈 Sub-Prism Inheritance
+# Sub-Prism Inheritance
 
 ## Overview
 

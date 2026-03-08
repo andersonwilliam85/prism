@@ -1,14 +1,14 @@
-# 💎 Prism Documentation
+# Prism Documentation
 
 Complete documentation for Prism — the modular, hierarchical development environment installer.
 
 ---
 
-## 📚 Documentation Structure
+## Documentation Structure
 
 ```
 docs/
-├── README.md                         # 👈 You are here!
+├── README.md                         # This file
 ├── getting-started/
 │   ├── installation.md               # Install Prism
 │   ├── quickstart.md                 # Up and running in minutes
@@ -34,7 +34,7 @@ docs/
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 **New user?** Start here:
 
@@ -44,19 +44,19 @@ docs/
 
 ---
 
-## 📖 Getting Started
+## Getting Started
 
 ### [Choosing a Prism](getting-started/choosing-a-prism.md)
 
 Complete catalog of pre-built prisms:
 
-- 🏠 **Personal Dev** — Solo developers
-- 🚀 **Startup** — Fast-moving teams (10–50)
-- 🏢 **ACME Corp** — Small companies (100–1K)
-- 🎯 **Consulting Firm** — Multi-client setups
-- 🌐 **Fortune 500** — Enterprise (50K+)
-- 🎓 **University** — Academic institutions
-- 🌟 **Open Source** — Community projects
+- **Personal Dev** — Solo developers
+- **Startup** — Fast-moving teams (10–50)
+- **ACME Corp** — Small companies (100–1K)
+- **Consulting Firm** — Multi-client setups
+- **Fortune 500** — Enterprise (50K+)
+- **University** — Academic institutions
+- **Open Source** — Community projects
 
 **Includes:** Decision tree, comparison matrix, installation commands
 
@@ -96,7 +96,7 @@ Setting up private NPM registries:
 
 ---
 
-## 📚 Reference Documentation
+## Reference Documentation
 
 ### [Configuration Schema](reference/configuration-schema.md)
 
@@ -138,7 +138,7 @@ Distributing prisms via NPM:
 
 ---
 
-## 💻 Contributor Guide
+## Contributor Guide
 
 ### [Contributing](contributor-guide/contributing.md)
 
@@ -178,7 +178,7 @@ End-to-end guide to publishing a prism package to npm:
 
 ---
 
-## 🎯 Common Tasks
+## Common Tasks
 
 ### I want to...
 
@@ -208,14 +208,14 @@ End-to-end guide to publishing a prism package to npm:
 
 ---
 
-## 🌟 Feature Highlights
+## Feature Highlights
 
-### 💎 Prism System
+### Prism System
 
 Every prism is self-contained: identity, tool settings, and a hierarchy of composable sub-prisms.
 
 ```
-💎 my-company.prism
+my-company.prism
  └── bundled_prisms
       ├── base         → required, applies to everyone
       ├── divisions    → user picks one
@@ -224,7 +224,7 @@ Every prism is self-contained: identity, tool settings, and a hierarchy of compo
 
 [Learn more](reference/package-system.md)
 
-### 🌈 Sub-Prism Inheritance
+### Sub-Prism Inheritance
 
 Settings flow down through tiers. Later layers extend earlier ones — tools merge by union, environment settings deep-merge, git config overrides.
 
@@ -252,7 +252,7 @@ GitHub Actions workflows, 3 environments, automated releases.
 
 ---
 
-## 🎓 Learning Path
+## Learning Path
 
 ### Beginner
 
@@ -274,7 +274,7 @@ GitHub Actions workflows, 3 environments, automated releases.
 
 ---
 
-## 🚀 Next Steps
+## Next Steps
 
 ```bash
 # Clone and install
@@ -292,4 +292,4 @@ python3 install.py --prism personal-dev
 
 ---
 
-**💎 Prism — Refract complexity into clarity**
+**Prism — Refract complexity into clarity**

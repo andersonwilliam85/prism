@@ -6,7 +6,7 @@
 
 ---
 
-## 🎯 What Is This?
+## What Is This?
 
 A **lightweight, no-corporate-BS** development environment config for indie developers!
 
@@ -25,16 +25,16 @@ A **lightweight, no-corporate-BS** development environment config for indie deve
 
 ---
 
-## ✨ Features
+## Features
 
-### ✅ No Corporate Hassles
+### No Corporate Hassles
 - **No VPN required**
 - **No proxy configuration**
 - **No enterprise approvals**
 - **No mandatory tools**
 - **YOUR code, YOUR rules!**
 
-### 🐙 Multi-Platform Support
+### Multi-Platform Support
 
 Pre-configured profiles for:
 
@@ -46,7 +46,7 @@ Pre-configured profiles for:
 | **Gitea** | Privacy, self-hosting, learning | Free (self-host) |
 | **Multi-platform** | Using multiple platforms | Mix & match! |
 
-### 💸 Free Tier Friendly
+### Free Tier Friendly
 
 **All recommended tools have free options:**
 - ✅ Deployment: Vercel, Netlify, Render, Railway, Fly.io
@@ -56,7 +56,7 @@ Pre-configured profiles for:
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Install Package
 
@@ -147,7 +147,7 @@ code your-repo/
 
 ---
 
-## 📚 What's Included
+## What's Included
 
 ### Base Configuration
 
@@ -197,9 +197,9 @@ code your-repo/
 
 ---
 
-## 🤔 Which Platform Should I Choose?
+## Which Platform Should I Choose?
 
-### 🐙 GitHub
+### GitHub
 
 **Use if:**
 - ✅ Building your portfolio
@@ -222,7 +222,7 @@ code your-repo/
 
 ---
 
-### 🦊 GitLab
+### GitLab
 
 **Use if:**
 - ✅ Want better CI/CD for free
@@ -245,7 +245,7 @@ code your-repo/
 
 ---
 
-### 🚣 Bitbucket
+### Bitbucket
 
 **Use if:**
 - ✅ Using Jira or Confluence
@@ -266,7 +266,7 @@ code your-repo/
 
 ---
 
-### ☕ Gitea (Self-hosted)
+### Gitea (Self-hosted)
 
 **Use if:**
 - ✅ Want full control & privacy
@@ -291,7 +291,7 @@ code your-repo/
 
 ---
 
-### 🌐 Multi-platform
+### Multi-platform
 
 **Use if:**
 - ✅ GitHub for OSS + portfolio
@@ -306,7 +306,7 @@ code your-repo/
 
 ---
 
-## 💸 Free Tier Recommendations
+## Free Tier Recommendations
 
 ### Deployment
 
@@ -337,7 +337,7 @@ code your-repo/
 
 ---
 
-## 👥 For Students
+## For Students
 
 ### GitHub Education Pack
 
@@ -353,7 +353,7 @@ code your-repo/
 
 ---
 
-## 🔧 Multi-Platform SSH Setup
+## Multi-Platform SSH Setup
 
 If using multiple platforms:
 
@@ -382,7 +382,7 @@ pbcopy < ~/.ssh/id_ed25519_gitlab.pub  # Add to GitLab
 
 ---
 
-## 📋 Project Structure Suggestion
+## Project Structure Suggestion
 
 ```bash
 ~/Projects/
@@ -412,7 +412,7 @@ pbcopy < ~/.ssh/id_ed25519_gitlab.pub  # Add to GitLab
 
 ---
 
-## 🚀 Next Steps After Install
+## Next Steps After Install
 
 ### 1. Build Your Portfolio
 
@@ -466,7 +466,7 @@ deploy:
 
 ---
 
-## ❓ FAQ
+## FAQ
 
 ### Q: I'm a complete beginner. Where do I start?
 
@@ -507,7 +507,7 @@ For work:
 
 ---
 
-## 🆘 Support
+## Support
 
 **Communities:**
 - 📝 Dev.to - https://dev.to
@@ -520,7 +520,7 @@ For work:
 
 ---
 
-## 💎 Contributing
+## Contributing
 
 Want to improve this prism? PRs welcome!
 

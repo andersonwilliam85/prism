@@ -171,7 +171,7 @@ class TestWebUI:
     def test_index_has_favicon(self, client):
         resp = client.get("/")
         html = resp.data.decode()
-        assert "prism_dark_32.png" in html
+        assert "prism_transparent_32.png" in html
 
     def test_index_has_logo(self, client):
         resp = client.get("/")

@@ -8,7 +8,7 @@ Go to: **Repository Settings** → **Branches** → **Add branch protection rule
 
 ---
 
-## 🔒 Main Branch Protection
+## Main Branch Protection
 
 **Branch name pattern:** `main`
 
@@ -43,7 +43,7 @@ Go to: **Repository Settings** → **Branches** → **Add branch protection rule
 
 ---
 
-## 🟡 Stage Branch Protection
+## Stage Branch Protection
 
 **Branch name pattern:** `stage`
 
@@ -71,7 +71,7 @@ Go to: **Repository Settings** → **Branches** → **Add branch protection rule
 
 ---
 
-## 🟢 Dev Branch Protection
+## Dev Branch Protection
 
 **Branch name pattern:** `dev`
 
@@ -92,7 +92,7 @@ Go to: **Repository Settings** → **Branches** → **Add branch protection rule
 
 ---
 
-## 🔄 Merge Strategy
+## Merge Strategy
 
 ### Recommended Merge Flow:
 
@@ -109,7 +109,7 @@ feature/xyz  →  dev  →  stage  →  main
 
 ---
 
-## ⚙️ Additional Repository Settings
+## Additional Repository Settings
 
 ### General Settings:
 
@@ -126,19 +126,19 @@ feature/xyz  →  dev  →  stage  →  main
 
 ---
 
-## 📝 Pull Request Template
+## Pull Request Template
 
 Create `.github/PULL_REQUEST_TEMPLATE.md` (see separate file)
 
 ---
 
-## 👥 Code Owners
+## Code Owners
 
 Create `.github/CODEOWNERS` (see separate file)
 
 ---
 
-## 🚀 Quick Setup Script
+## Quick Setup Script
 
 Use GitHub CLI to set up branch protection:
 
@@ -163,7 +163,7 @@ gh api repos/:owner/:repo/branches/main/protection \
 
 ---
 
-## 📊 Monitoring
+## Monitoring
 
 ### Check Branch Protection Status:
 
@@ -175,7 +175,7 @@ gh api repos/:owner/:repo/branches/dev/protection
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Common Issues:
 
@@ -195,7 +195,7 @@ gh api repos/:owner/:repo/branches/dev/protection
 
 ---
 
-## 📚 Resources
+## Resources
 
 - [GitHub Branch Protection Docs](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches)
 - [GitHub Actions Docs](https://docs.github.com/en/actions)

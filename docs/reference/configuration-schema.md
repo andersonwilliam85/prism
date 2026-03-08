@@ -1,4 +1,4 @@
-# 💎 Prism Configuration Schema
+# Prism Configuration Schema
 
 Complete YAML schema reference for `package.yaml` — the manifest for every prism.
 
@@ -35,7 +35,7 @@ flowchart LR
 ```yaml
 package:          # 🔷 Identity — name, version, type, support
 prism_config:     # ⚙️  Prism tool settings — theme, proxy, registry, branding
-bundled_prisms:   # 🌈 Hierarchical sub-prisms — base + optional tiers
+bundled_prisms:   # Hierarchical sub-prisms — base + optional tiers
 setup:            # 📁 File installation steps
 user_info_fields: # 👤 Info collected from the user at install time
 distribution:     # 📦 Where this prism is sourced from
