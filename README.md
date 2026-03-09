@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/branding/prism_transparent_256.png" alt="Prism" width="128">
+  <img src="assets/branding/prism_light_256.png" alt="Prism" width="128">
 </p>
 
 <h1 align="center">Prism</h1>
