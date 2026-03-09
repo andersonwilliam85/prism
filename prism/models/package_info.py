@@ -20,6 +20,7 @@ class TierInfo:
     id: str
     name: str
     required: bool = False
+    description: str = ""
 
 
 @dataclass
