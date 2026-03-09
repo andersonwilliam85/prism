@@ -1,6 +1,6 @@
 """SystemAccessor — platform detection, OS info, and environment variables.
 
-Pure I/O translation: wraps platform module, /etc/os-release,
+Pure I/O translation: wraps platform module, /etc/os-release parsing,
 subprocess version checks, and os.environ access.
 
 Volatility: low — OS detection and env var APIs are stable.
@@ -18,7 +18,13 @@ class SystemAccessor:
     """Concrete implementation of ISystemAccessor."""
 
     def get_platform(self) -> tuple[str, str]:
-        """Detect the current operating system."""
+        """Detect the current operating system.
+
+        Returns:
+            A tuple of (platform_name, platform_detail) where platform_name
+            is one of "mac", "windows", "ubuntu", "linux", "unknown" and
+            platform_detail provides additional context (e.g. "Apple Silicon").
+        """
         system = platform.system().lower()
         if system == "darwin":
             machine = platform.machine()
@@ -38,7 +44,17 @@ class SystemAccessor:
         return "unknown", ""
 
     def get_installed_version(self, tool_name: str) -> str | None:
-        """Get the installed version of a command-line tool."""
+        """Get the installed version of a command-line tool.
+
+        Runs `<tool_name> --version` and returns the first line of output.
+
+        Args:
+            tool_name: Name of the tool (e.g. "git", "node", "python3").
+
+        Returns:
+            Version string from the tool, or None if the tool is not found
+            or the version command fails.
+        """
         if not shutil.which(tool_name):
             return None
         try:
@@ -50,20 +66,39 @@ class SystemAccessor:
                 timeout=5,
             )
             output = result.stdout.strip() or result.stderr.strip()
+            # Return the first line only
             return output.split("\n")[0] if output else None
         except (subprocess.SubprocessError, OSError):
             return None
 
     def get_env(self, key: str, default: str = "") -> str:
-        """Read an environment variable."""
+        """Read an environment variable.
+
+        Args:
+            key: Variable name.
+            default: Default value if the variable is not set.
+
+        Returns:
+            The variable's value, or the default.
+        """
         return os.environ.get(key, default)
 
     def set_env(self, key: str, value: str) -> None:
-        """Set an environment variable in the current process."""
+        """Set an environment variable in the current process.
+
+        Args:
+            key: Variable name.
+            value: Value to set.
+        """
         os.environ[key] = value
 
     def get_all_proxy_vars(self) -> dict[str, str]:
-        """Read all proxy-related environment variables."""
+        """Read all proxy-related environment variables.
+
+        Returns:
+            Dict of proxy variable names to their values. Only includes
+            variables that are actually set.
+        """
         proxy_keys = [
             "HTTP_PROXY",
             "http_proxy",
