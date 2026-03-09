@@ -7,6 +7,8 @@ from dataclasses import dataclass, field
 
 @dataclass
 class BrandingConfig:
+    name: str = ""
+    tagline: str = ""
     logo_text: str = ""
     logo_icon: str = ""
     page_title: str = ""

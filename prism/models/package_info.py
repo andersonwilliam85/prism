@@ -25,6 +25,7 @@ class TierInfo:
 @dataclass
 class PackageInfo:
     name: str
+    dir_name: str = ""
     display_name: str = ""
     version: str = "1.0.0"
     description: str = ""
@@ -32,4 +33,5 @@ class PackageInfo:
     package_type: str = "prism"
     has_tiers: bool = False
     has_tools: bool = False
+    default: bool = False
     path: str = ""
