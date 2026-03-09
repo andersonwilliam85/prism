@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Optional
 
 from prism.accessors.command_accessor.i_command_accessor import ICommandAccessor
 from prism.accessors.file_accessor.i_file_accessor import IFileAccessor
@@ -23,7 +23,7 @@ from prism.models.installation import InstallationResult, StepResult
 from prism.models.prism_config import BrandingConfig, PrismConfig
 from prism.utilities.event_bus.i_event_bus import IEventBus
 
-ProgressCallback = Callable[[str, str, str], None] | None
+ProgressCallback = Optional[Callable[[str, str, str], None]]
 
 
 class InstallationManager:
