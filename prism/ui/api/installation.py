@@ -7,6 +7,8 @@ Volatility: low — install endpoint shape is stable.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from flask import Blueprint, current_app, jsonify, request
 
 installation_bp = Blueprint("installation", __name__)
@@ -22,6 +24,9 @@ def install():
         return jsonify({"success": False, "error": "No prism specified"}), 400
 
     user_info = data.get("userInfo", {})
+    target_dir = data.get("targetDir", "")
+    if target_dir:
+        user_info["workspace_dir"] = target_dir
     selected_sub_prisms = data.get("selectedSubPrisms", {})
     tools_selected = data.get("toolsSelected", [])
     tools_excluded = data.get("toolsExcluded", [])
@@ -47,11 +52,12 @@ def install():
         )
 
         if result.success:
+            workspace = user_info.get("workspace_dir", str(Path.home() / "workspace"))
             return jsonify(
                 {
                     "success": True,
                     "message": "Installation completed successfully!",
-                    "workspace": "",
+                    "workspace": workspace,
                     "progress": progress_log,
                 }
             )
