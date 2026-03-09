@@ -7,12 +7,18 @@ from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
 
+from prism.accessors.system_accessor.i_system_accessor import ISystemAccessor
 from prism.accessors.system_accessor.system_accessor import SystemAccessor
 
 
 @pytest.fixture
-def accessor():
+def accessor() -> ISystemAccessor:
     return SystemAccessor()
+
+
+class TestInterfaceConformance:
+    def test_implements_interface(self):
+        assert isinstance(SystemAccessor(), ISystemAccessor)
 
 
 class TestGetPlatform:

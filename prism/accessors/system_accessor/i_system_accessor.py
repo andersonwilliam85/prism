@@ -1,9 +1,6 @@
 """ISystemAccessor — platform detection, OS info, and environment variables.
 
-Consolidated from SystemInfoAccessor + EnvironmentAccessor. Both access
-OS-level system state and change for the same reason (new platform support).
-
-Volatility: low — OS detection + env vars are stable APIs.
+Volatility: low — OS detection and env var APIs are stable.
 """
 
 from __future__ import annotations

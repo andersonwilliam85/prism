@@ -1,6 +1,6 @@
-"""IPackageSourcingEngine — resolve local vs remote prism source.
+"""IResolutionEngine — resolve package source (local, npm, url).
 
-Volatility: medium — changes as new registry/source types are supported.
+Volatility: medium — changes as new source types are supported.
 """
 
 from __future__ import annotations
@@ -9,5 +9,5 @@ from typing import Protocol, runtime_checkable
 
 
 @runtime_checkable
-class IPackageSourcingEngine(Protocol):
+class IResolutionEngine(Protocol):
     def resolve(self, package_name: str, sources: list[dict] | None = None) -> dict: ...

@@ -1,6 +1,10 @@
-"""IInstallationManager — orchestrates the multi-step installation pipeline.
+"""IInstallationManager — orchestrate install pipeline and preflight checks.
 
-Volatility: low — step ordering and pipeline structure rarely change.
+Absorbs PreflightManager (single-method manager was a code smell).
+Preflight checking is part of the installation workflow — same
+volatility axis.
+
+Volatility: low — pipeline structure and check sequence are stable.
 """
 
 from __future__ import annotations
@@ -21,6 +25,8 @@ class IInstallationManager(Protocol):
         tools_selected: list[str] | None = None,
         tools_excluded: list[str] | None = None,
     ) -> InstallationResult: ...
+
+    def check_readiness(self, requirements: dict) -> tuple[bool, list[str]]: ...
 
     def load_prism_config(self, package_name: str) -> PrismConfig: ...
 

@@ -2,6 +2,8 @@
 
 Pure I/O translation: wraps platform module, /etc/os-release parsing,
 subprocess version checks, and os.environ access.
+
+Volatility: low — OS detection and env var APIs are stable.
 """
 
 from __future__ import annotations
