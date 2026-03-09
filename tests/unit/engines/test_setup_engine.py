@@ -59,6 +59,34 @@ class TestPlanWorkspace:
         result = engine.plan_workspace(merged)
         assert result.count("projects") == 1
 
+    def test_config_dirs_replace_defaults(self):
+        engine = SetupEngine()
+        config_dirs = ["src", "infra", "docs"]
+        result = engine.plan_workspace({}, config_dirs=config_dirs)
+        assert result == ["src", "infra", "docs"]
+        assert "projects" not in result  # defaults replaced
+
+    def test_config_dirs_plus_merged_extras(self):
+        engine = SetupEngine()
+        config_dirs = ["src", "infra"]
+        merged = {"workspace": {"directories": ["sandbox"]}}
+        result = engine.plan_workspace(merged, config_dirs=config_dirs)
+        assert "src" in result
+        assert "infra" in result
+        assert "sandbox" in result
+
+    def test_config_dirs_no_duplicates_with_merged(self):
+        engine = SetupEngine()
+        config_dirs = ["src", "docs"]
+        merged = {"workspace": {"directories": ["src"]}}
+        result = engine.plan_workspace(merged, config_dirs=config_dirs)
+        assert result.count("src") == 1
+
+    def test_empty_config_dirs_uses_defaults(self):
+        engine = SetupEngine()
+        result = engine.plan_workspace({}, config_dirs=[])
+        assert "projects" in result  # falls back to defaults
+
 
 class TestPlanRepoClones:
     def test_string_repos(self):
@@ -71,7 +99,15 @@ class TestPlanRepoClones:
 
     def test_dict_repos(self):
         engine = SetupEngine()
-        merged = {"repositories": [{"url": "https://github.com/org/api.git", "name": "api", "path": "~/dev/api"}]}
+        merged = {
+            "repositories": [
+                {
+                    "url": "https://github.com/org/api.git",
+                    "name": "api",
+                    "path": "~/dev/api",
+                }
+            ]
+        }
         result = engine.plan_repo_clones(merged, "/workspace")
         assert result[0]["name"] == "api"
 

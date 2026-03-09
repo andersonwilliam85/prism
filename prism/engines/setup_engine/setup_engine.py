@@ -48,24 +48,37 @@ class SetupEngine:
 
         return plan
 
-    def plan_workspace(self, merged_config: dict) -> list[str]:
-        """Plan workspace directories to create."""
-        defaults = [
-            "projects",
-            "experiments",
-            "learning",
-            "archived",
-            "docs",
-            "tooling",
-        ]
+    def plan_workspace(self, merged_config: dict, config_dirs: list[str] | None = None) -> list[str]:
+        """Plan workspace directories to create.
 
+        Args:
+            merged_config: Merged sub-prism config (may contain workspace.directories).
+            config_dirs: Directories from the prism's setup.install.directories section.
+                If provided, these replace the hardcoded defaults — prism authors
+                define the structure, not the engine.
+        """
+        if config_dirs:
+            # Prism-defined structure replaces defaults
+            dirs = list(config_dirs)
+        else:
+            # Fallback defaults when prism doesn't specify structure
+            dirs = [
+                "projects",
+                "experiments",
+                "learning",
+                "archived",
+                "docs",
+                "tooling",
+            ]
+
+        # Merged sub-prism config can add extra directories
         extra = merged_config.get("workspace", {}).get("directories", [])
         if isinstance(extra, list):
             for d in extra:
-                if isinstance(d, str) and d not in defaults:
-                    defaults.append(d)
+                if isinstance(d, str) and d not in dirs:
+                    dirs.append(d)
 
-        return defaults
+        return dirs
 
     def plan_repo_clones(self, merged_config: dict, workspace_root: str) -> list[dict]:
         """Plan repository clones from merged config."""

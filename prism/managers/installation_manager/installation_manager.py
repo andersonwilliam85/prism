@@ -88,7 +88,11 @@ class InstallationManager:
             platform_name, platform_detail = self._system.get_platform()
             self.log("platform", f"Detected: {platform_name} ({platform_detail})")
             result.steps.append(
-                StepResult(step="platform", success=True, message=f"{platform_name} ({platform_detail})")
+                StepResult(
+                    step="platform",
+                    success=True,
+                    message=f"{platform_name} ({platform_detail})",
+                )
             )
 
             if platform_name == "unknown":
@@ -113,9 +117,13 @@ class InstallationManager:
             step_result = self._ensure_package_manager(platform_name)
             result.steps.append(step_result)
 
-            # Workspace folders
-            workspace_root = Path.home() / "workspace"
-            self._create_workspace(merged, workspace_root)
+            # Workspace folders — user chooses base dir, defaults to ~/workspace
+            workspace_dir = user_info.get("workspace_dir", "")
+            if workspace_dir:
+                workspace_root = Path(workspace_dir).expanduser()
+            else:
+                workspace_root = Path.home() / "workspace"
+            self._create_workspace(config, merged, workspace_root)
             result.steps.append(StepResult(step="workspace", success=True))
 
             # Git config
@@ -133,7 +141,14 @@ class InstallationManager:
             # Apply config package (copy files, save merged config)
             pkg_path = self._files.find_package(self._prisms_dir, package_name)
             if pkg_path:
-                self._apply_config_package(pkg_path, workspace_root, user_info, merged, selected_sub_prisms, config)
+                self._apply_config_package(
+                    pkg_path,
+                    workspace_root,
+                    user_info,
+                    merged,
+                    selected_sub_prisms,
+                    config,
+                )
             result.steps.append(StepResult(step="config_package", success=True))
 
             # ---- Phase 2: Privileged steps (tool installs) ----
@@ -150,7 +165,10 @@ class InstallationManager:
                 result.pending_privileged = pending
                 result.phase = 1
                 if pending:
-                    self.log("tools", f"Deferred {len(pending)} tool installs pending approval")
+                    self.log(
+                        "tools",
+                        f"Deferred {len(pending)} tool installs pending approval",
+                    )
                 result.steps.append(StepResult(step="tools", success=True, skipped=True, message="Deferred"))
             else:
                 # Execute tool installs immediately
@@ -159,7 +177,14 @@ class InstallationManager:
                 result.phase = 2
 
             # Finalize
-            self._finalize(workspace_root, package_name, platform_name, selected_sub_prisms, user_info, config)
+            self._finalize(
+                workspace_root,
+                package_name,
+                platform_name,
+                selected_sub_prisms,
+                user_info,
+                config,
+            )
             result.steps.append(StepResult(step="finalize", success=True))
 
             result.success = True
@@ -234,7 +259,13 @@ class InstallationManager:
                     result.steps.append(StepResult(step="tools", success=True, message=f"Installed {step.name}"))
                 except Exception as e:
                     self.log("tools", f"Failed to install {step.name}: {e}", "warning")
-                    result.steps.append(StepResult(step="tools", success=False, message=f"Failed: {step.name} - {e}"))
+                    result.steps.append(
+                        StepResult(
+                            step="tools",
+                            success=False,
+                            message=f"Failed: {step.name} - {e}",
+                        )
+                    )
 
             result.success = True
             result.finished_at = datetime.now()
@@ -319,7 +350,11 @@ class InstallationManager:
                             tier_configs.append(sub_config)
                             self.log("prism", f"Merged sub-prism: {tier_name}/{sub_id}")
                         except Exception as e:
-                            self.log("prism", f"Failed to merge {tier_name}/{sub_id}: {e}", "warning")
+                            self.log(
+                                "prism",
+                                f"Failed to merge {tier_name}/{sub_id}: {e}",
+                                "warning",
+                            )
 
         return self._merge.merge_tiers({}, tier_configs)
 
@@ -386,19 +421,34 @@ class InstallationManager:
             if self._commands.pkg_is_installed("brew"):
                 self.log("package_manager", "Homebrew already installed", "success")
             else:
-                self.log("package_manager", "Homebrew not found — manual install required", "warning")
+                self.log(
+                    "package_manager",
+                    "Homebrew not found — manual install required",
+                    "warning",
+                )
         elif platform_name in ("ubuntu", "linux"):
             self.log("package_manager", "Using apt (built-in)", "success")
         elif platform_name == "windows":
             if self._commands.pkg_is_installed("choco"):
                 self.log("package_manager", "Chocolatey already installed", "success")
             else:
-                self.log("package_manager", "Chocolatey not found — manual install required", "warning")
+                self.log(
+                    "package_manager",
+                    "Chocolatey not found — manual install required",
+                    "warning",
+                )
         return StepResult(step="package_manager", success=True)
 
-    def _create_workspace(self, merged_config: dict, workspace_root: Path) -> None:
+    def _create_workspace(self, config: dict, merged_config: dict, workspace_root: Path) -> None:
         """Create workspace directory structure."""
-        dirs = self._setup.plan_workspace(merged_config)
+        # Config-driven directories from setup.install.directories
+        setup_dirs = config.get("setup", {}).get("install", {}).get("directories", [])
+        config_dir_names = [d.get("name", d.get("dest", "")) for d in setup_dirs if isinstance(d, dict)]
+        config_dir_names = [d for d in config_dir_names if d]
+
+        dirs = self._setup.plan_workspace(merged_config, config_dir_names)
+        self._files.mkdir(workspace_root)
+        self.log("workspace", f"Base: {workspace_root}")
         for d in dirs:
             path = workspace_root / d
             self._files.mkdir(path)
@@ -503,7 +553,11 @@ class InstallationManager:
                 if self._files.exists(dir_dest):
                     self._files.rmtree(dir_dest)
                 self._files.copy(src, dir_dest)
-                self.log("config_package", f"Copied directory: {dir_entry['dest']}", "success")
+                self.log(
+                    "config_package",
+                    f"Copied directory: {dir_entry['dest']}",
+                    "success",
+                )
 
         # Save user info
         self._files.write_yaml(dest / "user-info.yaml", user_info)
