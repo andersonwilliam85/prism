@@ -10,6 +10,7 @@
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT"></a>
   <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.9+-blue.svg" alt="Python 3.9+"></a>
   <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey" alt="Platform">
+  <a href="https://andersonwilliam85.github.io/prism/"><img src="https://img.shields.io/badge/docs-GitHub%20Pages-blue.svg" alt="Documentation"></a>
 </p>
 
 ---
@@ -199,6 +200,17 @@ make test-coverage     # With coverage report
 ```
 
 GitHub Actions runs lint, test, and coverage on every PR.
+
+---
+
+## Documentation
+
+Full documentation is available at **[andersonwilliam85.github.io/prism](https://andersonwilliam85.github.io/prism/)**.
+
+- [Getting Started](https://andersonwilliam85.github.io/prism/getting-started/quickstart)
+- [User Guide](https://andersonwilliam85.github.io/prism/user-guide/creating-configurations)
+- [Configuration Reference](https://andersonwilliam85.github.io/prism/reference/configuration-schema)
+- [Contributing](https://andersonwilliam85.github.io/prism/contributor-guide/contributing)
 
 ---
 
