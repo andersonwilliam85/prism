@@ -38,10 +38,12 @@ class PackageManager:
         return [
             PackageInfo(
                 name=pkg["name"],
+                dir_name=pkg.get("dir_name", pkg["name"]),
                 display_name=pkg.get("description", pkg["name"]),
                 version=pkg.get("version", "1.0.0"),
                 description=pkg.get("description", ""),
                 package_type=pkg.get("type", "prism"),
+                default=pkg.get("default", False),
                 path=pkg.get("path", ""),
             )
             for pkg in raw_packages

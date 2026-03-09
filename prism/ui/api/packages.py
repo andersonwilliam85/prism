@@ -32,7 +32,7 @@ def list_packages():
         for pkg in packages:
             is_valid, errors, warnings = results.get(pkg.name, (True, [], []))
             entry = {
-                "id": pkg.name,
+                "id": pkg.dir_name or pkg.name,
                 "name": pkg.name,
                 "displayName": pkg.display_name or pkg.name.replace("-", " ").title(),
                 "description": pkg.description,
@@ -42,7 +42,7 @@ def list_packages():
             }
             if is_valid:
                 entry["warnings"] = warnings
-                entry["default"] = False
+                entry["default"] = pkg.default
                 valid_packages.append(entry)
             else:
                 entry["errors"] = errors
@@ -194,6 +194,8 @@ def get_config(package_name):
             "unpkg_url": prism_config.unpkg_url,
             "proxies": prism_config.proxies,
             "branding": {
+                "name": prism_config.branding.name,
+                "tagline": prism_config.branding.tagline,
                 "logo_text": prism_config.branding.logo_text,
                 "logo_icon": prism_config.branding.logo_icon,
                 "page_title": prism_config.branding.page_title,
