@@ -250,3 +250,115 @@ class TestProgressCallback:
         assert len(messages) > 0
         steps = [m[0] for m in messages]
         assert "platform" in steps
+
+
+# ------------------------------------------------------------------
+# Two-phase install (privilege separation)
+# ------------------------------------------------------------------
+
+
+class TestTwoPhaseInstall:
+    def test_skip_privileged_returns_phase_1(self, manager, file_accessor, valid_config):
+        file_accessor.get_package_config.return_value = valid_config
+        result = manager.install("startup", {}, skip_privileged=True)
+        assert result.success is True
+        assert result.phase == 1
+
+    def test_skip_privileged_defers_tools(self, manager, file_accessor, command_accessor):
+        config = {
+            "package": {"name": "test", "version": "1.0.0", "description": "Test"},
+            "tools_required": [{"name": "docker", "description": "Containers"}],
+        }
+        file_accessor.get_package_config.return_value = config
+        command_accessor.pkg_is_installed.return_value = False
+
+        result = manager.install("test", {}, skip_privileged=True)
+        assert result.success is True
+        assert result.phase == 1
+        assert len(result.pending_privileged) == 1
+        assert result.pending_privileged[0].name == "docker"
+
+    def test_skip_privileged_tools_step_marked_skipped(self, manager, file_accessor, valid_config):
+        file_accessor.get_package_config.return_value = valid_config
+        result = manager.install("startup", {}, skip_privileged=True)
+        tools_steps = [s for s in result.steps if s.step == "tools"]
+        assert any(s.skipped for s in tools_steps)
+
+    def test_normal_install_is_phase_2(self, manager, file_accessor, valid_config):
+        file_accessor.get_package_config.return_value = valid_config
+        result = manager.install("startup", {})
+        assert result.phase == 2
+
+    def test_normal_install_no_pending(self, manager, file_accessor, valid_config):
+        file_accessor.get_package_config.return_value = valid_config
+        result = manager.install("startup", {})
+        assert result.pending_privileged == []
+
+
+class TestPlanPrivilegedInstalls:
+    def test_no_tools_returns_empty(self, manager):
+        plan = manager.plan_privileged_installs({}, "mac")
+        assert plan == []
+
+    def test_already_installed_tools_excluded(self, manager, command_accessor):
+        command_accessor.pkg_is_installed.return_value = True
+        config = {"tools_required": [{"name": "git"}]}
+        plan = manager.plan_privileged_installs(config, "mac")
+        assert plan == []
+
+    def test_missing_tools_included(self, manager, command_accessor):
+        command_accessor.pkg_is_installed.return_value = False
+        config = {"tools_required": [{"name": "docker"}, {"name": "kubectl"}]}
+        plan = manager.plan_privileged_installs(config, "ubuntu")
+        assert len(plan) == 2
+        assert plan[0].name == "docker"
+        assert plan[1].name == "kubectl"
+
+    def test_mac_no_sudo(self, manager, command_accessor):
+        command_accessor.pkg_is_installed.return_value = False
+        config = {"tools_required": [{"name": "node"}]}
+        plan = manager.plan_privileged_installs(config, "mac")
+        assert len(plan) == 1
+        assert plan[0].needs_sudo is False
+        assert "brew" in plan[0].command
+
+    def test_ubuntu_needs_sudo(self, manager, command_accessor):
+        command_accessor.pkg_is_installed.return_value = False
+        config = {"tools_required": [{"name": "node"}]}
+        plan = manager.plan_privileged_installs(config, "ubuntu")
+        assert len(plan) == 1
+        assert plan[0].needs_sudo is True
+        assert "apt" in plan[0].command
+
+    def test_windows_needs_sudo(self, manager, command_accessor):
+        command_accessor.pkg_is_installed.return_value = False
+        config = {"tools_required": [{"name": "git"}]}
+        plan = manager.plan_privileged_installs(config, "windows")
+        assert len(plan) == 1
+        assert plan[0].needs_sudo is True
+        assert "choco" in plan[0].command
+
+
+class TestInstallPrivileged:
+    def test_installs_pending_tools(self, manager, command_accessor):
+        from prism.models.installation import PrivilegedStep
+
+        steps = [
+            PrivilegedStep(name="docker", command="brew install docker", needs_sudo=False, platform="mac"),
+        ]
+        command_accessor.pkg_is_installed.return_value = False
+        result = manager.install_privileged(steps, "mac")
+        assert result.success is True
+        assert result.phase == 2
+        command_accessor.pkg_install.assert_called_once_with("docker", "mac")
+
+    def test_skips_already_installed(self, manager, command_accessor):
+        from prism.models.installation import PrivilegedStep
+
+        steps = [
+            PrivilegedStep(name="git", command="brew install git", needs_sudo=False, platform="mac"),
+        ]
+        command_accessor.pkg_is_installed.return_value = True
+        result = manager.install_privileged(steps, "mac")
+        assert result.success is True
+        command_accessor.pkg_install.assert_not_called()
