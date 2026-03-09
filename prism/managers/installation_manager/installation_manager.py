@@ -19,7 +19,7 @@ from prism.accessors.system_accessor.i_system_accessor import ISystemAccessor
 from prism.engines.merge_engine.i_merge_engine import IMergeEngine
 from prism.engines.setup_engine.i_setup_engine import ISetupEngine
 from prism.engines.validation_engine.i_validation_engine import IValidationEngine
-from prism.models.installation import InstallationResult, StepResult
+from prism.models.installation import InstallationResult, PrivilegedStep, StepResult
 from prism.models.prism_config import BrandingConfig, PrismConfig
 from prism.utilities.event_bus.i_event_bus import IEventBus
 
@@ -61,8 +61,15 @@ class InstallationManager:
         selected_sub_prisms: dict[str, str] | None = None,
         tools_selected: list[str] | None = None,
         tools_excluded: list[str] | None = None,
+        skip_privileged: bool = False,
     ) -> InstallationResult:
-        """Run the full installation pipeline."""
+        """Run the installation pipeline.
+
+        Args:
+            skip_privileged: If True, skip system package installs and return
+                them as pending_privileged steps for user approval. Call
+                install_privileged() to execute them.
+        """
         result = InstallationResult(success=False, package_name=package_name)
         selected_sub_prisms = selected_sub_prisms or {}
 
@@ -100,7 +107,9 @@ class InstallationManager:
             self._apply_prism_config(prism_config)
             result.steps.append(StepResult(step="prism_config", success=True))
 
-            # Package manager (brew/choco/apt)
+            # ---- Phase 1: Unprivileged steps ----
+
+            # Package manager check (no install, just detection)
             step_result = self._ensure_package_manager(platform_name)
             result.steps.append(step_result)
 
@@ -117,10 +126,6 @@ class InstallationManager:
             self._ensure_ssh_keys(user_info)
             result.steps.append(StepResult(step="ssh_keys", success=True))
 
-            # Install tools
-            self._install_tools(merged, platform_name, tools_selected, tools_excluded)
-            result.steps.append(StepResult(step="tools", success=True))
-
             # Clone repositories
             self._clone_repos(merged, str(workspace_root))
             result.steps.append(StepResult(step="repositories", success=True))
@@ -130,6 +135,28 @@ class InstallationManager:
             if pkg_path:
                 self._apply_config_package(pkg_path, workspace_root, user_info, merged, selected_sub_prisms, config)
             result.steps.append(StepResult(step="config_package", success=True))
+
+            # ---- Phase 2: Privileged steps (tool installs) ----
+            # Build effective config: top-level config + merged sub-prism config
+            effective = dict(merged)
+            if "tools_required" not in effective and "tools_required" in config:
+                effective["tools_required"] = config["tools_required"]
+            if "tools" not in effective and "tools" in config:
+                effective["tools"] = config["tools"]
+
+            if skip_privileged:
+                # Plan privileged installs but don't execute
+                pending = self.plan_privileged_installs(effective, platform_name, tools_selected, tools_excluded)
+                result.pending_privileged = pending
+                result.phase = 1
+                if pending:
+                    self.log("tools", f"Deferred {len(pending)} tool installs pending approval")
+                result.steps.append(StepResult(step="tools", success=True, skipped=True, message="Deferred"))
+            else:
+                # Execute tool installs immediately
+                self._install_tools(effective, platform_name, tools_selected, tools_excluded)
+                result.steps.append(StepResult(step="tools", success=True))
+                result.phase = 2
 
             # Finalize
             self._finalize(workspace_root, package_name, platform_name, selected_sub_prisms, user_info, config)
@@ -145,6 +172,88 @@ class InstallationManager:
             self._event_bus.publish("installation.failed", {"package": package_name, "error": str(e)})
 
         return result
+
+    def plan_privileged_installs(
+        self,
+        merged_config: dict,
+        platform_name: str,
+        tools_selected: list[str] | None = None,
+        tools_excluded: list[str] | None = None,
+    ) -> list[PrivilegedStep]:
+        """Plan which tool installs need elevated privileges.
+
+        Returns a list of PrivilegedStep objects. On macOS with Homebrew,
+        needs_sudo is False (brew runs as user). On Linux/Windows, needs_sudo
+        is True for system package managers.
+        """
+        tools = self._setup.resolve_tools(merged_config, platform_name, tools_selected, tools_excluded)
+        if not tools:
+            return []
+
+        # macOS Homebrew doesn't need sudo
+        needs_sudo = platform_name not in ("mac",)
+
+        steps: list[PrivilegedStep] = []
+        for tool in tools:
+            name = tool["name"]
+            if not self._commands.pkg_is_installed(name):
+                cmd = self._get_install_command(name, platform_name)
+                steps.append(
+                    PrivilegedStep(
+                        name=name,
+                        command=cmd,
+                        needs_sudo=needs_sudo,
+                        platform=platform_name,
+                    )
+                )
+
+        return steps
+
+    def install_privileged(
+        self,
+        steps: list[PrivilegedStep],
+        platform_name: str,
+    ) -> InstallationResult:
+        """Execute privileged install steps (Phase 2).
+
+        Called after user has approved the plan from plan_privileged_installs().
+        """
+        result = InstallationResult(success=False, package_name="", phase=2)
+
+        try:
+            for step in steps:
+                if self._commands.pkg_is_installed(step.name):
+                    self.log("tools", f"{step.name} already installed", "success")
+                    result.steps.append(StepResult(step="tools", success=True, message=f"{step.name} present"))
+                    continue
+
+                self.log("tools", f"Installing {step.name}...")
+                try:
+                    self._commands.pkg_install(step.name, step.platform or platform_name)
+                    self.log("tools", f"Installed {step.name}", "success")
+                    result.steps.append(StepResult(step="tools", success=True, message=f"Installed {step.name}"))
+                except Exception as e:
+                    self.log("tools", f"Failed to install {step.name}: {e}", "warning")
+                    result.steps.append(StepResult(step="tools", success=False, message=f"Failed: {step.name} - {e}"))
+
+            result.success = True
+            result.finished_at = datetime.now()
+        except Exception as e:
+            result.error = str(e)
+            result.finished_at = datetime.now()
+
+        return result
+
+    @staticmethod
+    def _get_install_command(tool_name: str, platform_name: str) -> str:
+        """Get the platform-specific install command for display."""
+        if platform_name == "mac":
+            return f"brew install {tool_name}"
+        elif platform_name in ("ubuntu", "linux"):
+            return f"sudo apt-get install -y {tool_name}"
+        elif platform_name == "windows":
+            return f"choco install {tool_name} -y"
+        return f"install {tool_name}"
 
     def check_readiness(self, requirements: dict) -> tuple[bool, list[str]]:
         """Check whether the system meets installation requirements."""
