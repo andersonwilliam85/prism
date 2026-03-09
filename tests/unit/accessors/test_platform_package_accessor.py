@@ -82,7 +82,9 @@ class TestInstall:
 
 
 class TestIsInstalled:
-    @patch("prism.accessors.platform_package_accessor.platform_package_accessor.shutil.which", return_value="/usr/bin/git")
+    @patch(
+        "prism.accessors.platform_package_accessor.platform_package_accessor.shutil.which", return_value="/usr/bin/git"
+    )
     def test_returns_true_when_on_path(self, mock_which, accessor):
         assert accessor.is_installed("git") is True
         mock_which.assert_called_once_with("git")
