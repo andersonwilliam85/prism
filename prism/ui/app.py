@@ -10,9 +10,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from flask import Flask
+from flask import Flask, render_template
 
 from prism.container import Container
+
+TEMPLATE_DIR = Path(__file__).parent / "templates"
 
 
 def create_app(prisms_dir: Path | None = None) -> Flask:
@@ -21,7 +23,7 @@ def create_app(prisms_dir: Path | None = None) -> Flask:
     Args:
         prisms_dir: Path to the prisms directory. Defaults to repo root / prisms.
     """
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder=str(TEMPLATE_DIR))
 
     # Build the DI container — single source of truth for all wiring
     container = Container(prisms_dir=prisms_dir)
@@ -38,5 +40,10 @@ def create_app(prisms_dir: Path | None = None) -> Flask:
     app.register_blueprint(installation_bp)
     app.register_blueprint(validation_bp)
     app.register_blueprint(configuration_bp)
+
+    # Index route — serves the installer UI
+    @app.route("/")
+    def index():
+        return render_template("index.html")
 
     return app
