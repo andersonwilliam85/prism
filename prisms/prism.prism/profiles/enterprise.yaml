@@ -1,14 +1,70 @@
 # Enterprise Profile
-# Corporate environment with compliance requirements
+# Corporate environment with compliance, security, and multi-tier setup
 
 git_config:
   default_branch: "main"
   pull_rebase: true
+  auto_setup_remote: true
+  commit_template: ".gitmessage"
+  sign_commits: true
+  hooks:
+    pre_commit: true
+    commit_msg: true
+    pre_push: true
+
+ssh:
+  generate_key: true
+  key_type: "ed25519"
+  add_to_agent: true
+  config_entries:
+    - host: "github.com"
+      identity_file: "~/.ssh/id_ed25519_work"
 
 proxy:
   http: ""
   https: ""
-  no_proxy: "localhost,127.0.0.1"
+  no_proxy: "localhost,127.0.0.1,.internal.company.com"
+
+editor:
+  default: "code"
+  tab_size: 2
+  format_on_save: true
+  shared_settings: true
+
+workspace:
+  directories:
+    - "projects"
+    - "projects/core"
+    - "projects/services"
+    - "projects/libraries"
+    - "scripts"
+    - "docs"
+    - ".config"
+    - ".certs"
+
+shell:
+  aliases:
+    - alias: "gs"
+      command: "git status"
+    - alias: "gp"
+      command: "git push"
+    - alias: "gl"
+      command: "git log --oneline -20"
+    - alias: "gpr"
+      command: "gh pr create"
+    - alias: "gprl"
+      command: "gh pr list"
+
+code_quality:
+  linting: true
+  formatting: true
+  pre_commit_hooks: true
+  security_scanning: true
+
+security:
+  credential_storage: "keychain"
+  rotate_keys_days: 90
+  audit_logging: true
 
 tools_required:
   - name: "git"
@@ -17,6 +73,7 @@ tools_required:
       mac: "brew install git"
       ubuntu: "sudo apt-get install -y git"
       linux: "sudo apt-get install -y git"
+      windows: "winget install Git.Git"
 
   - name: "curl"
     description: "HTTP client"
@@ -24,3 +81,69 @@ tools_required:
       mac: "brew install curl"
       ubuntu: "sudo apt-get install -y curl"
       linux: "sudo apt-get install -y curl"
+      windows: "winget install cURL.cURL"
+
+  - name: "node"
+    description: "Node.js runtime"
+    platforms:
+      mac: "brew install node"
+      ubuntu: "curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - && sudo apt-get install -y nodejs"
+      linux: "curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - && sudo apt-get install -y nodejs"
+      windows: "winget install OpenJS.NodeJS.LTS"
+
+  - name: "python3"
+    description: "Python interpreter"
+    platforms:
+      mac: "brew install python@3.12"
+      ubuntu: "sudo apt-get install -y python3 python3-pip python3-venv"
+      linux: "sudo apt-get install -y python3 python3-pip python3-venv"
+      windows: "winget install Python.Python.3.12"
+
+  - name: "gh"
+    description: "GitHub CLI — PR workflows"
+    platforms:
+      mac: "brew install gh"
+      ubuntu: "sudo apt-get install -y gh"
+      linux: "sudo apt-get install -y gh"
+      windows: "winget install GitHub.cli"
+
+  - name: "docker"
+    description: "Container runtime"
+    platforms:
+      mac: "brew install --cask docker"
+      ubuntu: "curl -fsSL https://get.docker.com | sh"
+      linux: "curl -fsSL https://get.docker.com | sh"
+      windows: "winget install Docker.DockerDesktop"
+
+tools_optional:
+  - name: "code"
+    description: "Visual Studio Code"
+    platforms:
+      mac: "brew install --cask visual-studio-code"
+      ubuntu: "sudo snap install code --classic"
+      linux: "sudo snap install code --classic"
+      windows: "winget install Microsoft.VisualStudioCode"
+
+  - name: "jq"
+    description: "JSON processor"
+    platforms:
+      mac: "brew install jq"
+      ubuntu: "sudo apt-get install -y jq"
+      linux: "sudo apt-get install -y jq"
+      windows: "winget install jqlang.jq"
+
+  - name: "aws"
+    description: "AWS CLI"
+    platforms:
+      mac: "brew install awscli"
+      ubuntu: "sudo apt-get install -y awscli"
+      linux: "sudo apt-get install -y awscli"
+      windows: "winget install Amazon.AWSCLI"
+
+  - name: "kubectl"
+    description: "Kubernetes CLI"
+    platforms:
+      mac: "brew install kubectl"
+      ubuntu: "sudo snap install kubectl --classic"
+      linux: "sudo snap install kubectl --classic"
+      windows: "winget install Kubernetes.kubectl"

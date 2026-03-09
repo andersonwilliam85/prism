@@ -39,7 +39,7 @@ class PackageManager:
             PackageInfo(
                 name=pkg["name"],
                 dir_name=pkg.get("dir_name", pkg["name"]),
-                display_name=pkg.get("description", pkg["name"]),
+                display_name=pkg.get("name", pkg["name"]).replace("-", " ").replace(".", " ").title(),
                 version=pkg.get("version", "1.0.0"),
                 description=pkg.get("description", ""),
                 package_type=pkg.get("type", "prism"),
@@ -59,7 +59,7 @@ class PackageManager:
 
         return PackageInfo(
             name=pkg.get("name", package_name),
-            display_name=pkg.get("description", package_name),
+            display_name=pkg.get("name", package_name).replace("-", " ").replace(".", " ").title(),
             version=pkg.get("version", "1.0.0"),
             description=pkg.get("description", ""),
             author=pkg.get("author", ""),
@@ -87,6 +87,7 @@ class PackageManager:
                         id=sub_prism.get("id", ""),
                         name=sub_prism.get("name", sub_prism.get("id", "")),
                         required=sub_prism.get("required", False),
+                        description=sub_prism.get("description", ""),
                     )
                 )
             if tier_list:
