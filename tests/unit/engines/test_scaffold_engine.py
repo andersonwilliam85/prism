@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from prism.engines.scaffold_engine.scaffold_engine import ScaffoldEngine
 from prism.engines.scaffold_engine.i_scaffold_engine import IScaffoldEngine
+from prism.engines.scaffold_engine.scaffold_engine import ScaffoldEngine
 
 
 class TestInterfaceConformance:

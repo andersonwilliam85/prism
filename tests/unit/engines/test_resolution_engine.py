@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from prism.engines.resolution_engine.resolution_engine import ResolutionEngine
 from prism.engines.resolution_engine.i_resolution_engine import IResolutionEngine
+from prism.engines.resolution_engine.resolution_engine import ResolutionEngine
 
 
 class TestInterfaceConformance:

@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from prism.engines.merge_engine.merge_engine import MergeEngine
 from prism.engines.merge_engine.i_merge_engine import IMergeEngine
+from prism.engines.merge_engine.merge_engine import MergeEngine
 
 
 class TestInterfaceConformance:

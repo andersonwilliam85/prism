@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import json
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
-from prism.accessors.registry_accessor.registry_accessor import RegistryAccessor
 from prism.accessors.registry_accessor.i_registry_accessor import IRegistryAccessor
+from prism.accessors.registry_accessor.registry_accessor import RegistryAccessor
 
 
 @pytest.fixture

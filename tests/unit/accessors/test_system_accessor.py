@@ -7,8 +7,8 @@ from unittest.mock import patch
 
 import pytest
 
-from prism.accessors.system_accessor.system_accessor import SystemAccessor
 from prism.accessors.system_accessor.i_system_accessor import ISystemAccessor
+from prism.accessors.system_accessor.system_accessor import SystemAccessor
 
 
 @pytest.fixture

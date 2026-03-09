@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from prism.engines.validation_engine.validation_engine import ValidationEngine
 from prism.engines.validation_engine.i_validation_engine import IValidationEngine
+from prism.engines.validation_engine.validation_engine import ValidationEngine
 
 
 class TestInterfaceConformance:

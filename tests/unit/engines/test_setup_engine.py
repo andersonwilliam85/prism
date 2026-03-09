@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from prism.engines.setup_engine.setup_engine import SetupEngine
 from prism.engines.setup_engine.i_setup_engine import ISetupEngine
+from prism.engines.setup_engine.setup_engine import SetupEngine
 
 
 class TestInterfaceConformance:
