@@ -57,7 +57,11 @@ def prisms_dir():
 @pytest.fixture
 def valid_config():
     return {
-        "package": {"name": "startup", "version": "1.0.0", "description": "Startup Prism"},
+        "package": {
+            "name": "startup",
+            "version": "1.0.0",
+            "description": "Startup Prism",
+        },
         "prism_config": {"theme": "ocean"},
         "bundled_prisms": {},
     }
@@ -135,7 +139,12 @@ class TestInstallFailures:
 
     def test_preflight_failure(self, manager, file_accessor, system_accessor):
         config = {
-            "package": {"name": "strict", "version": "1.0.0", "description": "Strict", "requires": {"node": True}},
+            "package": {
+                "name": "strict",
+                "version": "1.0.0",
+                "description": "Strict",
+                "requires": {"node": True},
+            },
         }
         system_accessor.get_installed_version.return_value = None
         file_accessor.get_package_config.return_value = config
@@ -253,6 +262,57 @@ class TestProgressCallback:
 
 
 # ------------------------------------------------------------------
+# Configurable workspace (BL-010)
+# ------------------------------------------------------------------
+
+
+class TestConfigurableWorkspace:
+    def test_custom_workspace_dir(self, manager, file_accessor, valid_config):
+        file_accessor.get_package_config.return_value = valid_config
+        manager.install("startup", {"workspace_dir": "/tmp/myworkspace"})
+        # Should create dirs under /tmp/myworkspace, not ~/workspace
+        mkdir_calls = file_accessor.mkdir.call_args_list
+        paths = [str(call.args[0]) for call in mkdir_calls]
+        assert any("/tmp/myworkspace" in p for p in paths)
+
+    def test_default_workspace_when_not_specified(self, manager, file_accessor, valid_config):
+        file_accessor.get_package_config.return_value = valid_config
+        manager.install("startup", {})
+        mkdir_calls = file_accessor.mkdir.call_args_list
+        paths = [str(call.args[0]) for call in mkdir_calls]
+        assert any("workspace" in p for p in paths)
+
+    def test_tilde_expansion(self, manager, file_accessor, valid_config):
+        file_accessor.get_package_config.return_value = valid_config
+        manager.install("startup", {"workspace_dir": "~/development"})
+        mkdir_calls = file_accessor.mkdir.call_args_list
+        paths = [str(call.args[0]) for call in mkdir_calls]
+        # ~ should be expanded, not literal
+        assert not any("~" in p for p in paths)
+
+    def test_config_driven_directories(self, manager, file_accessor):
+        config = {
+            "package": {"name": "custom", "version": "1.0.0", "description": "Custom"},
+            "setup": {
+                "install": {
+                    "directories": [
+                        {"name": "src"},
+                        {"name": "infra"},
+                        {"name": "sandbox"},
+                    ]
+                }
+            },
+        }
+        file_accessor.get_package_config.return_value = config
+        manager.install("custom", {})
+        mkdir_calls = file_accessor.mkdir.call_args_list
+        paths = [str(call.args[0]) for call in mkdir_calls]
+        assert any("src" in p for p in paths)
+        assert any("infra" in p for p in paths)
+        assert any("sandbox" in p for p in paths)
+
+
+# ------------------------------------------------------------------
 # Two-phase install (privilege separation)
 # ------------------------------------------------------------------
 
@@ -344,7 +404,12 @@ class TestInstallPrivileged:
         from prism.models.installation import PrivilegedStep
 
         steps = [
-            PrivilegedStep(name="docker", command="brew install docker", needs_sudo=False, platform="mac"),
+            PrivilegedStep(
+                name="docker",
+                command="brew install docker",
+                needs_sudo=False,
+                platform="mac",
+            ),
         ]
         command_accessor.pkg_is_installed.return_value = False
         result = manager.install_privileged(steps, "mac")
