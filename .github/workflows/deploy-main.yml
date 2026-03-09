@@ -31,7 +31,8 @@ jobs:
 
       - name: Generate test reports
         if: always()
-        run: make test-report
+        run: |
+          $(command -v python || command -v python3) -m pytest tests/e2e/test_cli_installer.py tests/e2e/test_web_api.py tests/e2e/test_full_install_flow.py --html=reports/report.html --self-contained-html --no-cov || true
 
       - name: Upload test results
         if: always()

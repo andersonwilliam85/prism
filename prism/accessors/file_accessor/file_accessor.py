@@ -106,13 +106,16 @@ class FileAccessor:
                     continue
 
                 pkg_info = metadata.get("package", {})
+                prism_config = metadata.get("prism_config", {})
                 packages.append(
                     {
+                        "dir_name": pkg_dir.name,
                         "name": pkg_info.get("name", pkg_dir.name),
                         "version": pkg_info.get("version", "unknown"),
                         "description": pkg_info.get("description", "No description"),
                         "type": pkg_info.get("type", "unknown"),
                         "path": str(pkg_dir),
+                        "default": prism_config.get("default", False),
                     }
                 )
             except (yaml.YAMLError, OSError):
