@@ -13,7 +13,6 @@ import importlib.util
 import json
 import os
 import shutil
-import sys
 import tempfile
 from pathlib import Path
 from unittest.mock import patch
