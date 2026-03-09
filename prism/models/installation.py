@@ -27,6 +27,16 @@ class StepResult:
 
 
 @dataclass
+class PrivilegedStep:
+    """A step that requires elevated privileges (sudo/admin)."""
+
+    name: str
+    command: str
+    needs_sudo: bool = True
+    platform: str = ""
+
+
+@dataclass
 class InstallationResult:
     """Outcome of a full installation run."""
 
@@ -36,3 +46,5 @@ class InstallationResult:
     started_at: datetime = field(default_factory=datetime.now)
     finished_at: datetime | None = None
     error: str | None = None
+    pending_privileged: list[PrivilegedStep] = field(default_factory=list)
+    phase: int = 0
