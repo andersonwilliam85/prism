@@ -3,6 +3,12 @@
 from __future__ import annotations
 
 from prism.engines.resolution_engine.resolution_engine import ResolutionEngine
+from prism.engines.resolution_engine.i_resolution_engine import IResolutionEngine
+
+
+class TestInterfaceConformance:
+    def test_implements_interface(self):
+        assert isinstance(ResolutionEngine(), IResolutionEngine)
 
 
 class TestResolve:

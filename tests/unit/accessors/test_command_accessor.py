@@ -8,11 +8,17 @@ from unittest.mock import patch, MagicMock
 import pytest
 
 from prism.accessors.command_accessor.command_accessor import CommandAccessor
+from prism.accessors.command_accessor.i_command_accessor import ICommandAccessor
 
 
 @pytest.fixture
-def accessor(tmp_path):
+def accessor(tmp_path) -> ICommandAccessor:
     return CommandAccessor(ssh_dir=tmp_path / ".ssh")
+
+
+class TestInterfaceConformance:
+    def test_implements_interface(self, tmp_path):
+        assert isinstance(CommandAccessor(ssh_dir=tmp_path / ".ssh"), ICommandAccessor)
 
 
 class TestGitCommands:

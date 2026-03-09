@@ -3,6 +3,12 @@
 from __future__ import annotations
 
 from prism.engines.setup_engine.setup_engine import SetupEngine
+from prism.engines.setup_engine.i_setup_engine import ISetupEngine
+
+
+class TestInterfaceConformance:
+    def test_implements_interface(self):
+        assert isinstance(SetupEngine(), ISetupEngine)
 
 
 class TestPlanGitConfig:

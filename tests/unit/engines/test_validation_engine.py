@@ -3,6 +3,12 @@
 from __future__ import annotations
 
 from prism.engines.validation_engine.validation_engine import ValidationEngine
+from prism.engines.validation_engine.i_validation_engine import IValidationEngine
+
+
+class TestInterfaceConformance:
+    def test_implements_interface(self):
+        assert isinstance(ValidationEngine(), IValidationEngine)
 
 
 class TestValidate:

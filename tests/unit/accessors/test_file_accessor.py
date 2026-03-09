@@ -7,11 +7,17 @@ from pathlib import Path
 import pytest
 
 from prism.accessors.file_accessor.file_accessor import FileAccessor
+from prism.accessors.file_accessor.i_file_accessor import IFileAccessor
 
 
 @pytest.fixture
-def accessor():
+def accessor() -> IFileAccessor:
     return FileAccessor()
+
+
+class TestInterfaceConformance:
+    def test_implements_interface(self):
+        assert isinstance(FileAccessor(), IFileAccessor)
 
 
 @pytest.fixture

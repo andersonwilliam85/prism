@@ -8,11 +8,17 @@ from unittest.mock import patch, MagicMock
 import pytest
 
 from prism.accessors.registry_accessor.registry_accessor import RegistryAccessor
+from prism.accessors.registry_accessor.i_registry_accessor import IRegistryAccessor
 
 
 @pytest.fixture
-def accessor():
+def accessor() -> IRegistryAccessor:
     return RegistryAccessor(timeout=5)
+
+
+class TestInterfaceConformance:
+    def test_implements_interface(self):
+        assert isinstance(RegistryAccessor(), IRegistryAccessor)
 
 
 class TestFetchPackage:

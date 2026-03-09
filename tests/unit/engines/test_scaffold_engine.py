@@ -3,6 +3,12 @@
 from __future__ import annotations
 
 from prism.engines.scaffold_engine.scaffold_engine import ScaffoldEngine
+from prism.engines.scaffold_engine.i_scaffold_engine import IScaffoldEngine
+
+
+class TestInterfaceConformance:
+    def test_implements_interface(self):
+        assert isinstance(ScaffoldEngine(), IScaffoldEngine)
 
 
 class TestGenerate:
