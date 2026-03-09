@@ -74,12 +74,17 @@ def get_metadata(package_name):
         # Detect optional tiers (tiers with at least one non-required item)
         has_optional_tiers = any(any(not t.required for t in tier_items) for tier_items in tiers.values())
 
-        # Check for tools
+        # Check for tools — base config or any bundled profile may have them.
+        # When bundled_prisms exist, profiles may add tools after merge, so assume true.
         container = current_app.config["container"]
         config = container.file_accessor.get_package_config(container._prisms_dir, package_name)
         pkg_section = config.get("package", {})
         has_tools = (
-            "tools_required" in config or "tools_selected" in config or "tools" in pkg_section or "tools" in config
+            "tools_required" in config
+            or "tools_selected" in config
+            or "tools" in pkg_section
+            or "tools" in config
+            or bool(config.get("bundled_prisms"))
         )
 
         user_fields = pm.get_user_fields(package_name)
@@ -120,7 +125,7 @@ def get_tiers(package_name):
                     "name": tier_name,
                     "label": tier_name.replace("_", " ").title(),
                     "required": False,
-                    "options": [{"id": t.id, "name": t.name, "description": ""} for t in optional_items],
+                    "options": [{"id": t.id, "name": t.name, "description": t.description} for t in optional_items],
                 }
             )
 
@@ -208,3 +213,56 @@ def get_config(package_name):
         return jsonify({"prism_config": config_dict, "package_name": package_name})
     except Exception as e:
         return jsonify({"prism_config": None, "error": str(e)})
+
+
+@packages_bp.route("/api/package/<package_name>/tools")
+def get_tools(package_name):
+    """Get tools from the package, optionally merged with selected sub-prisms."""
+    from flask import request
+
+    try:
+        container = current_app.config["container"]
+        im = container.installation_manager
+
+        # Get selected sub-prisms from query params (e.g. ?environment=personal)
+        selected_sub_prisms = {}
+        config = container.file_accessor.get_package_config(container._prisms_dir, package_name)
+        bundled = config.get("bundled_prisms", {})
+        for tier_name in bundled:
+            val = request.args.get(tier_name)
+            if val:
+                selected_sub_prisms[tier_name] = val
+
+        # Merge tiers to get the effective config
+        merged = im.merge_tiers(config, selected_sub_prisms)
+
+        # Collect tools from merged config
+        tools_required = merged.get("tools_required", config.get("tools_required", []))
+        tools_optional = merged.get("tools_optional", config.get("tools_optional", []))
+
+        seen = {}
+        for tool in tools_required:
+            if isinstance(tool, dict):
+                tid = tool.get("name", "")
+                seen[tid] = {
+                    "id": tid,
+                    "name": tid.replace("-", " ").title(),
+                    "description": tool.get("description", ""),
+                    "required": True,
+                }
+
+        for tool in tools_optional:
+            if isinstance(tool, dict):
+                tid = tool.get("name", "")
+                if tid not in seen:
+                    seen[tid] = {
+                        "id": tid,
+                        "name": tid.replace("-", " ").title(),
+                        "description": tool.get("description", ""),
+                        "required": False,
+                    }
+
+        tools = list(seen.values())
+        return jsonify({"tools": tools, "has_tools": len(tools) > 0})
+    except Exception as e:
+        return jsonify({"tools": [], "has_tools": False, "error": str(e)})

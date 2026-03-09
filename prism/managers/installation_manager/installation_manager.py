@@ -292,10 +292,14 @@ class InstallationManager:
         for key in requirements:
             if key == "onboarding_version":
                 continue
-            tool = "python" if key == "python_version" else key
-            version = self._system.get_installed_version(tool)
-            if version:
-                installed[tool] = version
+            if key == "python_version":
+                version = self._system.get_installed_version("python3") or self._system.get_installed_version("python")
+                if version:
+                    installed["python"] = version
+            else:
+                version = self._system.get_installed_version(key)
+                if version:
+                    installed[key] = version
         return self._setup.check_requirements(requirements, installed)
 
     def load_prism_config(self, package_name: str) -> PrismConfig:
@@ -384,10 +388,14 @@ class InstallationManager:
         for key in requirements:
             if key == "onboarding_version":
                 continue
-            tool = "python" if key == "python_version" else key
-            version = self._system.get_installed_version(tool)
-            if version:
-                installed[tool] = version
+            if key == "python_version":
+                version = self._system.get_installed_version("python3") or self._system.get_installed_version("python")
+                if version:
+                    installed["python"] = version
+            else:
+                version = self._system.get_installed_version(key)
+                if version:
+                    installed[key] = version
 
         ok, failures = self._setup.check_requirements(requirements, installed)
         if not ok:
