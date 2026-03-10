@@ -23,8 +23,14 @@ package:
 # PRISM META-CONFIGURATION
 # This configures Prism itself (theme, sources, registry)
 prism_config:
-  theme: "ocean"  # Default theme (ocean, purple, forest, sunset, midnight)
-  
+  theme: "ocean"
+  theme_options:
+    - "ocean"
+    - "purple"
+    - "forest"
+    - "sunset"
+    - "midnight"
+
   sources:
     - url: "local"
       name: "Built-in Prisms"

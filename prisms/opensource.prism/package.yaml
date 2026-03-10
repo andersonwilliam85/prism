@@ -24,6 +24,11 @@ package:
 # PRISM META-CONFIGURATION
 prism_config:
   theme: "forest"
+  theme_options:
+    - "forest"
+    - "ocean"
+    - "purple"
+    - "sunset"
 
   sources:
     - url: "local"

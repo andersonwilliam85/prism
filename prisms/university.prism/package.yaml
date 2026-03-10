@@ -22,8 +22,20 @@ package:
 
 # PRISM META-CONFIGURATION
 prism_config:
-  theme: "forest"  # Calming green theme for learning
-  
+  theme: "forest"
+  theme_options:
+    - "forest"
+    - "ocean"
+    - "midnight"
+  custom_themes:
+    - id: "university-brand"
+      name: "University Colors"
+      gradient_1: "#059669"
+      gradient_2: "#047857"
+      gradient_3: "#065f46"
+      gradient_4: "#064e3b"
+      gradient_5: "#022c22"
+
   sources:
     - url: "local"
       name: "Built-in Prisms"
@@ -214,11 +226,38 @@ user_info_fields:
       - "Data Science"
       - "Mathematics"
       - "Other"
-  
-  - id: "year"
-    label: "Year (if student)"
+
+  - id: "course"
+    label: "Primary Course"
     type: "select"
     required: false
+    depends_on: "department"
+    options:
+      - "CS 101: Intro to Programming"
+      - "CS 201: Data Structures"
+      - "CS 301: Algorithms"
+    option_map:
+      Computer Science:
+        - "CS 101: Intro to Programming"
+        - "CS 201: Data Structures"
+        - "CS 301: Algorithms"
+      Engineering:
+        - "ENGR 101: Engineering Design"
+        - "ENGR 201: Systems Engineering"
+      Data Science:
+        - "DS 101: Intro to Data Science"
+        - "DS 201: Machine Learning"
+      Mathematics:
+        - "MATH 201: Linear Algebra"
+        - "MATH 301: Real Analysis"
+      Other:
+        - "N/A"
+
+  - id: "year"
+    label: "Year"
+    type: "select"
+    required: false
+    depends_on: "user_type"
     options:
       - "Freshman"
       - "Sophomore"
@@ -226,6 +265,20 @@ user_info_fields:
       - "Senior"
       - "Graduate"
       - "N/A"
+    option_map:
+      "Student (Undergrad)":
+        - "Freshman"
+        - "Sophomore"
+        - "Junior"
+        - "Senior"
+      "Student (Graduate)":
+        - "Graduate"
+      Faculty:
+        - "N/A"
+      Researcher:
+        - "N/A"
+      Staff:
+        - "N/A"
 
 # Distribution
 distribution:
