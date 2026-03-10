@@ -14,6 +14,7 @@ from prism.accessors.registry_accessor.registry_accessor import RegistryAccessor
 from prism.accessors.rollback_accessor.rollback_accessor import RollbackAccessor
 from prism.accessors.sudo_accessor.sudo_accessor import SudoAccessor
 from prism.accessors.system_accessor.system_accessor import SystemAccessor
+from prism.engines.hierarchy_engine.hierarchy_engine import HierarchyEngine
 from prism.engines.merge_engine.merge_engine import MergeEngine
 from prism.engines.resolution_engine.resolution_engine import ResolutionEngine
 from prism.engines.rollback_engine.rollback_engine import RollbackEngine
@@ -45,6 +46,7 @@ class Container:
         self.event_bus = InMemoryEventBus()
 
         # Engines
+        self.hierarchy_engine = HierarchyEngine()
         self.merge_engine = MergeEngine()
         self.resolution_engine = ResolutionEngine()
         self.rollback_engine = RollbackEngine()

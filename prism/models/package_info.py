@@ -13,6 +13,8 @@ class UserField:
     required: bool = False
     placeholder: str = ""
     options: list[str] = field(default_factory=list)
+    depends_on: str = ""
+    option_map: dict[str, list[str]] = field(default_factory=dict)
 
 
 @dataclass
