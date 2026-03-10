@@ -62,16 +62,13 @@
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
   mermaid.initialize({ startOnLoad: false, theme: 'default' });
 
-  // Script is in <head>, so wait for DOM before touching body elements
-  document.addEventListener('DOMContentLoaded', async () => {
-    // Jekyll renders ```mermaid blocks as <pre><code class="language-mermaid">
-    // Convert them to <pre class="mermaid"> so Mermaid can find them
-    document.querySelectorAll('pre > code.language-mermaid').forEach(code => {
-      const pre = code.parentElement;
-      pre.classList.add('mermaid');
-      pre.textContent = code.textContent;
-    });
-
-    await mermaid.run({ querySelector: 'pre.mermaid' });
+  // Module scripts are deferred — DOM is already parsed when this runs.
+  // DOMContentLoaded may have already fired, so query directly.
+  document.querySelectorAll('pre > code.language-mermaid').forEach(code => {
+    const pre = code.parentElement;
+    pre.classList.add('mermaid');
+    pre.textContent = code.textContent;
   });
+
+  await mermaid.run({ querySelector: 'pre.mermaid' });
 </script>
