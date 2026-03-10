@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 @dataclass
@@ -66,6 +66,33 @@ class RollbackState:
     def undo_sequence(self) -> list[RollbackAction]:
         """Return actions in LIFO order for rollback."""
         return list(reversed(self.actions))
+
+
+@dataclass
+class SudoSession:
+    """A time-limited sudo validation session.
+
+    Created when the user successfully validates their password.
+    Expires after ttl_seconds (default 15 minutes). The token is
+    opaque and memory-only — never logged or persisted.
+    """
+
+    token: str
+    created_at: datetime = field(default_factory=datetime.now)
+    ttl_seconds: int = 900  # 15 minutes
+    attempts: int = 0
+    max_attempts: int = 3
+    locked_until: datetime | None = None
+
+    @property
+    def is_expired(self) -> bool:
+        return datetime.now() > self.created_at + timedelta(seconds=self.ttl_seconds)
+
+    @property
+    def is_locked(self) -> bool:
+        if self.locked_until is None:
+            return False
+        return datetime.now() < self.locked_until
 
 
 @dataclass
