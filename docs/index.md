@@ -356,7 +356,7 @@ GitHub Actions workflows, 3 environments, automated releases.
 
 ### Beginner
 
-1. [Main README](../README.md) — What is Prism?
+1. [Main README](https://github.com/andersonwilliam85/prism#readme) — What is Prism?
 2. [Quickstart](getting-started/quickstart.md) — Install in minutes
 3. [Choosing a Prism](getting-started/choosing-a-prism.md) — Pick your prism
 
