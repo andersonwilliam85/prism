@@ -1,0 +1,17 @@
+company:
+  name: "CLI Test Co"
+  domain: "example.com"
+
+environment:
+  proxy:
+    http: "http://proxy.example.com:8080"
+    https: "http://proxy.example.com:8080"
+
+git:
+  user:
+    name: "${USER}"
+    email: "${USER}@example.com"
+
+tools_required:
+  - git
+  - docker

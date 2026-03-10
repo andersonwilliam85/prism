@@ -21,8 +21,21 @@ package:
 
 # PRISM META-CONFIGURATION
 prism_config:
-  theme: "sunset"  # Energetic orange theme
-  
+  theme: "sunset"
+  theme_options:
+    - "sunset"
+    - "ocean"
+    - "purple"
+    - "launchpad"
+  custom_themes:
+    - id: "launchpad"
+      name: "Launchpad"
+      gradient_1: "#f97316"
+      gradient_2: "#fb923c"
+      gradient_3: "#fbbf24"
+      gradient_4: "#facc15"
+      gradient_5: "#fde68a"
+
   sources:
     - url: "local"
       name: "Built-in Prisms"
@@ -149,6 +162,35 @@ user_info_fields:
     required: true
     placeholder: "alexcodes"
   
+  - id: "role"
+    label: "Role"
+    type: "select"
+    required: true
+    options:
+      - "Full-Stack"
+      - "Frontend"
+      - "Backend"
+
+  - id: "stack"
+    label: "Primary Stack"
+    type: "select"
+    required: true
+    depends_on: "role"
+    options:
+      - "MERN"
+      - "JAMstack"
+      - "Rails"
+    option_map:
+      Full-Stack:
+        - "MERN"
+        - "Rails"
+      Frontend:
+        - "JAMstack"
+        - "MERN"
+      Backend:
+        - "Rails"
+        - "MERN"
+
   - id: "slack_handle"
     label: "Slack"
     type: "text"

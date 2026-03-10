@@ -22,8 +22,19 @@ package:
 
 # PRISM META-CONFIGURATION
 prism_config:
-  theme: "midnight"  # Professional dark theme for enterprise
-  
+  theme: "midnight"
+  theme_options:
+    - "midnight"
+    - "ocean"
+  custom_themes:
+    - id: "corporate"
+      name: "Corporate Blue"
+      gradient_1: "#1e3a8a"
+      gradient_2: "#1e40af"
+      gradient_3: "#2563eb"
+      gradient_4: "#3b82f6"
+      gradient_5: "#60a5fa"
+
   sources:
     - url: "local"
       name: "Built-in Prisms"
@@ -176,6 +187,18 @@ setup:
       - source: "business_units/"
         dest: "config/business_units/"
   
+  privileged_steps:
+    - name: "Install enterprise security tools"
+      command: "apt-get install -y snyk trivy"
+      description: "Installs required security scanning tools (requires sudo)"
+    - name: "Configure corporate CA certificate"
+      command: "cp config/certs/company-ca.crt /usr/local/share/ca-certificates/ && update-ca-certificates"
+      description: "Installs corporate CA certificate for proxy HTTPS inspection"
+
+  rollback:
+    enabled: true
+    persist_state: true
+
   post_install:
     message: |
       🎉 Welcome to [Company Name]!

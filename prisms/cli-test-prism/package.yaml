@@ -1,0 +1,70 @@
+package:
+  name: "cli-test-prism-prism"
+  version: "1.0.0"
+  description: "CLI Test Co development environment"
+  type: "company"
+  author: "CLI Test Co IT Team"
+  homepage: "https://dev.example.com"
+
+prism_config:
+  theme: "midnight"
+  branding:
+    name: "CLI Test Co Prism"
+    tagline: "Empowering CLI Test Co Development"
+    primary_color: "#1e3a8a"
+
+bundled_prisms:
+  base:
+    - id: "base"
+      name: "CLI Test Co Base"
+      description: "Company-wide settings: proxy, git, required tools"
+      required: true
+      config: "base/cli-test-prism.yaml"
+
+  teams:
+    - id: "platform"
+      name: "Platform Team"
+      config: "teams/platform.yaml"
+    - id: "backend"
+      name: "Backend Team"
+      config: "teams/backend.yaml"
+
+setup:
+  install:
+    target_dir: "config/"
+    files:
+      - source: "welcome.yaml"
+        dest: "config/welcome.yaml"
+      - source: "resources.yaml"
+        dest: "config/resources.yaml"
+    directories:
+      - source: "base/"
+        dest: "config/base/"
+      - source: "teams/"
+        dest: "config/teams/"
+  post_install:
+    message: |
+      💎 CLI Test Co prism installed!
+
+user_info_fields:
+  - id: "name"
+    label: "Full Name"
+    type: "text"
+    required: true
+  - id: "email"
+    label: "Company Email"
+    type: "email"
+    required: true
+    validation:
+      pattern: '.*@example\.com$'
+      message: "Must be a company email address"
+
+distribution:
+  local:
+    path: "prisms/cli-test-prism/"
+    discoverable: true
+
+metadata:
+  tags: ["company", "template"]
+  company_size: "medium"
+  last_updated: "2026-03-08"
