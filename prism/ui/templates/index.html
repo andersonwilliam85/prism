@@ -1464,12 +1464,13 @@
             const metadata = await metadataResponse.json();
             
             // Collect all user info field values
-            const userInfoFields = document.querySelectorAll('#userInfoFields input');
+            const userInfoFields = document.querySelectorAll('#userInfoFields input, #userInfoFields select');
             let userInfoHTML = '';
-            userInfoFields.forEach(input => {
-                if (input.value) {
-                    const label = input.previousElementSibling?.previousElementSibling?.textContent.replace('*', '').trim() || input.name;
-                    userInfoHTML += `<p><strong>${label}:</strong> ${input.value}</p>`;
+            userInfoFields.forEach(el => {
+                if (el.value) {
+                    const group = el.closest('.form-group');
+                    const label = group?.querySelector('label')?.textContent.replace('*', '').trim() || el.name;
+                    userInfoHTML += `<p><strong>${label}:</strong> ${el.value}</p>`;
                 }
             });
             
@@ -1634,9 +1635,9 @@
             try {
                 // Collect all form data
                 const userInfo = {};
-                document.querySelectorAll('#userInfoFields input').forEach(input => {
-                    if (input.value) {
-                        userInfo[input.name] = input.value;
+                document.querySelectorAll('#userInfoFields input, #userInfoFields select').forEach(el => {
+                    if (el.value) {
+                        userInfo[el.name] = el.value;
                     }
                 });
                 
@@ -1987,35 +1988,99 @@
         }
         
         // Load user info fields based on selected package
+        let _userFieldMeta = [];
+
         async function loadUserInfoFields() {
             const response = await fetch(`/api/package/${selectedPackage}/user-fields`);
             const data = await response.json();
-            
+            _userFieldMeta = data.fields || [];
+
             const container = document.getElementById('userInfoFields');
             container.innerHTML = '';
-            
-            data.fields.forEach(field => {
-                const required = field.required ? 'required' : '';
-                const pattern = field.validation?.pattern || '';
-                const title = field.validation?.message || '';
-                
-                container.innerHTML += `
-                    <div class="form-group">
-                        <label for="field_${field.id}">
-                            ${field.label}
-                            ${field.required ? '<span style="color: red;">*</span>' : ''}
-                        </label>
-                        ${field.description ? `<p style="font-size: 0.85em; color: #666; margin: 5px 0;">${field.description}</p>` : ''}
-                        <input
-                            type="${field.type}"
-                            id="field_${field.id}"
-                            name="${field.id}"
-                            placeholder="${field.placeholder || ''}"
-                            ${required}
-                            ${pattern ? `pattern="${pattern}" title="${title}"` : ''}
-                        >
-                    </div>
-                `;
+
+            _userFieldMeta.forEach(field => {
+                const req = field.required ? 'required' : '';
+                const div = document.createElement('div');
+                div.className = 'form-group';
+                div.id = `group_${field.id}`;
+
+                const label = document.createElement('label');
+                label.setAttribute('for', `field_${field.id}`);
+                label.innerHTML = `${field.label}${field.required ? ' <span style="color:red;">*</span>' : ''}`;
+                div.appendChild(label);
+
+                if (field.type === 'select' && field.options) {
+                    const select = document.createElement('select');
+                    select.id = `field_${field.id}`;
+                    select.name = field.id;
+                    if (field.required) select.required = true;
+                    if (field.depends_on) {
+                        select.setAttribute('data-depends-on', field.depends_on);
+                    }
+                    if (field.option_map) {
+                        select.setAttribute('data-option-map', JSON.stringify(field.option_map));
+                    }
+
+                    populateSelect(select, field.options, field.placeholder);
+
+                    select.addEventListener('change', () => handleCascadeChange(field.id));
+                    div.appendChild(select);
+
+                    // If depends on parent, hide until parent has value
+                    if (field.depends_on) {
+                        div.style.display = 'none';
+                    }
+                } else {
+                    const input = document.createElement('input');
+                    input.type = field.type || 'text';
+                    input.id = `field_${field.id}`;
+                    input.name = field.id;
+                    input.placeholder = field.placeholder || '';
+                    if (field.required) input.required = true;
+                    div.appendChild(input);
+                }
+
+                container.appendChild(div);
+            });
+        }
+
+        function populateSelect(select, options, placeholder) {
+            select.innerHTML = '';
+            const none = document.createElement('option');
+            none.value = '';
+            none.textContent = placeholder || '-- Select --';
+            select.appendChild(none);
+            options.forEach(opt => {
+                const o = document.createElement('option');
+                o.value = opt;
+                o.textContent = opt;
+                select.appendChild(o);
+            });
+        }
+
+        function handleCascadeChange(changedFieldId) {
+            _userFieldMeta.forEach(field => {
+                if (field.depends_on !== changedFieldId) return;
+                const parentEl = document.getElementById(`field_${changedFieldId}`);
+                const childEl = document.getElementById(`field_${field.id}`);
+                const group = document.getElementById(`group_${field.id}`);
+                if (!parentEl || !childEl) return;
+
+                const parentVal = parentEl.value;
+                if (!parentVal) {
+                    group.style.display = 'none';
+                    childEl.value = '';
+                    handleCascadeChange(field.id);
+                    return;
+                }
+
+                group.style.display = '';
+                const optionMap = field.option_map;
+                const filteredOptions = (optionMap && optionMap[parentVal]) || field.options || [];
+                populateSelect(childEl, filteredOptions, field.placeholder);
+
+                // Recursively reset any children
+                handleCascadeChange(field.id);
             });
         }
         

@@ -164,6 +164,10 @@ def get_user_fields(package_name):
                 }
             )
 
+        # Sort fields so parents appear before dependents
+        container = current_app.config["container"]
+        ordered = container.hierarchy_engine.resolve_dependency_order(fields)
+
         return jsonify(
             {
                 "fields": [
@@ -174,8 +178,10 @@ def get_user_fields(package_name):
                         "required": f.required,
                         "placeholder": f.placeholder,
                         "options": f.options if f.options else None,
+                        "depends_on": f.depends_on or None,
+                        "option_map": f.option_map if f.option_map else None,
                     }
-                    for f in fields
+                    for f in ordered
                 ]
             }
         )

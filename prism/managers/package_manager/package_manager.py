@@ -129,6 +129,8 @@ class PackageManager:
                 required=f.get("required", False),
                 placeholder=f.get("placeholder", ""),
                 options=f.get("options", []),
+                depends_on=f.get("depends_on", ""),
+                option_map=f.get("option_map", {}),
             )
             for f in raw_fields
             if isinstance(f, dict) and f.get("id")

@@ -229,11 +229,12 @@ user_info_fields:
       - "Digital"
       - "Data & Analytics"
       - "Other"
-  
+
   - id: "role"
     label: "Role"
     type: "select"
     required: true
+    depends_on: "division"
     options:
       - "Software Engineer"
       - "Frontend Engineer"
@@ -241,6 +242,27 @@ user_info_fields:
       - "Data Engineer"
       - "Security Engineer"
       - "Other"
+    option_map:
+      Technology:
+        - "Software Engineer"
+        - "DevOps Engineer"
+        - "Security Engineer"
+        - "Other"
+      Digital:
+        - "Frontend Engineer"
+        - "Software Engineer"
+        - "Other"
+      "Data & Analytics":
+        - "Data Engineer"
+        - "Software Engineer"
+        - "Other"
+      Other:
+        - "Software Engineer"
+        - "Frontend Engineer"
+        - "DevOps Engineer"
+        - "Data Engineer"
+        - "Security Engineer"
+        - "Other"
   
   - id: "manager_email"
     label: "Manager Email"
