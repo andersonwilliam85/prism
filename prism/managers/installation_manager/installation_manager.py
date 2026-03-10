@@ -20,7 +20,7 @@ from prism.engines.merge_engine.i_merge_engine import IMergeEngine
 from prism.engines.setup_engine.i_setup_engine import ISetupEngine
 from prism.engines.validation_engine.i_validation_engine import IValidationEngine
 from prism.models.installation import InstallationResult, PrivilegedStep, StepResult
-from prism.models.prism_config import BrandingConfig, PrismConfig
+from prism.models.prism_config import BrandingConfig, PrismConfig, ThemeDefinition
 from prism.utilities.event_bus.i_event_bus import IEventBus
 
 ProgressCallback = Optional[Callable[[str, str, str], None]]
@@ -307,8 +307,20 @@ class InstallationManager:
         config = self._files.get_package_config(self._prisms_dir, package_name)
         pc = config.get("prism_config", {})
         branding_raw = pc.get("branding", {})
+        # Parse custom themes if declared
+        custom_themes_raw = pc.get("custom_themes", [])
+        custom_themes = []
+        for ct in custom_themes_raw:
+            if isinstance(ct, dict) and "id" in ct and "name" in ct:
+                custom_themes.append(
+                    ThemeDefinition(**{k: v for k, v in ct.items() if k in ThemeDefinition.__dataclass_fields__})
+                )
+
         return PrismConfig(
             theme=pc.get("theme", "ocean"),
+            theme_options=pc.get("theme_options", []),
+            default_theme=pc.get("default_theme", pc.get("theme", "ocean")),
+            custom_themes=custom_themes,
             sources=pc.get("sources", []),
             npm_registry=pc.get("npm_registry", ""),
             unpkg_url=pc.get("unpkg_url", ""),

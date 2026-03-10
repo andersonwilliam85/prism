@@ -16,6 +16,7 @@ from prism.engines.merge_engine.merge_engine import MergeEngine
 from prism.engines.resolution_engine.resolution_engine import ResolutionEngine
 from prism.engines.scaffold_engine.scaffold_engine import ScaffoldEngine
 from prism.engines.setup_engine.setup_engine import SetupEngine
+from prism.engines.theme_engine.theme_engine import ThemeEngine
 from prism.engines.validation_engine.validation_engine import ValidationEngine
 from prism.managers.installation_manager.installation_manager import InstallationManager
 from prism.managers.package_manager.package_manager import PackageManager
@@ -44,6 +45,7 @@ class Container:
         self.resolution_engine = ResolutionEngine()
         self.scaffold_engine = ScaffoldEngine()
         self.setup_engine = SetupEngine()
+        self.theme_engine = ThemeEngine()
         self.validation_engine = ValidationEngine()
 
         # Accessors

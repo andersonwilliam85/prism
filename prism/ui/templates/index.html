@@ -769,7 +769,7 @@
                 <h3>🎨 Choose Your Theme</h3>
                 <p style="color: #666; margin-bottom: 20px;">Select your preferred color scheme</p>
                 
-                <div class="theme-grid">
+                <div class="theme-grid" id="themeGrid">
                     <div class="theme-option active" data-theme="ocean" onclick="selectTheme('ocean')">
                         <div class="theme-preview ocean"></div>
                         <div class="theme-name">Ocean Blue</div>
@@ -1157,7 +1157,7 @@
         function selectTheme(themeName) {
             // Update theme
             document.documentElement.setAttribute('data-theme', themeName);
-            
+
             // Update active state in settings
             document.querySelectorAll('.theme-option').forEach(opt => {
                 if (opt.dataset.theme === themeName) {
@@ -1166,10 +1166,42 @@
                     opt.classList.remove('active');
                 }
             });
-            
+
             // Save to config
             prismConfig.theme = themeName;
             savePrismConfig(prismConfig);
+        }
+
+        function renderThemeGrid(themes, currentTheme) {
+            const grid = document.getElementById('themeGrid');
+            if (!grid || !themes || themes.length === 0) return;
+
+            // Inject CSS for any custom themes
+            themes.forEach(t => {
+                if (t.gradient_1 && !document.querySelector(`style[data-theme-css="${t.id}"]`)) {
+                    const style = document.createElement('style');
+                    style.setAttribute('data-theme-css', t.id);
+                    style.textContent = `[data-theme="${t.id}"] {
+                        --gradient-1: ${t.gradient_1};
+                        --gradient-2: ${t.gradient_2};
+                        --gradient-3: ${t.gradient_3 || t.gradient_1};
+                        --gradient-4: ${t.gradient_4 || t.gradient_2};
+                        --gradient-5: ${t.gradient_5 || t.gradient_1};
+                    }`;
+                    document.head.appendChild(style);
+                }
+            });
+
+            grid.innerHTML = themes.map(t => {
+                const isActive = t.id === currentTheme ? ' active' : '';
+                const previewStyle = t.gradient_1
+                    ? `background: linear-gradient(135deg, ${t.gradient_1}, ${t.gradient_2});`
+                    : '';
+                return `<div class="theme-option${isActive}" data-theme="${t.id}" onclick="selectTheme('${t.id}')">
+                    <div class="theme-preview ${t.id}" style="${previewStyle}"></div>
+                    <div class="theme-name">${t.name}</div>
+                </div>`;
+            }).join('');
         }
         
         function addPrismSource() {
@@ -1878,7 +1910,7 @@
                     if (data.prism_config.theme) {
                         const theme = data.prism_config.theme;
                         document.documentElement.setAttribute('data-theme', theme);
-                        
+
                         // Update theme selection in settings
                         document.querySelectorAll('.theme-option').forEach(opt => {
                             if (opt.dataset.theme === theme) {
@@ -1887,10 +1919,15 @@
                                 opt.classList.remove('active');
                             }
                         });
-                        
+
                         // Save to prismConfig
                         prismConfig.theme = theme;
                         savePrismConfig(prismConfig);
+                    }
+
+                    // Render available themes from package config
+                    if (data.prism_config.available_themes) {
+                        renderThemeGrid(data.prism_config.available_themes, data.prism_config.theme || prismConfig.theme);
                     }
                     
                     // Apply sources if specified
