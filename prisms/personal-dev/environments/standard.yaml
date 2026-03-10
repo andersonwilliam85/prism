@@ -1,0 +1,27 @@
+# Standard environment — tools + workspace
+# Good default for most personal developers
+
+tools_required:
+  - git
+  - vscode
+  - node
+  - docker
+
+tools_optional:
+  - gh
+  - httpie
+  - jq
+
+environment:
+  workspace_root: "~/projects"
+  directories:
+    - "~/projects"
+    - "~/projects/personal"
+    - "~/projects/freelance"
+
+git:
+  default_branch: "main"
+  pull_rebase: true
+  auto_setup_remote: true
+
+repositories: []

@@ -55,20 +55,20 @@ def temp_install_dir():
 class TestCompleteInstallationFlow:
     """Test complete end-to-end installation workflows."""
 
-    def test_complete_core_prism_installation(self, page: Page, installer_server):
-        """Test complete installation of core.prism package."""
+    def test_complete_default_prism_installation(self, page: Page, installer_server):
+        """Test complete installation of the default prism package."""
         page.goto(INSTALLER_URL)
 
         # Step 1: Select package
         page.wait_for_selector(".package-card", timeout=5000)
 
-        # Find and click core.prism package
-        core_package = page.locator(".package-card").filter(has_text="Core Prism")
-        expect(core_package).to_be_visible()
-        core_package.click()
+        # Find and click the default prism package
+        default_package = page.locator(".package-card").filter(has_text="Prism")
+        expect(default_package).to_be_visible()
+        default_package.click()
 
         # Verify selection
-        expect(core_package).to_have_css("border-color", "rgb(102, 126, 234)")
+        expect(default_package).to_have_css("border-color", "rgb(102, 126, 234)")
 
         # Click Next
         page.locator("button").filter(has_text="Next").first.click()

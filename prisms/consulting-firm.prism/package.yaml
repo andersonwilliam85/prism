@@ -22,6 +22,19 @@ package:
 # PRISM META-CONFIGURATION
 prism_config:
   theme: "purple"
+  theme_options:
+    - "purple"
+    - "midnight"
+    - "ocean"
+    - "consultant"
+  custom_themes:
+    - id: "consultant"
+      name: "Consultant"
+      gradient_1: "#7c3aed"
+      gradient_2: "#8b5cf6"
+      gradient_3: "#a78bfa"
+      gradient_4: "#06b6d4"
+      gradient_5: "#22d3ee"
 
   sources:
     - url: "local"
@@ -111,16 +124,45 @@ user_info_fields:
 
   - id: "primary_client"
     label: "Primary Client"
-    type: "text"
+    type: "select"
     required: true
-    placeholder: "ACME Corp"
-    description: "The client you'll be working with most"
+    options:
+      - "FinTech Client"
+      - "Healthcare Client"
+      - "Retail Client"
+      - "Other"
+    description: "The client engagement you'll be working on"
+
+  - id: "compliance_framework"
+    label: "Compliance Framework"
+    type: "select"
+    required: true
+    depends_on: "primary_client"
+    options:
+      - "SOX"
+      - "PCI-DSS"
+      - "HIPAA"
+      - "General"
+    option_map:
+      "FinTech Client":
+        - "SOX"
+        - "PCI-DSS"
+      "Healthcare Client":
+        - "HIPAA"
+      "Retail Client":
+        - "PCI-DSS"
+      "Other":
+        - "General"
 
   - id: "billable_hours_tracker"
     label: "Time Tracking System"
-    type: "text"
+    type: "select"
     required: false
-    placeholder: "Harvest, Toggl, etc."
+    options:
+      - "Harvest"
+      - "Toggl"
+      - "Clockify"
+      - "Other"
 
 distribution:
   local:
