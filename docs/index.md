@@ -3,6 +3,10 @@ layout: default
 title: Home
 ---
 
+<p align="center">
+  <img src="assets/prism-logo.png" alt="Prism" width="128" height="128">
+</p>
+
 # Prism Documentation
 
 Complete documentation for Prism — the modular, hierarchical development environment installer.
