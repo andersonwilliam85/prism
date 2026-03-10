@@ -24,6 +24,12 @@ package:
 # PRISM META-CONFIGURATION
 prism_config:
   theme: "ocean"
+  theme_options:
+    - "ocean"
+    - "purple"
+    - "forest"
+    - "sunset"
+    - "midnight"
   default: true  # Marks this as the product default prism
 
   sources:

@@ -23,6 +23,9 @@ package:
 # PRISM META-CONFIGURATION
 prism_config:
   theme: "midnight"
+  theme_options:
+    - "midnight"
+    - "ocean"
 
   sources:
     - url: "local"
@@ -76,6 +79,10 @@ setup:
       - source: "teams/"
         dest: "config/teams/"
 
+  rollback:
+    enabled: true
+    persist_state: true
+
   post_install:
     message: |
       💎 ACME Corp prism installed!
@@ -103,6 +110,39 @@ user_info_fields:
     validation:
       pattern: ".*@acmecorp\\.com$"
       message: "Must be an @acmecorp.com email"
+
+  - id: "org"
+    label: "Sub-Organization"
+    type: "select"
+    required: true
+    options:
+      - "Engineering"
+      - "Product"
+      - "Design"
+
+  - id: "team"
+    label: "Team"
+    type: "select"
+    required: true
+    depends_on: "org"
+    options:
+      - "Platform"
+      - "Backend"
+      - "Frontend"
+      - "Mobile"
+      - "Infrastructure"
+    option_map:
+      Engineering:
+        - "Platform"
+        - "Backend"
+        - "Frontend"
+        - "Infrastructure"
+      Product:
+        - "Product Engineering"
+        - "Integrations"
+      Design:
+        - "Design Systems"
+        - "Frontend"
 
   - id: "github_username"
     label: "GitHub Enterprise Username"
