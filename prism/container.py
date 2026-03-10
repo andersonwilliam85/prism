@@ -74,6 +74,8 @@ class Container:
             system_accessor=self.system_accessor,
             event_bus=self.event_bus,
             prisms_dir=self._prisms_dir,
+            rollback_engine=self.rollback_engine,
+            rollback_accessor=self.rollback_accessor,
         )
 
         self.package_manager = PackageManager(
