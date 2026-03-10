@@ -9,6 +9,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from prism.ui.api import installation as installation_module
 from prism.ui.app import create_app
 
 
@@ -48,15 +49,24 @@ def valid_config():
 
 
 @pytest.fixture
-def app(mock_file_accessor, mock_command_accessor, mock_system_accessor, valid_config):
+def mock_sudo_accessor():
+    mock = MagicMock()
+    mock.validate_password.return_value = True
+    mock.is_sudo_available.return_value = True
+    return mock
+
+
+@pytest.fixture
+def app(mock_file_accessor, mock_command_accessor, mock_system_accessor, mock_sudo_accessor, valid_config):
     mock_file_accessor.get_package_config.return_value = valid_config
     with patch("prism.container.FileAccessor", return_value=mock_file_accessor):
         with patch("prism.container.CommandAccessor", return_value=mock_command_accessor):
             with patch("prism.container.SystemAccessor", return_value=mock_system_accessor):
                 with patch("prism.container.RegistryAccessor"):
-                    application = create_app(prisms_dir=Path("/fake/prisms"))
-                    application.config["TESTING"] = True
-                    yield application
+                    with patch("prism.container.SudoAccessor", return_value=mock_sudo_accessor):
+                        application = create_app(prisms_dir=Path("/fake/prisms"))
+                        application.config["TESTING"] = True
+                        yield application
 
 
 @pytest.fixture
@@ -151,3 +161,115 @@ class TestInstallEndpoint:
             assert "step" in entry
             assert "message" in entry
             assert "level" in entry
+
+
+class TestSudoValidation:
+    """Tests for sudo validation and session management endpoints."""
+
+    @pytest.fixture(autouse=True)
+    def _clear_sessions(self):
+        """Clear the in-memory session store between tests."""
+        installation_module._sudo_sessions.clear()
+        yield
+        installation_module._sudo_sessions.clear()
+
+    def test_validate_sudo_success(self, client, mock_sudo_accessor):
+        mock_sudo_accessor.validate_password.return_value = True
+        resp = client.post(
+            "/api/installation/validate-sudo",
+            data=json.dumps({"password": "correct"}),
+            content_type="application/json",
+        )
+        data = json.loads(resp.data)
+        assert resp.status_code == 200
+        assert data["success"] is True
+        assert "token" in data
+
+    def test_validate_sudo_wrong_password(self, client, mock_sudo_accessor):
+        mock_sudo_accessor.validate_password.return_value = False
+        resp = client.post(
+            "/api/installation/validate-sudo",
+            data=json.dumps({"password": "wrong"}),
+            content_type="application/json",
+        )
+        data = json.loads(resp.data)
+        assert resp.status_code == 401
+        assert data["success"] is False
+        assert "remaining_attempts" in data
+
+    def test_validate_sudo_empty_password(self, client):
+        resp = client.post(
+            "/api/installation/validate-sudo",
+            data=json.dumps({"password": ""}),
+            content_type="application/json",
+        )
+        assert resp.status_code == 400
+
+    def test_validate_sudo_lockout(self, client, mock_sudo_accessor):
+        mock_sudo_accessor.validate_password.return_value = False
+        # First attempt — get the token
+        resp = client.post(
+            "/api/installation/validate-sudo",
+            data=json.dumps({"password": "wrong"}),
+            content_type="application/json",
+        )
+        token = json.loads(resp.data)["token"]
+        # Subsequent attempts with same token
+        for _ in range(2):
+            resp = client.post(
+                "/api/installation/validate-sudo",
+                data=json.dumps({"password": "wrong", "token": token}),
+                content_type="application/json",
+            )
+        data = json.loads(resp.data)
+        assert resp.status_code == 429
+        assert data.get("locked") is True
+
+    def test_session_status_valid(self, client, mock_sudo_accessor):
+        mock_sudo_accessor.validate_password.return_value = True
+        resp = client.post(
+            "/api/installation/validate-sudo",
+            data=json.dumps({"password": "correct"}),
+            content_type="application/json",
+        )
+        token = json.loads(resp.data)["token"]
+
+        resp = client.get(f"/api/installation/sudo-session/{token}")
+        data = json.loads(resp.data)
+        assert data["valid"] is True
+        assert data["expired"] is False
+
+    def test_session_status_not_found(self, client):
+        resp = client.get("/api/installation/sudo-session/nonexistent")
+        assert resp.status_code == 404
+
+    def test_sudo_not_available(self, client, mock_sudo_accessor):
+        mock_sudo_accessor.is_sudo_available.return_value = False
+        resp = client.post(
+            "/api/installation/validate-sudo",
+            data=json.dumps({"password": "test"}),
+            content_type="application/json",
+        )
+        data = json.loads(resp.data)
+        assert resp.status_code == 400
+        assert "not available" in data["error"]
+
+    def test_retry_with_token(self, client, mock_sudo_accessor):
+        mock_sudo_accessor.validate_password.return_value = False
+        resp = client.post(
+            "/api/installation/validate-sudo",
+            data=json.dumps({"password": "wrong"}),
+            content_type="application/json",
+        )
+        token = json.loads(resp.data)["token"]
+
+        mock_sudo_accessor.validate_password.return_value = True
+        resp = client.post(
+            "/api/installation/validate-sudo",
+            data=json.dumps({"password": "correct", "token": token}),
+            content_type="application/json",
+        )
+        data = json.loads(resp.data)
+        assert resp.status_code == 200
+        assert data["success"] is True
+        assert data["token"] == token
