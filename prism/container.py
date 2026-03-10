@@ -11,11 +11,13 @@ from pathlib import Path
 from prism.accessors.command_accessor.command_accessor import CommandAccessor
 from prism.accessors.file_accessor.file_accessor import FileAccessor
 from prism.accessors.registry_accessor.registry_accessor import RegistryAccessor
+from prism.accessors.sudo_accessor.sudo_accessor import SudoAccessor
 from prism.accessors.system_accessor.system_accessor import SystemAccessor
 from prism.engines.merge_engine.merge_engine import MergeEngine
 from prism.engines.resolution_engine.resolution_engine import ResolutionEngine
 from prism.engines.scaffold_engine.scaffold_engine import ScaffoldEngine
 from prism.engines.setup_engine.setup_engine import SetupEngine
+from prism.engines.sudo_validation_engine.sudo_validation_engine import SudoValidationEngine
 from prism.engines.validation_engine.validation_engine import ValidationEngine
 from prism.managers.installation_manager.installation_manager import InstallationManager
 from prism.managers.package_manager.package_manager import PackageManager
@@ -44,11 +46,13 @@ class Container:
         self.resolution_engine = ResolutionEngine()
         self.scaffold_engine = ScaffoldEngine()
         self.setup_engine = SetupEngine()
+        self.sudo_validation_engine = SudoValidationEngine()
         self.validation_engine = ValidationEngine()
 
         # Accessors
         self.command_accessor = CommandAccessor()
         self.file_accessor = FileAccessor()
+        self.sudo_accessor = SudoAccessor()
         self.system_accessor = SystemAccessor()
         self.registry_accessor = RegistryAccessor()
 
