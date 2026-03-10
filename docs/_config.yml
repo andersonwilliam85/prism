@@ -1,4 +1,6 @@
 title: Prism Documentation
 description: "Refract complexity into clarity — modular development environment installer"
+baseurl: /prism
+url: https://andersonwilliam85.github.io
 theme: jekyll-theme-cayman
 markdown: kramdown
