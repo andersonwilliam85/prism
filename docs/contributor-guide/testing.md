@@ -1,3 +1,8 @@
+---
+layout: default
+title: Testing
+---
+
 # Testing
 
 Comprehensive testing guide for Prism Package Manager.

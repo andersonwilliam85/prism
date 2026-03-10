@@ -1,3 +1,8 @@
+---
+layout: default
+title: CI/CD Pipeline
+---
+
 # CI/CD Pipeline
 
 Complete automation pipeline for Prism Package Manager.

@@ -1,3 +1,8 @@
+---
+layout: default
+title: Bad Configuration Examples
+---
+
 # Bad Configuration Examples
 
 The `bad-config-examples/` directory in the repository root contains YAML files that intentionally trigger validation errors. They are used to test and demonstrate the validator — each one illustrates a specific failure mode.

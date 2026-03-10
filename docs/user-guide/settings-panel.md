@@ -1,3 +1,8 @@
+---
+layout: default
+title: Settings Panel
+---
+
 # Settings Panel
 
 The settings drawer is accessible from the gear icon in the top-right corner of the installer UI. It lets you override default connection and registry settings without modifying any configuration files.

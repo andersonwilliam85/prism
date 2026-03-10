@@ -1,3 +1,8 @@
+---
+layout: default
+title: Sub-Prism Inheritance
+---
+
 # Sub-Prism Inheritance
 
 ## Overview

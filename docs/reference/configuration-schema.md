@@ -1,3 +1,8 @@
+---
+layout: default
+title: Configuration Schema
+---
+
 # Prism Configuration Schema
 
 Complete YAML schema reference for `package.yaml` — the manifest for every prism.
