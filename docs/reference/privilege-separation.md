@@ -143,8 +143,6 @@ After 3 consecutive failed password attempts, the session is locked for 30 secon
 
 ## UI Flow
 
-<div align="center">
-
 ### Figure 1: Two-Phase Install Flow
 
 ```mermaid
@@ -171,8 +169,6 @@ flowchart TB
     style PARTIAL fill:#f59e0b,color:#000
     style SUDO fill:#ea1100,color:#fff
 ```
-
-</div>
 
 If the user clicks **Skip**, phase 2 is not executed. The installation is marked as partially complete, and the skipped steps are logged so the user can run them manually later.
 

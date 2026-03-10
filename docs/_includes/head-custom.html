@@ -49,11 +49,16 @@
     color: #1e40af;
   }
 
-  /* Mermaid diagrams — prevent code styling on rendered SVGs */
+  /* Mermaid diagrams — center and prevent code styling on rendered SVGs */
   .main-content pre.mermaid {
     background: none;
     border: none;
     padding: 0;
+    text-align: center;
+  }
+
+  .main-content pre.mermaid svg {
+    margin: 0 auto;
   }
 </style>
 
