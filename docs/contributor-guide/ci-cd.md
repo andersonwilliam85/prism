@@ -13,13 +13,27 @@ Complete automation pipeline for Prism Package Manager.
 
 Prism uses **GitHub Actions** for continuous integration and deployment with a multi-stage workflow:
 
+<div align="center">
+
+### Figure 1: CI/CD Pipeline
+
+```mermaid
+flowchart LR
+    F["feature/*"] -->|PR, 1 approval| DEV["dev"]
+    DEV -->|PR, 1 approval| STAGE["stage"]
+    STAGE -->|PR, 2 approvals| MAIN["main"]
+    F -.->|Basic CI| F
+    DEV -.->|Full CI| DEV
+    STAGE -.->|Full CI| STAGE
+    MAIN -.->|Release| MAIN
+
+    style F fill:#8b5cf6,color:#fff
+    style DEV fill:#3b82f6,color:#fff
+    style STAGE fill:#f59e0b,color:#000
+    style MAIN fill:#10b981,color:#fff
 ```
-feature/* → dev → stage → main
-    ↓       ↓      ↓       ↓
-   PR(1)   PR(1)  PR(2)  Release
-   Basic   Full   Full   GitHub
-   CI      CI     CI     Release
-```
+
+</div>
 
 **4 Workflows:**
 1. **ci.yml** - PR checks (lint, test, coverage, security)
@@ -230,37 +244,34 @@ git push origin feature/my-feature
 
 ### Standard Release (dev → stage → main)
 
-```bash
-# 1. Merge feature to dev
-feature/xyz → dev (PR)
-  ↓
-  CI runs (fast tests)
-  Deploy to dev environment
-  7-day artifacts
+<div align="center">
 
-# 2. Promote dev to stage
-dev → stage (PR)
-  ↓
-  CI runs (full tests + coverage)
-  Build RC package
-  Deploy to stage environment
-  Smoke tests
-  30-day artifacts
+### Figure 2: Release Process
 
-# 3. Promote stage to main
-stage → main (PR)
-  ↓
-  CI runs (full test suite)
-  Build production artifacts
-  Deploy to production
-  90-day artifacts
+```mermaid
+flowchart TB
+    F["feature/xyz"] -->|PR| DEV["dev"]
+    DEV -->|Fast CI, deploy| DEV_ENV["Dev Environment"]
+    DEV_ENV -->|7-day artifacts| PROMOTE1{"Promote?"}
+    PROMOTE1 -->|PR| STAGE["stage"]
+    STAGE -->|Full CI + coverage| STAGE_ENV["Stage Environment"]
+    STAGE_ENV -->|Smoke tests, 30-day artifacts| PROMOTE2{"Promote?"}
+    PROMOTE2 -->|PR, 2 approvals| MAIN["main"]
+    MAIN -->|Full test suite| PROD["Production"]
+    PROD -->|90-day artifacts| TAG{"Tag release?"}
+    TAG -->|git tag| RELEASE["GitHub Release"]
 
-# 4. Tag for GitHub Release (optional)
-git tag -a v1.0.0 -m "Release v1.0.0"
-git push origin v1.0.0
-  ↓
-  Create GitHub Release with artifacts
+    style F fill:#8b5cf6,color:#fff
+    style DEV fill:#3b82f6,color:#fff
+    style DEV_ENV fill:#3b82f6,color:#fff
+    style STAGE fill:#f59e0b,color:#000
+    style STAGE_ENV fill:#f59e0b,color:#000
+    style MAIN fill:#10b981,color:#fff
+    style PROD fill:#10b981,color:#fff
+    style RELEASE fill:#10b981,color:#fff
 ```
+
+</div>
 
 ### Hotfix Release (emergency)
 
