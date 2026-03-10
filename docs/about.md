@@ -79,9 +79,9 @@ Each prism includes custom themes, cascading user fields, and rollback configura
 
 Prism follows a **VBD-inspired** (Volatility-Based Decomposition) layered architecture:
 
-- **Managers** — Orchestration (no logic, no I/O)
-- **Engines** — Pure computation (no I/O, trivially testable)
-- **Accessors** — I/O boundary (thin adapters)
+- **Managers** — Orchestration — *the "what"*
+- **Engines** — Business logic — *the "how"*
+- **Accessors** — External boundaries — *the "where"*
 - **Utilities** — Cross-cutting services
 - **Models** — Plain dataclasses
 
