@@ -21,7 +21,7 @@ Prism packages can be published to the **npm public registry** under the `@prism
 
 All packages are published under the `@prism` scope:
 
-- `@prism/personal-dev` — For freelancers & indie developers
+- `@prism/prism` — For freelancers & indie developers
 - `@prism/startup` — For startups (10–50 people)
 - `@prism/fortune500` — For large enterprises
 - `@prism/university` — For universities
@@ -52,7 +52,7 @@ python3 install.py --prism fortune500
 python3 scripts/npm_package_fetcher.py list
 
 # Fetch a specific prism
-python3 scripts/npm_package_fetcher.py fetch @prism/personal-dev
+python3 scripts/npm_package_fetcher.py fetch @prism/prism
 
 # Fetch specific version
 python3 scripts/npm_package_fetcher.py fetch @prism/startup --version 1.0.0
@@ -61,14 +61,14 @@ python3 scripts/npm_package_fetcher.py fetch @prism/startup --version 1.0.0
 ### Method 3: Direct npm install (if you have npm)
 
 ```bash
-npm install @prism/personal-dev
+npm install @prism/prism
 ```
 
 ### Method 4: Direct CDN access (no tools needed)
 
 ```bash
 # Download package.yaml
-curl https://unpkg.com/@prism/personal-dev@latest/package.yaml
+curl https://unpkg.com/@prism/prism@latest/package.yaml
 ```
 
 ---
@@ -103,21 +103,21 @@ npm login
 #### Test first (dry run)
 
 ```bash
-python3 scripts/publish_packages.py --package personal-dev --dry-run
+python3 scripts/publish_packages.py --package prism --dry-run
 python3 scripts/publish_packages.py --all --dry-run
 ```
 
 #### Publish
 
 ```bash
-python3 scripts/publish_packages.py --package personal-dev
+python3 scripts/publish_packages.py --package prism
 python3 scripts/publish_packages.py --all
 ```
 
 ### Manual publishing
 
 ```bash
-cd prisms/personal-dev
+cd prisms/prism.prism
 npm publish --access public
 ```
 
@@ -150,7 +150,7 @@ python3 scripts/publish_packages.py --package PRISM_NAME
 Each prism directory published to npm:
 
 ```
-prisms/personal-dev/
+prisms/prism.prism/
 ├── package.json      # npm metadata (required for publishing)
 ├── package.yaml      # Prism manifest
 ├── README.md         # Prism documentation
@@ -163,7 +163,7 @@ prisms/personal-dev/
 
 ```json
 {
-  "name": "@prism/personal-dev",
+  "name": "@prism/prism",
   "version": "1.0.0",
   "description": "Prism for freelancers and indie developers",
   "main": "package.yaml",
@@ -180,7 +180,7 @@ prisms/personal-dev/
   "repository": {
     "type": "git",
     "url": "https://github.com/andersonwilliam85/prism.git",
-    "directory": "prisms/personal-dev"
+    "directory": "prisms/prism.prism"
   }
 }
 ```
@@ -215,7 +215,7 @@ https://unpkg.com/@prism/PRISM-NAME@VERSION/FILE
 Examples:
 ```bash
 # Latest version
-https://unpkg.com/@prism/personal-dev@latest/package.yaml
+https://unpkg.com/@prism/prism@latest/package.yaml
 
 # Specific version
 https://unpkg.com/@prism/startup@1.0.0/package.yaml

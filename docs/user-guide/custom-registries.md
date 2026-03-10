@@ -34,7 +34,7 @@ python3 scripts/npm_package_fetcher.py list \
   --registry https://npm.mycompany.com
 
 # Fetch package from custom CDN
-python3 scripts/npm_package_fetcher.py fetch @prism/personal-dev-config \
+python3 scripts/npm_package_fetcher.py fetch @prism/prism-config \
   --unpkg https://cdn.mycompany.com/npm
 
 # Run installer with custom registry
@@ -125,8 +125,8 @@ Must serve package files at:
 ```
 
 **Examples:**
-- `https://unpkg.com/@prism/personal-dev-config@1.0.0/package.yaml`
-- `https://cdn.company.com/npm/@prism/personal-dev-config@1.0.0/package.yaml`
+- `https://unpkg.com/@prism/prism-config@1.0.0/package.yaml`
+- `https://cdn.company.com/npm/@prism/prism-config@1.0.0/package.yaml`
 
 **Compatible CDNs:**
 - unpkg.com (default)
@@ -152,7 +152,7 @@ npm config set registry https://artifactory.company.com/artifactory/api/npm/npm-
 npm login
 
 # Publish packages
-cd config-packages/personal-dev
+cd prisms/prism.prism
 npm publish
 ```
 
@@ -181,7 +181,7 @@ npm set registry http://localhost:4873
 3. **Publish packages:**
 
 ```bash
-cd config-packages/personal-dev
+cd prisms/prism.prism
 npm publish
 ```
 
@@ -204,7 +204,7 @@ echo "//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}" >> .npmrc
 2. **Publish packages:**
 
 ```bash
-cd config-packages/personal-dev
+cd prisms/prism.prism
 npm publish
 ```
 
@@ -246,10 +246,10 @@ python3 scripts/npm_package_fetcher.py list
 
 ```bash
 # Test npm registry
-curl https://npm.mycompany.com/@prism/personal-dev-config
+curl https://npm.mycompany.com/@prism/prism-config
 
 # Test unpkg CDN
-curl https://cdn.mycompany.com/npm/@prism/personal-dev-config@latest/package.yaml
+curl https://cdn.mycompany.com/npm/@prism/prism-config@latest/package.yaml
 ```
 
 ### Common Issues
