@@ -1,3 +1,8 @@
+---
+layout: default
+title: Custom Registries
+---
+
 # Custom Registry Configuration
 
 Prism supports using custom npm registries and unpkg CDN URLs for air-gapped environments, corporate proxies, or custom package hosting.

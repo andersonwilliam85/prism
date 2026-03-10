@@ -1,3 +1,8 @@
+---
+layout: default
+title: NPM Packages
+---
+
 # NPM Package Distribution
 
 Prism packages can be published to the **npm public registry** under the `@prism` scope, making them available to anyone via CDN without needing npm installed.

@@ -1,3 +1,8 @@
+---
+layout: default
+title: Publishing Prisms
+---
+
 # Publishing Prisms
 
 This guide covers packaging and publishing a validated prism to npm so other teams can install it without cloning the repository.
