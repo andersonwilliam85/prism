@@ -1,7 +1,7 @@
 """Installation execution API flow.
 
 Handles install, sudo validation, and session management routes.
-Delegates to InstallationManager and SudoValidationEngine/SudoAccessor.
+Delegates to InstallationManager and InstallationEngine/SudoAccessor.
 
 Volatility: low — install endpoint shape is stable.
 """
@@ -215,7 +215,7 @@ def validate_sudo():
         return jsonify({"success": False, "error": "Password required"}), 400
 
     container = current_app.config["container"]
-    engine = container.sudo_validation_engine
+    engine = container.installation_engine
     accessor = container.sudo_accessor
 
     # Check sudo availability
@@ -226,11 +226,11 @@ def validate_sudo():
     token = data.get("token")
     session = _sudo_sessions.get(token) if token else None
     if session is None:
-        session = engine.create_session()
+        session = engine.create_sudo_session()
         _sudo_sessions[session.token] = session
 
     # Check lockout
-    if not engine.validate_session(session):
+    if not engine.validate_sudo_session(session):
         if session.is_locked:
             return jsonify({"success": False, "error": "Too many attempts. Try again later.", "locked": True}), 429
         if session.is_expired:
@@ -239,7 +239,7 @@ def validate_sudo():
 
     # Validate password via accessor
     valid = accessor.validate_password(password)
-    session = engine.record_attempt(session, valid)
+    session = engine.record_sudo_attempt(session, valid)
     _sudo_sessions[session.token] = session
 
     if valid:
@@ -264,8 +264,8 @@ def sudo_session_status(token: str):
         return jsonify({"valid": False, "error": "Session not found"}), 404
 
     container = current_app.config["container"]
-    engine = container.sudo_validation_engine
-    valid = engine.validate_session(session)
+    engine = container.installation_engine
+    valid = engine.validate_sudo_session(session)
 
     if not valid and session.is_expired:
         _sudo_sessions.pop(token, None)

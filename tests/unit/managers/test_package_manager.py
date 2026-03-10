@@ -8,7 +8,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from prism.engines.validation_engine.validation_engine import ValidationEngine
+from prism.engines.config_engine.config_engine import ConfigEngine
 from prism.managers.package_manager.package_manager import PackageManager
 from prism.models.package_info import UserField
 
@@ -19,8 +19,8 @@ def file_accessor():
 
 
 @pytest.fixture
-def validation_engine():
-    return ValidationEngine()
+def config_engine():
+    return ConfigEngine()
 
 
 @pytest.fixture
@@ -29,9 +29,9 @@ def prisms_dir():
 
 
 @pytest.fixture
-def manager(validation_engine, file_accessor, prisms_dir):
+def manager(config_engine, file_accessor, prisms_dir):
     return PackageManager(
-        validation_engine=validation_engine,
+        config_engine=config_engine,
         file_accessor=file_accessor,
         prisms_dir=prisms_dir,
     )
