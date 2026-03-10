@@ -142,7 +142,7 @@ Post-install documentation server for browsing your workspace configuration.
 
 VBD-inspired layered architecture:
 
-- Engines (pure computation), Accessors (I/O), Managers (orchestration)
+- Managers (the "what"), Engines (the "how"), Accessors (the "where")
 - Dependency injection via `container.py`
 - Complete component inventory
 
@@ -337,7 +337,7 @@ Normal operations run first, then privileged steps require explicit sudo approva
 
 ### VBD Architecture
 
-Clean layered design: Engines (logic), Accessors (I/O), Managers (orchestration).
+Clean layered design: Managers (the "what"), Engines (the "how"), Accessors (the "where").
 [Learn more](reference/architecture.md)
 
 ### Comprehensive Testing
