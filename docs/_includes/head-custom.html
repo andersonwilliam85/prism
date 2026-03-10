@@ -57,18 +57,20 @@
   }
 </style>
 
-<!-- Mermaid.js for diagram rendering -->
-<script type="module">
-  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+<!-- Mermaid.js for diagram rendering (UMD build, no ESM needed) -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>
+  // Disable auto-start — we need to convert Jekyll code blocks first
   mermaid.initialize({ startOnLoad: false, theme: 'default' });
 
-  // Module scripts are deferred — DOM is already parsed when this runs.
-  // DOMContentLoaded may have already fired, so query directly.
-  document.querySelectorAll('pre > code.language-mermaid').forEach(code => {
-    const pre = code.parentElement;
-    pre.classList.add('mermaid');
-    pre.textContent = code.textContent;
+  window.addEventListener('load', function () {
+    // Jekyll renders ```mermaid as <pre><code class="language-mermaid">
+    // Convert to <pre class="mermaid"> for Mermaid to find
+    document.querySelectorAll('pre > code.language-mermaid').forEach(function (code) {
+      var pre = code.parentElement;
+      pre.classList.add('mermaid');
+      pre.textContent = code.textContent;
+    });
+    mermaid.run({ querySelector: 'pre.mermaid' });
   });
-
-  await mermaid.run({ querySelector: 'pre.mermaid' });
 </script>
