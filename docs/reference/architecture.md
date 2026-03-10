@@ -11,8 +11,6 @@ Prism follows a VBD-inspired (Volatility-Based Decomposition) layered architectu
 
 ## Layer Overview
 
-<div align="center">
-
 ### Figure 1: VBD Layer Architecture
 
 ```mermaid
@@ -54,8 +52,6 @@ flowchart LR
     style UTILITIES fill:#76c043,color:#000
     style MODELS fill:#64748b,color:#fff
 ```
-
-</div>
 
 ---
 
@@ -162,8 +158,6 @@ To swap an implementation (e.g., for testing), replace the concrete class in `co
 
 A typical installation follows this path:
 
-<div align="center">
-
 ### Figure 2: Installation Data Flow
 
 ```mermaid
@@ -194,8 +188,6 @@ flowchart TB
     style RE fill:#ffc220,color:#000
     style EB fill:#76c043,color:#000
 ```
-
-</div>
 
 ---
 

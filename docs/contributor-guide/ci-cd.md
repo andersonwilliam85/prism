@@ -13,8 +13,6 @@ Complete automation pipeline for Prism Package Manager.
 
 Prism uses **GitHub Actions** for continuous integration and deployment with a multi-stage workflow:
 
-<div align="center">
-
 ### Figure 1: CI/CD Pipeline
 
 ```mermaid
@@ -32,8 +30,6 @@ flowchart LR
     style STAGE fill:#f59e0b,color:#000
     style MAIN fill:#10b981,color:#fff
 ```
-
-</div>
 
 **4 Workflows:**
 1. **ci.yml** - PR checks (lint, test, coverage, security)
@@ -244,8 +240,6 @@ git push origin feature/my-feature
 
 ### Standard Release (dev → stage → main)
 
-<div align="center">
-
 ### Figure 2: Release Process
 
 ```mermaid
@@ -270,8 +264,6 @@ flowchart TB
     style PROD fill:#10b981,color:#fff
     style RELEASE fill:#10b981,color:#fff
 ```
-
-</div>
 
 ### Hotfix Release (emergency)
 
