@@ -1,0 +1,9 @@
+company:
+  name: "CLI Test Co"
+
+welcome:
+  title: "Welcome to CLI Test Co"
+  subtitle: "Your development environment is ready!"
+
+branding:
+  footer_text: "Built by CLI Test Co"

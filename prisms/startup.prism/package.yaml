@@ -26,6 +26,15 @@ prism_config:
     - "sunset"
     - "ocean"
     - "purple"
+    - "launchpad"
+  custom_themes:
+    - id: "launchpad"
+      name: "Launchpad"
+      gradient_1: "#f97316"
+      gradient_2: "#fb923c"
+      gradient_3: "#fbbf24"
+      gradient_4: "#facc15"
+      gradient_5: "#fde68a"
 
   sources:
     - url: "local"
