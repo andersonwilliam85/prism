@@ -5,7 +5,7 @@ title: Rollback System
 
 # Rollback System
 
-Prism tracks every action during installation so it can undo them if something fails. The rollback system consists of two components: the **RollbackEngine** (pure logic) and the **RollbackAccessor** (I/O).
+Prism tracks every action during installation so it can undo them if something fails. Rollback is owned by the **InstallationEngine**, which receives a **RollbackAccessor** via constructor injection for I/O (state persistence, file deletion, command execution).
 
 ---
 
@@ -43,27 +43,27 @@ This ensures dependent artifacts are removed before their containers.
 
 ---
 
-## RollbackEngine (Pure Logic)
+## InstallationEngine — Rollback Logic
 
-The engine handles all computation with no I/O:
+The InstallationEngine handles rollback computation and delegates I/O to the RollbackAccessor:
 
 ```python
-engine = RollbackEngine()
+engine = InstallationEngine(rollback_accessor=accessor, ...)
 
 # Create state for an installation
-state = engine.create_state("my-company-prism")
+state = engine.create_rollback_state("my-company-prism")
 
 # Record actions as installation progresses
-engine.record_action(state, "dir_created", "/home/user/workspace")
-engine.record_action(state, "file_created", "/home/user/workspace/config.yaml")
-engine.record_action(state, "command_executed", "npm install eslint",
-                     rollback_command="npm uninstall eslint")
+engine.record_rollback_action(state, "dir_created", "/home/user/workspace")
+engine.record_rollback_action(state, "file_created", "/home/user/workspace/config.yaml")
+engine.record_rollback_action(state, "command_executed", "npm install eslint",
+                              rollback_command="npm uninstall eslint")
 
 # Compute the undo plan (LIFO, filtered)
 plan = engine.compute_rollback_plan(state)
 
 # Validate completeness — warns about actions with no rollback path
-all_covered, warnings = engine.validate_completeness(state)
+all_covered, warnings = engine.validate_rollback_completeness(state)
 ```
 
 ---
@@ -138,7 +138,7 @@ If Prism crashes during installation:
 
 1. The rollback state file remains in `/tmp/prism_rollback_*.json`
 2. On next run, Prism can detect incomplete installations by scanning for state files
-3. The state is loaded via `RollbackAccessor.load_state()`
+3. The state is loaded via the RollbackAccessor's `load_state()` method
 4. The rollback plan is computed and executed to clean up partial state
 
 If the state file itself is corrupted (invalid JSON, missing keys), `load_state()` returns `None` and the recovery is skipped.
@@ -147,10 +147,10 @@ If the state file itself is corrupted (invalid JSON, missing keys), `load_state(
 
 ## Completeness Validation
 
-Before starting an install, the engine can check if all planned actions have rollback coverage:
+Before starting an install, the InstallationEngine can check if all planned actions have rollback coverage:
 
 ```python
-all_covered, warnings = engine.validate_completeness(state)
+all_covered, warnings = engine.validate_rollback_completeness(state)
 if not all_covered:
     for w in warnings:
         print(f"Warning: {w}")
@@ -163,6 +163,6 @@ Actions without rollback paths are silently skipped during rollback execution. T
 
 ## See Also
 
-- [Architecture](architecture.md) — Where RollbackEngine and RollbackAccessor fit in the system
+- [Architecture](architecture.md) — Where InstallationEngine and RollbackAccessor fit in the system
 - [Privilege Separation](privilege-separation.md) — How rollback interacts with sudo operations
 - [Installation](../getting-started/installation.md) — The install flow that generates rollback actions

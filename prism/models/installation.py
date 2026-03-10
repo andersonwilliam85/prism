@@ -4,6 +4,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
+from pathlib import Path
+from typing import Callable, Optional
+
+ProgressCallback = Optional[Callable[[str, str, str], None]]
 
 
 @dataclass
@@ -93,6 +97,25 @@ class SudoSession:
         if self.locked_until is None:
             return False
         return datetime.now() < self.locked_until
+
+
+@dataclass
+class InstallContext:
+    """Everything the InstallationEngine needs to execute an install."""
+
+    package_name: str
+    config: dict  # raw config (for setup.install directives)
+    merged_config: dict  # validated + merged config
+    user_info: dict
+    platform_name: str
+    workspace_root: Path
+    pkg_path: Path | None = None
+    tools_selected: list[str] | None = None
+    tools_excluded: list[str] | None = None
+    skip_privileged: bool = False
+    selected_sub_prisms: dict[str, str] = field(default_factory=dict)
+    proxies: dict[str, str] = field(default_factory=dict)
+    npm_registry: str = ""
 
 
 @dataclass

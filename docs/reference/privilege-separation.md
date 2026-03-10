@@ -29,15 +29,15 @@ The UI presents phase 2 steps for review before prompting for a password. The us
 
 ---
 
-## SudoValidationEngine (Pure Logic)
+## InstallationEngine — Sudo Session Management
 
-Manages sudo session lifecycle with no I/O:
+The InstallationEngine owns sudo session lifecycle. It receives accessors via constructor injection for any I/O:
 
 ### Session Creation
 
 ```python
-engine = SudoValidationEngine()
-session = engine.create_session()
+engine = InstallationEngine(sudo_accessor=accessor, ...)
+session = engine.create_sudo_session()
 # session.token = <32-byte cryptographically random URL-safe string>
 # session.ttl_seconds = 900  (15 minutes)
 # session.max_attempts = 3
@@ -46,7 +46,7 @@ session = engine.create_session()
 ### Session Validation
 
 ```python
-is_valid = engine.validate_session(session)
+is_valid = engine.validate_sudo_session(session)
 # Returns False if:
 #   - Session has expired (created_at + ttl_seconds < now)
 #   - Session is locked (locked_until > now)
@@ -56,11 +56,11 @@ is_valid = engine.validate_session(session)
 
 ```python
 # On successful password validation
-session = engine.record_attempt(session, success=True)
+session = engine.record_sudo_attempt(session, success=True)
 # Resets attempt counter to 0
 
 # On failed password validation
-session = engine.record_attempt(session, success=False)
+session = engine.record_sudo_attempt(session, success=False)
 # Increments attempt counter
 # After 3 failures: locks session for 30 seconds
 ```
@@ -188,6 +188,6 @@ If the user clicks **Skip**, phase 2 is not executed. The installation is marked
 
 ## See Also
 
-- [Architecture](architecture.md) — SudoValidationEngine and SudoAccessor in the system design
+- [Architecture](architecture.md) — InstallationEngine and SudoAccessor in the system design
 - [Rollback System](rollback-system.md) — How rollback handles privileged actions
 - [Installation](../getting-started/installation.md) — The full install flow

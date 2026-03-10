@@ -1,123 +1,48 @@
-"""InstallationManager — orchestrate the full install pipeline.
+"""InstallationManager — orchestrate the install pipeline.
 
-Delegates computation to engines, I/O to accessors.
-This is the single orchestrator that replaces the monolithic installer_engine.py.
+Thin orchestrator: loads config, validates, merges, delegates execution
+to the InstallationEngine. The manager owns the "what" (which package,
+which sub-prisms); the engine owns the "how" (git, workspace, tools, etc.).
 
 Volatility: low — pipeline structure and step sequence are stable.
 """
 
 from __future__ import annotations
 
-import json
 import threading
 from datetime import datetime
 from pathlib import Path
-from typing import Callable, Optional
 
-from prism.accessors.command_accessor.i_command_accessor import ICommandAccessor
 from prism.accessors.file_accessor.i_file_accessor import IFileAccessor
-from prism.accessors.rollback_accessor.i_rollback_accessor import IRollbackAccessor
-from prism.accessors.system_accessor.i_system_accessor import ISystemAccessor
-from prism.engines.merge_engine.i_merge_engine import IMergeEngine
-from prism.engines.rollback_engine.i_rollback_engine import IRollbackEngine
-from prism.engines.setup_engine.i_setup_engine import ISetupEngine
-from prism.engines.validation_engine.i_validation_engine import IValidationEngine
-from prism.models.installation import InstallationResult, PrivilegedStep, RollbackState, StepResult
+from prism.engines.config_engine.i_config_engine import IConfigEngine
+from prism.engines.installation_engine.i_installation_engine import IInstallationEngine
+from prism.models.installation import InstallationResult, InstallContext, PrivilegedStep, ProgressCallback
 from prism.models.prism_config import BrandingConfig, PrismConfig, ThemeDefinition
 from prism.utilities.event_bus.i_event_bus import IEventBus
 
-ProgressCallback = Optional[Callable[[str, str, str], None]]
-
 
 class InstallationManager:
-    """Concrete implementation of IInstallationManager."""
+    """Orchestrate install pipeline: load → validate → merge → delegate."""
 
     def __init__(
         self,
-        merge_engine: IMergeEngine,
-        setup_engine: ISetupEngine,
-        validation_engine: IValidationEngine,
-        command_accessor: ICommandAccessor,
+        config_engine: IConfigEngine,
+        installation_engine: IInstallationEngine,
         file_accessor: IFileAccessor,
-        system_accessor: ISystemAccessor,
+        system_accessor: object,  # ISystemAccessor — for platform detection
         event_bus: IEventBus,
         prisms_dir: Path,
-        rollback_engine: IRollbackEngine | None = None,
-        rollback_accessor: IRollbackAccessor | None = None,
     ) -> None:
-        self._merge = merge_engine
-        self._setup = setup_engine
-        self._validation = validation_engine
-        self._commands = command_accessor
+        self._config = config_engine
+        self._engine = installation_engine
         self._files = file_accessor
         self._system = system_accessor
         self._event_bus = event_bus
         self._prisms_dir = prisms_dir
-        self._rollback_engine = rollback_engine
-        self._rollback_accessor = rollback_accessor
-        self._progress_callback: ProgressCallback = None
-        self._cancel_event: threading.Event | None = None
-        self._current_rollback_state: RollbackState | None = None
 
     # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
-
-    def set_cancel_event(self, event: threading.Event) -> None:
-        """Set a threading Event that, when set, signals cancellation."""
-        self._cancel_event = event
-
-    def _check_cancelled(self) -> None:
-        """Raise if cancellation was requested."""
-        if self._cancel_event and self._cancel_event.is_set():
-            raise _InstallCancelled()
-
-    def _record(self, action_type: str, target: str, rollback_command: str = "", original_value: str = "") -> None:
-        """Record an action for rollback tracking."""
-        if self._rollback_engine and self._current_rollback_state:
-            self._rollback_engine.record_action(
-                self._current_rollback_state, action_type, target, rollback_command, original_value
-            )
-
-    def rollback(self, state: RollbackState | None = None) -> list[dict]:
-        """Execute rollback for the given or current state.
-
-        Returns a list of {action, success, detail} dicts.
-        """
-        state = state or self._current_rollback_state
-        if not state or not self._rollback_engine or not self._rollback_accessor:
-            return []
-
-        plan = self._rollback_engine.compute_rollback_plan(state)
-        results: list[dict] = []
-
-        for action in plan:
-            self.log("rollback", f"Undoing {action.action_type}: {action.target}")
-            try:
-                if action.rollback_command:
-                    ok, output = self._rollback_accessor.run_command(action.rollback_command)
-                    results.append({"action": action.target, "success": ok, "detail": output})
-                elif action.action_type == "file_created":
-                    ok = self._rollback_accessor.delete_file(action.target)
-                    results.append({"action": action.target, "success": ok, "detail": "deleted" if ok else "not found"})
-                elif action.action_type == "dir_created":
-                    ok = self._rollback_accessor.delete_directory(action.target)
-                    results.append({"action": action.target, "success": ok, "detail": "deleted" if ok else "not found"})
-                elif action.action_type == "config_changed" and action.original_value:
-                    # Restore original git config value
-                    self._commands.git_set_config(action.target, action.original_value, scope="global")
-                    results.append({"action": action.target, "success": True, "detail": "restored"})
-                else:
-                    results.append({"action": action.target, "success": False, "detail": "no rollback path"})
-            except Exception as e:
-                results.append({"action": action.target, "success": False, "detail": str(e)})
-
-            level = "success" if results[-1]["success"] else "warning"
-            self.log("rollback", f"  → {results[-1]['detail']}", level)
-
-        state.rolled_back = True
-        self._event_bus.publish("installation.rolled_back", {"package": state.package_name})
-        return results
 
     def install(
         self,
@@ -128,276 +53,161 @@ class InstallationManager:
         tools_excluded: list[str] | None = None,
         skip_privileged: bool = False,
     ) -> InstallationResult:
-        """Run the installation pipeline.
-
-        Args:
-            skip_privileged: If True, skip system package installs and return
-                them as pending_privileged steps for user approval. Call
-                install_privileged() to execute them.
-        """
-        result = InstallationResult(success=False, package_name=package_name)
+        """Run the installation pipeline."""
         selected_sub_prisms = selected_sub_prisms or {}
 
-        # Initialize rollback tracking
-        if self._rollback_engine:
-            self._current_rollback_state = self._rollback_engine.create_state(package_name)
-
         try:
-            self._check_cancelled()
-
-            # Load and validate
-            config = self._files.get_package_config(self._prisms_dir, package_name)
-            valid, errors, _warnings = self._validation.validate(config)
-            if not valid:
-                result.error = f"Validation failed: {'; '.join(errors)}"
-                return result
-
-            prism_config = self.load_prism_config(package_name)
-            merged = self.merge_tiers(config, selected_sub_prisms)
-
-            # Detect platform
-            platform_name, platform_detail = self._system.get_platform()
-            self.log("platform", f"Detected: {platform_name} ({platform_detail})")
-            result.steps.append(
-                StepResult(
-                    step="platform",
-                    success=True,
-                    message=f"{platform_name} ({platform_detail})",
-                )
+            return self._do_install(
+                package_name, user_info, selected_sub_prisms, tools_selected, tools_excluded, skip_privileged
             )
-
-            if platform_name == "unknown":
-                result.error = "Unsupported platform"
-                result.steps.append(StepResult(step="platform", success=False, message="Unsupported platform"))
-                return result
-
-            # Preflight checks
-            step_result = self._run_preflight(config, platform_name)
-            result.steps.append(step_result)
-            if not step_result.success:
-                result.error = step_result.message
-                return result
-
-            # Apply prism config (proxy, registry)
-            self._apply_prism_config(prism_config)
-            result.steps.append(StepResult(step="prism_config", success=True))
-
-            # ---- Phase 1: Unprivileged steps ----
-            self._check_cancelled()
-
-            # Package manager check (no install, just detection)
-            step_result = self._ensure_package_manager(platform_name)
-            result.steps.append(step_result)
-
-            # Workspace folders — user chooses base dir, defaults to ~/workspace
-            self._check_cancelled()
-            workspace_dir = user_info.get("workspace_dir", "")
-            if workspace_dir:
-                workspace_root = Path(workspace_dir).expanduser()
-            else:
-                workspace_root = Path.home() / "workspace"
-            self._create_workspace(config, merged, workspace_root)
-            result.steps.append(StepResult(step="workspace", success=True))
-
-            # Git config
-            self._check_cancelled()
-            self._configure_git(user_info, merged)
-            result.steps.append(StepResult(step="git_config", success=True))
-
-            # SSH keys
-            self._check_cancelled()
-            self._ensure_ssh_keys(user_info)
-            result.steps.append(StepResult(step="ssh_keys", success=True))
-
-            # Clone repositories
-            self._check_cancelled()
-            self._clone_repos(merged, str(workspace_root))
-            result.steps.append(StepResult(step="repositories", success=True))
-
-            # Apply config package (copy files, save merged config)
-            self._check_cancelled()
-            pkg_path = self._files.find_package(self._prisms_dir, package_name)
-            if pkg_path:
-                self._apply_config_package(
-                    pkg_path,
-                    workspace_root,
-                    user_info,
-                    merged,
-                    selected_sub_prisms,
-                    config,
-                )
-            result.steps.append(StepResult(step="config_package", success=True))
-
-            # ---- Phase 2: Privileged steps (tool installs) ----
-            # Build effective config: top-level config + merged sub-prism config
-            effective = dict(merged)
-            if "tools_required" not in effective and "tools_required" in config:
-                effective["tools_required"] = config["tools_required"]
-            if "tools" not in effective and "tools" in config:
-                effective["tools"] = config["tools"]
-
-            if skip_privileged:
-                # Plan privileged installs but don't execute
-                pending = self.plan_privileged_installs(effective, platform_name, tools_selected, tools_excluded)
-                result.pending_privileged = pending
-                result.phase = 1
-                if pending:
-                    self.log(
-                        "tools",
-                        f"Deferred {len(pending)} tool installs pending approval",
-                    )
-                result.steps.append(StepResult(step="tools", success=True, skipped=True, message="Deferred"))
-            else:
-                # Execute tool installs immediately
-                self._install_tools(effective, platform_name, tools_selected, tools_excluded)
-                result.steps.append(StepResult(step="tools", success=True))
-                result.phase = 2
-
-            # Finalize
-            self._finalize(
-                workspace_root,
-                package_name,
-                platform_name,
-                selected_sub_prisms,
-                user_info,
-                config,
-            )
-            result.steps.append(StepResult(step="finalize", success=True))
-
-            result.success = True
-            result.finished_at = datetime.now()
-            self._event_bus.publish("installation.complete", {"package": package_name, "success": True})
-
-        except _InstallCancelled:
-            result.error = "Installation cancelled by user"
-            result.finished_at = datetime.now()
-            self.log("install", "Cancelled — rolling back...", "warning")
-            rollback_results = self.rollback()
-            result.rollback_results = rollback_results
-            self._event_bus.publish("installation.cancelled", {"package": package_name})
-
         except Exception as e:
+            result = InstallationResult(success=False, package_name=package_name)
             result.error = str(e)
             result.finished_at = datetime.now()
-            # Auto-rollback on failure
-            if self._current_rollback_state and self._current_rollback_state.actions:
-                self.log("install", "Error — rolling back changes...", "warning")
-                rollback_results = self.rollback()
-                result.rollback_results = rollback_results
             self._event_bus.publish("installation.failed", {"package": package_name, "error": str(e)})
+            return result
 
-        return result
-
-    def plan_privileged_installs(
+    def _do_install(
         self,
-        merged_config: dict,
-        platform_name: str,
-        tools_selected: list[str] | None = None,
-        tools_excluded: list[str] | None = None,
-    ) -> list[PrivilegedStep]:
-        """Plan which tool installs need elevated privileges.
-
-        Returns a list of PrivilegedStep objects. On macOS with Homebrew,
-        needs_sudo is False (brew runs as user). On Linux/Windows, needs_sudo
-        is True for system package managers.
-        """
-        tools = self._setup.resolve_tools(merged_config, platform_name, tools_selected, tools_excluded)
-        if not tools:
-            return []
-
-        # macOS Homebrew doesn't need sudo
-        needs_sudo = platform_name not in ("mac",)
-
-        steps: list[PrivilegedStep] = []
-        for tool in tools:
-            name = tool["name"]
-            if not self._commands.pkg_is_installed(name):
-                cmd = self._get_install_command(name, platform_name)
-                steps.append(
-                    PrivilegedStep(
-                        name=name,
-                        command=cmd,
-                        needs_sudo=needs_sudo,
-                        platform=platform_name,
-                    )
-                )
-
-        return steps
-
-    def install_privileged(
-        self,
-        steps: list[PrivilegedStep],
-        platform_name: str,
+        package_name: str,
+        user_info: dict,
+        selected_sub_prisms: dict[str, str],
+        tools_selected: list[str] | None,
+        tools_excluded: list[str] | None,
+        skip_privileged: bool,
     ) -> InstallationResult:
-        """Execute privileged install steps (Phase 2).
+        """Internal install logic — separated for clean error handling."""
+        # Load config
+        config = self._files.get_package_config(self._prisms_dir, package_name)
 
-        Called after user has approved the plan from plan_privileged_installs().
-        """
-        result = InstallationResult(success=False, package_name="", phase=2)
+        # Build tier configs from selected sub-prisms
+        tier_configs = self._collect_tier_configs(config, selected_sub_prisms)
 
-        try:
-            for step in steps:
-                if self._commands.pkg_is_installed(step.name):
-                    self.log("tools", f"{step.name} already installed", "success")
-                    result.steps.append(StepResult(step="tools", success=True, message=f"{step.name} present"))
-                    continue
+        # Validate + merge via ConfigEngine
+        is_valid, merged, errors, warnings = self._config.prepare(config, tier_configs)
+        if not is_valid:
+            result = InstallationResult(success=False, package_name=package_name)
+            result.error = f"Validation failed: {'; '.join(errors)}"
+            return result
 
-                self.log("tools", f"Installing {step.name}...")
-                try:
-                    self._commands.pkg_install(step.name, step.platform or platform_name)
-                    self.log("tools", f"Installed {step.name}", "success")
-                    result.steps.append(StepResult(step="tools", success=True, message=f"Installed {step.name}"))
-                except Exception as e:
-                    self.log("tools", f"Failed to install {step.name}: {e}", "warning")
-                    result.steps.append(
-                        StepResult(
-                            step="tools",
-                            success=False,
-                            message=f"Failed: {step.name} - {e}",
-                        )
-                    )
+        # Detect platform
+        platform_name, platform_detail = self._system.get_platform()
 
-            result.success = True
-            result.finished_at = datetime.now()
-        except Exception as e:
-            result.error = str(e)
-            result.finished_at = datetime.now()
+        if platform_name == "unknown":
+            result = InstallationResult(success=False, package_name=package_name)
+            result.error = "Unsupported platform"
+            return result
+
+        # Build workspace root
+        workspace_dir = user_info.get("workspace_dir", "")
+        workspace_root = Path(workspace_dir).expanduser() if workspace_dir else Path.home() / "workspace"
+
+        # Load prism config for proxy/registry
+        prism_config = self._load_prism_config(config)
+
+        # Find package path
+        pkg_path = self._files.find_package(self._prisms_dir, package_name)
+
+        # Build context and delegate to engine
+        context = InstallContext(
+            package_name=package_name,
+            config=config,
+            merged_config=merged,
+            user_info=user_info,
+            platform_name=platform_name,
+            workspace_root=workspace_root,
+            pkg_path=pkg_path,
+            tools_selected=tools_selected,
+            tools_excluded=tools_excluded,
+            skip_privileged=skip_privileged,
+            selected_sub_prisms=selected_sub_prisms,
+            proxies=prism_config.proxies,
+            npm_registry=prism_config.npm_registry,
+        )
+
+        result = self._engine.install(context)
+
+        # Publish events
+        if result.success:
+            self._event_bus.publish("installation.complete", {"package": package_name, "success": True})
+        elif result.error and "cancelled" in result.error.lower():
+            self._event_bus.publish("installation.cancelled", {"package": package_name})
+        elif result.error:
+            self._event_bus.publish("installation.failed", {"package": package_name, "error": result.error})
 
         return result
 
-    @staticmethod
-    def _get_install_command(tool_name: str, platform_name: str) -> str:
-        """Get the platform-specific install command for display."""
-        if platform_name == "mac":
-            return f"brew install {tool_name}"
-        elif platform_name in ("ubuntu", "linux"):
-            return f"sudo apt-get install -y {tool_name}"
-        elif platform_name == "windows":
-            return f"choco install {tool_name} -y"
-        return f"install {tool_name}"
+    def install_privileged(self, steps: list[PrivilegedStep], platform_name: str) -> InstallationResult:
+        """Execute deferred privileged install steps (Phase 2)."""
+        return self._engine.install_privileged(steps, platform_name)
+
+    def rollback(self) -> list[dict]:
+        """Rollback the current installation."""
+        results = self._engine.rollback()
+        self._event_bus.publish("installation.rolled_back", {"results": results})
+        return results
 
     def check_readiness(self, requirements: dict) -> tuple[bool, list[str]]:
         """Check whether the system meets installation requirements."""
-        installed: dict[str, str] = {}
-        for key in requirements:
-            if key == "onboarding_version":
-                continue
-            if key == "python_version":
-                version = self._system.get_installed_version("python3") or self._system.get_installed_version("python")
-                if version:
-                    installed["python"] = version
-            else:
-                version = self._system.get_installed_version(key)
-                if version:
-                    installed[key] = version
-        return self._setup.check_requirements(requirements, installed)
+        return self._engine.check_requirements(requirements)
+
+    def set_cancel_event(self, event: threading.Event) -> None:
+        """Set a threading Event that signals cancellation."""
+        self._engine.set_cancel_event(event)
+
+    def set_progress_callback(self, callback: ProgressCallback) -> None:
+        """Set the progress callback for UI updates."""
+        self._engine.set_progress_callback(callback)
 
     def load_prism_config(self, package_name: str) -> PrismConfig:
         """Load the prism_config section from a package."""
         config = self._files.get_package_config(self._prisms_dir, package_name)
+        return self._load_prism_config(config)
+
+    def merge_tiers(self, config: dict, selected_sub_prisms: dict[str, str]) -> dict:
+        """Build merged config from selected sub-prisms."""
+        tier_configs = self._collect_tier_configs(config, selected_sub_prisms)
+        return self._config.merge_tiers({}, tier_configs)
+
+    # ------------------------------------------------------------------
+    # Private helpers
+    # ------------------------------------------------------------------
+
+    def _collect_tier_configs(self, config: dict, selected_sub_prisms: dict[str, str]) -> list[dict]:
+        """Read sub-prism config files and collect them for merging."""
+        bundled = config.get("bundled_prisms", {})
+        if not bundled:
+            return []
+
+        tier_configs: list[dict] = []
+        pkg_name = config.get("package", {}).get("name", "")
+        pkg_path = self._files.find_package(self._prisms_dir, pkg_name) if pkg_name else None
+
+        for tier_name, tier_prisms in bundled.items():
+            if not isinstance(tier_prisms, list):
+                continue
+            for sub_prism in tier_prisms:
+                if not isinstance(sub_prism, dict):
+                    continue
+                sub_id = sub_prism.get("id")
+                config_file = sub_prism.get("config")
+                is_required = sub_prism.get("required", False)
+                should_include = is_required or (selected_sub_prisms.get(tier_name) == sub_id)
+
+                if should_include and config_file and pkg_path:
+                    config_path = pkg_path / config_file
+                    if self._files.exists(config_path):
+                        try:
+                            tier_configs.append(self._files.read_yaml(config_path))
+                        except Exception:
+                            pass
+
+        return tier_configs
+
+    def _load_prism_config(self, config: dict) -> PrismConfig:
+        """Parse prism_config section from a raw config dict."""
         pc = config.get("prism_config", {})
         branding_raw = pc.get("branding", {})
-        # Parse custom themes if declared
         custom_themes_raw = pc.get("custom_themes", [])
         custom_themes = []
         for ct in custom_themes_raw:
@@ -421,310 +231,3 @@ class InstallationManager:
                 else BrandingConfig()
             ),
         )
-
-    def merge_tiers(self, config: dict, selected_sub_prisms: dict[str, str]) -> dict:
-        """Build merged config from selected sub-prisms."""
-        bundled = config.get("bundled_prisms", {})
-        if not bundled:
-            return {}
-
-        tier_configs: list[dict] = []
-        pkg_path = None
-
-        # Find the package path for resolving config file references
-        pkg_section = config.get("package", {})
-        pkg_name = pkg_section.get("name", "")
-        if pkg_name:
-            pkg_path = self._files.find_package(self._prisms_dir, pkg_name)
-
-        for tier_name, tier_prisms in bundled.items():
-            if not isinstance(tier_prisms, list):
-                continue
-            for sub_prism in tier_prisms:
-                if not isinstance(sub_prism, dict):
-                    continue
-                sub_id = sub_prism.get("id")
-                config_file = sub_prism.get("config")
-                is_required = sub_prism.get("required", False)
-                should_include = is_required or (selected_sub_prisms.get(tier_name) == sub_id)
-
-                if should_include and config_file and pkg_path:
-                    config_path = pkg_path / config_file
-                    if self._files.exists(config_path):
-                        try:
-                            sub_config = self._files.read_yaml(config_path)
-                            tier_configs.append(sub_config)
-                            self.log("prism", f"Merged sub-prism: {tier_name}/{sub_id}")
-                        except Exception as e:
-                            self.log(
-                                "prism",
-                                f"Failed to merge {tier_name}/{sub_id}: {e}",
-                                "warning",
-                            )
-
-        return self._merge.merge_tiers({}, tier_configs)
-
-    def set_progress_callback(self, callback: object | None) -> None:
-        """Set the progress callback for UI updates."""
-        self._progress_callback = callback  # type: ignore[assignment]
-
-    def log(self, step: str, message: str, level: str = "info") -> None:
-        """Log a message and invoke the progress callback."""
-        prefix = {"info": "i", "success": "+", "error": "!", "warning": "?"}.get(level, "i")
-        print(f"[{prefix}] {message}")
-        if self._progress_callback:
-            self._progress_callback(step, message, level)
-
-    # ------------------------------------------------------------------
-    # Private orchestration steps
-    # ------------------------------------------------------------------
-
-    def _run_preflight(self, config: dict, platform_name: str) -> StepResult:
-        """Run preflight requirement checks."""
-        requirements = config.get("package", {}).get("requires", {})
-        if not requirements:
-            self.log("preflight", "No requirements specified — skipping")
-            return StepResult(step="preflight", success=True, skipped=True)
-
-        installed: dict[str, str] = {}
-        for key in requirements:
-            if key == "onboarding_version":
-                continue
-            if key == "python_version":
-                version = self._system.get_installed_version("python3") or self._system.get_installed_version("python")
-                if version:
-                    installed["python"] = version
-            else:
-                version = self._system.get_installed_version(key)
-                if version:
-                    installed[key] = version
-
-        ok, failures = self._setup.check_requirements(requirements, installed)
-        if not ok:
-            msg = f"Preflight failed: {'; '.join(failures)}"
-            self.log("preflight", msg, "error")
-            return StepResult(step="preflight", success=False, message=msg)
-
-        self.log("preflight", "All requirements satisfied", "success")
-        return StepResult(step="preflight", success=True)
-
-    def _apply_prism_config(self, prism_config: PrismConfig) -> None:
-        """Apply proxy and registry settings to environment."""
-        if prism_config.proxies.get("http"):
-            for key in ("HTTP_PROXY", "http_proxy"):
-                self._system.set_env(key, prism_config.proxies["http"])
-            https = prism_config.proxies.get("https", prism_config.proxies["http"])
-            for key in ("HTTPS_PROXY", "https_proxy"):
-                self._system.set_env(key, https)
-            no_proxy = prism_config.proxies.get("no_proxy", "localhost,127.0.0.1")
-            for key in ("NO_PROXY", "no_proxy"):
-                self._system.set_env(key, no_proxy)
-            self.log("prism_config", f"Proxy: {prism_config.proxies['http']}")
-
-        if prism_config.npm_registry:
-            self._system.set_env("PRISM_NPM_REGISTRY", prism_config.npm_registry)
-            self.log("prism_config", f"NPM registry: {prism_config.npm_registry}")
-
-    def _ensure_package_manager(self, platform_name: str) -> StepResult:
-        """Ensure OS package manager is available."""
-        if platform_name == "mac":
-            if self._commands.pkg_is_installed("brew"):
-                self.log("package_manager", "Homebrew already installed", "success")
-            else:
-                self.log(
-                    "package_manager",
-                    "Homebrew not found — manual install required",
-                    "warning",
-                )
-        elif platform_name in ("ubuntu", "linux"):
-            self.log("package_manager", "Using apt (built-in)", "success")
-        elif platform_name == "windows":
-            if self._commands.pkg_is_installed("choco"):
-                self.log("package_manager", "Chocolatey already installed", "success")
-            else:
-                self.log(
-                    "package_manager",
-                    "Chocolatey not found — manual install required",
-                    "warning",
-                )
-        return StepResult(step="package_manager", success=True)
-
-    def _create_workspace(self, config: dict, merged_config: dict, workspace_root: Path) -> None:
-        """Create workspace directory structure."""
-        # Config-driven directories from setup.install.directories
-        setup_dirs = config.get("setup", {}).get("install", {}).get("directories", [])
-        config_dir_names = [d.get("name", d.get("dest", "")) for d in setup_dirs if isinstance(d, dict)]
-        config_dir_names = [d for d in config_dir_names if d]
-
-        dirs = self._setup.plan_workspace(merged_config, config_dir_names)
-        if not self._files.exists(workspace_root):
-            self._files.mkdir(workspace_root)
-            self._record("dir_created", str(workspace_root))
-        self.log("workspace", f"Base: {workspace_root}")
-        for d in dirs:
-            path = workspace_root / d
-            if not self._files.exists(path):
-                self._files.mkdir(path)
-                self._record("dir_created", str(path))
-            self.log("workspace", f"Ensured: {d}")
-
-    def _configure_git(self, user_info: dict, merged_config: dict) -> None:
-        """Configure git global settings."""
-        plan = self._setup.plan_git_config(user_info, merged_config)
-        if not plan:
-            self.log("git_config", "No git config to set", "warning")
-            return
-
-        for key, value in plan:
-            # Capture original value for rollback
-            original = (
-                self._commands.git_get_config(key, scope="global") if hasattr(self._commands, "git_get_config") else ""
-            )
-            self._commands.git_set_config(key, value, scope="global")
-            self._record("config_changed", key, original_value=original or "")
-        self.log("git_config", f"Set {len(plan)} git config values", "success")
-
-    def _ensure_ssh_keys(self, user_info: dict) -> None:
-        """Generate SSH keys if they don't exist."""
-        if self._commands.ssh_key_exists():
-            self.log("ssh_keys", "SSH key already exists", "success")
-            return
-        email = user_info.get("email", user_info.get("work_email", "user@example.com"))
-        key_path = self._commands.ssh_generate_key(key_type="ed25519", comment=email)
-        self._record("file_created", str(key_path))
-        self.log("ssh_keys", f"Generated SSH key: {key_path}", "success")
-
-    def _install_tools(
-        self,
-        merged_config: dict,
-        platform_name: str,
-        tools_selected: list[str] | None,
-        tools_excluded: list[str] | None,
-    ) -> None:
-        """Resolve and install tools."""
-        tools = self._setup.resolve_tools(merged_config, platform_name, tools_selected, tools_excluded)
-        if not tools:
-            self.log("tools", "No tools to install")
-            return
-
-        for tool in tools:
-            name = tool["name"]
-            if self._commands.pkg_is_installed(name):
-                self.log("tools", f"{name} already installed", "success")
-            else:
-                self.log("tools", f"Installing {name}...")
-                try:
-                    self._commands.pkg_install(name, platform_name)
-                    self.log("tools", f"Installed {name}", "success")
-                except Exception:
-                    self.log("tools", f"Failed to install {name} — skipping", "warning")
-
-    def _clone_repos(self, merged_config: dict, workspace_root: str) -> None:
-        """Clone repositories from merged config."""
-        plans = self._setup.plan_repo_clones(merged_config, workspace_root)
-        if not plans:
-            self.log("repositories", "No repositories to clone")
-            return
-
-        for plan in plans:
-            dest = Path(plan["dest"])
-            if self._files.exists(dest):
-                self.log("repositories", f"Already exists: {plan['name']}")
-                continue
-            self._files.mkdir(dest.parent)
-            try:
-                self._commands.git_clone(plan["url"], dest)
-                self.log("repositories", f"Cloned: {plan['name']}", "success")
-            except Exception as e:
-                self.log("repositories", f"Failed to clone {plan['name']}: {e}", "warning")
-
-    def _apply_config_package(
-        self,
-        pkg_path: Path,
-        workspace_root: Path,
-        user_info: dict,
-        merged_config: dict,
-        selected_sub_prisms: dict[str, str],
-        config: dict,
-    ) -> None:
-        """Copy prism files and save merged config."""
-        dest = workspace_root / "docs" / "config"
-
-        # Remove old config if present, then copy
-        if self._files.exists(dest):
-            self._files.rmtree(dest)
-        self._files.copy(pkg_path, dest)
-        self._record("dir_created", str(dest))
-        self.log("config_package", "Prism files copied", "success")
-
-        # Process setup.install directives
-        setup_install = config.get("setup", {}).get("install", {})
-        for file_entry in setup_install.get("files", []):
-            src = pkg_path / file_entry.get("source", "")
-            file_dest = workspace_root / file_entry.get("dest", "")
-            if self._files.exists(src):
-                self._files.mkdir(file_dest.parent)
-                self._files.copy(src, file_dest)
-                self.log("config_package", f"Copied file: {file_entry['dest']}", "success")
-
-        for dir_entry in setup_install.get("directories", []):
-            src = pkg_path / dir_entry.get("source", "")
-            dir_dest = workspace_root / dir_entry.get("dest", "")
-            if self._files.exists(src):
-                if self._files.exists(dir_dest):
-                    self._files.rmtree(dir_dest)
-                self._files.copy(src, dir_dest)
-                self.log(
-                    "config_package",
-                    f"Copied directory: {dir_entry['dest']}",
-                    "success",
-                )
-
-        # Save user info
-        self._files.write_yaml(dest / "user-info.yaml", user_info)
-        self._record("file_created", str(dest / "user-info.yaml"))
-
-        # Save merged config
-        if merged_config:
-            self._files.write_yaml(dest / "merged-config.yaml", merged_config)
-            self._record("file_created", str(dest / "merged-config.yaml"))
-
-        # Save selection record
-        if selected_sub_prisms:
-            self._files.write_yaml(dest / "selected-sub-prisms.yaml", selected_sub_prisms)
-            self._record("file_created", str(dest / "selected-sub-prisms.yaml"))
-
-    def _finalize(
-        self,
-        workspace_root: Path,
-        package_name: str,
-        platform_name: str,
-        selected_sub_prisms: dict[str, str],
-        user_info: dict,
-        config: dict,
-    ) -> None:
-        """Write installation marker and show post-install message."""
-        marker = workspace_root / ".prism_installed"
-        marker_data = json.dumps(
-            {
-                "installed_at": datetime.now().isoformat(),
-                "platform": platform_name,
-                "prism": package_name,
-                "selected_sub_prisms": selected_sub_prisms,
-                "user": user_info.get("name", user_info.get("full_name", "Unknown")),
-            },
-            indent=2,
-        )
-        self._files.write_text(marker, marker_data)
-        self._record("file_created", str(marker))
-        self.log("finalize", "Installation complete!", "success")
-
-        post_msg = config.get("setup", {}).get("post_install", {}).get("message")
-        if not post_msg:
-            post_msg = config.get("package", {}).get("post_install", {}).get("message")
-        if post_msg:
-            self.log("finalize", post_msg)
-
-
-class _InstallCancelled(Exception):
-    """Internal signal that the user cancelled the installation."""

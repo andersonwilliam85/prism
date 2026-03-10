@@ -169,7 +169,7 @@ def get_user_fields(package_name):
 
         # Sort fields so parents appear before dependents
         container = current_app.config["container"]
-        ordered = container.hierarchy_engine.resolve_dependency_order(fields)
+        ordered = container.config_engine.resolve_dependency_order(fields)
 
         return jsonify(
             {
@@ -219,13 +219,8 @@ def get_config(package_name):
             },
         }
 
-        # Include theme metadata
-        theme_engine = container.theme_engine
-        available = theme_engine.list_available_themes(
-            theme_options=prism_config.theme_options or None,
-            custom_themes=prism_config.custom_themes or None,
-        )
-        config_dict["theme_options"] = [t.id for t in available]
+        # Theme metadata comes directly from prism_config
+        config_dict["theme_options"] = prism_config.theme_options
         config_dict["default_theme"] = prism_config.default_theme
         config_dict["available_themes"] = [
             {
@@ -237,7 +232,7 @@ def get_config(package_name):
                 "gradient_4": t.gradient_4,
                 "gradient_5": t.gradient_5,
             }
-            for t in available
+            for t in prism_config.custom_themes
         ]
 
         return jsonify({"prism_config": config_dict, "package_name": package_name})
@@ -247,26 +242,8 @@ def get_config(package_name):
 
 @packages_bp.route("/api/themes")
 def list_themes():
-    """List all built-in themes (no package context needed)."""
-    try:
-        container = current_app.config["container"]
-        theme_engine = container.theme_engine
-        themes = theme_engine.list_available_themes()
-        return jsonify(
-            {
-                "themes": [
-                    {
-                        "id": t.id,
-                        "name": t.name,
-                        "gradient_1": t.gradient_1,
-                        "gradient_2": t.gradient_2,
-                    }
-                    for t in themes
-                ]
-            }
-        )
-    except Exception as e:
-        return jsonify({"themes": [], "error": str(e)})
+    """List built-in theme IDs (themes are config data, not a separate engine)."""
+    return jsonify({"themes": ["ocean", "sunset", "forest", "midnight", "minimal"]})
 
 
 @packages_bp.route("/api/package/<package_name>/tools")

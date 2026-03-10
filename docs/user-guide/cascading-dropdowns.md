@@ -13,7 +13,7 @@ Cascading dropdowns let you create dependent select fields where the options in 
 
 1. A parent field (e.g., `division`) is a standard `select` with a fixed `options` list.
 2. A child field (e.g., `team`) declares `depends_on: "division"` and provides an `option_map` keyed by parent values.
-3. When the user selects a parent value, the HierarchyEngine filters the child's options to only those matching the selected parent.
+3. When the user selects a parent value, the ConfigEngine filters the child's options to only those matching the selected parent.
 4. If the parent value has no entry in `option_map`, the full `options` list is shown as a fallback.
 
 ---
@@ -107,7 +107,7 @@ user_info_fields:
 
 ## Dependency Resolution
 
-The HierarchyEngine uses topological sort to determine the correct rendering order for fields. Fields without dependencies appear first, followed by their dependents.
+The ConfigEngine uses topological sort to determine the correct rendering order for fields. Fields without dependencies appear first, followed by their dependents.
 
 Given fields `[team, division, name]` where `team` depends on `division`:
 
@@ -149,4 +149,4 @@ Selecting "Operations" (not in `option_map`) would show `["General"]`.
 
 - [Configuration Schema](../reference/configuration-schema.md) — `user_info_fields` reference
 - [Creating Prisms](creating-configurations.md) — Full prism authoring guide
-- [Architecture](../reference/architecture.md) — HierarchyEngine in the system design
+- [Architecture](../reference/architecture.md) — ConfigEngine in the system design
