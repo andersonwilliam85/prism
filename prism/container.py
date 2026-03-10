@@ -14,18 +14,11 @@ from prism.accessors.registry_accessor.registry_accessor import RegistryAccessor
 from prism.accessors.rollback_accessor.rollback_accessor import RollbackAccessor
 from prism.accessors.sudo_accessor.sudo_accessor import SudoAccessor
 from prism.accessors.system_accessor.system_accessor import SystemAccessor
-from prism.engines.hierarchy_engine.hierarchy_engine import HierarchyEngine
-from prism.engines.merge_engine.merge_engine import MergeEngine
-from prism.engines.resolution_engine.resolution_engine import ResolutionEngine
-from prism.engines.rollback_engine.rollback_engine import RollbackEngine
-from prism.engines.scaffold_engine.scaffold_engine import ScaffoldEngine
-from prism.engines.setup_engine.setup_engine import SetupEngine
-from prism.engines.sudo_validation_engine.sudo_validation_engine import SudoValidationEngine
-from prism.engines.theme_engine.theme_engine import ThemeEngine
-from prism.engines.validation_engine.validation_engine import ValidationEngine
+from prism.engines.config_engine.config_engine import ConfigEngine
+from prism.engines.installation_engine.installation_engine import InstallationEngine
 from prism.managers.installation_manager.installation_manager import InstallationManager
 from prism.managers.package_manager.package_manager import PackageManager
-from prism.utilities.event_bus.in_memory_event_bus import InMemoryEventBus
+from prism.utilities.event_bus.local_event_bus import LocalEventBus
 
 
 class Container:
@@ -43,43 +36,35 @@ class Container:
         self._prisms_dir = prisms_dir
 
         # Utilities
-        self.event_bus = InMemoryEventBus()
+        self.event_bus = LocalEventBus()
 
         # Engines
-        self.hierarchy_engine = HierarchyEngine()
-        self.merge_engine = MergeEngine()
-        self.resolution_engine = ResolutionEngine()
-        self.rollback_engine = RollbackEngine()
-        self.scaffold_engine = ScaffoldEngine()
-        self.setup_engine = SetupEngine()
-        self.sudo_validation_engine = SudoValidationEngine()
-        self.theme_engine = ThemeEngine()
-        self.validation_engine = ValidationEngine()
+        self.config_engine = ConfigEngine()
+        self.installation_engine = InstallationEngine(
+            command_accessor=CommandAccessor(),
+            file_accessor=FileAccessor(),
+            system_accessor=SystemAccessor(),
+            rollback_accessor=RollbackAccessor(),
+        )
 
-        # Accessors
-        self.command_accessor = CommandAccessor()
+        # Accessors (for manager-level use)
         self.file_accessor = FileAccessor()
-        self.rollback_accessor = RollbackAccessor()
-        self.sudo_accessor = SudoAccessor()
         self.system_accessor = SystemAccessor()
         self.registry_accessor = RegistryAccessor()
+        self.sudo_accessor = SudoAccessor()
 
         # Managers
         self.installation_manager = InstallationManager(
-            merge_engine=self.merge_engine,
-            setup_engine=self.setup_engine,
-            validation_engine=self.validation_engine,
-            command_accessor=self.command_accessor,
+            config_engine=self.config_engine,
+            installation_engine=self.installation_engine,
             file_accessor=self.file_accessor,
             system_accessor=self.system_accessor,
             event_bus=self.event_bus,
             prisms_dir=self._prisms_dir,
-            rollback_engine=self.rollback_engine,
-            rollback_accessor=self.rollback_accessor,
         )
 
         self.package_manager = PackageManager(
-            validation_engine=self.validation_engine,
+            config_engine=self.config_engine,
             file_accessor=self.file_accessor,
             prisms_dir=self._prisms_dir,
         )

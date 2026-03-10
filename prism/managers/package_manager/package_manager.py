@@ -1,6 +1,6 @@
 """PackageManager — orchestrate package browsing, metadata, and user fields.
 
-Delegates to ValidationEngine for validation, FileAccessor for I/O.
+Delegates to ConfigEngine for validation, FileAccessor for I/O.
 No direct I/O — all filesystem access goes through the accessor.
 
 Volatility: medium — query interface stable; schema evolves.
@@ -11,7 +11,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from prism.accessors.file_accessor.i_file_accessor import IFileAccessor
-from prism.engines.validation_engine.i_validation_engine import IValidationEngine
+from prism.engines.config_engine.i_config_engine import IConfigEngine
 from prism.models.package_info import PackageInfo, TierInfo, UserField
 
 
@@ -20,11 +20,11 @@ class PackageManager:
 
     def __init__(
         self,
-        validation_engine: IValidationEngine,
+        config_engine: IConfigEngine,
         file_accessor: IFileAccessor,
         prisms_dir: Path,
     ) -> None:
-        self._validation = validation_engine
+        self._config = config_engine
         self._files = file_accessor
         self._prisms_dir = prisms_dir
 
@@ -96,9 +96,9 @@ class PackageManager:
         return result
 
     def validate(self, package_name: str) -> tuple[bool, list[str], list[str]]:
-        """Validate a single package."""
+        """Validate a single package config."""
         config = self._files.get_package_config(self._prisms_dir, package_name)
-        return self._validation.validate(config)
+        return self._config.validate(config)
 
     def validate_all(self) -> dict[str, tuple[bool, list[str], list[str]]]:
         """Validate all discoverable packages."""

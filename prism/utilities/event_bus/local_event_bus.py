@@ -1,4 +1,4 @@
-"""In-memory event bus implementation.
+"""LocalEventBus — local publish/subscribe event bus.
 
 Suitable for single-process applications. Replace with a persistent
 message broker (Redis, RabbitMQ, etc.) when scaling to multiple processes.
@@ -10,8 +10,8 @@ from collections import defaultdict
 from typing import Callable
 
 
-class InMemoryEventBus:
-    """Simple in-memory publish/subscribe event bus."""
+class LocalEventBus:
+    """Local publish/subscribe event bus for manager-to-manager communication."""
 
     def __init__(self) -> None:
         self._handlers: dict[str, list[Callable[[dict], None]]] = defaultdict(list)

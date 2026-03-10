@@ -5,7 +5,7 @@ title: Architecture
 
 # Architecture
 
-Prism follows a VBD-inspired (Volatility-Based Decomposition) layered architecture. Each layer has a single responsibility and a defined volatility profile. Dependencies flow inward — outer layers depend on inner layers, never the reverse.
+Prism follows a VBD-inspired (Volatility-Based Decomposition) layered architecture. Each component is grouped by its volatility axis — what causes it to change. Dependencies flow inward, and all wiring happens in a single composition root.
 
 ---
 
@@ -21,9 +21,7 @@ flowchart LR
             IM["InstallationManager"] ~~~ PM["PackageManager"]
         end
         subgraph ENGINES["ENGINES"]
-            ME["MergeEngine"] ~~~ VE["ValidationEngine"] ~~~ TE["ThemeEngine"]
-            SE["SetupEngine"] ~~~ RE["RollbackEngine"] ~~~ HE["HierarchyEngine"]
-            RSE["ResolutionEngine"] ~~~ SCE["ScaffoldEngine"] ~~~ SVE["SudoValidationEngine"]
+            CE["ConfigEngine"] ~~~ IE["InstallationEngine"]
         end
         subgraph ACCESSORS["RESOURCE ACCESSORS"]
             FA["FileAccessor"] ~~~ CA["CommandAccessor"]
@@ -32,7 +30,7 @@ flowchart LR
         end
         subgraph MODELS["MODELS"]
             PI["PackageInfo"] ~~~ UF["UserField"] ~~~ TD["ThemeDefinition"]
-            RAC["RollbackAction"] ~~~ RS["RollbackState"] ~~~ SS["SudoSession"]
+            IC["InstallContext"] ~~~ RS["RollbackState"] ~~~ SS["SudoSession"]
         end
         MANAGERS ~~~ ENGINES
         ENGINES ~~~ ACCESSORS
@@ -41,7 +39,7 @@ flowchart LR
 
     subgraph UTILITIES["UTILITIES"]
         direction TB
-        EB["InMemoryEventBus"]
+        EB["LocalEventBus"]
     end
 
     MAIN ~~~ UTILITIES
@@ -59,40 +57,37 @@ flowchart LR
 
 ### Managers
 
-Orchestrate multi-step workflows by coordinating engines and accessors. Managers contain no business logic and no I/O — they delegate both.
+Orchestrate workflows by collecting context and delegating to engines. Managers own the "what" — which package, which sub-prisms, which events to publish.
 
 | Manager | Responsibility |
 |---|---|
-| `InstallationManager` | Orchestrates the full install flow: validation, merge, setup, command execution |
-| `PackageManager` | Package discovery, listing, validation, and scaffold creation |
+| `InstallationManager` | Loads config, validates/merges via ConfigEngine, delegates execution to InstallationEngine, publishes events |
+| `PackageManager` | Package discovery, listing, validation (via ConfigEngine), user field resolution |
 
 ### Engines
 
-Pure computation. No file system access, no network calls, no subprocess invocations. Given inputs, they return outputs. This makes them trivially testable and highly stable.
+Encapsulate the "how" — business logic grouped by volatility axis. Engines receive accessors via constructor injection and handle full execution internally, including I/O through accessors.
 
-| Engine | Responsibility |
-|---|---|
-| `MergeEngine` | Deep-merges sub-prism configurations using strategy rules |
-| `ValidationEngine` | Validates `package.yaml` structure and field constraints |
-| `ThemeEngine` | Resolves, lists, and validates themes (5 built-in + custom) |
-| `SetupEngine` | Computes file copy plans from `setup` config |
-| `RollbackEngine` | Tracks actions, computes LIFO undo sequences |
-| `HierarchyEngine` | Resolves cascading field dependencies via topological sort |
-| `ResolutionEngine` | Resolves prism sources (local, remote, npm) |
-| `ScaffoldEngine` | Generates new prism directory scaffolds |
-| `SudoValidationEngine` | Manages sudo sessions: tokens, TTL, lockout |
+| Engine | Volatility Axis | Public Interface |
+|---|---|---|
+| `ConfigEngine` | Schema evolution (medium-high) | `validate()`, `prepare()`, `merge()`, `merge_tiers()`, hierarchy methods |
+| `InstallationEngine` | Installation surface (low-medium) | `install()`, `rollback()`, `install_privileged()`, sudo session management |
+
+**ConfigEngine** owns config validation, merge strategies, and field hierarchy resolution. When the `package.yaml` schema evolves, validation rules, merge strategies, and field dependencies all change together — same volatility axis.
+
+**InstallationEngine** owns the full installation pipeline: preflight checks, git config, workspace creation, repo cloning, tool installation, config file copying, rollback, and sudo sessions. It receives accessors via DI and calls them internally — the manager doesn't need to know about individual steps.
 
 ### Accessors
 
-I/O boundary. Each accessor wraps exactly one external dependency (filesystem, subprocess, network). They are thin adapters — no business logic.
+I/O boundary. Each accessor wraps exactly one external dependency. They are thin adapters — no business logic.
 
 | Accessor | Responsibility |
 |---|---|
-| `FileAccessor` | File and directory read/write/copy operations |
-| `CommandAccessor` | Subprocess execution (tool installs, git config) |
+| `FileAccessor` | File and directory read/write/copy, YAML I/O, package discovery |
+| `CommandAccessor` | Git commands, SSH key generation, package manager CLI |
 | `RegistryAccessor` | HTTP requests to npm/unpkg registries |
-| `SystemAccessor` | Platform detection, environment variables |
-| `RollbackAccessor` | Rollback state persistence (JSON temp files), rollback execution |
+| `SystemAccessor` | Platform detection, environment variables, installed versions |
+| `RollbackAccessor` | Rollback state persistence, file/directory deletion, command execution |
 | `SudoAccessor` | Sudo password validation via `sudo -S -v` |
 
 ### Utilities
@@ -101,18 +96,18 @@ Cross-cutting services shared across layers.
 
 | Utility | Responsibility |
 |---|---|
-| `InMemoryEventBus` | Publish/subscribe event system for progress reporting |
+| `LocalEventBus` | Publish/subscribe event system for manager-to-manager communication |
 
 ### Models
 
-Plain data classes (Python dataclasses). No behavior beyond property accessors. Used by all layers.
+Plain data classes (Python dataclasses). No behavior beyond property accessors.
 
 | Model | Responsibility |
 |---|---|
 | `PackageInfo` | Parsed `package.yaml` — identity, config, tiers |
 | `UserField` | A single `user_info_fields` entry with type, validation, dependencies |
-| `ThemeDefinition` | Theme ID, name, and 5 gradient color slots |
-| `RollbackAction` | A tracked install action (type, target, rollback command) |
+| `ThemeDefinition` | Theme ID, name, and gradient color slots |
+| `InstallContext` | Everything the InstallationEngine needs to execute an install |
 | `RollbackState` | All actions for one installation, supports LIFO undo |
 | `SudoSession` | Token, TTL, attempt counter, lockout state |
 
@@ -120,31 +115,30 @@ Plain data classes (Python dataclasses). No behavior beyond property accessors. 
 
 ## Dependency Injection
 
-All wiring happens in `container.py` — the composition root. It is the **only** file that imports concrete classes. Every other module depends on interfaces (abstract base classes), not implementations.
+All wiring happens in `container.py` — the composition root. It is the **only** file that imports concrete classes. Every other module depends on interfaces (`Protocol` classes), not implementations.
 
 ```python
 # container.py — simplified
 class Container:
     def __init__(self, prisms_dir):
-        # Engines (no dependencies)
-        self.merge_engine = MergeEngine()
-        self.validation_engine = ValidationEngine()
-        self.theme_engine = ThemeEngine()
-        # ...
+        # Utilities
+        self.event_bus = LocalEventBus()
 
-        # Accessors (no dependencies)
-        self.file_accessor = FileAccessor()
-        self.command_accessor = CommandAccessor()
-        # ...
+        # Engines (InstallationEngine receives accessors)
+        self.config_engine = ConfigEngine()
+        self.installation_engine = InstallationEngine(
+            command_accessor=CommandAccessor(),
+            file_accessor=FileAccessor(),
+            system_accessor=SystemAccessor(),
+            rollback_accessor=RollbackAccessor(),
+        )
 
-        # Managers (depend on engines + accessors)
+        # Managers (depend on engines + utilities)
         self.installation_manager = InstallationManager(
-            merge_engine=self.merge_engine,
-            setup_engine=self.setup_engine,
-            validation_engine=self.validation_engine,
-            command_accessor=self.command_accessor,
-            file_accessor=self.file_accessor,
-            system_accessor=self.system_accessor,
+            config_engine=self.config_engine,
+            installation_engine=self.installation_engine,
+            file_accessor=FileAccessor(),
+            system_accessor=SystemAccessor(),
             event_bus=self.event_bus,
             prisms_dir=prisms_dir,
         )
@@ -156,36 +150,28 @@ To swap an implementation (e.g., for testing), replace the concrete class in `co
 
 ## Data Flow
 
-A typical installation follows this path:
-
 ### Figure 2: Installation Data Flow
 
 ```mermaid
 flowchart TB
     USER["User clicks Install"] --> IM["InstallationManager.install()"]
-    IM --> VE["ValidationEngine.validate()"]
-    IM --> HE["HierarchyEngine.resolve_dependency_order()"]
-    IM --> ME["MergeEngine.merge()"]
-    IM --> SE["SetupEngine.plan()"]
-    IM --> FA["FileAccessor.copy_files()"]
-    IM --> CA["CommandAccessor.run()"]
-    IM --> RE["RollbackEngine.record_action()"]
+    IM --> CE["ConfigEngine.prepare()"]
+    CE -->|"valid, merged config"| IM
+    IM -->|"InstallContext"| IE["InstallationEngine.install()"]
+    IE --> CA["CommandAccessor"]
+    IE --> FA["FileAccessor"]
+    IE --> SA["SystemAccessor"]
+    IE --> RBA["RollbackAccessor"]
     IM --> EB["EventBus.publish()"]
-
-    VE -->|validation result| IM
-    HE -->|sorted fields| IM
-    ME -->|merged config| IM
-    SE -->|file copy plan| IM
 
     style USER fill:#041f41,color:#fff
     style IM fill:#0053e2,color:#fff
-    style VE fill:#ffc220,color:#000
-    style HE fill:#ffc220,color:#000
-    style ME fill:#ffc220,color:#000
-    style SE fill:#ffc220,color:#000
+    style CE fill:#ffc220,color:#000
+    style IE fill:#ffc220,color:#000
     style FA fill:#2a8703,color:#fff
     style CA fill:#2a8703,color:#fff
-    style RE fill:#ffc220,color:#000
+    style SA fill:#2a8703,color:#fff
+    style RBA fill:#2a8703,color:#fff
     style EB fill:#76c043,color:#000
 ```
 
@@ -193,12 +179,13 @@ flowchart TB
 
 ## Design Principles
 
-1. **Engines are pure** — No I/O, no side effects. Given the same input, always the same output.
-2. **Accessors are thin** — Wrap exactly one external dependency. No business logic.
-3. **Managers orchestrate** — They call engines for decisions and accessors for actions.
+1. **Engines own the "how"** — They encapsulate full execution, calling accessors internally for both reads and writes.
+2. **Managers own the "what"** — They collect context, delegate to engines, and publish events. They don't know about individual steps.
+3. **Accessors are thin** — Wrap exactly one external dependency. No business logic.
 4. **Models are data** — Plain dataclasses. No behavior beyond computed properties.
-5. **Dependencies flow inward** — Managers → Engines/Accessors → Models. Never the reverse.
+5. **Coarse-grained interfaces** — Engines expose few public operations. Fine-grained logic stays private.
 6. **One composition root** — `container.py` is the only file that knows concrete types.
+7. **Volatility-based grouping** — Components that change for the same reason live together.
 
 ---
 
@@ -211,15 +198,8 @@ prism/
 │   ├── installation_manager/
 │   └── package_manager/
 ├── engines/
-│   ├── merge_engine/
-│   ├── validation_engine/
-│   ├── theme_engine/
-│   ├── setup_engine/
-│   ├── rollback_engine/
-│   ├── hierarchy_engine/
-│   ├── resolution_engine/
-│   ├── scaffold_engine/
-│   └── sudo_validation_engine/
+│   ├── config_engine/           # Schema evolution axis
+│   └── installation_engine/     # Installation surface axis
 ├── accessors/
 │   ├── file_accessor/
 │   ├── command_accessor/
@@ -239,7 +219,7 @@ prism/
 
 ## See Also
 
-- [Rollback System](rollback-system.md) — How RollbackEngine and RollbackAccessor work together
-- [Privilege Separation](privilege-separation.md) — SudoValidationEngine and SudoAccessor
+- [Rollback System](rollback-system.md) — How rollback tracking and execution works
+- [Privilege Separation](privilege-separation.md) — Sudo session management
 - [Configuration Schema](configuration-schema.md) — The data that flows through these layers
 - [Contributing](../contributor-guide/contributing.md) — Development setup and conventions
