@@ -11,10 +11,12 @@ from pathlib import Path
 from prism.accessors.command_accessor.command_accessor import CommandAccessor
 from prism.accessors.file_accessor.file_accessor import FileAccessor
 from prism.accessors.registry_accessor.registry_accessor import RegistryAccessor
+from prism.accessors.rollback_accessor.rollback_accessor import RollbackAccessor
 from prism.accessors.sudo_accessor.sudo_accessor import SudoAccessor
 from prism.accessors.system_accessor.system_accessor import SystemAccessor
 from prism.engines.merge_engine.merge_engine import MergeEngine
 from prism.engines.resolution_engine.resolution_engine import ResolutionEngine
+from prism.engines.rollback_engine.rollback_engine import RollbackEngine
 from prism.engines.scaffold_engine.scaffold_engine import ScaffoldEngine
 from prism.engines.setup_engine.setup_engine import SetupEngine
 from prism.engines.sudo_validation_engine.sudo_validation_engine import SudoValidationEngine
@@ -44,6 +46,7 @@ class Container:
         # Engines
         self.merge_engine = MergeEngine()
         self.resolution_engine = ResolutionEngine()
+        self.rollback_engine = RollbackEngine()
         self.scaffold_engine = ScaffoldEngine()
         self.setup_engine = SetupEngine()
         self.sudo_validation_engine = SudoValidationEngine()
@@ -52,6 +55,7 @@ class Container:
         # Accessors
         self.command_accessor = CommandAccessor()
         self.file_accessor = FileAccessor()
+        self.rollback_accessor = RollbackAccessor()
         self.sudo_accessor = SudoAccessor()
         self.system_accessor = SystemAccessor()
         self.registry_accessor = RegistryAccessor()
