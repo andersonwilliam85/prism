@@ -1,3 +1,8 @@
+---
+layout: default
+title: Merge Strategies
+---
+
 # Merge Strategies
 
 When a user selects optional tiers (teams, roles, divisions), Prism merges their configuration files into a single resolved config. This page documents exactly how that merge works — which keys win, which accumulate, and which are replaced.

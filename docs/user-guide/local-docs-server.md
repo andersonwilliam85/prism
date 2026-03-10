@@ -1,3 +1,8 @@
+---
+layout: default
+title: Local Documentation Server
+---
+
 # Local Documentation Server
 
 After Prism installs your environment, it can serve a local documentation site that gives you a live, browsable view of everything in your workspace — installed tools, cloned repositories, merged configuration, and more.

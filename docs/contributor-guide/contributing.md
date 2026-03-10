@@ -1,3 +1,8 @@
+---
+layout: default
+title: Contributing
+---
+
 # Contributing to Prism
 
 Thank you for considering contributing to Prism! 🎉

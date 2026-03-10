@@ -1,3 +1,8 @@
+---
+layout: default
+title: Choosing a Prism
+---
+
 # Choosing a Prism
 
 Complete guide to selecting the right Prism configuration for your organization.
