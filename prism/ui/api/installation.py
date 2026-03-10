@@ -1,6 +1,7 @@
 """Installation execution API flow.
 
-Handles the POST /api/install route — delegates to InstallationManager.
+Handles install, sudo validation, and session management routes.
+Delegates to InstallationManager and SudoValidationEngine/SudoAccessor.
 
 Volatility: low — install endpoint shape is stable.
 """
@@ -11,7 +12,12 @@ from pathlib import Path
 
 from flask import Blueprint, current_app, jsonify, request
 
+from prism.models.installation import SudoSession
+
 installation_bp = Blueprint("installation", __name__)
+
+# In-memory session store — keyed by token. Never persisted.
+_sudo_sessions: dict[str, SudoSession] = {}
 
 
 @installation_bp.route("/api/install", methods=["POST"])
@@ -75,3 +81,81 @@ def install():
 
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 500
+
+
+# ------------------------------------------------------------------
+# Sudo session endpoints
+# ------------------------------------------------------------------
+
+
+@installation_bp.route("/api/installation/validate-sudo", methods=["POST"])
+def validate_sudo():
+    """Validate a sudo password and create/update a session.
+
+    Expects JSON: {"password": "...", "token": "..."}
+    If token is provided, reuses existing session (for retries).
+    If not, creates a new session.
+    """
+    data = request.json or {}
+    password = data.get("password", "")
+
+    if not password:
+        return jsonify({"success": False, "error": "Password required"}), 400
+
+    container = current_app.config["container"]
+    engine = container.sudo_validation_engine
+    accessor = container.sudo_accessor
+
+    # Check sudo availability
+    if not accessor.is_sudo_available():
+        return jsonify({"success": False, "error": "sudo not available on this system"}), 400
+
+    # Get or create session
+    token = data.get("token")
+    session = _sudo_sessions.get(token) if token else None
+    if session is None:
+        session = engine.create_session()
+        _sudo_sessions[session.token] = session
+
+    # Check lockout
+    if not engine.validate_session(session):
+        if session.is_locked:
+            return jsonify({"success": False, "error": "Too many attempts. Try again later.", "locked": True}), 429
+        if session.is_expired:
+            _sudo_sessions.pop(session.token, None)
+            return jsonify({"success": False, "error": "Session expired", "expired": True}), 401
+
+    # Validate password via accessor
+    valid = accessor.validate_password(password)
+    session = engine.record_attempt(session, valid)
+    _sudo_sessions[session.token] = session
+
+    if valid:
+        return jsonify({"success": True, "token": session.token})
+
+    remaining = session.max_attempts - session.attempts
+    resp = {"success": False, "error": "Invalid password", "token": session.token}
+    if remaining > 0:
+        resp["remaining_attempts"] = remaining
+    else:
+        resp["locked"] = True
+        resp["error"] = "Too many attempts. Try again in 30 seconds."
+    status = 429 if session.is_locked else 401
+    return jsonify(resp), status
+
+
+@installation_bp.route("/api/installation/sudo-session/<token>", methods=["GET"])
+def sudo_session_status(token: str):
+    """Check if a sudo session is still valid."""
+    session = _sudo_sessions.get(token)
+    if session is None:
+        return jsonify({"valid": False, "error": "Session not found"}), 404
+
+    container = current_app.config["container"]
+    engine = container.sudo_validation_engine
+    valid = engine.validate_session(session)
+
+    if not valid and session.is_expired:
+        _sudo_sessions.pop(token, None)
+
+    return jsonify({"valid": valid, "expired": session.is_expired, "locked": session.is_locked})
