@@ -12,6 +12,7 @@ from prism.accessors.command_accessor.command_accessor import CommandAccessor
 from prism.accessors.file_accessor.file_accessor import FileAccessor
 from prism.accessors.registry_accessor.registry_accessor import RegistryAccessor
 from prism.accessors.system_accessor.system_accessor import SystemAccessor
+from prism.engines.hierarchy_engine.hierarchy_engine import HierarchyEngine
 from prism.engines.merge_engine.merge_engine import MergeEngine
 from prism.engines.resolution_engine.resolution_engine import ResolutionEngine
 from prism.engines.scaffold_engine.scaffold_engine import ScaffoldEngine
@@ -40,6 +41,7 @@ class Container:
         self.event_bus = InMemoryEventBus()
 
         # Engines
+        self.hierarchy_engine = HierarchyEngine()
         self.merge_engine = MergeEngine()
         self.resolution_engine = ResolutionEngine()
         self.scaffold_engine = ScaffoldEngine()
