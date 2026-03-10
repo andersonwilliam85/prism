@@ -210,9 +210,54 @@ def get_config(package_name):
             },
         }
 
+        # Include theme metadata
+        theme_engine = container.theme_engine
+        available = theme_engine.list_available_themes(
+            theme_options=prism_config.theme_options or None,
+            custom_themes=prism_config.custom_themes or None,
+        )
+        config_dict["theme_options"] = [t.id for t in available]
+        config_dict["default_theme"] = prism_config.default_theme
+        config_dict["available_themes"] = [
+            {
+                "id": t.id,
+                "name": t.name,
+                "gradient_1": t.gradient_1,
+                "gradient_2": t.gradient_2,
+                "gradient_3": t.gradient_3,
+                "gradient_4": t.gradient_4,
+                "gradient_5": t.gradient_5,
+            }
+            for t in available
+        ]
+
         return jsonify({"prism_config": config_dict, "package_name": package_name})
     except Exception as e:
         return jsonify({"prism_config": None, "error": str(e)})
+
+
+@packages_bp.route("/api/themes")
+def list_themes():
+    """List all built-in themes (no package context needed)."""
+    try:
+        container = current_app.config["container"]
+        theme_engine = container.theme_engine
+        themes = theme_engine.list_available_themes()
+        return jsonify(
+            {
+                "themes": [
+                    {
+                        "id": t.id,
+                        "name": t.name,
+                        "gradient_1": t.gradient_1,
+                        "gradient_2": t.gradient_2,
+                    }
+                    for t in themes
+                ]
+            }
+        )
+    except Exception as e:
+        return jsonify({"themes": [], "error": str(e)})
 
 
 @packages_bp.route("/api/package/<package_name>/tools")
