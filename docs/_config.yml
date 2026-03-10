@@ -4,3 +4,10 @@ baseurl: /prism
 url: https://andersonwilliam85.github.io
 theme: jekyll-theme-cayman
 markdown: kramdown
+
+plugins:
+  - jekyll-relative-links
+
+relative_links:
+  enabled: true
+  collections: true
