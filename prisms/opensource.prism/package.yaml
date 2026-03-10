@@ -29,6 +29,15 @@ prism_config:
     - "ocean"
     - "purple"
     - "sunset"
+    - "community"
+  custom_themes:
+    - id: "community"
+      name: "Community"
+      gradient_1: "#059669"
+      gradient_2: "#10b981"
+      gradient_3: "#34d399"
+      gradient_4: "#6ee7b7"
+      gradient_5: "#a7f3d0"
 
   sources:
     - url: "local"

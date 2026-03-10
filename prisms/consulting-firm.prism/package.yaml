@@ -26,6 +26,15 @@ prism_config:
     - "purple"
     - "midnight"
     - "ocean"
+    - "consultant"
+  custom_themes:
+    - id: "consultant"
+      name: "Consultant"
+      gradient_1: "#7c3aed"
+      gradient_2: "#8b5cf6"
+      gradient_3: "#a78bfa"
+      gradient_4: "#06b6d4"
+      gradient_5: "#22d3ee"
 
   sources:
     - url: "local"

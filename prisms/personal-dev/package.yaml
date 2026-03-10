@@ -29,6 +29,15 @@ prism_config:
     - "forest"
     - "sunset"
     - "midnight"
+    - "indie"
+  custom_themes:
+    - id: "indie"
+      name: "Indie Dev"
+      gradient_1: "#0093e9"
+      gradient_2: "#80d0c7"
+      gradient_3: "#43e97b"
+      gradient_4: "#38f9d7"
+      gradient_5: "#00c6fb"
 
   sources:
     - url: "local"

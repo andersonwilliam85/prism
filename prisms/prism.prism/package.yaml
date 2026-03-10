@@ -30,6 +30,15 @@ prism_config:
     - "forest"
     - "sunset"
     - "midnight"
+    - "prism"
+  custom_themes:
+    - id: "prism"
+      name: "Prism"
+      gradient_1: "#667eea"
+      gradient_2: "#764ba2"
+      gradient_3: "#f093fb"
+      gradient_4: "#f5576c"
+      gradient_5: "#4facfe"
   default: true  # Marks this as the product default prism
 
   sources:

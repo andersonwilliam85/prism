@@ -26,6 +26,15 @@ prism_config:
   theme_options:
     - "midnight"
     - "ocean"
+    - "acme"
+  custom_themes:
+    - id: "acme"
+      name: "ACME Brand"
+      gradient_1: "#1e3a8a"
+      gradient_2: "#1e40af"
+      gradient_3: "#2563eb"
+      gradient_4: "#f59e0b"
+      gradient_5: "#fbbf24"
 
   sources:
     - url: "local"
