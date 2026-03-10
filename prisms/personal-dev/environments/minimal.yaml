@@ -1,0 +1,12 @@
+# Minimal environment — just git config and SSH key
+# For experienced devs who manage their own tools
+
+tools_required:
+  - git
+
+environment:
+  workspace_root: "~/projects"
+
+git:
+  default_branch: "main"
+  pull_rebase: true
