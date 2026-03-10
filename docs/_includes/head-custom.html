@@ -60,5 +60,15 @@
 <!-- Mermaid.js for diagram rendering -->
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-  mermaid.initialize({ startOnLoad: true, theme: 'default' });
+  mermaid.initialize({ startOnLoad: false, theme: 'default' });
+
+  // Jekyll renders ```mermaid blocks as <pre><code class="language-mermaid">
+  // Convert them to <pre class="mermaid"> so Mermaid can find them
+  document.querySelectorAll('pre > code.language-mermaid').forEach(code => {
+    const pre = code.parentElement;
+    pre.classList.add('mermaid');
+    pre.textContent = code.textContent;
+  });
+
+  await mermaid.run({ querySelector: 'pre.mermaid' });
 </script>
