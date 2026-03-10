@@ -9,17 +9,20 @@ Volatility: low — pipeline structure and step sequence are stable.
 from __future__ import annotations
 
 import json
+import threading
 from datetime import datetime
 from pathlib import Path
 from typing import Callable, Optional
 
 from prism.accessors.command_accessor.i_command_accessor import ICommandAccessor
 from prism.accessors.file_accessor.i_file_accessor import IFileAccessor
+from prism.accessors.rollback_accessor.i_rollback_accessor import IRollbackAccessor
 from prism.accessors.system_accessor.i_system_accessor import ISystemAccessor
 from prism.engines.merge_engine.i_merge_engine import IMergeEngine
+from prism.engines.rollback_engine.i_rollback_engine import IRollbackEngine
 from prism.engines.setup_engine.i_setup_engine import ISetupEngine
 from prism.engines.validation_engine.i_validation_engine import IValidationEngine
-from prism.models.installation import InstallationResult, PrivilegedStep, StepResult
+from prism.models.installation import InstallationResult, PrivilegedStep, RollbackState, StepResult
 from prism.models.prism_config import BrandingConfig, PrismConfig, ThemeDefinition
 from prism.utilities.event_bus.i_event_bus import IEventBus
 
@@ -39,6 +42,8 @@ class InstallationManager:
         system_accessor: ISystemAccessor,
         event_bus: IEventBus,
         prisms_dir: Path,
+        rollback_engine: IRollbackEngine | None = None,
+        rollback_accessor: IRollbackAccessor | None = None,
     ) -> None:
         self._merge = merge_engine
         self._setup = setup_engine
@@ -48,11 +53,71 @@ class InstallationManager:
         self._system = system_accessor
         self._event_bus = event_bus
         self._prisms_dir = prisms_dir
+        self._rollback_engine = rollback_engine
+        self._rollback_accessor = rollback_accessor
         self._progress_callback: ProgressCallback = None
+        self._cancel_event: threading.Event | None = None
+        self._current_rollback_state: RollbackState | None = None
 
     # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
+
+    def set_cancel_event(self, event: threading.Event) -> None:
+        """Set a threading Event that, when set, signals cancellation."""
+        self._cancel_event = event
+
+    def _check_cancelled(self) -> None:
+        """Raise if cancellation was requested."""
+        if self._cancel_event and self._cancel_event.is_set():
+            raise _InstallCancelled()
+
+    def _record(self, action_type: str, target: str, rollback_command: str = "", original_value: str = "") -> None:
+        """Record an action for rollback tracking."""
+        if self._rollback_engine and self._current_rollback_state:
+            self._rollback_engine.record_action(
+                self._current_rollback_state, action_type, target, rollback_command, original_value
+            )
+
+    def rollback(self, state: RollbackState | None = None) -> list[dict]:
+        """Execute rollback for the given or current state.
+
+        Returns a list of {action, success, detail} dicts.
+        """
+        state = state or self._current_rollback_state
+        if not state or not self._rollback_engine or not self._rollback_accessor:
+            return []
+
+        plan = self._rollback_engine.compute_rollback_plan(state)
+        results: list[dict] = []
+
+        for action in plan:
+            self.log("rollback", f"Undoing {action.action_type}: {action.target}")
+            try:
+                if action.rollback_command:
+                    ok, output = self._rollback_accessor.run_command(action.rollback_command)
+                    results.append({"action": action.target, "success": ok, "detail": output})
+                elif action.action_type == "file_created":
+                    ok = self._rollback_accessor.delete_file(action.target)
+                    results.append({"action": action.target, "success": ok, "detail": "deleted" if ok else "not found"})
+                elif action.action_type == "dir_created":
+                    ok = self._rollback_accessor.delete_directory(action.target)
+                    results.append({"action": action.target, "success": ok, "detail": "deleted" if ok else "not found"})
+                elif action.action_type == "config_changed" and action.original_value:
+                    # Restore original git config value
+                    self._commands.git_set_config(action.target, action.original_value, scope="global")
+                    results.append({"action": action.target, "success": True, "detail": "restored"})
+                else:
+                    results.append({"action": action.target, "success": False, "detail": "no rollback path"})
+            except Exception as e:
+                results.append({"action": action.target, "success": False, "detail": str(e)})
+
+            level = "success" if results[-1]["success"] else "warning"
+            self.log("rollback", f"  → {results[-1]['detail']}", level)
+
+        state.rolled_back = True
+        self._event_bus.publish("installation.rolled_back", {"package": state.package_name})
+        return results
 
     def install(
         self,
@@ -73,7 +138,13 @@ class InstallationManager:
         result = InstallationResult(success=False, package_name=package_name)
         selected_sub_prisms = selected_sub_prisms or {}
 
+        # Initialize rollback tracking
+        if self._rollback_engine:
+            self._current_rollback_state = self._rollback_engine.create_state(package_name)
+
         try:
+            self._check_cancelled()
+
             # Load and validate
             config = self._files.get_package_config(self._prisms_dir, package_name)
             valid, errors, _warnings = self._validation.validate(config)
@@ -112,12 +183,14 @@ class InstallationManager:
             result.steps.append(StepResult(step="prism_config", success=True))
 
             # ---- Phase 1: Unprivileged steps ----
+            self._check_cancelled()
 
             # Package manager check (no install, just detection)
             step_result = self._ensure_package_manager(platform_name)
             result.steps.append(step_result)
 
             # Workspace folders — user chooses base dir, defaults to ~/workspace
+            self._check_cancelled()
             workspace_dir = user_info.get("workspace_dir", "")
             if workspace_dir:
                 workspace_root = Path(workspace_dir).expanduser()
@@ -127,18 +200,22 @@ class InstallationManager:
             result.steps.append(StepResult(step="workspace", success=True))
 
             # Git config
+            self._check_cancelled()
             self._configure_git(user_info, merged)
             result.steps.append(StepResult(step="git_config", success=True))
 
             # SSH keys
+            self._check_cancelled()
             self._ensure_ssh_keys(user_info)
             result.steps.append(StepResult(step="ssh_keys", success=True))
 
             # Clone repositories
+            self._check_cancelled()
             self._clone_repos(merged, str(workspace_root))
             result.steps.append(StepResult(step="repositories", success=True))
 
             # Apply config package (copy files, save merged config)
+            self._check_cancelled()
             pkg_path = self._files.find_package(self._prisms_dir, package_name)
             if pkg_path:
                 self._apply_config_package(
@@ -191,9 +268,22 @@ class InstallationManager:
             result.finished_at = datetime.now()
             self._event_bus.publish("installation.complete", {"package": package_name, "success": True})
 
+        except _InstallCancelled:
+            result.error = "Installation cancelled by user"
+            result.finished_at = datetime.now()
+            self.log("install", "Cancelled — rolling back...", "warning")
+            rollback_results = self.rollback()
+            result.rollback_results = rollback_results
+            self._event_bus.publish("installation.cancelled", {"package": package_name})
+
         except Exception as e:
             result.error = str(e)
             result.finished_at = datetime.now()
+            # Auto-rollback on failure
+            if self._current_rollback_state and self._current_rollback_state.actions:
+                self.log("install", "Error — rolling back changes...", "warning")
+                rollback_results = self.rollback()
+                result.rollback_results = rollback_results
             self._event_bus.publish("installation.failed", {"package": package_name, "error": str(e)})
 
         return result
@@ -467,11 +557,15 @@ class InstallationManager:
         config_dir_names = [d for d in config_dir_names if d]
 
         dirs = self._setup.plan_workspace(merged_config, config_dir_names)
-        self._files.mkdir(workspace_root)
+        if not self._files.exists(workspace_root):
+            self._files.mkdir(workspace_root)
+            self._record("dir_created", str(workspace_root))
         self.log("workspace", f"Base: {workspace_root}")
         for d in dirs:
             path = workspace_root / d
-            self._files.mkdir(path)
+            if not self._files.exists(path):
+                self._files.mkdir(path)
+                self._record("dir_created", str(path))
             self.log("workspace", f"Ensured: {d}")
 
     def _configure_git(self, user_info: dict, merged_config: dict) -> None:
@@ -482,7 +576,12 @@ class InstallationManager:
             return
 
         for key, value in plan:
+            # Capture original value for rollback
+            original = (
+                self._commands.git_get_config(key, scope="global") if hasattr(self._commands, "git_get_config") else ""
+            )
             self._commands.git_set_config(key, value, scope="global")
+            self._record("config_changed", key, original_value=original or "")
         self.log("git_config", f"Set {len(plan)} git config values", "success")
 
     def _ensure_ssh_keys(self, user_info: dict) -> None:
@@ -492,6 +591,7 @@ class InstallationManager:
             return
         email = user_info.get("email", user_info.get("work_email", "user@example.com"))
         key_path = self._commands.ssh_generate_key(key_type="ed25519", comment=email)
+        self._record("file_created", str(key_path))
         self.log("ssh_keys", f"Generated SSH key: {key_path}", "success")
 
     def _install_tools(
@@ -554,6 +654,7 @@ class InstallationManager:
         if self._files.exists(dest):
             self._files.rmtree(dest)
         self._files.copy(pkg_path, dest)
+        self._record("dir_created", str(dest))
         self.log("config_package", "Prism files copied", "success")
 
         # Process setup.install directives
@@ -581,14 +682,17 @@ class InstallationManager:
 
         # Save user info
         self._files.write_yaml(dest / "user-info.yaml", user_info)
+        self._record("file_created", str(dest / "user-info.yaml"))
 
         # Save merged config
         if merged_config:
             self._files.write_yaml(dest / "merged-config.yaml", merged_config)
+            self._record("file_created", str(dest / "merged-config.yaml"))
 
         # Save selection record
         if selected_sub_prisms:
             self._files.write_yaml(dest / "selected-sub-prisms.yaml", selected_sub_prisms)
+            self._record("file_created", str(dest / "selected-sub-prisms.yaml"))
 
     def _finalize(
         self,
@@ -612,6 +716,7 @@ class InstallationManager:
             indent=2,
         )
         self._files.write_text(marker, marker_data)
+        self._record("file_created", str(marker))
         self.log("finalize", "Installation complete!", "success")
 
         post_msg = config.get("setup", {}).get("post_install", {}).get("message")
@@ -619,3 +724,7 @@ class InstallationManager:
             post_msg = config.get("package", {}).get("post_install", {}).get("message")
         if post_msg:
             self.log("finalize", post_msg)
+
+
+class _InstallCancelled(Exception):
+    """Internal signal that the user cancelled the installation."""
