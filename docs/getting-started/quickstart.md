@@ -97,7 +97,7 @@ python3 install.py --prism my-company
 
 ## Next Steps
 
-- [Choose the right prism](../user-guide/choosing-a-prism.md)
+- [Choose the right prism](choosing-a-prism.md)
 - [Understand sub-prism inheritance](../user-guide/config-inheritance.md)
 - [Create your own prism](../user-guide/creating-configurations.md)
 - [Configuration schema reference](../reference/configuration-schema.md)

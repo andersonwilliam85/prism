@@ -80,7 +80,7 @@ If all tests pass, you're ready to develop! ✅
 
 ## Testing
 
-See [docs/TESTING.md](docs/TESTING.md) for comprehensive testing guide.
+See [Testing](testing.md) for comprehensive testing guide.
 
 ### Quick Reference
 
@@ -322,7 +322,7 @@ pytest
 
 ## Adding a New Prism
 
-See [docs/PACKAGE_SYSTEM.md](docs/PACKAGE_SYSTEM.md) for creating custom prisms.
+See [Package System](../reference/package-system.md) for creating custom prisms.
 
 **Quick steps**:
 
