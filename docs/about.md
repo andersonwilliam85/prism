@@ -4,7 +4,7 @@ title: About Prism
 ---
 
 <p align="center">
-  <img src="assets/prism-logo.png" alt="Prism" width="128">
+  <img src="assets/prism-logo-light.png" alt="Prism" width="128">
 </p>
 
 <h1 align="center">Prism</h1>
