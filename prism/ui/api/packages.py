@@ -48,6 +48,9 @@ def list_packages():
                 entry["errors"] = errors
                 invalid_packages.append(entry)
 
+        # Default prism first
+        valid_packages.sort(key=lambda p: (not p.get("default", False), p.get("name", "")))
+
         return jsonify(
             {
                 "packages": valid_packages,
