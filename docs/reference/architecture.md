@@ -79,7 +79,7 @@ Encapsulate the "how" — business logic grouped by volatility axis. Engines rec
 
 ### Accessors
 
-I/O boundary. Each accessor wraps exactly one external dependency. They are thin adapters — no business logic.
+Encapsulate the "where" — external boundaries. Each accessor wraps exactly one external dependency (filesystem, APIs, registries, subprocesses). No business logic.
 
 | Accessor | Responsibility |
 |---|---|

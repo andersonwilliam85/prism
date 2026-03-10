@@ -140,7 +140,7 @@ Prism follows a **VBD-inspired** (Volatility-Based Decomposition) layered archit
 |-------|------|------------|
 | **Managers** | Orchestration — *the "what"* | `installation_manager`, `package_manager` |
 | **Engines** | Business logic — *the "how"* | `config_engine` (schema evolution), `installation_engine` (installation surface) |
-| **Accessors** | I/O boundary — *thin adapters* | `file`, `command`, `registry`, `system`, `rollback`, `sudo` |
+| **Accessors** | External boundaries — *the "where"* | `file`, `command`, `registry`, `system`, `rollback`, `sudo` |
 | **Utilities** | Cross-cutting services | `event_bus` (pub/sub progress) |
 | **Models** | Plain dataclasses | Installation, config, rollback DTOs |
 | **UI** | Flask web app | REST API + static frontend |
