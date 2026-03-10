@@ -227,7 +227,30 @@
         .btn-secondary:hover {
             background: rgba(208, 208, 208, 0.9);
         }
-        
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .progress-bar {
             height: 6px;
             background: rgba(224, 224, 224, 0.5);
@@ -954,13 +977,17 @@
         <!-- Step 6: Installing -->
         <div class="step" id="step6">
             <div class="installing">
-                <h2>Installing...</h2>
-                <div class="spinner"></div>
+                <h2 id="installHeading">Installing...</h2>
+                <div class="spinner" id="installSpinner"></div>
                 <p id="installStatus">Setting up your environment...</p>
-                
+
                 <div class="log-output" id="logOutput">
                     <div>Starting installation...</div>
                 </div>
+
+                <button class="btn-danger" id="cancelInstallBtn" onclick="cancelInstall()" style="margin-top: 16px; display: inline-block;">
+                    Cancel Installation
+                </button>
             </div>
         </div>
         
@@ -1624,86 +1651,187 @@
             btn.textContent = '🔍 Validate Configurations';
         }
         
+        let currentInstallId = null;
+
         async function startInstall() {
             currentStep = 6;
             document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
             document.getElementById('step6').classList.add('active');
             updateProgress();
-            
+
             const logOutput = document.getElementById('logOutput');
-            
+            const cancelBtn = document.getElementById('cancelInstallBtn');
+            const heading = document.getElementById('installHeading');
+            const spinner = document.getElementById('installSpinner');
+
+            cancelBtn.style.display = 'inline-block';
+            cancelBtn.disabled = false;
+            heading.textContent = 'Installing...';
+            spinner.style.display = 'block';
+
+            // Collect all form data
+            const userInfo = {};
+            document.querySelectorAll('#userInfoFields input, #userInfoFields select').forEach(el => {
+                if (el.value) {
+                    userInfo[el.name] = el.value;
+                }
+            });
+
+            const registryEl = document.getElementById('settingsNpmRegistry');
+            const registry = registryEl ? registryEl.value || null : null;
+            const unpkgUrl = prismConfig.unpkgUrl || null;
+
+            logOutput.innerHTML = '<div>Starting installation...</div>';
+
+            const payload = {
+                package: selectedPackage,
+                userInfo: userInfo,
+                registry: registry,
+                unpkgUrl: unpkgUrl,
+                selectedSubPrisms: selectedSubPrisms,
+                targetDir: document.getElementById('targetDir').value || '~/prism-config'
+            };
+
             try {
-                // Collect all form data
-                const userInfo = {};
-                document.querySelectorAll('#userInfoFields input, #userInfoFields select').forEach(el => {
-                    if (el.value) {
-                        userInfo[el.name] = el.value;
-                    }
+                // Try SSE streaming first
+                const response = await fetch('/api/install/stream', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
                 });
-                
-                const registryEl = document.getElementById('settingsNpmRegistry');
-                const registry = registryEl ? registryEl.value || null : null;
-                const unpkgUrl = prismConfig.unpkgUrl || null;
-                
-                logOutput.innerHTML = '<div>🚀 Starting installation...</div>';
-                
-                // Call backend API
+
+                if (!response.ok || !response.body) {
+                    // Fallback to regular install
+                    await fallbackInstall(payload, logOutput, cancelBtn, heading, spinner);
+                    return;
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop() || '';
+
+                    for (const line of lines) {
+                        if (!line.startsWith('data: ')) continue;
+                        const data = JSON.parse(line.slice(6));
+
+                        if (data.type === 'started') {
+                            currentInstallId = data.install_id;
+                        } else if (data.type === 'progress') {
+                            appendLog(logOutput, data.message, data.level);
+                        } else if (data.type === 'complete') {
+                            cancelBtn.style.display = 'none';
+                            spinner.style.display = 'none';
+                            appendLog(logOutput, 'Installation complete!', 'success');
+                            if (data.workspace) {
+                                logOutput.innerHTML += `<div style="margin-top: 10px;">Workspace: ${data.workspace}</div>`;
+                            }
+                            await new Promise(r => setTimeout(r, 1000));
+                            currentStep = 7;
+                            document.getElementById('step6').classList.remove('active');
+                            document.getElementById('step7').classList.add('active');
+                            updateProgress();
+                            showCompletion(data);
+                        } else if (data.type === 'cancelled') {
+                            spinner.style.display = 'none';
+                            heading.textContent = 'Installation Cancelled';
+                            cancelBtn.style.display = 'none';
+                            appendLog(logOutput, 'Installation cancelled — changes rolled back.', 'warning');
+                            if (data.rollback) {
+                                for (const r of data.rollback) {
+                                    const level = r.success ? 'success' : 'warning';
+                                    appendLog(logOutput, `Rollback ${r.action}: ${r.detail}`, level);
+                                }
+                            }
+                        } else if (data.type === 'error') {
+                            spinner.style.display = 'none';
+                            heading.textContent = 'Installation Failed';
+                            cancelBtn.style.display = 'none';
+                            appendLog(logOutput, data.error, 'error');
+                            if (data.rollback) {
+                                appendLog(logOutput, 'Auto-rollback executed:', 'warning');
+                                for (const r of data.rollback) {
+                                    const level = r.success ? 'success' : 'warning';
+                                    appendLog(logOutput, `  ${r.action}: ${r.detail}`, level);
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                // Fallback to regular install on SSE failure
+                await fallbackInstall(payload, logOutput, cancelBtn, heading, spinner);
+            }
+
+            currentInstallId = null;
+        }
+
+        async function fallbackInstall(payload, logOutput, cancelBtn, heading, spinner) {
+            cancelBtn.style.display = 'none';
+            try {
                 const response = await fetch('/api/install', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        package: selectedPackage,
-                        userInfo: userInfo,
-                        registry: registry,
-                        unpkgUrl: unpkgUrl,
-                        selectedSubPrisms: selectedSubPrisms,
-                        targetDir: document.getElementById('targetDir').value || '~/prism-config'
-                    })
+                    body: JSON.stringify(payload)
                 });
-                
                 const result = await response.json();
-                
+
+                if (result.progress) {
+                    for (let msg of result.progress) {
+                        appendLog(logOutput, msg.message, msg.level);
+                        await new Promise(r => setTimeout(r, 100));
+                    }
+                }
+
                 if (result.success) {
-                    // Show all progress messages
-                    if (result.progress) {
-                        for (let msg of result.progress) {
-                            const emoji = {
-                                'success': '✅',
-                                'error': '❌',
-                                'warning': '⚠️',
-                                'info': 'ℹ️'
-                            }[msg.level] || 'ℹ️';
-                            
-                            const color = {
-                                'success': '#10b981',
-                                'error': '#ef4444',
-                                'warning': '#f59e0b',
-                                'info': '#3b82f6'
-                            }[msg.level] || '#3b82f6';
-                            
-                            logOutput.innerHTML += `<div style="color: ${color};">${emoji} ${msg.message}</div>`;
-                            logOutput.scrollTop = logOutput.scrollHeight;
-                            await new Promise(resolve => setTimeout(resolve, 100));
-                        }
-                    }
-                    
-                    logOutput.innerHTML += `<div style="color: #10b981; margin-top: 20px;">✅ <strong>Installation complete!</strong></div>`;
-                    if (result.workspace) {
-                        logOutput.innerHTML += `<div style="margin-top: 10px;">📁 Workspace: ${result.workspace}</div>`;
-                    }
-                    
-                    // Go to complete
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    spinner.style.display = 'none';
+                    appendLog(logOutput, 'Installation complete!', 'success');
+                    await new Promise(r => setTimeout(r, 1000));
                     currentStep = 7;
                     document.getElementById('step6').classList.remove('active');
                     document.getElementById('step7').classList.add('active');
                     updateProgress();
                     showCompletion(result);
                 } else {
-                    logOutput.innerHTML += `<div style="color: #ef4444; margin-top: 20px;">❌ <strong>Error:</strong> ${result.error}</div>`;
+                    spinner.style.display = 'none';
+                    heading.textContent = 'Installation Failed';
+                    appendLog(logOutput, result.error, 'error');
                 }
             } catch (error) {
-                logOutput.innerHTML += `<div style="color: #ef4444; margin-top: 20px;">❌ <strong>Error:</strong> ${error.message}</div>`;
+                spinner.style.display = 'none';
+                heading.textContent = 'Installation Failed';
+                appendLog(logOutput, error.message, 'error');
+            }
+        }
+
+        function appendLog(logOutput, message, level) {
+            const emoji = {'success': '+', 'error': 'x', 'warning': '!', 'info': 'i'}[level] || 'i';
+            const color = {'success': '#10b981', 'error': '#ef4444', 'warning': '#f59e0b', 'info': '#3b82f6'}[level] || '#3b82f6';
+            logOutput.innerHTML += `<div style="color: ${color};">[${emoji}] ${message}</div>`;
+            logOutput.scrollTop = logOutput.scrollHeight;
+        }
+
+        async function cancelInstall() {
+            if (!currentInstallId) return;
+            const btn = document.getElementById('cancelInstallBtn');
+            btn.disabled = true;
+            btn.textContent = 'Cancelling...';
+
+            try {
+                await fetch('/api/install/cancel', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ install_id: currentInstallId })
+                });
+            } catch (e) {
+                // SSE stream will handle the result
             }
         }
         

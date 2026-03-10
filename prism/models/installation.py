@@ -107,3 +107,4 @@ class InstallationResult:
     error: str | None = None
     pending_privileged: list[PrivilegedStep] = field(default_factory=list)
     phase: int = 0
+    rollback_results: list[dict] = field(default_factory=list)
