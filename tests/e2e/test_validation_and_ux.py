@@ -6,7 +6,11 @@ import os
 from pathlib import Path
 
 import pytest
-from playwright.sync_api import Page, expect
+
+try:
+    from playwright.sync_api import Page, expect
+except ImportError:
+    pytest.skip("playwright not installed", allow_module_level=True)
 
 INSTALLER_URL = os.getenv("INSTALLER_URL", "http://localhost:5555")
 
