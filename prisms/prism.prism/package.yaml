@@ -1,18 +1,17 @@
 # ============================================================================
-# PRISM — DEFAULT PRODUCT CONFIGURATION
+# PRISM — DEFAULT CONFIGURATION
 # ============================================================================
-# This is the default prism that ships with Prism. It auto-loads on startup
-# and provides the base developer onboarding experience. Users can switch
-# to a different prism at any time, but this is the out-of-box default.
+# The default prism that ships with Prism. Works for individuals, small teams,
+# and enterprise environments. Pick your scale, environment, and git platform.
 
 package:
   name: "prism"
-  version: "1.0.0"
-  description: "Default Prism configuration — developer onboarding out of the box"
+  version: "2.0.0"
+  description: "Default Prism configuration — from solo developers to enterprise teams"
   author: "Prism"
-  homepage: "https://github.com/prism/prism"
+  homepage: "https://github.com/andersonwilliam85/prism"
   support:
-    github: "https://github.com/prism/prism/issues"
+    github: "https://github.com/andersonwilliam85/prism/issues"
     community: "https://discord.gg/prism"
 
   type: "default"
@@ -39,7 +38,7 @@ prism_config:
       gradient_3: "#f093fb"
       gradient_4: "#f5576c"
       gradient_5: "#4facfe"
-  default: true  # Marks this as the product default prism
+  default: true
 
   sources:
     - url: "local"
@@ -54,7 +53,7 @@ prism_config:
     tagline: "Refract complexity into clarity"
 
 # BUNDLED SUB-PRISMS
-# base is required; users pick their environment profile
+# base is required; user picks scale, environment complexity, and git platform
 bundled_prisms:
   base:
     - id: "prism-base"
@@ -63,21 +62,80 @@ bundled_prisms:
       required: true
       config: "base/prism-base.yaml"
 
-  environment:
+  # Scale — who is this for?
+  scale:
     - id: "personal"
-      name: "Personal / Freelance"
-      description: "Solo developer, personal projects"
+      name: "Individual"
+      description: "Solo developer, freelancer, personal projects"
       config: "profiles/personal.yaml"
 
     - id: "team"
       name: "Small Team"
-      description: "Small team with shared conventions"
+      description: "Small team with shared conventions and PR workflows"
       config: "profiles/team.yaml"
 
     - id: "enterprise"
       name: "Enterprise"
-      description: "Corporate environment with compliance requirements"
+      description: "Corporate environment with compliance, security, and multi-tier setup"
       config: "profiles/enterprise.yaml"
+
+  # Environment complexity — how much structure?
+  environment:
+    - id: "minimal"
+      name: "Minimal"
+      description: "Just git config and SSH key — for devs who know what they want"
+      config: "environments/minimal.yaml"
+
+    - id: "standard"
+      name: "Standard"
+      description: "Git, SSH, common tools (VS Code, Docker, Node), and a workspace"
+      config: "environments/standard.yaml"
+      tools:
+        - vscode
+        - docker
+        - node
+        - git
+
+    - id: "full"
+      name: "Full-Featured"
+      description: "Structured workspace, organized folders, multiple runtimes, dev utilities"
+      config: "environments/full.yaml"
+      tools:
+        - vscode
+        - docker
+        - node
+        - python3
+        - git
+        - gh
+        - jq
+        - httpie
+
+  # Git platform
+  platform:
+    - id: "github"
+      name: "GitHub"
+      description: "GitHub.com"
+      config: "profiles/github.yaml"
+
+    - id: "gitlab"
+      name: "GitLab"
+      description: "GitLab.com or self-hosted"
+      config: "profiles/gitlab.yaml"
+
+    - id: "bitbucket"
+      name: "Bitbucket"
+      description: "Bitbucket for repositories"
+      config: "profiles/bitbucket.yaml"
+
+    - id: "gitea"
+      name: "Gitea"
+      description: "Self-hosted Gitea instance"
+      config: "profiles/gitea.yaml"
+
+    - id: "multi"
+      name: "Multiple Platforms"
+      description: "Multiple git platforms simultaneously"
+      config: "profiles/multi-platform.yaml"
 
 # SETUP CONFIGURATION
 setup:
@@ -88,22 +146,38 @@ setup:
       - source: "welcome.yaml"
         dest: "config/welcome.yaml"
         description: "Welcome message"
+      - source: "resources.yaml"
+        dest: "config/resources.yaml"
+        description: "Developer resources"
 
     directories:
       - source: "base/"
         dest: "config/base/"
         description: "Base configuration files"
+      - source: "environments/"
+        dest: "config/environments/"
+        description: "Environment complexity configs"
+      - source: "profiles/"
+        dest: "config/profiles/"
+        description: "Scale and platform profiles"
+
+  rollback:
+    enabled: true
+    persist_state: true
 
   post_install:
     message: |
-      Welcome to Prism!
+      Prism installed!
 
-      Your development environment is ready.
+      Your environment is ready. Here's what was set up:
+
+        Scale:       Individual / Team / Enterprise
+        Environment: Minimal / Standard / Full-Featured
+        Platform:    GitHub / GitLab / Bitbucket / Gitea / Multi
 
       Next steps:
-      1. Review your configuration in config/
-      2. Install additional prisms from the menu
-      3. Start developing!
+      1. Add your SSH key to your git provider
+      2. Start coding!
 
 # User info fields
 user_info_fields:
@@ -121,12 +195,59 @@ user_info_fields:
     placeholder: "jane@example.com"
     description: "Your email address (for git commits)"
 
-  - id: "git_username"
+  - id: "username"
     label: "Git Username"
     type: "text"
     required: true
     placeholder: "janedev"
-    description: "Your git username"
+    description: "Your username on chosen git platform"
+
+  - id: "scale"
+    label: "Scale"
+    type: "select"
+    required: true
+    options:
+      - "Individual"
+      - "Small Team"
+      - "Enterprise"
+    description: "Who is this environment for?"
+
+  - id: "environment"
+    label: "Environment"
+    type: "select"
+    required: true
+    options:
+      - "Minimal"
+      - "Standard"
+      - "Full-Featured"
+    description: "How much structure do you want?"
+
+  - id: "primary_language"
+    label: "Primary Language"
+    type: "select"
+    required: false
+    depends_on: "environment"
+    options:
+      - "JavaScript/TypeScript"
+      - "Python"
+      - "Go"
+      - "Rust"
+      - "Java"
+      - "Other"
+    option_map:
+      Minimal:
+        - "N/A"
+      Standard:
+        - "JavaScript/TypeScript"
+        - "Python"
+        - "Other"
+      Full-Featured:
+        - "JavaScript/TypeScript"
+        - "Python"
+        - "Go"
+        - "Rust"
+        - "Java"
+        - "Other"
 
 # Distribution
 distribution:
@@ -141,12 +262,16 @@ metadata:
     - recommended
     - core
     - universal
+    - personal
+    - freelance
+    - team
+    - enterprise
   keywords:
     - default
     - starter
     - onboarding
   company_size: "any"
   regions: ["Global"]
-  last_updated: "2026-03-08"
+  last_updated: "2026-03-10"
   maintainers:
     - "Prism"
