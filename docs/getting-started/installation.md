@@ -119,5 +119,5 @@ python3 install.py --prism my-company --npm-registry https://npm.mycompany.com
 ## Next Steps
 
 - [Quickstart](quickstart.md)
-- [Choose a prism](../user-guide/choosing-a-prism.md)
+- [Choose a prism](choosing-a-prism.md)
 - [Configuration schema](../reference/configuration-schema.md)

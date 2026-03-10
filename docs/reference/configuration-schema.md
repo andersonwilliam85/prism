@@ -457,5 +457,5 @@ prism_config:
 ## Resources
 
 - [Sub-Prism Inheritance](../user-guide/config-inheritance.md)
-- [Choosing a Prism](../user-guide/choosing-a-prism.md)
+- [Choosing a Prism](../getting-started/choosing-a-prism.md)
 - [Creating Prisms](../user-guide/creating-configurations.md)
