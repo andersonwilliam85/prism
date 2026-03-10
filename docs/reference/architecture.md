@@ -11,30 +11,51 @@ Prism follows a VBD-inspired (Volatility-Based Decomposition) layered architectu
 
 ## Layer Overview
 
+<div align="center">
+
+### Figure 1: VBD Layer Architecture
+
+```mermaid
+flowchart LR
+    subgraph MAIN[" "]
+        direction TB
+        subgraph MANAGERS["MANAGERS"]
+            IM["InstallationManager"] ~~~ PM["PackageManager"]
+        end
+        subgraph ENGINES["ENGINES"]
+            ME["MergeEngine"] ~~~ VE["ValidationEngine"] ~~~ TE["ThemeEngine"]
+            SE["SetupEngine"] ~~~ RE["RollbackEngine"] ~~~ HE["HierarchyEngine"]
+            RSE["ResolutionEngine"] ~~~ SCE["ScaffoldEngine"] ~~~ SVE["SudoValidationEngine"]
+        end
+        subgraph ACCESSORS["RESOURCE ACCESSORS"]
+            FA["FileAccessor"] ~~~ CA["CommandAccessor"]
+            RA["RegistryAccessor"] ~~~ SA["SystemAccessor"]
+            RBA["RollbackAccessor"] ~~~ SUA["SudoAccessor"]
+        end
+        subgraph MODELS["MODELS"]
+            PI["PackageInfo"] ~~~ UF["UserField"] ~~~ TD["ThemeDefinition"]
+            RAC["RollbackAction"] ~~~ RS["RollbackState"] ~~~ SS["SudoSession"]
+        end
+        MANAGERS ~~~ ENGINES
+        ENGINES ~~~ ACCESSORS
+        ACCESSORS ~~~ MODELS
+    end
+
+    subgraph UTILITIES["UTILITIES"]
+        direction TB
+        EB["InMemoryEventBus"]
+    end
+
+    MAIN ~~~ UTILITIES
+
+    style MANAGERS fill:#0053e2,color:#fff
+    style ENGINES fill:#ffc220,color:#000
+    style ACCESSORS fill:#2a8703,color:#fff
+    style UTILITIES fill:#76c043,color:#000
+    style MODELS fill:#64748b,color:#fff
 ```
-┌─────────────────────────────────────────────┐
-│              Managers (orchestration)        │
-│  InstallationManager    PackageManager      │
-├─────────────────────────────────────────────┤
-│              Engines (pure logic)            │
-│  MergeEngine  ValidationEngine  ThemeEngine │
-│  SetupEngine  RollbackEngine  HierarchyEng │
-│  ResolutionEngine  ScaffoldEngine           │
-│  SudoValidationEngine                       │
-├─────────────────────────────────────────────┤
-│              Accessors (I/O adapters)        │
-│  FileAccessor   CommandAccessor             │
-│  RegistryAccessor  SystemAccessor           │
-│  RollbackAccessor  SudoAccessor             │
-├─────────────────────────────────────────────┤
-│              Utilities (shared services)     │
-│  InMemoryEventBus                           │
-├─────────────────────────────────────────────┤
-│              Models (data structures)        │
-│  PackageInfo  UserField  ThemeDefinition    │
-│  RollbackAction  RollbackState  SudoSession │
-└─────────────────────────────────────────────┘
-```
+
+</div>
 
 ---
 
@@ -141,36 +162,40 @@ To swap an implementation (e.g., for testing), replace the concrete class in `co
 
 A typical installation follows this path:
 
+<div align="center">
+
+### Figure 2: Installation Data Flow
+
+```mermaid
+flowchart TB
+    USER["User clicks Install"] --> IM["InstallationManager.install()"]
+    IM --> VE["ValidationEngine.validate()"]
+    IM --> HE["HierarchyEngine.resolve_dependency_order()"]
+    IM --> ME["MergeEngine.merge()"]
+    IM --> SE["SetupEngine.plan()"]
+    IM --> FA["FileAccessor.copy_files()"]
+    IM --> CA["CommandAccessor.run()"]
+    IM --> RE["RollbackEngine.record_action()"]
+    IM --> EB["EventBus.publish()"]
+
+    VE -->|validation result| IM
+    HE -->|sorted fields| IM
+    ME -->|merged config| IM
+    SE -->|file copy plan| IM
+
+    style USER fill:#041f41,color:#fff
+    style IM fill:#0053e2,color:#fff
+    style VE fill:#ffc220,color:#000
+    style HE fill:#ffc220,color:#000
+    style ME fill:#ffc220,color:#000
+    style SE fill:#ffc220,color:#000
+    style FA fill:#2a8703,color:#fff
+    style CA fill:#2a8703,color:#fff
+    style RE fill:#ffc220,color:#000
+    style EB fill:#76c043,color:#000
 ```
-User clicks "Install"
-       │
-       ▼
- InstallationManager.install()
-       │
-       ├──▶ ValidationEngine.validate(package_yaml)
-       │         └── returns validation result (pure)
-       │
-       ├──▶ HierarchyEngine.resolve_dependency_order(fields)
-       │         └── returns sorted fields (pure)
-       │
-       ├──▶ MergeEngine.merge(base, selected_tiers)
-       │         └── returns merged config (pure)
-       │
-       ├──▶ SetupEngine.plan(merged_config)
-       │         └── returns file copy plan (pure)
-       │
-       ├──▶ FileAccessor.copy_files(plan)
-       │         └── writes to disk (I/O)
-       │
-       ├──▶ CommandAccessor.run(tool_install_commands)
-       │         └── runs subprocesses (I/O)
-       │
-       ├──▶ RollbackEngine.record_action(each step)
-       │         └── tracks for undo (pure)
-       │
-       └──▶ EventBus.publish(progress_events)
-                 └── UI receives updates
-```
+
+</div>
 
 ---
 

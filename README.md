@@ -34,17 +34,17 @@ Prism provides:
 
 - **Configuration inheritance** — Define once at company level, override per team
 - **Multi-level hierarchies** — Support structures from flat (startups) to 5+ levels (enterprise)
-- **Web UI** — Visual prism selection and installation wizard
+- **Web UI** — Visual prism selection and installation wizard with themes, cascading dropdowns, and real-time progress
 - **CLI tools** — Scriptable, automatable, CI/CD friendly
 - **NPM distribution** — Packages published to npm, no custom infrastructure needed
 - **Validation** — Catch errors before deployment
-- **Smart merging** — Deep-merge with list handling strategies
+- **Smart merging** — Deep-merge with configurable strategies (union, override, append)
+- **Installation rollback** — Every action tracked, automatic LIFO undo on failure
+- **Privilege separation** — Two-phase install with sudo session management
 
 ---
 
 ## Quick Start
-
-### Installation
 
 ```bash
 # Clone the repository
@@ -62,20 +62,7 @@ make run
 # Opens at http://localhost:5555
 ```
 
-### Create Your First Configuration
-
-```bash
-# Use a template as starting point
-cp -r prisms/acme-corp prisms/my-company
-
-# Edit the base configuration
-vim prisms/my-company/base/my-company.yaml
-
-# Validate
-python3 scripts/package_validator.py prisms/my-company
-```
-
-See [Creating Configurations](docs/user-guide/creating-configurations.md) for a detailed guide.
+See [Getting Started](https://andersonwilliam85.github.io/prism/getting-started/quickstart) for the full guide.
 
 ---
 
@@ -85,19 +72,14 @@ See [Creating Configurations](docs/user-guide/creating-configurations.md) for a 
 
 - Prism gallery with visual cards for all configurations
 - Step-by-step wizard with progress tracking
-- Theme system (5 themes with localStorage persistence)
-- Responsive design
-- Smart validation prevents configuration errors
-
-```bash
-python3 install-ui.py
-# or
-make run
-```
+- **Theme system** — 5 built-in themes + custom themes with 5 gradient color slots
+- **Cascading dropdowns** — Dynamic field dependencies (e.g., division filters available teams)
+- **Settings panel** — Runtime registry, CDN, and language overrides
+- Responsive design with smart validation
 
 ### Configuration Inheritance
 
-Multi-level hierarchy support:
+Multi-level hierarchy with configurable merge strategies:
 
 ```
 Company (base)
@@ -107,20 +89,28 @@ Company (base)
               └── Individual
 ```
 
-Configurations merge intelligently — base layer defines company standards, each level can override or extend. See [Config Inheritance](docs/user-guide/config-inheritance.md).
+Configurations merge intelligently — base layer defines company standards, each level can override or extend using union, deep_merge, override, or append strategies.
 
 ### Built-in Prisms
 
 | Prism | Use Case | Hierarchy | Scale |
 |-------|----------|-----------|-------|
-| `prism` | Default out-of-box | Flat | Any |
-| `personal-dev` | Freelancers, indie devs | Flat | 1 |
+| `prism` | Default (ships as core) | Flat | Any |
+| `personal-dev` | Solo developers | 3 environment tiers | 1 |
 | `startup` | Seed/Series A startups | 1 level | 10–50 |
 | `acme-corp` | Template for companies | 2 levels | 100–1K |
 | `consulting-firm` | Multi-client work | By client | Variable |
 | `fortune500` | Enterprise | 5 levels | 50K+ |
 | `university` | Academic institutions | Dept to Lab | Variable |
 | `opensource` | Community projects | Flat | Community |
+
+Each prism includes custom themes, cascading user fields, and rollback configuration.
+
+### Installation Safety
+
+- **Rollback** — Every file copy, directory creation, command execution, and config change is tracked. On failure, changes unwind in LIFO order.
+- **Privilege separation** — Normal operations run first. Privileged steps (apt-get, global npm) require explicit sudo approval in a separate phase.
+- **Sudo sessions** — Cryptographic tokens with 15-minute TTL and 3-attempt lockout.
 
 ### NPM Distribution
 
@@ -132,42 +122,52 @@ python3 install.py --prism personal-dev
 python3 install.py --npm-registry https://npm.mycompany.com
 ```
 
-### Validation
+### Local Docs Server
+
+Post-install, browse your workspace configuration:
 
 ```bash
-# Validate single package
-python3 scripts/package_validator.py prisms/my-company
-
-# Validate all packages
-python3 scripts/package_validator.py --all
+python3 -m prism.tools.docs_server --workspace ~/dev
 ```
 
 ---
 
 ## Architecture
 
+Prism follows a **VBD-inspired** (Volatility-Based Decomposition) layered architecture with dependency injection.
+
 ```
 prism/
-├── install-ui.py              # Web UI server (Flask)
-├── install.py                 # CLI installer
-├── installer_engine.py        # Core installation logic
-├── scripts/
-│   ├── config_merger.py       # Configuration inheritance engine
-│   ├── config_validator.py    # YAML validation
-│   ├── package_validator.py   # Package schema validation
-│   ├── package_manager.py     # Package operations
-│   └── npm_package_fetcher.py # NPM integration
-├── prisms/                    # Prism configurations
-│   ├── prism.prism/           # Default product prism
-│   ├── personal-dev/
-│   ├── startup.prism/
-│   ├── acme-corp/
-│   └── ...
-└── tests/
-    ├── unit/
-    ├── e2e/
-    └── integration/
+├── container.py                # Composition root (DI wiring)
+├── managers/                   # Orchestration (no logic, no I/O)
+│   ├── installation_manager/   # Full install workflow
+│   └── package_manager/        # Discovery, validation, scaffolding
+├── engines/                    # Pure computation (no I/O)
+│   ├── merge_engine/           # Config deep-merge with strategies
+│   ├── validation_engine/      # Package.yaml validation
+│   ├── theme_engine/           # Theme resolution (built-in + custom)
+│   ├── hierarchy_engine/       # Cascading field dependency sort
+│   ├── setup_engine/           # File copy plan computation
+│   ├── rollback_engine/        # LIFO undo sequence tracking
+│   ├── resolution_engine/      # Prism source resolution
+│   ├── scaffold_engine/        # New prism directory generation
+│   └── sudo_validation_engine/ # Sudo session management
+├── accessors/                  # I/O boundary (thin adapters)
+│   ├── file_accessor/          # File read/write/copy
+│   ├── command_accessor/       # Subprocess execution
+│   ├── registry_accessor/      # npm/unpkg HTTP requests
+│   ├── system_accessor/        # Platform detection
+│   ├── rollback_accessor/      # Rollback state persistence
+│   └── sudo_accessor/          # Sudo password validation
+├── utilities/                  # Cross-cutting services
+│   └── event_bus/              # Pub/sub progress reporting
+├── models/                     # Plain dataclasses
+└── ui/                         # Flask web UI + API routes
+    ├── api/                    # REST endpoints
+    └── static/                 # Frontend assets
 ```
+
+See [Architecture Reference](https://andersonwilliam85.github.io/prism/reference/architecture) for the full breakdown.
 
 ---
 
@@ -176,40 +176,44 @@ prism/
 ### Prerequisites
 
 - Python 3.9+
-- Flask (for web UI)
+- Flask, PyYAML, Rich
 
 ### Setup
 
 ```bash
 make install-dev    # Install dev dependencies
-make test           # Run tests
+make test           # Run tests (unit + CLI)
+make test-all       # All tests including E2E
 make run            # Start dev server
-make lint           # Run linters
-make format         # Format code
+make lint           # Run linters (flake8 + mypy)
+make format         # Format code (black + isort)
 make check          # All CI checks
 ```
 
----
-
-## Testing
+### Testing
 
 ```bash
 make test              # Unit + CLI tests
 make test-all          # All tests including E2E
 make test-coverage     # With coverage report
+make test-trace        # E2E with Playwright traces
 ```
 
-GitHub Actions runs lint, test, and coverage on every PR.
+GitHub Actions runs lint, test, coverage, and security scans on every PR.
 
 ---
 
 ## Documentation
 
-Full documentation is available at **[andersonwilliam85.github.io/prism](https://andersonwilliam85.github.io/prism/)**.
+Full documentation at **[andersonwilliam85.github.io/prism](https://andersonwilliam85.github.io/prism/)**.
 
 - [Getting Started](https://andersonwilliam85.github.io/prism/getting-started/quickstart)
-- [User Guide](https://andersonwilliam85.github.io/prism/user-guide/creating-configurations)
-- [Configuration Reference](https://andersonwilliam85.github.io/prism/reference/configuration-schema)
+- [Themes & Customization](https://andersonwilliam85.github.io/prism/user-guide/themes)
+- [Cascading Dropdowns](https://andersonwilliam85.github.io/prism/user-guide/cascading-dropdowns)
+- [Configuration Schema](https://andersonwilliam85.github.io/prism/reference/configuration-schema)
+- [Architecture](https://andersonwilliam85.github.io/prism/reference/architecture)
+- [Rollback System](https://andersonwilliam85.github.io/prism/reference/rollback-system)
+- [Privilege Separation](https://andersonwilliam85.github.io/prism/reference/privilege-separation)
 - [Contributing](https://andersonwilliam85.github.io/prism/contributor-guide/contributing)
 
 ---
@@ -219,6 +223,7 @@ Full documentation is available at **[andersonwilliam85.github.io/prism](https:/
 - **macOS** (Intel and Apple Silicon)
 - **Windows** 10/11
 - **Linux** (Ubuntu 20.04+, Debian, Fedora, RHEL)
+- **WSL2**
 
 ---
 
@@ -231,7 +236,7 @@ Full documentation is available at **[andersonwilliam85.github.io/prism](https:/
 5. Run CI checks: `make check`
 6. Submit a Pull Request
 
-See [Contributing Guide](docs/contributor-guide/contributing.md).
+See [Contributing Guide](https://andersonwilliam85.github.io/prism/contributor-guide/contributing).
 
 ---
 

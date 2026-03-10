@@ -143,25 +143,36 @@ After 3 consecutive failed password attempts, the session is locked for 30 secon
 
 ## UI Flow
 
+<div align="center">
+
+### Figure 1: Two-Phase Install Flow
+
+```mermaid
+flowchart TB
+    START["Install Started"] --> P1["Phase 1: Normal Install"]
+    P1 --> WS["Created workspace"]
+    P1 --> CF["Copied config files"]
+    P1 --> GIT["Configured git"]
+    P1 --> REPO["Cloned repositories"]
+    REPO --> CHECK{"Privileged steps?"}
+    CHECK -->|No| DONE["Installation Complete"]
+    CHECK -->|Yes| P2["Phase 2: Privileged Operations"]
+    P2 --> REVIEW["Review: docker-ce, kubectl, eslint"]
+    REVIEW --> DECIDE{"User decision"}
+    DECIDE -->|Approve & Install| SUDO["Enter sudo password"]
+    SUDO --> EXEC["Execute privileged steps"]
+    EXEC --> DONE
+    DECIDE -->|Skip| PARTIAL["Partially Complete"]
+
+    style START fill:#041f41,color:#fff
+    style P1 fill:#0053e2,color:#fff
+    style P2 fill:#ffc220,color:#000
+    style DONE fill:#2a8703,color:#fff
+    style PARTIAL fill:#f59e0b,color:#000
+    style SUDO fill:#ea1100,color:#fff
 ```
-┌─────────────────────────────────────────┐
-│  Phase 1: Normal Install                │
-│  ✓ Created workspace                    │
-│  ✓ Copied config files                  │
-│  ✓ Configured git                       │
-│  ✓ Cloned repositories                  │
-├─────────────────────────────────────────┤
-│  Phase 2: Privileged Operations         │
-│                                         │
-│  The following require sudo:            │
-│  • apt-get install docker-ce            │
-│  • apt-get install kubectl              │
-│  • npm install -g eslint                │
-│                                         │
-│  [Enter sudo password: ________]        │
-│  [Approve & Install]  [Skip]            │
-└─────────────────────────────────────────┘
-```
+
+</div>
 
 If the user clicks **Skip**, phase 2 is not executed. The installation is marked as partially complete, and the skipped steps are logged so the user can run them manually later.
 

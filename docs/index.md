@@ -5,7 +5,7 @@ title: Home
 
 # Prism Documentation
 
-Complete documentation for Prism — the modular, hierarchical development environment installer.
+Complete documentation for Prism — the modular, hierarchical development environment installer. See [About Prism](about.md) for an overview.
 
 ---
 
