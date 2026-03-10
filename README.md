@@ -136,36 +136,16 @@ python3 -m prism.tools.docs_server --workspace ~/dev
 
 Prism follows a **VBD-inspired** (Volatility-Based Decomposition) layered architecture with dependency injection.
 
-```
-prism/
-├── container.py                # Composition root (DI wiring)
-├── managers/                   # Orchestration (no logic, no I/O)
-│   ├── installation_manager/   # Full install workflow
-│   └── package_manager/        # Discovery, validation, scaffolding
-├── engines/                    # Pure computation (no I/O)
-│   ├── merge_engine/           # Config deep-merge with strategies
-│   ├── validation_engine/      # Package.yaml validation
-│   ├── theme_engine/           # Theme resolution (built-in + custom)
-│   ├── hierarchy_engine/       # Cascading field dependency sort
-│   ├── setup_engine/           # File copy plan computation
-│   ├── rollback_engine/        # LIFO undo sequence tracking
-│   ├── resolution_engine/      # Prism source resolution
-│   ├── scaffold_engine/        # New prism directory generation
-│   └── sudo_validation_engine/ # Sudo session management
-├── accessors/                  # I/O boundary (thin adapters)
-│   ├── file_accessor/          # File read/write/copy
-│   ├── command_accessor/       # Subprocess execution
-│   ├── registry_accessor/      # npm/unpkg HTTP requests
-│   ├── system_accessor/        # Platform detection
-│   ├── rollback_accessor/      # Rollback state persistence
-│   └── sudo_accessor/          # Sudo password validation
-├── utilities/                  # Cross-cutting services
-│   └── event_bus/              # Pub/sub progress reporting
-├── models/                     # Plain dataclasses
-└── ui/                         # Flask web UI + API routes
-    ├── api/                    # REST endpoints
-    └── static/                 # Frontend assets
-```
+| Layer | Role | Components |
+|-------|------|------------|
+| **Managers** | Orchestration — *the "what"* | `installation_manager`, `package_manager` |
+| **Engines** | Business logic — *the "how"* | `config_engine` (schema evolution), `installation_engine` (installation surface) |
+| **Accessors** | I/O boundary — *thin adapters* | `file`, `command`, `registry`, `system`, `rollback`, `sudo` |
+| **Utilities** | Cross-cutting services | `event_bus` (pub/sub progress) |
+| **Models** | Plain dataclasses | Installation, config, rollback DTOs |
+| **UI** | Flask web app | REST API + static frontend |
+
+All layers are wired through a composition root (`container.py`) with constructor injection — no global state, fully testable.
 
 See [Architecture Reference](https://andersonwilliam85.github.io/prism/reference/architecture) for the full breakdown.
 
