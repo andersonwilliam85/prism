@@ -170,14 +170,10 @@ class TestConfigurationPersistence:
     def test_package_selection_persists_in_session(self, page: Page, installer_server):
         """Test that package selection persists when navigating back."""
         page.goto(INSTALLER_URL)
-        page.wait_for_selector(".package-card", timeout=5000)
+        page.wait_for_selector(".tier-card", timeout=5000)
 
-        # Get the ID of first package
-        first_pkg = page.locator(".package-card").first
-        pkg_id = first_pkg.get_attribute("id")
-
-        # Select it
-        first_pkg.click()
+        # Select first tier card
+        page.locator(".tier-card").first.click()
 
         # Go to step 2
         page.locator("button").filter(has_text="Next").first.click()
@@ -187,22 +183,22 @@ class TestConfigurationPersistence:
         page.locator("button").filter(has_text="Back").first.click()
         page.wait_for_selector("#step1.active")
 
-        # Verify selection persisted
-        selected_pkg = page.locator(f"#{pkg_id}")
-        expect(selected_pkg).to_have_css("border-color", "rgb(102, 126, 234)")
+        # Verify selection persisted (tier-card gets 'selected' class)
+        selected_tier = page.locator(".tier-card.selected")
+        expect(selected_tier).to_have_count(1)
 
     def test_user_info_persists_in_session(self, page: Page, installer_server):
         """Test that user info persists when navigating back and forth."""
         page.goto(INSTALLER_URL)
-        page.wait_for_selector(".package-card", timeout=5000)
+        page.wait_for_selector(".tier-card", timeout=5000)
 
         # Navigate to user info
-        page.locator(".package-card").first.click()
+        page.locator(".tier-card").first.click()
         page.locator("button").filter(has_text="Next").first.click()
         page.wait_for_selector("#step2.active")
 
         # Fill info
-        test_data = {"name": "Persistence Test User", "email": "persist@test.com", "git_username": "persisttest"}
+        test_data = {"name": "Persistence Test User", "email": "persist@test.com", "username": "persisttest"}
 
         for field, value in test_data.items():
             if page.locator(f"input[name='{field}']").count() > 0:
@@ -225,19 +221,27 @@ class TestConfigurationPersistence:
         """Test that theme selection persists across page navigation."""
         page.goto(INSTALLER_URL)
 
+        # Open settings panel and navigate to theme step
+        page.locator(".hamburger-menu").click()
+        page.locator("button[data-step='3']").click()
+        page.wait_for_timeout(300)
+
         # Set theme to forest
-        if page.locator(".theme-option[data-theme='forest']").count() > 0:
-            page.locator(".theme-option[data-theme='forest']").click()
+        page.locator(".theme-option[data-theme='forest']").click()
 
-            # Navigate through steps
-            page.wait_for_selector(".package-card", timeout=5000)
-            page.locator(".package-card").first.click()
-            page.locator("button").filter(has_text="Next").first.click()
-            page.wait_for_selector("#step2.active")
+        # Close settings panel
+        page.locator(".hamburger-menu").click()
+        page.wait_for_timeout(300)
 
-            # Verify theme still applied
-            html = page.locator("html")
-            expect(html).to_have_attribute("data-theme", "forest")
+        # Navigate through steps
+        page.wait_for_selector(".tier-card", timeout=5000)
+        page.locator(".tier-card").first.click()
+        page.locator("button").filter(has_text="Next").first.click()
+        page.wait_for_selector("#step2.active")
+
+        # Verify theme still applied
+        html = page.locator("html")
+        expect(html).to_have_attribute("data-theme", "forest")
 
 
 @pytest.mark.e2e
@@ -250,19 +254,19 @@ class TestUserExperience:
 
         # Check if loading indicator appears briefly
         # (might be too fast to catch, but we can try)
-        page.wait_for_selector(".package-card, .loading, .spinner", timeout=5000)
+        page.wait_for_selector(".tier-card, .loading, .spinner", timeout=10000)
 
-        # Verify packages loaded (no permanent loading state)
-        packages = page.locator(".package-card")
-        expect(packages.first).to_be_visible()
+        # Verify tier cards loaded (no permanent loading state)
+        tiers = page.locator(".tier-card")
+        expect(tiers.first).to_be_visible()
 
     def test_error_messages_are_user_friendly(self, page: Page, installer_server):
         """Test that error messages are clear and helpful."""
         page.goto(INSTALLER_URL)
-        page.wait_for_selector(".package-card", timeout=5000)
+        page.wait_for_selector(".tier-card", timeout=5000)
 
         # Navigate to form
-        page.locator(".package-card").first.click()
+        page.locator(".tier-card").first.click()
         page.locator("button").filter(has_text="Next").first.click()
         page.wait_for_selector("#step2.active")
 
@@ -284,7 +288,7 @@ class TestUserExperience:
     def test_progress_indication_through_steps(self, page: Page, installer_server):
         """Test that progress is indicated as user moves through steps."""
         page.goto(INSTALLER_URL)
-        page.wait_for_selector(".package-card", timeout=5000)
+        page.wait_for_selector(".tier-card", timeout=5000)
 
         # Check for progress indicators
         progress_indicators = page.locator(".step-indicator, .progress-bar, .breadcrumb, [class*='step']").count()
@@ -296,7 +300,7 @@ class TestUserExperience:
     def test_help_text_and_tooltips(self, page: Page, installer_server):
         """Test that help text and tooltips are available."""
         page.goto(INSTALLER_URL)
-        page.wait_for_selector(".package-card", timeout=5000)
+        page.wait_for_selector(".tier-card", timeout=5000)
 
         # Look for help indicators
         help_elements = page.locator(".help, .tooltip, [title], .description, [class*='help']").count()
@@ -312,7 +316,7 @@ class TestAccessibility:
     def test_keyboard_navigation_works(self, page: Page, installer_server):
         """Test that keyboard navigation works."""
         page.goto(INSTALLER_URL)
-        page.wait_for_selector(".package-card", timeout=5000)
+        page.wait_for_selector(".tier-card", timeout=5000)
 
         # Tab through elements
         page.keyboard.press("Tab")
@@ -325,10 +329,10 @@ class TestAccessibility:
     def test_labels_for_form_fields(self, page: Page, installer_server):
         """Test that form fields have proper labels."""
         page.goto(INSTALLER_URL)
-        page.wait_for_selector(".package-card", timeout=5000)
+        page.wait_for_selector(".tier-card", timeout=5000)
 
         # Navigate to form
-        page.locator(".package-card").first.click()
+        page.locator(".tier-card").first.click()
         page.locator("button").filter(has_text="Next").first.click()
         page.wait_for_selector("#step2.active")
 

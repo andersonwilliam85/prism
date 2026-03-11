@@ -100,7 +100,7 @@ class TestUserFields:
         field_ids = [f["id"] for f in data["fields"]]
         assert "name" in field_ids
         assert "email" in field_ids
-        assert "git_username" in field_ids
+        assert "username" in field_ids
 
 
 class TestTiers:
