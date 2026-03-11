@@ -77,11 +77,11 @@ class TestPackagesEndpoint:
 
 @pytest.mark.e2e
 class TestUserFieldsEndpoint:
-    def test_personal_dev_returns_fields(self, client):
-        prism_path = Path(__file__).parent.parent.parent / "prisms" / "personal-dev"
+    def test_prism_returns_fields(self, client):
+        prism_path = Path(__file__).parent.parent.parent / "prisms" / "prism.prism"
         if not prism_path.exists():
-            pytest.skip("personal-dev prism not present")
-        resp = client.get("/api/package/personal-dev/user-fields")
+            pytest.skip("prism.prism not present")
+        resp = client.get("/api/package/prism/user-fields")
         assert resp.status_code == 200
         data = resp.get_json()
         assert "fields" in data
@@ -89,10 +89,10 @@ class TestUserFieldsEndpoint:
         assert len(data["fields"]) > 0
 
     def test_each_field_has_id_and_label(self, client):
-        prism_path = Path(__file__).parent.parent.parent / "prisms" / "personal-dev"
+        prism_path = Path(__file__).parent.parent.parent / "prisms" / "prism.prism"
         if not prism_path.exists():
-            pytest.skip("personal-dev prism not present")
-        resp = client.get("/api/package/personal-dev/user-fields")
+            pytest.skip("prism.prism not present")
+        resp = client.get("/api/package/prism/user-fields")
         data = resp.get_json()
         for field in data["fields"]:
             assert "id" in field
@@ -112,28 +112,28 @@ class TestUserFieldsEndpoint:
 
 @pytest.mark.e2e
 class TestMetadataEndpoint:
-    def test_personal_dev_metadata(self, client):
-        prism_path = Path(__file__).parent.parent.parent / "prisms" / "personal-dev"
+    def test_prism_metadata(self, client):
+        prism_path = Path(__file__).parent.parent.parent / "prisms" / "prism.prism"
         if not prism_path.exists():
-            pytest.skip("personal-dev prism not present")
-        resp = client.get("/api/package/personal-dev/metadata")
+            pytest.skip("prism.prism not present")
+        resp = client.get("/api/package/prism/metadata")
         assert resp.status_code == 200
         data = resp.get_json()
-        assert data.get("name") == "personal-dev"
+        assert data.get("name") == "prism"
 
     def test_metadata_has_display_name(self, client):
-        prism_path = Path(__file__).parent.parent.parent / "prisms" / "personal-dev"
+        prism_path = Path(__file__).parent.parent.parent / "prisms" / "prism.prism"
         if not prism_path.exists():
-            pytest.skip("personal-dev prism not present")
-        resp = client.get("/api/package/personal-dev/metadata")
+            pytest.skip("prism.prism not present")
+        resp = client.get("/api/package/prism/metadata")
         data = resp.get_json()
         assert "display_name" in data
 
     def test_metadata_has_tiers_flag(self, client):
-        prism_path = Path(__file__).parent.parent.parent / "prisms" / "personal-dev"
+        prism_path = Path(__file__).parent.parent.parent / "prisms" / "prism.prism"
         if not prism_path.exists():
-            pytest.skip("personal-dev prism not present")
-        resp = client.get("/api/package/personal-dev/metadata")
+            pytest.skip("prism.prism not present")
+        resp = client.get("/api/package/prism/metadata")
         data = resp.get_json()
         assert "has_tiers" in data
 
@@ -150,21 +150,21 @@ class TestMetadataEndpoint:
 
 @pytest.mark.e2e
 class TestTiersEndpoint:
-    def test_personal_dev_tiers(self, client):
-        prism_path = Path(__file__).parent.parent.parent / "prisms" / "personal-dev"
+    def test_prism_tiers(self, client):
+        prism_path = Path(__file__).parent.parent.parent / "prisms" / "prism.prism"
         if not prism_path.exists():
-            pytest.skip("personal-dev prism not present")
-        resp = client.get("/api/package/personal-dev/tiers")
+            pytest.skip("prism.prism not present")
+        resp = client.get("/api/package/prism/tiers")
         assert resp.status_code == 200
         data = resp.get_json()
         assert "optional_tiers" in data
         assert isinstance(data["optional_tiers"], list)
 
     def test_tiers_have_required_fields(self, client):
-        prism_path = Path(__file__).parent.parent.parent / "prisms" / "personal-dev"
+        prism_path = Path(__file__).parent.parent.parent / "prisms" / "prism.prism"
         if not prism_path.exists():
-            pytest.skip("personal-dev prism not present")
-        resp = client.get("/api/package/personal-dev/tiers")
+            pytest.skip("prism.prism not present")
+        resp = client.get("/api/package/prism/tiers")
         data = resp.get_json()
         for tier in data["optional_tiers"]:
             assert "name" in tier
@@ -173,10 +173,10 @@ class TestTiersEndpoint:
             assert isinstance(tier["options"], list)
 
     def test_tier_options_have_id_and_name(self, client):
-        prism_path = Path(__file__).parent.parent.parent / "prisms" / "personal-dev"
+        prism_path = Path(__file__).parent.parent.parent / "prisms" / "prism.prism"
         if not prism_path.exists():
-            pytest.skip("personal-dev prism not present")
-        resp = client.get("/api/package/personal-dev/tiers")
+            pytest.skip("prism.prism not present")
+        resp = client.get("/api/package/prism/tiers")
         data = resp.get_json()
         for tier in data["optional_tiers"]:
             for opt in tier["options"]:
@@ -230,11 +230,11 @@ class TestTiersEndpoint:
 
 @pytest.mark.e2e
 class TestPackageConfigEndpoint:
-    def test_personal_dev_config(self, client):
-        prism_path = Path(__file__).parent.parent.parent / "prisms" / "personal-dev"
+    def test_prism_config(self, client):
+        prism_path = Path(__file__).parent.parent.parent / "prisms" / "prism.prism"
         if not prism_path.exists():
-            pytest.skip("personal-dev prism not present")
-        resp = client.get("/api/package/personal-dev/config")
+            pytest.skip("prism.prism not present")
+        resp = client.get("/api/package/prism/config")
         assert resp.status_code == 200
         data = resp.get_json()
         # prism_config may be None if not defined

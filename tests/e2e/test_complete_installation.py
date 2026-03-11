@@ -125,13 +125,13 @@ class TestCompleteInstallationFlow:
         selected = page.locator(".package-card").first
         expect(selected).to_have_css("border-color", "rgb(102, 126, 234)")
 
-    def test_personal_dev_package_complete_flow(self, page: Page, installer_server):
-        """Test complete flow for personal-dev package."""
+    def test_prism_package_complete_flow(self, page: Page, installer_server):
+        """Test complete flow for prism package."""
         page.goto(INSTALLER_URL)
         page.wait_for_selector(".package-card", timeout=5000)
 
-        # Select personal-dev package
-        personal_package = page.locator(".package-card").filter(has_text="Personal Dev")
+        # Select prism package
+        personal_package = page.locator(".package-card").filter(has_text="Prism")
 
         if personal_package.count() > 0:
             personal_package.click()
@@ -156,7 +156,7 @@ class TestCompleteInstallationFlow:
             # Verify all info in review
             expect(page.locator("text=Jane Developer")).to_be_visible()
             expect(page.locator("text=jane@personal.dev")).to_be_visible()
-            expect(page.locator("text=Personal Dev")).to_be_visible()
+            expect(page.locator("text=Prism")).to_be_visible()
 
     def test_validation_prevents_incomplete_submission(self, page: Page, installer_server):
         """Test that validation prevents submitting incomplete forms."""
@@ -408,16 +408,16 @@ class TestErrorHandling:
 class TestFullInstallationScenarios:
     """Test complete installation scenarios from start to finish."""
 
-    def test_complete_personal_developer_scenario(self, page: Page, installer_server):
-        """Complete scenario: Personal developer setting up environment."""
+    def test_complete_prism_scenario(self, page: Page, installer_server):
+        """Complete scenario: Developer setting up environment with prism package."""
         page.goto(INSTALLER_URL)
 
         # Wait for page load
         page.wait_for_load_state("networkidle")
         page.wait_for_selector(".package-card", timeout=5000)
 
-        # 1. Select personal-dev package
-        personal_pkg = page.locator(".package-card").filter(has_text="Personal")
+        # 1. Select prism package
+        personal_pkg = page.locator(".package-card").filter(has_text="Prism")
 
         if personal_pkg.count() > 0:
             personal_pkg.first.click()

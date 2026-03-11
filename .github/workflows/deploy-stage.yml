@@ -79,14 +79,16 @@ jobs:
       - name: Create release candidate archive
         run: |
           tar -czf prism-rc-${{ steps.version.outputs.version }}.tar.gz \
+            prism/ \
+            prisms/ \
             scripts/ \
+            install.py \
             install-ui.py \
-            auto-deploy-docs.py \
+            installer_engine.py \
             requirements.txt \
             README.md \
             LICENSE \
             Makefile \
-            DASHBOARD_COMMANDS.md \
             docs/
 
       - name: Generate checksums

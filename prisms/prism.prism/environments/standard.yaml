@@ -1,5 +1,5 @@
 # Standard environment — tools + workspace
-# Good default for most personal developers
+# Good default for most developers
 
 tools_required:
   - git

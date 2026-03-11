@@ -95,8 +95,7 @@ Configurations merge intelligently — base layer defines company standards, eac
 
 | Prism | Use Case | Hierarchy | Scale |
 |-------|----------|-----------|-------|
-| `prism` | Default (ships as core) | Flat | Any |
-| `personal-dev` | Solo developers | 3 environment tiers | 1 |
+| `prism` | Default — individuals to enterprise | Scale + environment + platform tiers | Any |
 | `startup` | Seed/Series A startups | 1 level | 10–50 |
 | `acme-corp` | Template for companies | 2 levels | 100–1K |
 | `consulting-firm` | Multi-client work | By client | Variable |
@@ -116,7 +115,7 @@ Each prism includes custom themes, cascading user fields, and rollback configura
 
 ```bash
 # Packages auto-fetch from npm via unpkg CDN
-python3 install.py --prism personal-dev
+python3 install.py --prism prism
 
 # Use custom registry (corporate/air-gapped)
 python3 install.py --npm-registry https://npm.mycompany.com
