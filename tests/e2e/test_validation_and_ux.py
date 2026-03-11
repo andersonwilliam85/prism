@@ -208,8 +208,8 @@ class TestConfigurationPersistence:
         page.locator("#step2 button").filter(has_text="Next").click()
         page.wait_for_selector("#step3.active, #step4.active, #step5.active", timeout=10000)
 
-        # Go back to user info
-        page.locator("button").filter(has_text="Back").first.click()
+        # Go back to user info — use Back button on the currently active step
+        page.locator(".step.active button").filter(has_text="Back").click()
         page.wait_for_selector("#step2.active", timeout=5000)
 
         # Verify data persisted
