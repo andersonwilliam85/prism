@@ -204,12 +204,12 @@ class TestConfigurationPersistence:
             if page.locator(f"input[name='{field}']").count() > 0:
                 page.fill(f"input[name='{field}']", value)
 
-        # Go to next step (could be step 3 or later depending on config)
+        # Go to next step (step 3: tiers)
         page.locator("#step2 button").filter(has_text="Next").click()
-        page.wait_for_timeout(1000)
+        page.wait_for_selector("#step3.active", timeout=5000)
 
         # Go back to user info
-        page.locator("button").filter(has_text="Back").first.click()
+        page.locator("#step3 button").filter(has_text="Back").click()
         page.wait_for_selector("#step2.active", timeout=5000)
 
         # Verify data persisted
@@ -228,15 +228,16 @@ class TestConfigurationPersistence:
         page.locator(".settings-step-btn[data-step='3']").click()
         page.wait_for_timeout(500)
 
-        # Set theme to forest
-        forest = page.locator(".theme-option[data-theme='forest']")
-        forest.wait_for(state="visible", timeout=5000)
-        forest.click()
+        # Click the first available theme
+        first_theme = page.locator(".theme-option").first
+        first_theme.wait_for(state="visible", timeout=5000)
+        theme_id = first_theme.get_attribute("data-theme")
+        first_theme.click()
         page.wait_for_timeout(300)
 
         # Verify theme applied
         html = page.locator("html")
-        expect(html).to_have_attribute("data-theme", "forest")
+        expect(html).to_have_attribute("data-theme", theme_id)
 
         # Close settings panel
         page.locator(".hamburger-menu").click()
@@ -249,7 +250,7 @@ class TestConfigurationPersistence:
         page.wait_for_selector("#step2.active")
 
         # Verify theme still applied after navigation
-        expect(html).to_have_attribute("data-theme", "forest")
+        expect(html).to_have_attribute("data-theme", theme_id)
 
 
 @pytest.mark.e2e
