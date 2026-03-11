@@ -4,6 +4,7 @@ Tests the entire workflow from package selection to installation completion.
 """
 
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -60,15 +61,15 @@ class TestCompleteInstallationFlow:
         page.goto(INSTALLER_URL)
 
         # Step 1: Select package
-        page.wait_for_selector(".package-card", timeout=5000)
+        page.wait_for_selector(".tier-card", timeout=5000)
 
         # Find and click the default prism package
-        default_package = page.locator(".package-card").filter(has_text="Prism")
+        default_package = page.locator(".tier-card").filter(has_text="Prism")
         expect(default_package).to_be_visible()
         default_package.click()
 
         # Verify selection
-        expect(default_package).to_have_css("border-color", "rgb(102, 126, 234)")
+        expect(default_package).to_have_class(re.compile(r"selected"))
 
         # Click Next
         page.locator("button").filter(has_text="Next").first.click()
@@ -78,7 +79,7 @@ class TestCompleteInstallationFlow:
 
         page.fill("input[name='name']", "John Developer")
         page.fill("input[name='email']", "john@example.com")
-        page.fill("input[name='git_username']", "johndev")
+        page.fill("input[name='username']", "johndev")
 
         # Click Next
         page.locator("button").filter(has_text="Next").nth(1).click()
@@ -96,10 +97,10 @@ class TestCompleteInstallationFlow:
     def test_multi_step_navigation_forward_backward(self, page: Page, installer_server):
         """Test navigation forward and backward through all steps."""
         page.goto(INSTALLER_URL)
-        page.wait_for_selector(".package-card", timeout=5000)
+        page.wait_for_selector(".tier-card", timeout=5000)
 
         # Step 1 -> Step 2
-        page.locator(".package-card").first.click()
+        page.locator(".tier-card").first.click()
         page.locator("button").filter(has_text="Next").first.click()
         page.wait_for_selector("#step2.active")
 
@@ -122,16 +123,16 @@ class TestCompleteInstallationFlow:
         page.wait_for_selector("#step1.active")
 
         # Verify package selection persisted
-        selected = page.locator(".package-card").first
-        expect(selected).to_have_css("border-color", "rgb(102, 126, 234)")
+        selected = page.locator(".tier-card").first
+        expect(selected).to_have_class(re.compile(r"selected"))
 
     def test_prism_package_complete_flow(self, page: Page, installer_server):
         """Test complete flow for prism package."""
         page.goto(INSTALLER_URL)
-        page.wait_for_selector(".package-card", timeout=5000)
+        page.wait_for_selector(".tier-card", timeout=5000)
 
         # Select prism package
-        personal_package = page.locator(".package-card").filter(has_text="Prism")
+        personal_package = page.locator(".tier-card").filter(has_text="Prism")
 
         if personal_package.count() > 0:
             personal_package.click()
@@ -143,7 +144,7 @@ class TestCompleteInstallationFlow:
             # Fill comprehensive user info
             page.fill("input[name='name']", "Jane Developer")
             page.fill("input[name='email']", "jane@personal.dev")
-            page.fill("input[name='git_username']", "janedev")
+            page.fill("input[name='username']", "janedev")
 
             # If git platform selection exists
             if page.locator("select[name='git_platform']").count() > 0:
@@ -161,7 +162,7 @@ class TestCompleteInstallationFlow:
     def test_validation_prevents_incomplete_submission(self, page: Page, installer_server):
         """Test that validation prevents submitting incomplete forms."""
         page.goto(INSTALLER_URL)
-        page.wait_for_selector(".package-card", timeout=5000)
+        page.wait_for_selector(".tier-card", timeout=5000)
 
         # Try to proceed without selecting package
         _next_button = page.locator("button").filter(has_text="Next").first  # noqa: F841
@@ -170,7 +171,7 @@ class TestCompleteInstallationFlow:
         # (Implementation depends on your validation approach)
 
         # Select package
-        page.locator(".package-card").first.click()
+        page.locator(".tier-card").first.click()
         page.locator("button").filter(has_text="Next").first.click()
         page.wait_for_selector("#step2.active")
 
@@ -199,16 +200,16 @@ class TestConfigurationGeneration:
     def test_configuration_summary_display(self, page: Page, installer_server):
         """Test that configuration summary is displayed correctly."""
         page.goto(INSTALLER_URL)
-        page.wait_for_selector(".package-card", timeout=5000)
+        page.wait_for_selector(".tier-card", timeout=5000)
 
         # Complete flow to review step
-        page.locator(".package-card").first.click()
+        page.locator(".tier-card").first.click()
         page.locator("button").filter(has_text="Next").first.click()
         page.wait_for_selector("#step2.active")
 
         page.fill("input[name='name']", "Config Tester")
         page.fill("input[name='email']", "config@test.com")
-        page.fill("input[name='git_username']", "configtest")
+        page.fill("input[name='username']", "configtest")
 
         page.locator("button").filter(has_text="Next").nth(1).click()
         page.wait_for_selector("#step3.active")
@@ -225,16 +226,16 @@ class TestConfigurationGeneration:
     def test_install_button_triggers_installation(self, page: Page, installer_server):
         """Test that install button triggers the installation process."""
         page.goto(INSTALLER_URL)
-        page.wait_for_selector(".package-card", timeout=5000)
+        page.wait_for_selector(".tier-card", timeout=5000)
 
         # Complete to final step
-        page.locator(".package-card").first.click()
+        page.locator(".tier-card").first.click()
         page.locator("button").filter(has_text="Next").first.click()
         page.wait_for_selector("#step2.active")
 
         page.fill("input[name='name']", "Install Test")
         page.fill("input[name='email']", "install@test.com")
-        page.fill("input[name='git_username']", "installtest")
+        page.fill("input[name='username']", "installtest")
 
         page.locator("button").filter(has_text="Next").nth(1).click()
         page.wait_for_selector("#step3.active")
@@ -271,13 +272,13 @@ class TestPackageSpecificConfiguration:
     def test_package_with_org_hierarchy(self, page: Page, installer_server):
         """Test packages with organizational hierarchy options."""
         page.goto(INSTALLER_URL)
-        page.wait_for_selector(".package-card", timeout=5000)
+        page.wait_for_selector(".tier-card", timeout=5000)
 
         # Look for enterprise/fortune500 package
         enterprise_pkg = (
-            page.locator(".package-card")
+            page.locator(".tier-card")
             .filter(has_text="Fortune 500")
-            .or_(page.locator(".package-card").filter(has_text="Enterprise"))
+            .or_(page.locator(".tier-card").filter(has_text="Enterprise"))
         )
 
         if enterprise_pkg.count() > 0:
@@ -311,16 +312,16 @@ class TestPackageSpecificConfiguration:
     def test_package_with_custom_resources(self, page: Page, installer_server):
         """Test packages with custom resource configurations."""
         page.goto(INSTALLER_URL)
-        page.wait_for_selector(".package-card", timeout=5000)
+        page.wait_for_selector(".tier-card", timeout=5000)
 
         # Select any package
-        page.locator(".package-card").first.click()
+        page.locator(".tier-card").first.click()
         page.locator("button").filter(has_text="Next").first.click()
         page.wait_for_selector("#step2.active")
 
         page.fill("input[name='name']", "Resource Test")
         page.fill("input[name='email']", "resource@test.com")
-        page.fill("input[name='git_username']", "resourcetest")
+        page.fill("input[name='username']", "resourcetest")
 
         page.locator("button").filter(has_text="Next").nth(1).click()
         page.wait_for_selector("#step3.active")
@@ -344,7 +345,7 @@ class TestErrorHandling:
         page.goto(INSTALLER_URL)
 
         # Wait for packages to load
-        page.wait_for_selector(".package-card, .alert, .error", timeout=5000)
+        page.wait_for_selector(".tier-card, .alert, .error", timeout=10000)
 
         # Check if any invalid packages are shown
         invalid_section = page.locator("text=Invalid Packages").or_(page.locator("text=Validation Errors"))
@@ -378,9 +379,9 @@ class TestErrorHandling:
     def test_form_validation_shows_errors(self, page: Page, installer_server):
         """Test that form validation errors are displayed."""
         page.goto(INSTALLER_URL)
-        page.wait_for_selector(".package-card", timeout=5000)
+        page.wait_for_selector(".tier-card", timeout=5000)
 
-        page.locator(".package-card").first.click()
+        page.locator(".tier-card").first.click()
         page.locator("button").filter(has_text="Next").first.click()
         page.wait_for_selector("#step2.active")
 
@@ -414,16 +415,16 @@ class TestFullInstallationScenarios:
 
         # Wait for page load
         page.wait_for_load_state("networkidle")
-        page.wait_for_selector(".package-card", timeout=5000)
+        page.wait_for_selector(".tier-card", timeout=5000)
 
         # 1. Select prism package
-        personal_pkg = page.locator(".package-card").filter(has_text="Prism")
+        personal_pkg = page.locator(".tier-card").filter(has_text="Prism")
 
         if personal_pkg.count() > 0:
             personal_pkg.first.click()
         else:
             # Fallback to first package
-            page.locator(".package-card").first.click()
+            page.locator(".tier-card").first.click()
 
         page.locator("button").filter(has_text="Next").first.click()
 
@@ -432,7 +433,7 @@ class TestFullInstallationScenarios:
 
         page.fill("input[name='name']", "Alex Developer")
         page.fill("input[name='email']", "alex@developer.io")
-        page.fill("input[name='git_username']", "alexdev")
+        page.fill("input[name='username']", "alexdev")
 
         # Fill any additional fields that exist
         if page.locator("input[name='github_username']").count() > 0:
@@ -464,24 +465,24 @@ class TestFullInstallationScenarios:
     def test_complete_enterprise_team_scenario(self, page: Page, installer_server):
         """Complete scenario: Enterprise team member setup."""
         page.goto(INSTALLER_URL)
-        page.wait_for_selector(".package-card", timeout=5000)
+        page.wait_for_selector(".tier-card", timeout=5000)
 
         # Look for enterprise package
         enterprise = (
-            page.locator(".package-card")
+            page.locator(".tier-card")
             .filter(has_text="Fortune")
-            .or_(page.locator(".package-card").filter(has_text="Enterprise"))
+            .or_(page.locator(".tier-card").filter(has_text="Enterprise"))
         )
 
         if enterprise.count() > 0:
             enterprise.first.click()
         else:
             # Use ACME Corp as alternative
-            acme = page.locator(".package-card").filter(has_text="ACME")
+            acme = page.locator(".tier-card").filter(has_text="ACME")
             if acme.count() > 0:
                 acme.first.click()
             else:
-                page.locator(".package-card").first.click()
+                page.locator(".tier-card").first.click()
 
         page.locator("button").filter(has_text="Next").first.click()
         page.wait_for_selector("#step2.active", timeout=5000)
@@ -490,8 +491,8 @@ class TestFullInstallationScenarios:
         page.fill("input[name='name']", "Sarah Engineer")
         page.fill("input[name='email']", "sarah@company.com")
 
-        if page.locator("input[name='git_username']").count() > 0:
-            page.fill("input[name='git_username']", "saraheng")
+        if page.locator("input[name='username']").count() > 0:
+            page.fill("input[name='username']", "saraheng")
 
         # Select organization if available
         if page.locator("select[name='org']").count() > 0:
