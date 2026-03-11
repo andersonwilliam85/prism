@@ -53,40 +53,36 @@ class TestInstallerFlow:
         """Test that packages list loads."""
         page.goto(INSTALLER_URL)
 
-        # Wait for packages to load
-        page.wait_for_selector("#packagesList .package-card", timeout=5000)
+        # Wait for tier cards to load (step 1 renders tiers, not package cards)
+        page.wait_for_selector(".tier-card", timeout=5000)
 
-        # Verify at least one package is shown
-        packages = page.locator(".package-card")
-        expect(packages).to_have_count(pytest.approx(1, abs=20))  # At least 1 package
+        # Verify at least one tier card is shown
+        tiers = page.locator(".tier-card")
+        expect(tiers).to_have_count(pytest.approx(1, abs=20))  # At least 1 tier
 
     def test_package_selection(self, page: Page, installer_server):
-        """Test selecting a package."""
+        """Test selecting a tier card."""
         page.goto(INSTALLER_URL)
 
-        # Wait for packages
-        page.wait_for_selector(".package-card", timeout=5000)
+        # Wait for tier cards
+        page.wait_for_selector(".tier-card", timeout=5000)
 
-        # Click first package
-        first_package = page.locator(".package-card").first
-        first_package.click()
+        # Click first tier card
+        first_tier = page.locator(".tier-card").first
+        first_tier.click()
 
-        # Verify visual feedback (border change)
-        expect(first_package).to_have_css("border-color", "rgb(102, 126, 234)")  # #667eea
-
-        # Verify checkmark appears
-        checkmark = first_package.locator(".checkmark")
-        expect(checkmark).to_be_visible()
+        # Verify it becomes selected
+        expect(first_tier).to_have_class(pytest.approx("tier-card selected", abs=20))
 
     def test_next_button_enabled_after_selection(self, page: Page, installer_server):
-        """Test that Next button enables after package selection."""
+        """Test that Next button enables after tier selection."""
         page.goto(INSTALLER_URL)
 
-        # Wait for packages
-        page.wait_for_selector(".package-card", timeout=5000)
+        # Wait for tier cards
+        page.wait_for_selector(".tier-card", timeout=5000)
 
-        # Select a package
-        page.locator(".package-card").first.click()
+        # Select a tier card
+        page.locator(".tier-card").first.click()
 
         # Next button should be enabled (not checking disabled state)
         next_button = page.locator("button").filter(has_text="Next").first
@@ -96,11 +92,11 @@ class TestInstallerFlow:
         """Test navigation between steps."""
         page.goto(INSTALLER_URL)
 
-        # Wait for packages
-        page.wait_for_selector(".package-card", timeout=5000)
+        # Wait for tier cards
+        page.wait_for_selector(".tier-card", timeout=5000)
 
-        # Select package
-        page.locator(".package-card").first.click()
+        # Select tier
+        page.locator(".tier-card").first.click()
 
         # Click Next
         page.locator("button").filter(has_text="Next").first.click()
@@ -118,8 +114,8 @@ class TestInstallerFlow:
         page.goto(INSTALLER_URL)
 
         # Navigate to user info step
-        page.wait_for_selector(".package-card", timeout=5000)
-        page.locator(".package-card").first.click()
+        page.wait_for_selector(".tier-card", timeout=5000)
+        page.locator(".tier-card").first.click()
         page.locator("button").filter(has_text="Next").first.click()
 
         # Wait for step 2
@@ -142,6 +138,11 @@ class TestThemeSwitching:
         """Test that theme buttons are present."""
         page.goto(INSTALLER_URL)
 
+        # Open settings panel and navigate to theme step
+        page.locator(".hamburger-menu").click()
+        page.locator("button[data-step='3']").click()
+        page.wait_for_timeout(300)
+
         # Check for theme switcher
         theme_buttons = page.locator(".theme-option")
         expect(theme_buttons).to_have_count(5)  # 5 themes
@@ -149,6 +150,11 @@ class TestThemeSwitching:
     def test_theme_switching(self, page: Page, installer_server):
         """Test switching between themes."""
         page.goto(INSTALLER_URL)
+
+        # Open settings panel and navigate to theme step
+        page.locator(".hamburger-menu").click()
+        page.locator("button[data-step='3']").click()
+        page.wait_for_timeout(300)
 
         # Click a theme button
         purple_theme = page.locator(".theme-option[data-theme='purple']")
@@ -167,6 +173,11 @@ class TestThemeSwitching:
     def test_theme_persists(self, page: Page, installer_server):
         """Test that theme selection persists across page reloads."""
         page.goto(INSTALLER_URL)
+
+        # Open settings panel and navigate to theme step
+        page.locator(".hamburger-menu").click()
+        page.locator("button[data-step='3']").click()
+        page.wait_for_timeout(300)
 
         # Set theme to forest
         page.locator(".theme-option[data-theme='forest']").click()
