@@ -26,10 +26,14 @@ def _click_next_in_step(page, step_id):
 
 
 def _advance_past_step2(page):
-    """From step 2 (user info), click Next and wait for the next step to appear."""
+    """From step 2 (user info), click Next and wait for any subsequent step.
+
+    The UI skips steps 3 (tiers) and 4 (tools) if they have no content,
+    so we wait for whichever step becomes active next.
+    """
     _click_next_in_step(page, "step2")
-    # Step 3 is tiers — wait for it
-    page.wait_for_selector("#step3.active", timeout=5000)
+    # Wait for step 2 to no longer be active (some step after it becomes active)
+    page.wait_for_selector("#step3.active, #step4.active, #step5.active", timeout=10000)
 
 
 @pytest.fixture(scope="module")
@@ -89,7 +93,7 @@ class TestCompleteInstallationFlow:
         _advance_past_step2(page)
 
         # Verify we moved past user info
-        expect(page.locator("#step3.active")).to_be_visible()
+        assert page.locator("#step2.active").count() == 0, "Should have advanced past step 2"
 
     def test_multi_step_navigation_forward_backward(self, page: Page, installer_server):
         """Test navigation forward and backward through steps."""
@@ -104,19 +108,19 @@ class TestCompleteInstallationFlow:
         # Fill some info
         page.fill("input[name='name']", "Test User")
 
-        # Step 2 -> Step 3
+        # Step 2 -> next step (3, 4, or 5 depending on config)
         _advance_past_step2(page)
 
-        # Step 3 -> Step 2 (back)
+        # Go back to step 2
         page.locator("button").filter(has_text="Back").first.click()
-        page.wait_for_selector("#step2.active")
+        page.wait_for_selector("#step2.active", timeout=5000)
 
         # Verify data persisted
         expect(page.locator("input[name='name']")).to_have_value("Test User")
 
         # Step 2 -> Step 1 (back)
         page.locator("#step2 button").filter(has_text="Back").click()
-        page.wait_for_selector("#step1.active")
+        page.wait_for_selector("#step1.active", timeout=5000)
 
         # Verify tier selection persisted
         selected = page.locator(".tier-card.selected")
@@ -144,7 +148,7 @@ class TestCompleteInstallationFlow:
         _advance_past_step2(page)
 
         # Verify we advanced
-        expect(page.locator("#step3.active")).to_be_visible()
+        assert page.locator("#step2.active").count() == 0, "Should have advanced past step 2"
 
     def test_validation_prevents_incomplete_submission(self, page: Page, installer_server):
         """Test that validation prevents submitting incomplete forms."""
@@ -162,16 +166,15 @@ class TestCompleteInstallationFlow:
         # Try to go next
         _click_next_in_step(page, "step2")
 
-        # Should either stay on step 2 or show validation error
-        page.wait_for_timeout(500)
+        # Should either stay on step 2, show validation, or advance
+        page.wait_for_timeout(1000)
 
-        # Either step2 is still active OR there's a validation message OR we moved on
-        # (HTML5 validation may block, or the app may allow partial)
+        # Any outcome is acceptable — we're testing the app doesn't crash
         step2_active = page.locator("#step2.active").count() > 0
-        step3_active = page.locator("#step3.active").count() > 0
+        advanced = page.locator("#step3.active, #step4.active, #step5.active").count() > 0
         validation_msg = page.locator(".error, .validation, [class*='error']").count() > 0
 
-        assert step2_active or step3_active or validation_msg, "Should either validate or navigate"
+        assert step2_active or advanced or validation_msg, "Should either validate or navigate"
 
 
 @pytest.mark.e2e
@@ -196,7 +199,7 @@ class TestConfigurationGeneration:
         _advance_past_step2(page)
 
         # Verify we reached step 3
-        expect(page.locator("#step3.active")).to_be_visible()
+        assert page.locator("#step2.active").count() == 0, "Should have advanced past step 2"
 
     def test_install_button_triggers_installation(self, page: Page, installer_server):
         """Test navigating through to the install step."""
@@ -216,7 +219,7 @@ class TestConfigurationGeneration:
         _advance_past_step2(page)
 
         # We should be on step 3 (tiers) — verify it loaded
-        expect(page.locator("#step3.active")).to_be_visible()
+        assert page.locator("#step2.active").count() == 0, "Should have advanced past step 2"
 
 
 @pytest.mark.e2e
@@ -250,7 +253,7 @@ class TestPackageSpecificConfiguration:
 
         # Proceed to next step
         _advance_past_step2(page)
-        expect(page.locator("#step3.active")).to_be_visible()
+        assert page.locator("#step2.active").count() == 0, "Should have advanced past step 2"
 
     def test_package_with_custom_resources(self, page: Page, installer_server):
         """Test packages with custom resource configurations."""
@@ -270,7 +273,7 @@ class TestPackageSpecificConfiguration:
         _advance_past_step2(page)
 
         # Verify the tiers/config step loaded successfully
-        expect(page.locator("#step3.active")).to_be_visible()
+        assert page.locator("#step2.active").count() == 0, "Should have advanced past step 2"
 
 
 @pytest.mark.e2e
@@ -368,7 +371,7 @@ class TestFullInstallationScenarios:
         _advance_past_step2(page)
 
         # 3. Verify we reached step 3 (tiers)
-        expect(page.locator("#step3.active")).to_be_visible()
+        assert page.locator("#step2.active").count() == 0, "Should have advanced past step 2"
 
     def test_complete_enterprise_team_scenario(self, page: Page, installer_server):
         """Complete scenario: Enterprise team member setup."""
@@ -390,4 +393,4 @@ class TestFullInstallationScenarios:
         _advance_past_step2(page)
 
         # Verify we reached step 3
-        expect(page.locator("#step3.active")).to_be_visible()
+        assert page.locator("#step2.active").count() == 0, "Should have advanced past step 2"

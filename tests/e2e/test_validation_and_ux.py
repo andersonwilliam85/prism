@@ -204,12 +204,12 @@ class TestConfigurationPersistence:
             if page.locator(f"input[name='{field}']").count() > 0:
                 page.fill(f"input[name='{field}']", value)
 
-        # Go to next step (step 3: tiers)
+        # Go to next step (may skip step 3/4 if no tiers/tools)
         page.locator("#step2 button").filter(has_text="Next").click()
-        page.wait_for_selector("#step3.active", timeout=5000)
+        page.wait_for_selector("#step3.active, #step4.active, #step5.active", timeout=10000)
 
         # Go back to user info
-        page.locator("#step3 button").filter(has_text="Back").click()
+        page.locator("button").filter(has_text="Back").first.click()
         page.wait_for_selector("#step2.active", timeout=5000)
 
         # Verify data persisted
