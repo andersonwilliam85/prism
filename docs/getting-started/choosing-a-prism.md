@@ -15,7 +15,7 @@ Complete guide to selecting the right Prism configuration for your organization.
 
 | Organization Type | Prism | Team Size | Hierarchy | Complexity |
 |---|---|---|---|---|
-| Freelancer / Indie Dev | `personal-dev` | 1 | Flat | Low |
+| Freelancer / Indie Dev | `prism` | 1 | Flat | Low |
 | Startup | `startup` | 10–50 | Roles + Stacks | Low |
 | Small/Medium Company | `acme-corp` | 100–1K | Org → Team | Medium |
 | Consulting Firm | `consulting-firm` | Variable | By client | Medium |
@@ -47,7 +47,7 @@ Prism
 
 ## Available Prisms
 
-### 1. Personal Developer (`personal-dev`)
+### 1. Personal Developer (`prism`)
 
 **Perfect for:** Freelancers, indie developers, students, personal projects
 
@@ -57,12 +57,12 @@ Prism
 - Minimal user info — no corporate bureaucracy
 
 **Sub-prism tiers:**
-- **base** (required) — core personal dev setup
+- **base** (required) — core development setup
 - **profiles** (pick one) — your git platform of choice
 
 **Installation:**
 ```bash
-python3 install.py --prism personal-dev
+python3 install.py --prism prism
 ```
 
 ---
@@ -215,7 +215,7 @@ python3 install.py --prism opensource
 ## Decision Tree
 
 **Are you working alone?**
-→ Yes: **`personal-dev`**
+→ Yes: **`prism`**
 
 **Are you a consulting firm with multiple clients?**
 → Yes: **`consulting-firm`**

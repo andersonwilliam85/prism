@@ -17,8 +17,6 @@ Usage:
 import argparse
 import os
 import platform
-import shutil
-import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -27,11 +25,8 @@ import yaml
 
 # Try to import rich for better UX
 try:
-    from rich import print as rprint
     from rich.console import Console
     from rich.panel import Panel
-    from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
-    from rich.prompt import Confirm, IntPrompt, Prompt
     from rich.table import Table
 
     RICH_AVAILABLE = True
@@ -67,7 +62,7 @@ def detect_platform():
             with open("/etc/os-release") as f:
                 if "ubuntu" in f.read().lower():
                     return "ubuntu", platform.version()
-        except:
+        except OSError:
             pass
         return "linux", platform.version()
     else:
@@ -186,14 +181,14 @@ def main():
   Or set environment variables:
     PRISM_NPM_REGISTRY - Custom npm registry URL
     PRISM_UNPKG_URL - Custom unpkg CDN URL
-  
+
   Examples:
     # Use custom corporate registry
     python3 install.py --npm-registry https://npm.mycompany.com
-    
+
     # Use custom CDN
     python3 install.py --unpkg-url https://cdn.mycompany.com/npm
-    
+
     # Use environment variables
     export PRISM_NPM_REGISTRY=https://npm.mycompany.com
     python3 install.py
@@ -203,7 +198,7 @@ def main():
     parser.add_argument("--resume", action="store_true", help="Resume from last checkpoint")
     parser.add_argument("--status", action="store_true", help="Show current progress")
     parser.add_argument("--config", help="Use config file (non-interactive)")
-    parser.add_argument("--prism", dest="package", help="Specify prism to use (e.g., personal-dev, fortune500)")
+    parser.add_argument("--prism", dest="package", help="Specify prism to use (e.g., prism, fortune500)")
     parser.add_argument("--npm-registry", help="Custom npm registry URL (overrides PRISM_NPM_REGISTRY env var)")
     parser.add_argument("--unpkg-url", help="Custom unpkg CDN URL (overrides PRISM_UNPKG_URL env var)")
     args = parser.parse_args()
