@@ -5,136 +5,100 @@ title: Contributing
 
 # Contributing to Prism
 
-Thank you for considering contributing to Prism! 🎉
-
 ## Table of Contents
 
-- [Code of Conduct](#code-of-conduct)
-- [Getting Started](#getting-started)
+- [Branch Strategy](#branch-strategy)
 - [Development Setup](#development-setup)
+- [Workflow](#workflow)
 - [Testing](#testing)
 - [Coding Standards](#coding-standards)
-- [Pull Request Process](#pull-request-process)
-- [Project Structure](#project-structure)
+- [Adding a New Prism](#adding-a-new-prism)
 
 ---
 
-## Code of Conduct
+## Branch Strategy
 
-Be respectful, inclusive, and constructive. We're all here to make development better!
+Prism uses **gitflow**. All three long-lived branches are protected — no direct pushes.
 
----
-
-## Getting Started
-
-### Prerequisites
-
-- Python 3.9+
-- Git
-- pip or uv
-
-### Fork & Clone
-
-```bash
-# Fork on GitHub, then clone your fork
-git clone https://github.com/YOUR_USERNAME/prism.git
-cd prism
-
-# Add upstream remote
-git remote add upstream https://github.com/original/prism.git
 ```
+main        production — tagged releases only
+ ↑
+stage       release candidate — full test suite + smoke tests
+ ↑
+dev         integration — features land here first
+ ↑
+feature/*   your work branches from dev
+```
+
+### Normal development
+
+1. Branch from `dev`
+2. PR back to `dev`
+3. When `dev` is stable, PR `dev` → `stage`
+4. When `stage` passes, PR `stage` → `main`
+
+### Hotfixes
+
+1. Branch `hotfix/*` from `main`
+2. PR directly to `main`
+3. Cherry-pick the fix to `dev`
+4. Normal flow: `dev` → `stage` → `main`
 
 ---
 
 ## Development Setup
 
-### 1. Create Virtual Environment
+### Prerequisites
+
+- Python 3.9+
+- Git
+
+### Setup
 
 ```bash
+# Fork on GitHub, then clone your fork
+git clone https://github.com/YOUR_USERNAME/prism.git
+cd prism
+git remote add upstream https://github.com/andersonwilliam85/prism.git
+
+# Create virtual environment
 python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate
+
+# Install dependencies
+make install-dev
+
+# Verify
+make test
 ```
-
-### 2. Install Dependencies
-
-```bash
-pip install -r requirements.txt
-pip install -r requirements-test.txt
-```
-
-### 3. Install Playwright
-
-```bash
-python -m playwright install
-```
-
-### 4. Run Tests
-
-```bash
-pytest
-```
-
-If all tests pass, you're ready to develop! ✅
 
 ---
 
-## Testing
+## Workflow
 
-See [docs/TESTING.md](docs/TESTING.md) for comprehensive testing guide.
-
-### Quick Reference
+### 1. Create a branch from dev
 
 ```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=. --cov-report=html
-
-# Run specific test type
-pytest tests/unit/
-pytest tests/integration/
-pytest tests/e2e/
-
-# Run in watch mode (install pytest-watch)
-ptw
+git checkout dev
+git pull origin dev
+git checkout -b feature/your-feature-name
 ```
 
-### Writing Tests
+### 2. Make changes
 
-- **Unit tests**: Test individual functions/classes
-- **Integration tests**: Test component interactions
-- **E2E tests**: Test full user workflows with Playwright
+- Write code
+- Add tests (>90% coverage)
+- Update documentation if needed
 
-**Coverage requirement**: >90%
-
----
-
-## Coding Standards
-
-### Python Style
-
-We follow **PEP 8** with some modifications:
-
-- Line length: 100 characters (not 79)
-- Use `black` for formatting
-- Use `isort` for import sorting
-- Use type hints where appropriate
-
-### Format Code
+### 3. Test locally
 
 ```bash
-# Auto-format with black
-black .
-
-# Sort imports
-isort .
-
-# Check with flake8
-flake8 .
+make test          # Unit + CLI tests
+make lint          # flake8 + mypy
+make format-check  # black + isort
 ```
 
-### Commit Messages
+### 4. Commit
 
 Follow [Conventional Commits](https://www.conventionalcommits.org/):
 
@@ -142,209 +106,83 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 feat: Add new theme system
 fix: Fix package validation error
 docs: Update testing guide
-chore: Update dependencies
 refactor: Simplify config merger
 test: Add E2E tests for installer
 ```
 
-**Format**: `<type>: <description>`
-
-**Types**:
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation
-- `chore`: Maintenance
-- `refactor`: Code refactoring
-- `test`: Add/update tests
-- `perf`: Performance improvement
-
----
-
-## Pull Request Process
-
-### 1. Create a Branch
-
-```bash
-git checkout -b feature/your-feature-name
-# or
-git checkout -b fix/bug-description
-```
-
-### 2. Make Changes
-
-- Write code
-- Add tests (>90% coverage)
-- Update documentation
-- Format code (`black .` and `isort .`)
-
-### 3. Test Locally
-
-```bash
-# Run all tests
-pytest
-
-# Check coverage
-pytest --cov=. --cov-report=term-missing
-
-# Lint
-flake8 .
-```
-
-### 4. Commit
-
-```bash
-git add .
-git commit -m "feat: Add awesome feature"
-```
-
-### 5. Push
+### 5. Push and open PR to dev
 
 ```bash
 git push origin feature/your-feature-name
 ```
 
-### 6. Open Pull Request
+Open a PR targeting `dev`. CI runs automatically. Once approved, it merges to `dev`.
 
-- Go to GitHub
-- Click "New Pull Request"
-- Fill in the template:
-
-```markdown
-## Description
-Brief description of changes.
-
-## Type of Change
-- [ ] Bug fix
-- [ ] New feature
-- [ ] Breaking change
-- [ ] Documentation update
+---
 
 ## Testing
-- [ ] All tests pass
-- [ ] Added new tests
-- [ ] Coverage >90%
 
-## Checklist
-- [ ] Code follows style guidelines
-- [ ] Self-review completed
-- [ ] Documentation updated
-- [ ] No breaking changes (or documented)
-```
+See [Testing](testing.md) for the comprehensive guide.
 
-### 7. Code Review
-
-- Address feedback
-- Make requested changes
-- Push updates (they'll appear in PR automatically)
-
-### 8. Merge
-
-Once approved, maintainers will merge your PR. Thank you! 🎉
-
----
-
-## Project Structure
-
-```
-prism/
-├── install.py              # CLI installer
-├── install-ui.py           # Web UI installer
-├── installer_engine.py     # Core installation logic
-├── requirements.txt        # Dependencies
-├── requirements-test.txt   # Test dependencies
-├── pytest.ini              # Pytest configuration
-├── conftest.py             # Pytest fixtures
-│
-├── docs/                   # Documentation
-│   ├── TESTING.md
-│   ├── PACKAGE_SYSTEM.md
-│   └── ...
-│
-├── prisms/                 # Prism packages
-│   ├── core.prism/
-│   ├── startup.prism/
-│   └── ...
-│
-├── scripts/                # Utility scripts
-│   ├── package_validator.py
-│   ├── package_manager.py
-│   └── ...
-│
-├── tests/                  # Test suite
-│   ├── unit/
-│   ├── integration/
-│   ├── e2e/
-│   └── fixtures/
-│
-└── .github/
-    └── workflows/
-        └── tests.yml       # CI/CD
-```
-
----
-
-## Adding a New Feature
-
-### Example: Adding a New Theme
-
-1. **Write tests first** (TDD):
-
-```python
-# tests/unit/test_themes.py
-def test_new_theme_applies():
-    # Test code
-    pass
-```
-
-2. **Implement feature**:
-
-```python
-# Update theme system
-# Add new theme CSS
-```
-
-3. **Update docs**:
-
-```markdown
-# README.md
-- Added new "Sunset" theme
-```
-
-4. **Test locally**:
+### Quick reference
 
 ```bash
-pytest
+make test              # Unit + CLI
+make test-all          # All tests including E2E
+make test-coverage     # With coverage report
+make lint              # Linters
+make format            # Auto-format
+make check             # All CI checks
 ```
 
-5. **Submit PR**!
+### Test types
+
+- **Unit** — individual functions/classes
+- **CLI** — command-line interface
+- **Web** — Flask API endpoints
+- **Integration** — component interactions
+- **E2E** — full user workflows with Playwright
+
+Coverage requirement: >90%
+
+---
+
+## Coding Standards
+
+### Style
+
+- **PEP 8** with 100-character line length
+- **black** for formatting
+- **isort** for imports
+- Type hints where appropriate
+
+### Format code
+
+```bash
+make format   # black + isort
+make lint     # flake8 + mypy
+```
 
 ---
 
 ## Adding a New Prism
 
-See [docs/PACKAGE_SYSTEM.md](docs/PACKAGE_SYSTEM.md) for creating custom prisms.
-
-**Quick steps**:
+See [Package System](../reference/package-system.md) for the full guide.
 
 1. Create `prisms/your-prism/`
 2. Add `package.yaml`
 3. Add `README.md`
 4. Add tests
-5. Submit PR
+5. Submit PR to `dev`
 
 ---
 
 ## Questions?
 
-- Open an issue: [GitHub Issues](https://github.com/prism/prism/issues)
-- Start a discussion: [GitHub Discussions](https://github.com/prism/prism/discussions)
+[Open an issue](https://github.com/andersonwilliam85/prism/issues)
 
 ---
 
 ## License
 
 By contributing, you agree that your contributions will be licensed under the MIT License.
-
----
-
-Thank you for contributing! 🚀✨
