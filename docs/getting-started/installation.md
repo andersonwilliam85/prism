@@ -63,7 +63,7 @@ make run          # starts web UI
 python3 install.py --help
 
 # Install with a specific prism
-python3 install.py --prism personal-dev
+python3 install.py --prism prism
 
 # Use a custom npm registry
 python3 install.py --prism fortune500 --npm-registry https://npm.mycompany.com
