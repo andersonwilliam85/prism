@@ -4,7 +4,7 @@ Publish Prism config packages to npm registry
 
 Usage:
     python3 publish_packages.py --dry-run          # Test without publishing
-    python3 publish_packages.py --package personal-dev  # Publish one package
+    python3 publish_packages.py --package prism  # Publish one package
     python3 publish_packages.py --all              # Publish all packages
 """
 
@@ -19,13 +19,13 @@ CONFIG_PACKAGES_DIR = SCRIPT_DIR / "prisms"
 
 # Package mapping
 PACKAGE_DIRS = {
-    "personal-dev": "personal-dev",
+    "prism": "prism.prism",
     "startup": "startup-config",
     "fortune500": "fortune500-config",
     "university": "university-config",
     "consulting": "consulting-firm-config",
     "opensource": "opensource-project-config",
-    "acme-corp": "acme-corp",
+    "acme-corp": "acme-corp.prism",
 }
 
 
