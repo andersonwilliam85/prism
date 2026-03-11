@@ -3,6 +3,7 @@ End-to-end tests for the installer web UI using Playwright.
 """
 
 import os
+import re
 import subprocess
 import time
 
@@ -58,7 +59,7 @@ class TestInstallerFlow:
 
         # Verify at least one tier card is shown
         tiers = page.locator(".tier-card")
-        expect(tiers).to_have_count(pytest.approx(1, abs=20))  # At least 1 tier
+        assert tiers.count() >= 1, "Should have at least 1 tier card"
 
     def test_package_selection(self, page: Page, installer_server):
         """Test selecting a tier card."""
@@ -72,7 +73,7 @@ class TestInstallerFlow:
         first_tier.click()
 
         # Verify it becomes selected
-        expect(first_tier).to_have_class(pytest.approx("tier-card selected", abs=20))
+        expect(first_tier).to_have_class(re.compile(r"selected"))
 
     def test_next_button_enabled_after_selection(self, page: Page, installer_server):
         """Test that Next button enables after tier selection."""
@@ -137,11 +138,13 @@ class TestThemeSwitching:
     def test_theme_buttons_exist(self, page: Page, installer_server):
         """Test that theme buttons are present."""
         page.goto(INSTALLER_URL)
+        page.wait_for_load_state("networkidle")
 
         # Open settings panel and navigate to theme step
         page.locator(".hamburger-menu").click()
-        page.locator("button[data-step='3']").click()
-        page.wait_for_timeout(300)
+        page.wait_for_selector(".settings-panel.open", timeout=5000)
+        page.locator(".settings-step-btn[data-step='3']").click()
+        page.wait_for_timeout(500)
 
         # Check for theme switcher
         theme_buttons = page.locator(".theme-option")
@@ -150,11 +153,13 @@ class TestThemeSwitching:
     def test_theme_switching(self, page: Page, installer_server):
         """Test switching between themes."""
         page.goto(INSTALLER_URL)
+        page.wait_for_load_state("networkidle")
 
         # Open settings panel and navigate to theme step
         page.locator(".hamburger-menu").click()
-        page.locator("button[data-step='3']").click()
-        page.wait_for_timeout(300)
+        page.wait_for_selector(".settings-panel.open", timeout=5000)
+        page.locator(".settings-step-btn[data-step='3']").click()
+        page.wait_for_timeout(500)
 
         # Click a theme button
         purple_theme = page.locator(".theme-option[data-theme='purple']")
@@ -173,11 +178,13 @@ class TestThemeSwitching:
     def test_theme_persists(self, page: Page, installer_server):
         """Test that theme selection persists across page reloads."""
         page.goto(INSTALLER_URL)
+        page.wait_for_load_state("networkidle")
 
         # Open settings panel and navigate to theme step
         page.locator(".hamburger-menu").click()
-        page.locator("button[data-step='3']").click()
-        page.wait_for_timeout(300)
+        page.wait_for_selector(".settings-panel.open", timeout=5000)
+        page.locator(".settings-step-btn[data-step='3']").click()
+        page.wait_for_timeout(500)
 
         # Set theme to forest
         page.locator(".theme-option[data-theme='forest']").click()
