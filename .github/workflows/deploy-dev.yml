@@ -58,9 +58,12 @@ jobs:
       - name: Create dev snapshot
         run: |
           tar -czf prism-dev-${{ steps.version.outputs.version }}.tar.gz \
+            prism/ \
+            prisms/ \
             scripts/ \
+            install.py \
             install-ui.py \
-            auto-deploy-docs.py \
+            installer_engine.py \
             requirements.txt \
             README.md
 
