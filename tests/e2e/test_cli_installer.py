@@ -74,11 +74,11 @@ class TestPackageManagerCLI:
         lines = [line for line in result.stdout.split("\n") if line.strip()]
         assert len(lines) > 2  # header + at least one prism
 
-    def test_validate_personal_dev(self):
-        prism_path = PROJECT_ROOT / "prisms" / "personal-dev"
+    def test_validate_prism(self):
+        prism_path = PROJECT_ROOT / "prisms" / "prism.prism"
         if not prism_path.exists():
-            pytest.skip("personal-dev not present")
-        result = run(["python3", "scripts/package_manager.py", "validate", "personal-dev"])
+            pytest.skip("prism.prism not present")
+        result = run(["python3", "scripts/package_manager.py", "validate", "prism"])
         assert result.returncode == 0
         assert "valid" in result.stdout.lower() or "✅" in result.stdout
 
@@ -94,10 +94,10 @@ class TestPackageManagerCLI:
         assert result.returncode == 0
 
     def test_info_command_for_existing_prism(self):
-        prism_path = PROJECT_ROOT / "prisms" / "personal-dev"
+        prism_path = PROJECT_ROOT / "prisms" / "prism.prism"
         if not prism_path.exists():
-            pytest.skip("personal-dev not present")
-        result = run(["python3", "scripts/package_manager.py", "info", "personal-dev"])
+            pytest.skip("prism.prism not present")
+        result = run(["python3", "scripts/package_manager.py", "info", "prism"])
         combined = result.stdout + result.stderr
         assert result.returncode == 0 or "personal" in combined.lower()
 
@@ -125,18 +125,18 @@ class TestPrismValidatorCLI:
         assert result.returncode in (0, 1)
         assert "Valid" in result.stdout or "Invalid" in result.stdout or "prism" in result.stdout.lower()
 
-    def test_validates_personal_dev_prism(self):
-        prism_path = PROJECT_ROOT / "prisms" / "personal-dev"
+    def test_validates_prism(self):
+        prism_path = PROJECT_ROOT / "prisms" / "prism.prism"
         if not prism_path.exists():
-            pytest.skip("personal-dev not present")
+            pytest.skip("prism.prism not present")
         result = run(["python3", "scripts/package_validator.py", str(prism_path)])
         assert result.returncode == 0
         assert "valid" in result.stdout.lower() or "Valid" in result.stdout
 
     def test_valid_prism_reports_zero_errors(self):
-        prism_path = PROJECT_ROOT / "prisms" / "personal-dev"
+        prism_path = PROJECT_ROOT / "prisms" / "prism.prism"
         if not prism_path.exists():
-            pytest.skip("personal-dev not present")
+            pytest.skip("prism.prism not present")
         result = run(["python3", "scripts/package_validator.py", str(prism_path)])
         # Verify no error output
         assert "❌" not in result.stdout or "0" in result.stdout

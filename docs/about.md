@@ -63,7 +63,7 @@ make run
 | Prism | Use Case | Hierarchy | Scale |
 |-------|----------|-----------|-------|
 | `prism` | Default (ships as core) | Flat | Any |
-| `personal-dev` | Solo developers | 3 environment tiers | 1 |
+| `prism` | Solo developers | 3 environment tiers | 1 |
 | `startup` | Seed/Series A startups | 1 level | 10–50 |
 | `acme-corp` | Template for companies | 2 levels | 100–1K |
 | `consulting-firm` | Multi-client work | By client | Variable |

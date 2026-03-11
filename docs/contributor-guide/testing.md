@@ -118,10 +118,10 @@ def test_package_selection(page: Page):
     page.goto("http://localhost:5555")
     
     # Select package
-    page.click("#pkg_personal-dev")
+    page.click("#pkg_prism")
     
     # Verify selected
-    expect(page.locator("#pkg_personal-dev")).to_have_class(/selected/)
+    expect(page.locator("#pkg_prism")).to_have_class(/selected/)
     
     # Next step
     page.click("button:has-text('Next')")
@@ -331,7 +331,7 @@ class TestInstallerFlow:
         expect(page.locator("h1")).to_contain_text("Prism Installer")
         
         # 2. Select package
-        page.click("#pkg_personal-dev")
+        page.click("#pkg_prism")
         page.click("button:has-text('Next')")
         
         # 3. Enter user info

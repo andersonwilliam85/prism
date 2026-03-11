@@ -7,7 +7,7 @@ with fallback to local packages.
 
 Usage:
     python3 npm_package_fetcher.py list
-    python3 npm_package_fetcher.py fetch @prism/personal-dev-config
+    python3 npm_package_fetcher.py fetch @prism/prism-config
     python3 npm_package_fetcher.py fetch @prism/startup-config --version 1.0.0
 """
 
@@ -34,7 +34,7 @@ PRISM_SCOPE = "@prism"
 
 # Available packages
 AVAILABLE_PACKAGES = [
-    "@prism/personal-dev-config",
+    "@prism/prism-config",
     "@prism/startup-config",
     "@prism/fortune500-config",
     "@prism/university-config",
@@ -49,7 +49,7 @@ def fetch_package_metadata(package_name: str, registry: Optional[str] = None) ->
     Fetch package metadata from npm registry.
 
     Args:
-        package_name: Full package name (e.g., @prism/personal-dev-config)
+        package_name: Full package name (e.g., @prism/prism-config)
 
     Returns:
         Package metadata dict
@@ -148,7 +148,7 @@ def fetch_local_package(package_name: str) -> Optional[str]:
     Fallback: Load prism from local prisms directory.
 
     Args:
-        package_name: Full package name (e.g., @prism/personal-dev-config)
+        package_name: Full package name (e.g., @prism/prism-config)
 
     Returns:
         Path to local package directory
@@ -269,7 +269,7 @@ def main():
 
     # Fetch command
     fetch_parser = subparsers.add_parser("fetch", help="Fetch a package")
-    fetch_parser.add_argument("package", help="Package name (e.g., @prism/personal-dev-config)")
+    fetch_parser.add_argument("package", help="Package name (e.g., @prism/prism-config)")
     fetch_parser.add_argument("--version", default="latest", help="Package version")
     fetch_parser.add_argument("--dest", help="Destination directory")
 
