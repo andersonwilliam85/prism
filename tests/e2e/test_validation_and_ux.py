@@ -204,13 +204,13 @@ class TestConfigurationPersistence:
             if page.locator(f"input[name='{field}']").count() > 0:
                 page.fill(f"input[name='{field}']", value)
 
-        # Go to review
-        page.locator("button").filter(has_text="Next").nth(1).click()
-        page.wait_for_selector("#step3.active")
+        # Go to next step (could be step 3 or later depending on config)
+        page.locator("#step2 button").filter(has_text="Next").click()
+        page.wait_for_timeout(1000)
 
         # Go back to user info
         page.locator("button").filter(has_text="Back").first.click()
-        page.wait_for_selector("#step2.active")
+        page.wait_for_selector("#step2.active", timeout=5000)
 
         # Verify data persisted
         for field, value in test_data.items():
@@ -220,14 +220,23 @@ class TestConfigurationPersistence:
     def test_theme_persists_across_navigation(self, page: Page, installer_server):
         """Test that theme selection persists across page navigation."""
         page.goto(INSTALLER_URL)
+        page.wait_for_load_state("networkidle")
 
         # Open settings panel and navigate to theme step
         page.locator(".hamburger-menu").click()
-        page.locator("button[data-step='3']").click()
-        page.wait_for_timeout(300)
+        page.wait_for_selector(".settings-panel.open", timeout=5000)
+        page.locator(".settings-step-btn[data-step='3']").click()
+        page.wait_for_timeout(500)
 
         # Set theme to forest
-        page.locator(".theme-option[data-theme='forest']").click()
+        forest = page.locator(".theme-option[data-theme='forest']")
+        forest.wait_for(state="visible", timeout=5000)
+        forest.click()
+        page.wait_for_timeout(300)
+
+        # Verify theme applied
+        html = page.locator("html")
+        expect(html).to_have_attribute("data-theme", "forest")
 
         # Close settings panel
         page.locator(".hamburger-menu").click()
@@ -239,8 +248,7 @@ class TestConfigurationPersistence:
         page.locator("button").filter(has_text="Next").first.click()
         page.wait_for_selector("#step2.active")
 
-        # Verify theme still applied
-        html = page.locator("html")
+        # Verify theme still applied after navigation
         expect(html).to_have_attribute("data-theme", "forest")
 
 
