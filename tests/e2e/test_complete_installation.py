@@ -111,8 +111,8 @@ class TestCompleteInstallationFlow:
         # Step 2 -> next step (3, 4, or 5 depending on config)
         _advance_past_step2(page)
 
-        # Go back to step 2
-        page.locator("button").filter(has_text="Back").first.click()
+        # Go back to step 2 — use the visible Back button on the active step
+        page.locator(".step.active button").filter(has_text="Back").click()
         page.wait_for_selector("#step2.active", timeout=5000)
 
         # Verify data persisted
