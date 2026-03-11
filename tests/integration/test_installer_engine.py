@@ -24,11 +24,11 @@ def prism_exists(name: str) -> bool:
 class TestEngineWithRealPrisms:
     """Test InstallationEngine loading and merging with actual prisms from prisms/."""
 
-    def test_engine_loads_personal_dev(self, sample_user_info):
-        if not prism_exists("personal-dev"):
-            pytest.skip("personal-dev prism not present")
+    def test_engine_loads_prism(self, sample_user_info):
+        if not prism_exists("prism.prism"):
+            pytest.skip("prism.prism not present")
         engine = InstallationEngine(
-            config_package=str(PRISMS_DIR / "personal-dev"),
+            config_package=str(PRISMS_DIR / "prism.prism"),
             user_info=sample_user_info,
         )
         # Should have prism meta (prism_config section)
@@ -54,7 +54,7 @@ class TestEngineWithRealPrisms:
 
     def test_base_sub_prism_always_merged(self, sample_user_info):
         """Required base sub-prism should always be in merged_config."""
-        for prism_name in ("personal-dev", "startup.prism"):
+        for prism_name in ("prism.prism", "startup.prism"):
             prism_path = PRISMS_DIR / prism_name
             if not prism_path.exists():
                 continue

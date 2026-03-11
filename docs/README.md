@@ -287,7 +287,7 @@ python3 install-ui.py
 # Opens at http://localhost:5555
 
 # Or use the CLI
-python3 install.py --prism personal-dev
+python3 install.py --prism prism
 ```
 
 ---

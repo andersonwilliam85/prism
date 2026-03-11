@@ -30,7 +30,7 @@ python3 install-ui.py
 ```
 
 The web UI walks you through:
-1. **Choose a prism** — personal-dev, startup, acme-corp, fortune500, etc.
+1. **Choose a prism** — prism, startup, acme-corp, fortune500, etc.
 2. **Select sub-prisms** — pick your role, division, team, etc.
 3. **Fill in your info** — name, email, platform-specific fields
 4. **Install** — watch the live progress log
@@ -44,7 +44,7 @@ The web UI walks you through:
 python3 install.py
 
 # Install a specific prism
-python3 install.py --prism personal-dev
+python3 install.py --prism prism
 
 # Install with a custom npm registry (corporate environments)
 python3 install.py --prism fortune500 --npm-registry https://npm.mycompany.com

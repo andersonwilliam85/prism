@@ -1883,7 +1883,7 @@
             
             try {
                 const testUrl = unpkg || registry || 'https://unpkg.com';
-                const response = await fetch(testUrl + '/@prism/personal-dev-config@latest/package.json');
+                const response = await fetch(testUrl + '/@prism/prism-config@latest/package.json');
                 
                 if (response.ok) {
                     result.innerHTML = '<span style="color: #10b981;">✅ Connection successful!</span>';
