@@ -19,7 +19,9 @@ def _build_parser() -> argparse.ArgumentParser:
         prog="prism",
         description="Prism — refract complexity into clarity",
     )
-    parser.add_argument("--version", action="version", version="%(prog)s 0.1.0b1")
+    from prism import __version__
+
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
 
     sub = parser.add_subparsers(dest="command")
     register_install(sub)
