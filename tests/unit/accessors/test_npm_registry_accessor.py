@@ -19,14 +19,14 @@ def accessor():
 class TestFetchPackage:
     @patch("prism.accessors.npm_registry_accessor.npm_registry_accessor.urllib.request.urlopen")
     def test_fetches_package_metadata(self, mock_urlopen, accessor):
-        response_data = {"name": "@prism/test", "version": "1.0.0"}
+        response_data = {"name": "@prism-dx/test", "version": "1.0.0"}
         mock_response = MagicMock()
         mock_response.read.return_value = json.dumps(response_data).encode("utf-8")
         mock_response.__enter__ = MagicMock(return_value=mock_response)
         mock_response.__exit__ = MagicMock(return_value=False)
         mock_urlopen.return_value = mock_response
 
-        result = accessor.fetch_package("@prism/test", "https://registry.npmjs.org")
+        result = accessor.fetch_package("@prism-dx/test", "https://registry.npmjs.org")
         assert result == response_data
 
     @patch(
@@ -35,7 +35,7 @@ class TestFetchPackage:
     )
     def test_raises_connection_error_on_url_error(self, mock_urlopen, accessor):
         with pytest.raises(ConnectionError, match="Cannot reach registry"):
-            accessor.fetch_package("@prism/test", "https://unreachable.example.com")
+            accessor.fetch_package("@prism-dx/test", "https://unreachable.example.com")
 
     @patch("prism.accessors.npm_registry_accessor.npm_registry_accessor.urllib.request.urlopen")
     def test_raises_value_error_on_invalid_json(self, mock_urlopen, accessor):
@@ -46,7 +46,7 @@ class TestFetchPackage:
         mock_urlopen.return_value = mock_response
 
         with pytest.raises(ValueError, match="Invalid JSON"):
-            accessor.fetch_package("@prism/test", "https://registry.npmjs.org")
+            accessor.fetch_package("@prism-dx/test", "https://registry.npmjs.org")
 
     @patch("prism.accessors.npm_registry_accessor.npm_registry_accessor.urllib.request.urlopen")
     def test_strips_trailing_slash_from_url(self, mock_urlopen, accessor):
@@ -56,11 +56,11 @@ class TestFetchPackage:
         mock_response.__exit__ = MagicMock(return_value=False)
         mock_urlopen.return_value = mock_response
 
-        accessor.fetch_package("@prism/test", "https://registry.npmjs.org/")
+        accessor.fetch_package("@prism-dx/test", "https://registry.npmjs.org/")
         # Verify the request was constructed correctly (no double slash)
         call_args = mock_urlopen.call_args
         request_obj = call_args[0][0]
-        assert request_obj.full_url == "https://registry.npmjs.org/@prism/test"
+        assert request_obj.full_url == "https://registry.npmjs.org/@prism-dx/test"
 
 
 class TestTestConnection:

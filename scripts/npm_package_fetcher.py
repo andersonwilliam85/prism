@@ -7,8 +7,8 @@ with fallback to local packages.
 
 Usage:
     python3 npm_package_fetcher.py list
-    python3 npm_package_fetcher.py fetch @prism/prism-config
-    python3 npm_package_fetcher.py fetch @prism/startup-config --version 1.0.0
+    python3 npm_package_fetcher.py fetch @prism-dx/prism-config
+    python3 npm_package_fetcher.py fetch @prism-dx/startup-config --version 1.0.0
 """
 
 import argparse
@@ -30,17 +30,17 @@ UNPKG_BASE = os.environ.get("PRISM_UNPKG_URL", DEFAULT_UNPKG_BASE)
 NPM_REGISTRY = os.environ.get("PRISM_NPM_REGISTRY", DEFAULT_NPM_REGISTRY)
 
 # Prism package scope
-PRISM_SCOPE = "@prism"
+PRISM_SCOPE = "@prism-dx"
 
 # Available packages
 AVAILABLE_PACKAGES = [
-    "@prism/prism-config",
-    "@prism/startup-config",
-    "@prism/fortune500-config",
-    "@prism/university-config",
-    "@prism/consulting-config",
-    "@prism/opensource-config",
-    "@prism/acme-corp-config",
+    "@prism-dx/prism-config",
+    "@prism-dx/startup-config",
+    "@prism-dx/fortune500-config",
+    "@prism-dx/university-config",
+    "@prism-dx/consulting-config",
+    "@prism-dx/opensource-config",
+    "@prism-dx/acme-corp-config",
 ]
 
 
@@ -49,7 +49,7 @@ def fetch_package_metadata(package_name: str, registry: Optional[str] = None) ->
     Fetch package metadata from npm registry.
 
     Args:
-        package_name: Full package name (e.g., @prism/prism-config)
+        package_name: Full package name (e.g., @prism-dx/prism-config)
 
     Returns:
         Package metadata dict
@@ -148,13 +148,13 @@ def fetch_local_package(package_name: str) -> Optional[str]:
     Fallback: Load prism from local prisms directory.
 
     Args:
-        package_name: Full package name (e.g., @prism/prism-config)
+        package_name: Full package name (e.g., @prism-dx/prism-config)
 
     Returns:
         Path to local package directory
     """
-    # Strip @prism/ prefix and map to local directory
-    local_name = package_name.replace("@prism/", "").replace("-config", "")
+    # Strip @prism-dx/ prefix and map to local directory
+    local_name = package_name.replace("@prism-dx/", "").replace("-config", "")
 
     # Try common name variations
     variations = [
@@ -165,9 +165,9 @@ def fetch_local_package(package_name: str) -> Optional[str]:
     ]
 
     # Special cases
-    if package_name == "@prism/consulting-config":
+    if package_name == "@prism-dx/consulting-config":
         variations.insert(0, "consulting-firm-config")
-    elif package_name == "@prism/opensource-config":
+    elif package_name == "@prism-dx/opensource-config":
         variations.insert(0, "opensource-project-config")
 
     script_dir = Path(__file__).parent.parent
@@ -269,7 +269,7 @@ def main():
 
     # Fetch command
     fetch_parser = subparsers.add_parser("fetch", help="Fetch a package")
-    fetch_parser.add_argument("package", help="Package name (e.g., @prism/prism-config)")
+    fetch_parser.add_argument("package", help="Package name (e.g., @prism-dx/prism-config)")
     fetch_parser.add_argument("--version", default="latest", help="Package version")
     fetch_parser.add_argument("--dest", help="Destination directory")
 
