@@ -227,7 +227,7 @@ class TestResolvePackageSource:
 
     def test_npm_scoped(self):
         engine = _make_engine()
-        result = engine.resolve_package_source("@prism/my-prism")
+        result = engine.resolve_package_source("@prism-dx/my-prism")
         assert result["type"] == "npm"
 
     def test_explicit_sources(self):

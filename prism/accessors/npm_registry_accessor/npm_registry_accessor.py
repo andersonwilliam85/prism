@@ -26,7 +26,7 @@ class NPMRegistryAccessor:
         """Fetch package metadata from an npm registry.
 
         Args:
-            package_name: Full npm package name (e.g. "@prism/prism-config").
+            package_name: Full npm package name (e.g. "@prism-dx/prism-config").
             registry_url: Base registry URL (e.g. "https://registry.npmjs.org").
 
         Returns:
