@@ -122,7 +122,7 @@ Open a PR targeting `dev`. CI runs automatically. Once approved, it merges to `d
 
 ## Testing
 
-See [Testing](testing.md) for the comprehensive guide.
+See [Testing](https://andersonwilliam85.github.io/prism/contributor-guide/testing) for the comprehensive guide.
 
 ### Quick reference
 
@@ -167,7 +167,7 @@ make lint     # flake8 + mypy
 
 ## Adding a New Prism
 
-See [Package System](../reference/package-system.md) for the full guide.
+See [Package System](https://andersonwilliam85.github.io/prism/reference/package-system) for the full guide.
 
 1. Create `prisms/your-prism/`
 2. Add `package.yaml`
