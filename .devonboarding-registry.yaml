@@ -23,7 +23,7 @@ registries:
   # npm registry (future)
   - name: "npm"
     type: "npm"
-    package_prefix: "@prism/"
+    package_prefix: "@prism-dx/"
     enabled: false
     priority: 2
   

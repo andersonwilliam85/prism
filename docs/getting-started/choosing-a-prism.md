@@ -254,7 +254,7 @@ python3 scripts/package_manager.py validate my-company
 python3 install.py --prism my-company
 ```
 
-See [Creating Prisms](creating-configurations.md) for a full guide.
+See [Creating Prisms](../user-guide/creating-configurations.md) for a full guide.
 
 ---
 

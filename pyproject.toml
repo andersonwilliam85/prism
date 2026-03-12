@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=68.0.0", "wheel"]
+requires = ["setuptools>=68.0.0", "setuptools-scm>=8.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "prism"
-version = "1.0.0"
+name = "prism-dx"
+dynamic = ["version"]
 description = "Developer onboarding tool — refract complexity into clarity"
 readme = "README.md"
 license = {text = "MIT"}
@@ -44,6 +44,10 @@ prism = "prism.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["prism*"]
+
+[tool.setuptools_scm]
+version_file = "prism/_version.py"
+fallback_version = "0.0.0.dev0"
 
 [tool.black]
 line-length = 120
