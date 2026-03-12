@@ -26,9 +26,8 @@ jobs:
     - name: Install Playwright Browsers
       run: python -m playwright install --with-deps
 
-    - name: Run Playwright tests
-      run: pytest tests/e2e/ --headed=false --tracing=on
-      continue-on-error: true
+    - name: Run Playwright browser tests
+      run: pytest tests/e2e/test_installer_flow.py tests/e2e/test_complete_installation.py tests/e2e/test_validation_and_ux.py -v --tracing=on
 
     - uses: actions/upload-artifact@v4
       if: always()
