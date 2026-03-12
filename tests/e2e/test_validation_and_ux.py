@@ -212,6 +212,9 @@ class TestConfigurationPersistence:
         page.locator(".step.active button").filter(has_text="Back").click()
         page.wait_for_selector("#step2.active", timeout=5000)
 
+        # Wait for form fields to render after step transition
+        page.wait_for_selector("#step2 input", timeout=5000)
+
         # Verify we're back on step 2 and fields are present
         assert page.locator("input[name='name']").count() > 0, "Name field should exist on step 2"
         assert page.locator("input[name='email']").count() > 0, "Email field should exist on step 2"
