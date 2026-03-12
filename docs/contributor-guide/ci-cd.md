@@ -461,9 +461,9 @@ gh secret set DEPLOY_SSH_KEY < ~/.ssh/deploy_key
 
 - [GitHub Actions Docs](https://docs.github.com/en/actions)
 - [Makefile Guide](../../Makefile)
-- [Branch Protection](.github/BRANCH_PROTECTION.md)
-- [Pull Request Template](.github/PULL_REQUEST_TEMPLATE.md)
-- [CODEOWNERS](.github/CODEOWNERS)
+- [Branch Protection](../../.github/BRANCH_PROTECTION.md)
+- [Pull Request Template](../../.github/PULL_REQUEST_TEMPLATE.md)
+- [CODEOWNERS](../../.github/CODEOWNERS)
 
 ---
 

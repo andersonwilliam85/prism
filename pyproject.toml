@@ -3,8 +3,8 @@ requires = ["setuptools>=68.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "prism"
-version = "1.0.0"
+name = "prism-dx"
+version = "0.1.0b1"
 description = "Developer onboarding tool — refract complexity into clarity"
 readme = "README.md"
 license = {text = "MIT"}

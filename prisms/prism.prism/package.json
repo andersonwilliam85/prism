@@ -1,0 +1,28 @@
+{
+  "name": "@prism-dx/prism",
+  "version": "2.0.0",
+  "description": "Default Prism configuration — from solo developers to enterprise teams",
+  "main": "package.yaml",
+  "files": [
+    "package.yaml",
+    "base/",
+    "environments/",
+    "profiles/",
+    "resources.yaml",
+    "welcome.yaml"
+  ],
+  "keywords": [
+    "prism",
+    "onboarding",
+    "developer-experience",
+    "configuration"
+  ],
+  "author": "William Anderson",
+  "license": "MIT",
+  "homepage": "https://github.com/andersonwilliam85/prism",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andersonwilliam85/prism.git",
+    "directory": "prisms/prism.prism"
+  }
+}
