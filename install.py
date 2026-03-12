@@ -246,8 +246,8 @@ def main():
         from npm_package_fetcher import fetch_package
 
         package_name = args.package
-        if not package_name.startswith("@prism/"):
-            package_name = f"@prism/{package_name}-config"
+        if not package_name.startswith("@prism-dx/"):
+            package_name = f"@prism-dx/{package_name}-config"
 
         print(f"\n📦 Fetching package: {package_name}")
 
@@ -260,7 +260,7 @@ def main():
         except Exception as e:
             print(f"⚠️  Could not fetch from npm: {e}")
             # Try local
-            pkg_id = package_name.replace("@prism/", "").replace("-config", "")
+            pkg_id = package_name.replace("@prism-dx/", "").replace("-config", "")
             local_path = SCRIPT_DIR / "prisms" / pkg_id
             if local_path.exists():
                 package_path = str(local_path)

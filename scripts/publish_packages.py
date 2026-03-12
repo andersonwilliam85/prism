@@ -51,7 +51,7 @@ def validate_package(package_dir: Path) -> bool:
         with open(package_dir / "package.json") as f:
             pkg_json = json.load(f)
 
-        if not pkg_json.get("name", "").startswith("@prism/"):
+        if not pkg_json.get("name", "").startswith("@prism-dx/"):
             print(f"❌ Invalid package name in {package_dir.name}")
             return False
 
@@ -137,7 +137,7 @@ def check_npm_login() -> bool:
     except subprocess.CalledProcessError:
         print("❌ Not logged in to npm.")
         print("\nPlease run: npm login")
-        print("\nYou'll need an npm account with access to the @prism scope.")
+        print("\nYou'll need an npm account with access to the @prism-dx scope.")
         return False
 
     except FileNotFoundError:
