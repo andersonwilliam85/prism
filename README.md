@@ -46,20 +46,21 @@ Prism provides:
 
 ## Quick Start
 
+### Install from PyPI
+
 ```bash
-# Clone the repository
+pip install prism-dx
+prism ui            # Launch the web installer
+prism install       # Or install directly from CLI
+```
+
+### Install from source
+
+```bash
 git clone https://github.com/andersonwilliam85/prism.git
 cd prism
-
-# Install dependencies
 make install-dev
-
-# Run tests
-make test
-
-# Start the web UI installer
-make run
-# Opens at http://localhost:5555
+make run            # Opens at http://localhost:5555
 ```
 
 See [Getting Started](https://andersonwilliam85.github.io/prism/getting-started/quickstart) for the full guide.
@@ -91,11 +92,22 @@ Company (base)
 
 Configurations merge intelligently — base layer defines company standards, each level can override or extend using union, deep_merge, override, or append strategies.
 
-### Built-in Prisms
+### The Default Prism
+
+The built-in `prism` package scales from a solo developer to an enterprise team. Pick three tiers and go:
+
+| Tier | Options | What it controls |
+|------|---------|-----------------|
+| **Scale** | Individual, Small Team, Enterprise | Git workflows, PR templates, access patterns |
+| **Environment** | Minimal, Standard, Full-Featured | Tooling depth — just git+SSH up to full runtime stacks |
+| **Platform** | GitHub, GitLab, Bitbucket, Gitea, Multi | Provider-specific config (SSH hosts, CLI tools, webhooks) |
+
+A solo dev picks **Individual + Minimal + GitHub** and gets git config and an SSH key in seconds. A platform team picks **Enterprise + Full-Featured + Multi** and gets structured workspaces, multiple runtimes, and multi-provider support.
+
+### More Prisms
 
 | Prism | Use Case | Hierarchy | Scale |
 |-------|----------|-----------|-------|
-| `prism` | Default — individuals to enterprise | Scale + environment + platform tiers | Any |
 | `startup` | Seed/Series A startups | 1 level | 10–50 |
 | `acme-corp` | Template for companies | 2 levels | 100–1K |
 | `consulting-firm` | Multi-client work | By client | Variable |
