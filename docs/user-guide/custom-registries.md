@@ -34,7 +34,7 @@ python3 scripts/npm_package_fetcher.py list \
   --registry https://npm.mycompany.com
 
 # Fetch package from custom CDN
-python3 scripts/npm_package_fetcher.py fetch @prism/prism-config \
+python3 scripts/npm_package_fetcher.py fetch @prism-dx/prism-config \
   --unpkg https://cdn.mycompany.com/npm
 
 # Run installer with custom registry
@@ -105,7 +105,7 @@ Must support standard npm registry API:
 
 - **Metadata endpoint**: `GET /{package}` returns package.json
 - **Dist-tags**: Support `latest` tag
-- **Scope support**: Handle `@prism/*` scoped packages
+- **Scope support**: Handle `@prism-dx/*` scoped packages
 
 **Compatible registries:**
 - npm public registry (default)
@@ -125,8 +125,8 @@ Must serve package files at:
 ```
 
 **Examples:**
-- `https://unpkg.com/@prism/prism-config@1.0.0/package.yaml`
-- `https://cdn.company.com/npm/@prism/prism-config@1.0.0/package.yaml`
+- `https://unpkg.com/@prism-dx/prism-config@1.0.0/package.yaml`
+- `https://cdn.company.com/npm/@prism-dx/prism-config@1.0.0/package.yaml`
 
 **Compatible CDNs:**
 - unpkg.com (default)
@@ -197,7 +197,7 @@ export PRISM_UNPKG_URL=http://localhost:4873
 1. **Configure npm:**
 
 ```bash
-echo "@prism:registry=https://npm.pkg.github.com" >> .npmrc
+echo "@prism-dx:registry=https://npm.pkg.github.com" >> .npmrc
 echo "//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}" >> .npmrc
 ```
 
@@ -246,10 +246,10 @@ python3 scripts/npm_package_fetcher.py list
 
 ```bash
 # Test npm registry
-curl https://npm.mycompany.com/@prism/prism-config
+curl https://npm.mycompany.com/@prism-dx/prism-config
 
 # Test unpkg CDN
-curl https://cdn.mycompany.com/npm/@prism/prism-config@latest/package.yaml
+curl https://cdn.mycompany.com/npm/@prism-dx/prism-config@latest/package.yaml
 ```
 
 ### Common Issues
@@ -266,7 +266,7 @@ curl https://cdn.mycompany.com/npm/@prism/prism-config@latest/package.yaml
 
 **"404 Not Found"**
 - Ensure packages are published to your registry
-- Check package names match `@prism/*` scope
+- Check package names match `@prism-dx/*` scope
 - Verify registry supports scoped packages
 
 **"Package not found, using local"**

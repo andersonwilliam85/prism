@@ -5,7 +5,7 @@ title: NPM Packages
 
 # NPM Package Distribution
 
-Prism packages can be published to the **npm public registry** under the `@prism` scope, making them available to anyone via CDN without needing npm installed.
+Prism packages can be published to the **npm public registry** under the `@prism-dx` scope, making them available to anyone via CDN without needing npm installed.
 
 ## Why npm?
 
@@ -19,15 +19,15 @@ Prism packages can be published to the **npm public registry** under the `@prism
 
 ## Available Packages
 
-All packages are published under the `@prism` scope:
+All packages are published under the `@prism-dx` scope:
 
-- `@prism/prism` — For freelancers & indie developers
-- `@prism/startup` — For startups (10–50 people)
-- `@prism/fortune500` — For large enterprises
-- `@prism/university` — For universities
-- `@prism/consulting-firm` — For consulting firms
-- `@prism/opensource` — For open source projects
-- `@prism/acme-corp` — Template for small companies
+- `@prism-dx/prism` — For freelancers & indie developers
+- `@prism-dx/startup` — For startups (10–50 people)
+- `@prism-dx/fortune500` — For large enterprises
+- `@prism-dx/university` — For universities
+- `@prism-dx/consulting-firm` — For consulting firms
+- `@prism-dx/opensource` — For open source projects
+- `@prism-dx/acme-corp` — Template for small companies
 
 ---
 
@@ -52,23 +52,23 @@ python3 install.py --prism fortune500
 python3 scripts/npm_package_fetcher.py list
 
 # Fetch a specific prism
-python3 scripts/npm_package_fetcher.py fetch @prism/prism
+python3 scripts/npm_package_fetcher.py fetch @prism-dx/prism
 
 # Fetch specific version
-python3 scripts/npm_package_fetcher.py fetch @prism/startup --version 1.0.0
+python3 scripts/npm_package_fetcher.py fetch @prism-dx/startup --version 1.0.0
 ```
 
 ### Method 3: Direct npm install (if you have npm)
 
 ```bash
-npm install @prism/prism
+npm install @prism-dx/prism
 ```
 
 ### Method 4: Direct CDN access (no tools needed)
 
 ```bash
 # Download package.yaml
-curl https://unpkg.com/@prism/prism@latest/package.yaml
+curl https://unpkg.com/@prism-dx/prism@latest/package.yaml
 ```
 
 ---
@@ -78,7 +78,7 @@ curl https://unpkg.com/@prism/prism@latest/package.yaml
 ### Prerequisites
 
 1. **npm account** — Create at [npmjs.com](https://www.npmjs.com/signup)
-2. **@prism scope access** — Request access via GitHub issues
+2. **@prism-dx scope access** — Request access via GitHub issues
 3. **npm CLI installed**:
    ```bash
    # Mac
@@ -163,7 +163,7 @@ prisms/prism.prism/
 
 ```json
 {
-  "name": "@prism/prism",
+  "name": "@prism-dx/prism",
   "version": "1.0.0",
   "description": "Prism for freelancers and indie developers",
   "main": "package.yaml",
@@ -209,19 +209,19 @@ prisms/prism.prism/
 ## unpkg CDN URLs
 
 ```
-https://unpkg.com/@prism/PRISM-NAME@VERSION/FILE
+https://unpkg.com/@prism-dx/PRISM-NAME@VERSION/FILE
 ```
 
 Examples:
 ```bash
 # Latest version
-https://unpkg.com/@prism/prism@latest/package.yaml
+https://unpkg.com/@prism-dx/prism@latest/package.yaml
 
 # Specific version
-https://unpkg.com/@prism/startup@1.0.0/package.yaml
+https://unpkg.com/@prism-dx/startup@1.0.0/package.yaml
 
 # Browse entire prism
-https://unpkg.com/browse/@prism/fortune500@latest/
+https://unpkg.com/browse/@prism-dx/fortune500@latest/
 ```
 
 ---
