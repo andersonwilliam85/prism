@@ -1,5 +1,5 @@
 {
-  "name": "@prism/acme-corp-config",
+  "name": "@prism-dx/acme-corp-config",
   "version": "1.0.0",
   "description": "Prism config template - customize for your company",
   "main": "package.yaml",
