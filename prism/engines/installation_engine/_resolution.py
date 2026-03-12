@@ -8,7 +8,7 @@ from __future__ import annotations
 
 _DEFAULT_UNPKG_URL = "https://unpkg.com"
 _DEFAULT_NPM_REGISTRY = "https://registry.npmjs.org"
-_PRISM_SCOPE = "@prism"
+_PRISM_SCOPE = "@prism-dx"
 _LOCAL_SUFFIXES = ["", "-config"]
 _LOCAL_TRANSFORMS = [
     lambda s: s,
