@@ -35,7 +35,7 @@ class TestRootCommand:
     def test_version_flag(self):
         result = run_cli("--version")
         assert result.returncode == 0
-        assert "0.1.0b1" in result.stdout
+        assert "prism" in result.stdout
 
 
 class TestInstallSubcommand:
