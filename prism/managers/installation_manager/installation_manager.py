@@ -14,6 +14,7 @@ from datetime import datetime
 from pathlib import Path
 
 from prism.accessors.file_accessor.i_file_accessor import IFileAccessor
+from prism.accessors.system_accessor.i_system_accessor import ISystemAccessor
 from prism.engines.config_engine.i_config_engine import IConfigEngine
 from prism.engines.installation_engine.i_installation_engine import IInstallationEngine
 from prism.models.installation import InstallationResult, InstallContext, PrivilegedStep, ProgressCallback
@@ -29,7 +30,7 @@ class InstallationManager:
         config_engine: IConfigEngine,
         installation_engine: IInstallationEngine,
         file_accessor: IFileAccessor,
-        system_accessor: object,  # ISystemAccessor — for platform detection
+        system_accessor: ISystemAccessor,
         event_bus: IEventBus,
         prisms_dir: Path,
     ) -> None:
