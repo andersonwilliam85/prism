@@ -504,6 +504,11 @@ class InstallationEngine:
         if not post_msg:
             post_msg = config.get("package", {}).get("post_install", {}).get("message")
         if post_msg:
+            try:
+                display = {k: v.replace("-", " ").title() for k, v in selected_sub_prisms.items()}
+                post_msg = post_msg.format(**display)
+            except (KeyError, ValueError):
+                pass
             self._log("finalize", post_msg)
 
     # ==================================================================
