@@ -71,4 +71,8 @@ def get_tools():
 def serve_assets(filename):
     """Serve static assets (branding, etc.)."""
     assets_dir = _root_dir() / "assets"
+    if not (assets_dir / filename).exists():
+        # Fall back to bundled assets when running from pip install
+        bundled_dir = Path(__file__).parent.parent / "static" / "assets"
+        return send_from_directory(str(bundled_dir), filename)
     return send_from_directory(str(assets_dir), filename)
