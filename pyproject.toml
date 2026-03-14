@@ -45,6 +45,9 @@ prism = "prism.cli:main"
 [tool.setuptools.packages.find]
 include = ["prism*"]
 
+[tool.setuptools.package-data]
+"prism.ui" = ["templates/**", "static/**"]
+
 [tool.setuptools_scm]
 version_file = "prism/_version.py"
 fallback_version = "0.0.0.dev0"
