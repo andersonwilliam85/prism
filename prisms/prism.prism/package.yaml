@@ -171,9 +171,9 @@ setup:
 
       Your environment is ready. Here's what was set up:
 
-        Scale:       Individual / Team / Enterprise
-        Environment: Minimal / Standard / Full-Featured
-        Platform:    GitHub / GitLab / Bitbucket / Gitea / Multi
+        Scale:       {scale}
+        Environment: {environment}
+        Platform:    {platform}
 
       Next steps:
       1. Add your SSH key to your git provider
