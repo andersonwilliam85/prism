@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template
 
 from prism.container import Container
 
@@ -46,10 +46,5 @@ def create_app(prisms_dir: Path | None = None) -> Flask:
     @app.route("/")
     def index():
         return render_template("index.html")
-
-    # Serve bundled static assets (branding, etc.)
-    @app.route("/assets/<path:filename>")
-    def serve_assets(filename):
-        return send_from_directory(str(STATIC_DIR / "assets"), filename)
 
     return app
