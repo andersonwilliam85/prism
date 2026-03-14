@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from flask import Flask, render_template
+from flask import Flask, render_template, send_from_directory
 
 from prism.container import Container
 
@@ -24,7 +24,7 @@ def create_app(prisms_dir: Path | None = None) -> Flask:
     Args:
         prisms_dir: Path to the prisms directory. Defaults to repo root / prisms.
     """
-    app = Flask(__name__, template_folder=str(TEMPLATE_DIR), static_folder=str(STATIC_DIR), static_url_path="")
+    app = Flask(__name__, template_folder=str(TEMPLATE_DIR))
 
     # Build the DI container — single source of truth for all wiring
     container = Container(prisms_dir=prisms_dir)
@@ -46,5 +46,10 @@ def create_app(prisms_dir: Path | None = None) -> Flask:
     @app.route("/")
     def index():
         return render_template("index.html")
+
+    # Serve bundled static assets (branding, etc.)
+    @app.route("/assets/<path:filename>")
+    def serve_assets(filename):
+        return send_from_directory(str(STATIC_DIR / "assets"), filename)
 
     return app
