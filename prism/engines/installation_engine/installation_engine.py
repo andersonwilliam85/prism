@@ -529,7 +529,7 @@ class InstallationEngine:
 
         extra_config = merged_config.get("git", {}).get("config", {})
         for key, value in extra_config.items():
-            plan.append((key, str(value)))
+            plan.append((key.replace("_", "."), str(value)))
 
         return plan
 
