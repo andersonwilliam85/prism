@@ -15,6 +15,7 @@ from flask import Flask, render_template
 from prism.container import Container
 
 TEMPLATE_DIR = Path(__file__).parent / "templates"
+STATIC_DIR = Path(__file__).parent / "static"
 
 
 def create_app(prisms_dir: Path | None = None) -> Flask:
@@ -23,7 +24,7 @@ def create_app(prisms_dir: Path | None = None) -> Flask:
     Args:
         prisms_dir: Path to the prisms directory. Defaults to repo root / prisms.
     """
-    app = Flask(__name__, template_folder=str(TEMPLATE_DIR))
+    app = Flask(__name__, template_folder=str(TEMPLATE_DIR), static_folder=str(STATIC_DIR), static_url_path="")
 
     # Build the DI container — single source of truth for all wiring
     container = Container(prisms_dir=prisms_dir)
