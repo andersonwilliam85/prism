@@ -24,6 +24,7 @@ DEFAULT_RULES: dict = {
             "git": "override",
             "career": "user_only",
             "tools": "deep_merge",
+            "tool_registry": "deep_merge",
         },
         "conflicts": {"default": "override"},
     }
