@@ -7,7 +7,7 @@ tools_required:
   - name: "nvm"
     category: "runtime"
   - name: "docker"
-    category: "devops"
+    category: "containers"
 
 tools_optional:
   - name: "gh"

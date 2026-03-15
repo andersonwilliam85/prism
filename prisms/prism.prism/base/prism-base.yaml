@@ -74,6 +74,34 @@ tools_optional:
       linux: "sudo snap install sublime-text --classic"
       windows: "winget install SublimeHQ.SublimeText.4"
 
+  # ── Containers ──
+  - name: "docker"
+    description: "Docker Desktop (paid license for large orgs)"
+    category: "containers"
+    platforms:
+      mac: "brew install --cask docker"
+      ubuntu: "curl -fsSL https://get.docker.com | sh"
+      linux: "curl -fsSL https://get.docker.com | sh"
+      windows: "winget install Docker.DockerDesktop"
+
+  - name: "rancher"
+    description: "Rancher Desktop (free, open source, includes k8s)"
+    category: "containers"
+    platforms:
+      mac: "brew install --cask rancher"
+      ubuntu: "curl -s https://download.opensuse.org/repositories/isv:/Rancher:/stable/deb/Release.key | gpg --dearmor | sudo tee /usr/share/keyrings/isv-rancher-stable-archive-keyring.gpg && echo 'deb [signed-by=/usr/share/keyrings/isv-rancher-stable-archive-keyring.gpg] https://download.opensuse.org/repositories/isv:/Rancher:/stable/deb/ ./' | sudo tee /etc/apt/sources.list.d/isv-rancher-stable.list && sudo apt update && sudo apt install -y rancher-desktop"
+      linux: "sudo snap install rancher-desktop"
+      windows: "winget install suse.RancherDesktop"
+
+  - name: "podman"
+    description: "Podman — daemonless container engine"
+    category: "containers"
+    platforms:
+      mac: "brew install podman"
+      ubuntu: "sudo apt install -y podman"
+      linux: "sudo apt install -y podman"
+      windows: "winget install RedHat.Podman"
+
   # ── Runtimes & Language Managers ──
   - name: "nvm"
     description: "Node Version Manager"

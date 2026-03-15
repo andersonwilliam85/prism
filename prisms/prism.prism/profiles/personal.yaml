@@ -60,7 +60,7 @@ tools_required:
 tools_optional:
   - name: "docker"
     description: "Container runtime"
-    category: "devops"
+    category: "cloud"
     platforms:
       mac: "brew install --cask docker"
       ubuntu: "curl -fsSL https://get.docker.com | sh"
