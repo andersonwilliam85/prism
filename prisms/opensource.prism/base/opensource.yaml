@@ -23,7 +23,9 @@ tools_required:
   - git
   - gh
 
-tools_available:
+tool_registry_file: "tool-registry.yaml"
+
+tools_optional:
   - python3
   - nodejs
   - docker

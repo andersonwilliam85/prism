@@ -2,6 +2,8 @@
 # CONSULTING FIRM BASE CONFIGURATION
 # ============================================================================
 
+tool_registry_file: "tool-registry.yaml"
+
 firm:
   name: "[Consulting Firm Name]"
   domain: "consultingfirm.com"
@@ -22,7 +24,7 @@ tools_required:
   - docker
   - python3
 
-tools_available:
+tools_optional:
   - vscode
   - postman
   - terraform

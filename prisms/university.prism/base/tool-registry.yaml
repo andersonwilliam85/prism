@@ -1,0 +1,80 @@
+# Tool Registry — custom tools for the university prism.
+# These supplement the base tool registry with academic-specific tools.
+
+python3:
+  label: Python 3
+  summary: General-purpose language
+  description: Python interpreter for coursework, research, and scripting
+  category: runtime
+  platforms:
+    mac: brew install python@3
+    ubuntu: sudo apt-get install -y python3 python3-pip python3-venv
+    linux: sudo apt-get install -y python3 python3-pip python3-venv
+    windows: winget install Python.Python.3.12
+  uninstall:
+    mac: brew uninstall python@3
+    ubuntu: sudo apt-get remove -y python3 python3-pip python3-venv
+    linux: sudo apt-get remove -y python3 python3-pip python3-venv
+    windows: winget uninstall Python.Python.3.12
+
+vscode:
+  label: VS Code
+  summary: Extensible editor
+  description: Microsoft's extensible editor — recommended for coursework and projects
+  category: editor
+  platforms:
+    mac: brew install --cask visual-studio-code
+    ubuntu: sudo snap install code --classic
+    linux: sudo snap install code --classic
+    windows: winget install Microsoft.VisualStudioCode
+  uninstall:
+    mac: brew uninstall --cask visual-studio-code
+    ubuntu: sudo snap remove code
+    linux: sudo snap remove code
+    windows: winget uninstall Microsoft.VisualStudioCode
+
+jupyter:
+  label: Jupyter Notebook
+  summary: Interactive notebooks
+  description: Browser-based interactive notebooks for Python, data exploration, and research
+  category: data-science
+  platforms:
+    mac: pip3 install jupyterlab
+    ubuntu: pip3 install jupyterlab
+    linux: pip3 install jupyterlab
+    windows: pip install jupyterlab
+  uninstall:
+    mac: pip3 uninstall -y jupyterlab
+    ubuntu: pip3 uninstall -y jupyterlab
+    linux: pip3 uninstall -y jupyterlab
+    windows: pip uninstall -y jupyterlab
+
+latex:
+  label: LaTeX
+  summary: Typesetting system
+  description: Professional typesetting for papers, theses, and academic publications
+  category: academic
+  platforms:
+    mac: brew install --cask mactex
+    ubuntu: sudo apt-get install -y texlive-full
+    linux: sudo apt-get install -y texlive-full
+    windows: winget install MiKTeX.MiKTeX
+  uninstall:
+    mac: brew uninstall --cask mactex
+    ubuntu: sudo apt-get remove -y texlive-full
+    linux: sudo apt-get remove -y texlive-full
+    windows: winget uninstall MiKTeX.MiKTeX
+
+hpc-access:
+  label: HPC Access
+  summary: Cluster computing tools
+  description: SSH keys and tools for connecting to the university high-performance computing cluster
+  category: academic
+  platforms:
+    mac: brew install openssh && ssh-keygen -t ed25519 -f ~/.ssh/hpc_key -N ""
+    ubuntu: sudo apt-get install -y openssh-client && ssh-keygen -t ed25519 -f ~/.ssh/hpc_key -N ""
+    linux: sudo apt-get install -y openssh-client && ssh-keygen -t ed25519 -f ~/.ssh/hpc_key -N ""
+  uninstall:
+    mac: rm -f ~/.ssh/hpc_key ~/.ssh/hpc_key.pub
+    ubuntu: rm -f ~/.ssh/hpc_key ~/.ssh/hpc_key.pub
+    linux: rm -f ~/.ssh/hpc_key ~/.ssh/hpc_key.pub
