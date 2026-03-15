@@ -44,6 +44,7 @@ code_quality:
 tools_required:
   - name: "git"
     description: "Version control"
+    category: "core"
     platforms:
       mac: "brew install git"
       ubuntu: "sudo apt-get install -y git"
@@ -52,6 +53,7 @@ tools_required:
 
   - name: "curl"
     description: "HTTP client"
+    category: "core"
     platforms:
       mac: "brew install curl"
       ubuntu: "sudo apt-get install -y curl"
@@ -60,6 +62,7 @@ tools_required:
 
   - name: "node"
     description: "Node.js runtime"
+    category: "runtime"
     platforms:
       mac: "brew install node"
       ubuntu: "curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - && sudo apt-get install -y nodejs"
@@ -68,6 +71,7 @@ tools_required:
 
   - name: "python3"
     description: "Python interpreter"
+    category: "runtime"
     platforms:
       mac: "brew install python@3.12"
       ubuntu: "sudo apt-get install -y python3 python3-pip python3-venv"
@@ -76,6 +80,7 @@ tools_required:
 
   - name: "gh"
     description: "GitHub CLI — PR workflows"
+    category: "cli"
     platforms:
       mac: "brew install gh"
       ubuntu: "sudo apt-get install -y gh"
@@ -85,6 +90,7 @@ tools_required:
 tools_optional:
   - name: "docker"
     description: "Container runtime"
+    category: "devops"
     platforms:
       mac: "brew install --cask docker"
       ubuntu: "curl -fsSL https://get.docker.com | sh"
@@ -93,6 +99,7 @@ tools_optional:
 
   - name: "jq"
     description: "JSON processor"
+    category: "cli"
     platforms:
       mac: "brew install jq"
       ubuntu: "sudo apt-get install -y jq"
