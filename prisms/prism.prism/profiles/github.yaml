@@ -27,11 +27,8 @@ git:
 
 # Tools for GitHub workflow
 tools_required:
-  - name: "git"
-    category: "core"
-  - name: "gh"
-    description: "GitHub CLI"
-    category: "cli"
+  - "git"
+  - "gh"
 
 # GitHub repositories to clone (your personal repos)
 repositories:

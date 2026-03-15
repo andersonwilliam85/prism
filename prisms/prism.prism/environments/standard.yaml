@@ -2,20 +2,14 @@
 # Good default for most developers
 
 tools_required:
-  - name: "git"
-    category: "core"
-  - name: "nvm"
-    category: "runtime"
-  - name: "docker"
-    category: "containers"
+  - "git"
+  - "nvm"
+  - "docker"
 
 tools_optional:
-  - name: "gh"
-    category: "cli"
-  - name: "httpie"
-    category: "cli"
-  - name: "jq"
-    category: "cli"
+  - "gh"
+  - "httpie"
+  - "jq"
 
 environment:
   workspace_root: "~/projects"

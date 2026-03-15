@@ -42,48 +42,10 @@ code_quality:
   pre_commit_hooks: true
 
 tools_required:
-  - name: "git"
-    description: "Version control"
-    category: "core"
-    platforms:
-      mac: "brew install git"
-      ubuntu: "sudo apt-get install -y git"
-      linux: "sudo apt-get install -y git"
-      windows: "winget install Git.Git"
-
-  - name: "curl"
-    description: "HTTP client"
-    category: "core"
-    platforms:
-      mac: "brew install curl"
-      ubuntu: "sudo apt-get install -y curl"
-      linux: "sudo apt-get install -y curl"
-      windows: "winget install cURL.cURL"
-
-  - name: "gh"
-    description: "GitHub CLI — PR workflows"
-    category: "cli"
-    platforms:
-      mac: "brew install gh"
-      ubuntu: "sudo apt-get install -y gh"
-      linux: "sudo apt-get install -y gh"
-      windows: "winget install GitHub.cli"
+  - "git"
+  - "curl"
+  - "gh"
 
 tools_optional:
-  - name: "docker"
-    description: "Container runtime"
-    category: "cloud"
-    platforms:
-      mac: "brew install --cask docker"
-      ubuntu: "curl -fsSL https://get.docker.com | sh"
-      linux: "curl -fsSL https://get.docker.com | sh"
-      windows: "winget install Docker.DockerDesktop"
-
-  - name: "jq"
-    description: "JSON processor"
-    category: "cli"
-    platforms:
-      mac: "brew install jq"
-      ubuntu: "sudo apt-get install -y jq"
-      linux: "sudo apt-get install -y jq"
-      windows: "winget install jqlang.jq"
+  - "docker"
+  - "jq"

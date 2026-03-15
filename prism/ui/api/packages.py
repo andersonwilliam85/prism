@@ -267,37 +267,37 @@ def get_tools(package_name):
         # Merge tiers to get the effective config
         merged = im.merge_tiers(config, selected_sub_prisms)
 
-        # Collect tools from merged config
+        # Resolve tools against registry
+        registry = merged.get("tool_registry", config.get("tool_registry", {}))
         tools_required = merged.get("tools_required", config.get("tools_required", []))
         tools_optional = merged.get("tools_optional", config.get("tools_optional", []))
 
+        def _resolve(name):
+            return registry.get(name, {}) if isinstance(name, str) else {}
+
         seen = {}
         for tool in tools_required:
-            if isinstance(tool, str):
-                tool = {"name": tool, "description": ""}
-            if isinstance(tool, dict):
-                tid = tool.get("name", "")
-                seen[tid] = {
-                    "id": tid,
-                    "name": tid.replace("-", " ").title(),
-                    "description": tool.get("description", ""),
-                    "required": True,
-                    "category": tool.get("category", ""),
-                }
+            tid = tool.get("name", tool) if isinstance(tool, dict) else tool
+            reg = _resolve(tid)
+            seen[tid] = {
+                "id": tid,
+                "name": reg.get("label", tid.replace("-", " ").title()),
+                "description": reg.get("description", ""),
+                "required": True,
+                "category": reg.get("category", ""),
+            }
 
         for tool in tools_optional:
-            if isinstance(tool, str):
-                tool = {"name": tool, "description": ""}
-            if isinstance(tool, dict):
-                tid = tool.get("name", "")
-                if tid not in seen:
-                    seen[tid] = {
-                        "id": tid,
-                        "name": tid.replace("-", " ").title(),
-                        "description": tool.get("description", ""),
-                        "required": False,
-                        "category": tool.get("category", ""),
-                    }
+            tid = tool.get("name", tool) if isinstance(tool, dict) else tool
+            reg = _resolve(tid)
+            if tid not in seen:
+                seen[tid] = {
+                    "id": tid,
+                    "name": reg.get("label", tid.replace("-", " ").title()),
+                    "description": reg.get("description", ""),
+                    "required": False,
+                    "category": reg.get("category", ""),
+                }
 
         tools = list(seen.values())
         return jsonify({"tools": tools, "has_tools": len(tools) > 0})
