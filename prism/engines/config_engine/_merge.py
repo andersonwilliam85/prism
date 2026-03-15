@@ -12,6 +12,7 @@ DEFAULT_RULES: dict = {
     "merge_strategy": {
         "arrays": {
             "tools_required": "union",
+            "tools_optional": "union",
             "tools_selected": "union",
             "tools_excluded": "union",
             "repositories": "append",
