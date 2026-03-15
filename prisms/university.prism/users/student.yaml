@@ -12,6 +12,6 @@ tools_required:
   - git
   - python3
 
-tools_available:
+tools_optional:
   - jupyter
   - docker

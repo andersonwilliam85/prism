@@ -3,6 +3,8 @@
 # ============================================================================
 # Core setup applied to all Fortune 500 / enterprise users.
 
+tool_registry_file: "tool-registry.yaml"
+
 company:
   name: "[Company Name]"
   domain: "company.com"

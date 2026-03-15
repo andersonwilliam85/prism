@@ -1,0 +1,66 @@
+# Tool Registry — custom tools for consulting-firm.prism
+# Tools not found in the base prism.prism/base/tool-registry.yaml.
+
+python3:
+  label: Python 3
+  summary: Python runtime
+  description: General-purpose programming language — scripts, web backends, data science
+  category: runtime
+  platforms:
+    mac: brew install python@3
+    ubuntu: sudo apt-get install -y python3
+    linux: sudo apt-get install -y python3
+    windows: winget install Python.Python.3.12
+  uninstall:
+    mac: brew uninstall python@3
+    ubuntu: sudo apt-get remove -y python3
+    linux: sudo apt-get remove -y python3
+    windows: winget uninstall Python.Python.3.12
+
+vscode:
+  label: VS Code
+  summary: Extensible editor
+  description: Microsoft's extensible editor — huge ecosystem of extensions
+  category: editor
+  platforms:
+    mac: brew install --cask visual-studio-code
+    ubuntu: sudo snap install code --classic
+    linux: sudo snap install code --classic
+    windows: winget install Microsoft.VisualStudioCode
+  uninstall:
+    mac: brew uninstall --cask visual-studio-code
+    ubuntu: sudo snap remove code
+    linux: sudo snap remove code
+    windows: winget uninstall Microsoft.VisualStudioCode
+
+postman:
+  label: Postman
+  summary: API development platform
+  description: Design, test, and document APIs with a visual interface and collaboration tools
+  category: cli
+  platforms:
+    mac: brew install --cask postman
+    ubuntu: sudo snap install postman
+    linux: sudo snap install postman
+    windows: winget install Postman.Postman
+  uninstall:
+    mac: brew uninstall --cask postman
+    ubuntu: sudo snap remove postman
+    linux: sudo snap remove postman
+    windows: winget uninstall Postman.Postman
+
+nodejs:
+  label: Node.js
+  summary: JavaScript runtime
+  description: Server-side JavaScript runtime — build web servers, CLIs, and tooling
+  category: runtime
+  platforms:
+    mac: brew install node
+    ubuntu: sudo apt-get install -y nodejs
+    linux: sudo apt-get install -y nodejs
+    windows: winget install OpenJS.NodeJS
+  uninstall:
+    mac: brew uninstall node
+    ubuntu: sudo apt-get remove -y nodejs
+    linux: sudo apt-get remove -y nodejs
+    windows: winget uninstall OpenJS.NodeJS

@@ -1,0 +1,50 @@
+# Tool Registry — custom tools for the Open Source prism.
+# Tools defined here extend the base tool registry from prism.prism.
+
+python3:
+  label: Python 3
+  summary: General-purpose language
+  description: Interpreted language for scripting, automation, data science, and web backends
+  category: runtime
+  platforms:
+    mac: brew install python3
+    ubuntu: sudo apt-get install -y python3
+    linux: sudo apt-get install -y python3
+    windows: winget install Python.Python.3.12
+  uninstall:
+    mac: brew uninstall python3
+    ubuntu: sudo apt-get remove -y python3
+    linux: sudo apt-get remove -y python3
+    windows: winget uninstall Python.Python.3.12
+
+nodejs:
+  label: Node.js
+  summary: JavaScript runtime
+  description: Server-side JavaScript runtime — run JS outside the browser, power APIs and tooling
+  category: runtime
+  platforms:
+    mac: brew install node
+    ubuntu: sudo apt-get install -y nodejs
+    linux: sudo apt-get install -y nodejs
+    windows: winget install OpenJS.NodeJS
+  uninstall:
+    mac: brew uninstall node
+    ubuntu: sudo apt-get remove -y nodejs
+    linux: sudo apt-get remove -y nodejs
+    windows: winget uninstall OpenJS.NodeJS
+
+vscode:
+  label: VS Code
+  summary: Extensible editor
+  description: Microsoft's extensible editor — huge ecosystem of extensions
+  category: editor
+  platforms:
+    mac: brew install --cask visual-studio-code
+    ubuntu: sudo snap install code --classic
+    linux: sudo snap install code --classic
+    windows: winget install Microsoft.VisualStudioCode
+  uninstall:
+    mac: brew uninstall --cask visual-studio-code
+    ubuntu: sudo snap remove code
+    linux: sudo snap remove code
+    windows: winget uninstall Microsoft.VisualStudioCode

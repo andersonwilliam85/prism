@@ -18,11 +18,13 @@ git:
     name: "${USER}"
     email: "${USER}@university.edu"
 
+tool_registry_file: "tool-registry.yaml"
+
 tools_required:
   - git
   - python3
 
-tools_available:
+tools_optional:
   - vscode
   - jupyter
   - docker

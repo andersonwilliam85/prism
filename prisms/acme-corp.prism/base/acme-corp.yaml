@@ -7,6 +7,8 @@ company:
   domain: "acmecorp.com"
   internal_domain: ".acmecorp.com"
 
+tool_registry_file: "tool-registry.yaml"
+
 # Network & Environment
 environment:
   proxy:
@@ -35,8 +37,8 @@ tools_required:
   - kubectl
   - python3
 
-# Available Tools (optional)
-tools_available:
+# Optional Tools
+tools_optional:
   - nodejs
   - java
   - terraform
