@@ -2,22 +2,36 @@
 # For developers who want an organized, batteries-included setup
 
 tools_required:
-  - git
-  - node
-  - docker
-  - python3
+  - name: "git"
+    category: "core"
+  - name: "node"
+    category: "runtime"
+  - name: "docker"
+    category: "devops"
+  - name: "python3"
+    category: "runtime"
 
 tools_optional:
-  - gh
-  - httpie
-  - jq
-  - tmux
-  - ripgrep
-  - fd
-  - fzf
-  - lazygit
-  - go
-  - rustc
+  - name: "gh"
+    category: "cli"
+  - name: "httpie"
+    category: "cli"
+  - name: "jq"
+    category: "cli"
+  - name: "tmux"
+    category: "cli"
+  - name: "ripgrep"
+    category: "cli"
+  - name: "fd"
+    category: "cli"
+  - name: "fzf"
+    category: "cli"
+  - name: "lazygit"
+    category: "cli"
+  - name: "go"
+    category: "runtime"
+  - name: "rustc"
+    category: "runtime"
 
 environment:
   workspace_root: "~/dev"

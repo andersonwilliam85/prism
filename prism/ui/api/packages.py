@@ -282,7 +282,7 @@ def get_tools(package_name):
                     "name": tid.replace("-", " ").title(),
                     "description": tool.get("description", ""),
                     "required": True,
-                    "category": tool.get("category", "core"),
+                    "category": tool.get("category", ""),
                 }
 
         for tool in tools_optional:
@@ -296,7 +296,7 @@ def get_tools(package_name):
                         "name": tid.replace("-", " ").title(),
                         "description": tool.get("description", ""),
                         "required": False,
-                        "category": tool.get("category", "optional"),
+                        "category": tool.get("category", ""),
                     }
 
         tools = list(seen.values())
