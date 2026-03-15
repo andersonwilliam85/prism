@@ -228,47 +228,6 @@ user_info_fields:
     required: true
     placeholder: "EMP123456"
 
-  - id: "team"
-    label: "Team"
-    type: "select"
-    required: true
-    options:
-      - "Platform & Infrastructure"
-      - "Backend Services"
-      - "Frontend & Web"
-      - "Data & ML Engineering"
-      - "Security Engineering"
-
-  - id: "role"
-    label: "Role"
-    type: "select"
-    required: true
-    depends_on: "team"
-    options:
-      - "Software Engineer"
-      - "DevOps / SRE"
-      - "Frontend Engineer"
-      - "Data / ML Engineer"
-      - "Security Engineer"
-    option_map:
-      "Platform & Infrastructure":
-        - "DevOps / SRE"
-        - "Software Engineer"
-        - "Security Engineer"
-      "Backend Services":
-        - "Software Engineer"
-        - "DevOps / SRE"
-      "Frontend & Web":
-        - "Frontend Engineer"
-        - "Software Engineer"
-      "Data & ML Engineering":
-        - "Data / ML Engineer"
-        - "Software Engineer"
-      "Security Engineering":
-        - "Security Engineer"
-        - "Software Engineer"
-        - "DevOps / SRE"
-
   - id: "manager_email"
     label: "Manager Email"
     type: "email"

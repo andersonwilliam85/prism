@@ -148,17 +148,6 @@ user_info_fields:
       pattern: ".*@acmecorp\\.com$"
       message: "Must be an @acmecorp.com email"
 
-  - id: "team"
-    label: "Team"
-    type: "select"
-    required: true
-    options:
-      - "Platform"
-      - "Backend"
-      - "Frontend"
-      - "Data"
-      - "Mobile"
-
   - id: "github_username"
     label: "GitHub Username"
     type: "text"
