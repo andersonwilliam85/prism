@@ -405,20 +405,22 @@ class InstallationEngine:
             name = tool["name"]
             if self._commands.pkg_is_installed(name):
                 self._log("tools", f"{name} already installed", "success")
-            else:
-                # Use per-tool platform command from YAML if available
-                platforms = tool.get("platforms", {})
-                custom_cmd = platforms.get(platform_name, "") if isinstance(platforms, dict) else ""
-                self._log("tools", f"Installing {name}...")
-                try:
-                    if custom_cmd:
-                        import subprocess
-                        subprocess.run(custom_cmd, shell=True, check=True, capture_output=True, text=True)
-                    else:
-                        self._commands.pkg_install(name, platform_name)
-                    self._log("tools", f"Installed {name}", "success")
-                except Exception:
-                    self._log("tools", f"Failed to install {name} — skipping", "warning")
+                continue
+
+            # Only install if the YAML defines an explicit command for this platform
+            platforms = tool.get("platforms", {})
+            cmd = platforms.get(platform_name, "") if isinstance(platforms, dict) else ""
+            if not cmd:
+                self._log("tools", f"{name} — no install command for {platform_name}, skipping", "warning")
+                continue
+
+            self._log("tools", f"Installing {name}...")
+            try:
+                import subprocess
+                subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
+                self._log("tools", f"Installed {name}", "success")
+            except Exception:
+                self._log("tools", f"Failed to install {name} — skipping", "warning")
 
     def _clone_repos(self, merged_config: dict, workspace_root: str) -> None:
         plans = self._plan_repo_clones(merged_config, workspace_root)
