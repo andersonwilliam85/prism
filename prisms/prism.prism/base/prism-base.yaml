@@ -25,9 +25,10 @@ tools_required:
       mac: "brew install git"
       ubuntu: "sudo apt-get install -y git"
       linux: "sudo apt-get install -y git"
+      windows: "winget install Git.Git"
 
-# Editors — user picks one (or none) on the tools page
 tools_optional:
+  # ── Editors ──
   - name: "cursor"
     description: "AI-powered code editor"
     category: "editor"
@@ -73,8 +74,9 @@ tools_optional:
       linux: "sudo snap install sublime-text --classic"
       windows: "winget install SublimeHQ.SublimeText.4"
 
+  # ── Runtimes & Language Managers ──
   - name: "nvm"
-    description: "Node Version Manager (use instead of node)"
+    description: "Node Version Manager"
     category: "runtime"
     platforms:
       mac: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash"
@@ -82,9 +84,79 @@ tools_optional:
       linux: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash"
       windows: "winget install CoreyButler.NVMforWindows"
 
+  - name: "pyenv"
+    description: "Python version manager"
+    category: "runtime"
+    platforms:
+      mac: "brew install pyenv"
+      ubuntu: "curl https://pyenv.run | bash"
+      linux: "curl https://pyenv.run | bash"
+
+  - name: "sdk"
+    description: "SDKMAN — Java/JVM version manager (Java, Gradle, Maven)"
+    category: "runtime"
+    platforms:
+      mac: "curl -s https://get.sdkman.io | bash"
+      ubuntu: "curl -s https://get.sdkman.io | bash"
+      linux: "curl -s https://get.sdkman.io | bash"
+
+  - name: "dotnet"
+    description: ".NET SDK"
+    category: "runtime"
+    platforms:
+      mac: "brew install dotnet-sdk"
+      ubuntu: "sudo apt install -y dotnet-sdk-8.0"
+      linux: "sudo apt install -y dotnet-sdk-8.0"
+      windows: "winget install Microsoft.DotNet.SDK.8"
+
+  - name: "rustup"
+    description: "Rust toolchain installer"
+    category: "runtime"
+    platforms:
+      mac: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+      ubuntu: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+      linux: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+      windows: "winget install Rustlang.Rustup"
+
+  - name: "go"
+    description: "Go programming language"
+    category: "runtime"
+    platforms:
+      mac: "brew install go"
+      ubuntu: "sudo snap install go --classic"
+      linux: "sudo snap install go --classic"
+      windows: "winget install GoLang.Go"
+
+  - name: "perl"
+    description: "Perl"
+    category: "runtime"
+    platforms:
+      mac: "brew install perl"
+      ubuntu: "sudo apt install -y perl"
+      linux: "sudo apt install -y perl"
+      windows: "winget install StrawberryPerl.StrawberryPerl"
+
+  - name: "rbenv"
+    description: "Ruby version manager"
+    category: "runtime"
+    platforms:
+      mac: "brew install rbenv"
+      ubuntu: "sudo apt install -y rbenv"
+      linux: "sudo apt install -y rbenv"
+
+  # ── Cloud CLIs ──
+  - name: "aws"
+    description: "AWS CLI"
+    category: "cloud"
+    platforms:
+      mac: "brew install awscli"
+      ubuntu: "sudo apt install -y awscli"
+      linux: "sudo apt install -y awscli"
+      windows: "winget install Amazon.AWSCLI"
+
   - name: "az"
     description: "Azure CLI"
-    category: "devops"
+    category: "cloud"
     platforms:
       mac: "brew install azure-cli"
       ubuntu: "curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash"
@@ -93,9 +165,79 @@ tools_optional:
 
   - name: "gcloud"
     description: "Google Cloud CLI"
-    category: "devops"
+    category: "cloud"
     platforms:
       mac: "brew install --cask google-cloud-sdk"
-      ubuntu: "curl https://sdk.cloud.google.com | bash"
-      linux: "curl https://sdk.cloud.google.com | bash"
+      ubuntu: "sudo snap install google-cloud-cli --classic"
+      linux: "sudo snap install google-cloud-cli --classic"
       windows: "winget install Google.CloudSDK"
+
+  - name: "terraform"
+    description: "Infrastructure as code (HashiCorp)"
+    category: "cloud"
+    platforms:
+      mac: "brew install terraform"
+      ubuntu: "brew install terraform"
+      linux: "brew install terraform"
+      windows: "winget install Hashicorp.Terraform"
+
+  - name: "pulumi"
+    description: "Infrastructure as code (general-purpose languages)"
+    category: "cloud"
+    platforms:
+      mac: "brew install pulumi"
+      ubuntu: "curl -fsSL https://get.pulumi.com | sh"
+      linux: "curl -fsSL https://get.pulumi.com | sh"
+      windows: "winget install Pulumi.Pulumi"
+
+  # ── Kubernetes ──
+  - name: "kubectl"
+    description: "Kubernetes CLI"
+    category: "kubernetes"
+    platforms:
+      mac: "brew install kubernetes-cli"
+      ubuntu: "sudo snap install kubectl --classic"
+      linux: "sudo snap install kubectl --classic"
+      windows: "winget install Kubernetes.kubectl"
+
+  - name: "helm"
+    description: "Kubernetes package manager"
+    category: "kubernetes"
+    platforms:
+      mac: "brew install helm"
+      ubuntu: "sudo snap install helm --classic"
+      linux: "sudo snap install helm --classic"
+      windows: "winget install Helm.Helm"
+
+  - name: "k9s"
+    description: "Terminal UI for Kubernetes"
+    category: "kubernetes"
+    platforms:
+      mac: "brew install k9s"
+      ubuntu: "sudo snap install k9s"
+      linux: "sudo snap install k9s"
+      windows: "winget install Derailed.k9s"
+
+  - name: "kubectx"
+    description: "Fast Kubernetes context/namespace switching"
+    category: "kubernetes"
+    platforms:
+      mac: "brew install kubectx"
+      ubuntu: "sudo apt install -y kubectx"
+      linux: "sudo apt install -y kubectx"
+
+  - name: "stern"
+    description: "Multi-pod log tailing for Kubernetes"
+    category: "kubernetes"
+    platforms:
+      mac: "brew install stern"
+      ubuntu: "brew install stern"
+      linux: "brew install stern"
+
+  - name: "kustomize"
+    description: "Template-free Kubernetes configuration"
+    category: "kubernetes"
+    platforms:
+      mac: "brew install kustomize"
+      ubuntu: "sudo snap install kustomize"
+      linux: "sudo snap install kustomize"

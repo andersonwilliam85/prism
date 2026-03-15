@@ -4,12 +4,10 @@
 tools_required:
   - name: "git"
     category: "core"
-  - name: "node"
+  - name: "nvm"
     category: "runtime"
   - name: "docker"
     category: "devops"
-  - name: "python3"
-    category: "runtime"
 
 tools_optional:
   - name: "gh"
@@ -28,10 +26,6 @@ tools_optional:
     category: "cli"
   - name: "lazygit"
     category: "cli"
-  - name: "go"
-    category: "runtime"
-  - name: "rustc"
-    category: "runtime"
 
 environment:
   workspace_root: "~/dev"
