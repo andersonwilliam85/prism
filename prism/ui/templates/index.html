@@ -1470,31 +1470,22 @@
             toolsList.innerHTML = '';
 
             if (data.tools && data.tools.length > 0) {
-                // Group tools by category
+                // Group tools by category (from API, not hardcoded)
                 const groups = {};
+                const categoryOrder = [];
                 data.tools.forEach(tool => {
-                    const cat = tool.category || 'optional';
-                    if (!groups[cat]) groups[cat] = [];
+                    const cat = tool.category || '';
+                    if (!groups[cat]) {
+                        groups[cat] = [];
+                        categoryOrder.push(cat);
+                    }
                     groups[cat].push(tool);
                 });
 
-                const categoryLabels = {
-                    core: 'Core',
-                    editor: 'Editors',
-                    optional: 'Optional Tools',
-                    devops: 'DevOps',
-                    runtime: 'Runtimes',
-                };
-                const categoryOrder = ['core', 'editor', 'runtime', 'devops', 'optional'];
-                const sortedKeys = Object.keys(groups).sort((a, b) => {
-                    const ai = categoryOrder.indexOf(a);
-                    const bi = categoryOrder.indexOf(b);
-                    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
-                });
-
-                sortedKeys.forEach(cat => {
-                    const label = categoryLabels[cat] || cat.charAt(0).toUpperCase() + cat.slice(1);
-                    toolsList.innerHTML += `<h4 style="margin: 16px 0 8px; color: var(--gradient-1, #667eea); font-size: 0.95em; text-transform: uppercase; letter-spacing: 0.05em;">${label}</h4>`;
+                categoryOrder.forEach(cat => {
+                    if (cat) {
+                        toolsList.innerHTML += `<h4 style="margin: 16px 0 8px; color: var(--gradient-1, #667eea); font-size: 0.95em; text-transform: uppercase; letter-spacing: 0.05em;">${cat.charAt(0).toUpperCase() + cat.slice(1)}</h4>`;
+                    }
                     groups[cat].forEach(tool => {
                         const checked = tool.required ? 'checked disabled' : '';
                         toolsList.innerHTML += `
