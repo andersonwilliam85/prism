@@ -25,12 +25,6 @@ proxy:
   https: ""
   no_proxy: "localhost,127.0.0.1,.internal.company.com"
 
-editor:
-  default: "code"
-  tab_size: 2
-  format_on_save: true
-  shared_settings: true
-
 workspace:
   directories:
     - "projects"
@@ -116,14 +110,6 @@ tools_required:
       windows: "winget install Docker.DockerDesktop"
 
 tools_optional:
-  - name: "code"
-    description: "Visual Studio Code"
-    platforms:
-      mac: "brew install --cask visual-studio-code"
-      ubuntu: "sudo snap install code --classic"
-      linux: "sudo snap install code --classic"
-      windows: "winget install Microsoft.VisualStudioCode"
-
   - name: "jq"
     description: "JSON processor"
     platforms:

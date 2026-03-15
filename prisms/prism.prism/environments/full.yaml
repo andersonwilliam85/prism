@@ -3,7 +3,6 @@
 
 tools_required:
   - git
-  - vscode
   - node
   - docker
   - python3

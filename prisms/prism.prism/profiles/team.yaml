@@ -15,12 +15,6 @@ ssh:
   key_type: "ed25519"
   add_to_agent: true
 
-editor:
-  default: "code"
-  tab_size: 2
-  format_on_save: true
-  shared_settings: true
-
 workspace:
   directories:
     - "projects"
@@ -96,14 +90,6 @@ tools_optional:
       ubuntu: "curl -fsSL https://get.docker.com | sh"
       linux: "curl -fsSL https://get.docker.com | sh"
       windows: "winget install Docker.DockerDesktop"
-
-  - name: "code"
-    description: "Visual Studio Code"
-    platforms:
-      mac: "brew install --cask visual-studio-code"
-      ubuntu: "sudo snap install code --classic"
-      linux: "sudo snap install code --classic"
-      windows: "winget install Microsoft.VisualStudioCode"
 
   - name: "jq"
     description: "JSON processor"

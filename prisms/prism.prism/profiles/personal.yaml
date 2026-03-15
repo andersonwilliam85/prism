@@ -12,12 +12,6 @@ ssh:
   key_type: "ed25519"
   add_to_agent: true
 
-editor:
-  default: "code"
-  font_size: 14
-  tab_size: 2
-  format_on_save: true
-
 workspace:
   directories:
     - "projects"
@@ -101,10 +95,3 @@ tools_optional:
       linux: "sudo apt-get install -y jq"
       windows: "winget install jqlang.jq"
 
-  - name: "code"
-    description: "Visual Studio Code"
-    platforms:
-      mac: "brew install --cask visual-studio-code"
-      ubuntu: "sudo snap install code --classic"
-      linux: "sudo snap install code --classic"
-      windows: "winget install Microsoft.VisualStudioCode"

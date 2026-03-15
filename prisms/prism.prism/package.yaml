@@ -179,6 +179,47 @@ setup:
       1. Add your SSH key to your git provider
       2. Start coding!
 
+# Editor options — user picks one, engine installs it
+editors:
+  "VS Code":
+    tool_name: "code"
+    platforms:
+      mac: "brew install --cask visual-studio-code"
+      ubuntu: "sudo snap install code --classic"
+      linux: "sudo snap install code --classic"
+      windows: "winget install Microsoft.VisualStudioCode"
+  "Cursor":
+    tool_name: "cursor"
+    platforms:
+      mac: "brew install --cask cursor"
+      ubuntu: "curl -fsSL https://www.cursor.com/download/linux | sh"
+      linux: "curl -fsSL https://www.cursor.com/download/linux | sh"
+      windows: "winget install Anysphere.Cursor"
+  "Zed":
+    tool_name: "zed"
+    platforms:
+      mac: "brew install --cask zed"
+      ubuntu: "curl -fsSL https://zed.dev/install.sh | sh"
+      linux: "curl -fsSL https://zed.dev/install.sh | sh"
+      windows: "winget install Zed.Zed"
+  "Neovim":
+    tool_name: "nvim"
+    platforms:
+      mac: "brew install neovim"
+      ubuntu: "sudo apt-get install -y neovim"
+      linux: "sudo apt-get install -y neovim"
+      windows: "winget install Neovim.Neovim"
+  "Sublime Text":
+    tool_name: "subl"
+    platforms:
+      mac: "brew install --cask sublime-text"
+      ubuntu: "sudo snap install sublime-text --classic"
+      linux: "sudo snap install sublime-text --classic"
+      windows: "winget install SublimeHQ.SublimeText.4"
+  "None":
+    tool_name: null
+    platforms: {}
+
 # User info fields
 user_info_fields:
   - id: "name"
@@ -201,6 +242,19 @@ user_info_fields:
     required: true
     placeholder: "janedev"
     description: "Your username on chosen git platform"
+
+  - id: "editor"
+    label: "Editor"
+    type: "select"
+    required: true
+    options:
+      - "VS Code"
+      - "Cursor"
+      - "Zed"
+      - "Neovim"
+      - "Sublime Text"
+      - "None"
+    description: "Your preferred code editor"
 
   - id: "primary_language"
     label: "Primary Language"
