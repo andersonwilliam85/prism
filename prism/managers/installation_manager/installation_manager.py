@@ -99,8 +99,12 @@ class InstallationManager:
             result.error = "Unsupported platform"
             return result
 
-        # Build workspace root
+        # Build workspace root — user override > environment config > default
         workspace_dir = user_info.get("workspace_dir", "")
+        if not workspace_dir:
+            workspace_dir = merged.get("environment", {}).get("workspace_root", "")
+        if not workspace_dir:
+            workspace_dir = merged.get("workspace", {}).get("root", "")
         workspace_root = Path(workspace_dir).expanduser() if workspace_dir else Path.home() / "workspace"
 
         # Load prism config for proxy/registry
