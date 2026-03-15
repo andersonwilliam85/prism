@@ -203,7 +203,14 @@ class InstallationManager:
                     config_path = pkg_path / config_file
                     if self._files.exists(config_path):
                         try:
-                            tier_configs.append(self._files.read_yaml(config_path))
+                            tier_cfg = self._files.read_yaml(config_path)
+                            # Load external tool registry file if referenced
+                            reg_file = tier_cfg.pop("tool_registry_file", None)
+                            if reg_file:
+                                reg_path = config_path.parent / reg_file
+                                if self._files.exists(reg_path):
+                                    tier_cfg["tool_registry"] = self._files.read_yaml(reg_path)
+                            tier_configs.append(tier_cfg)
                         except Exception:
                             pass
 
