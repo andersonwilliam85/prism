@@ -163,9 +163,6 @@
         }
         
         .checkbox-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
             margin-top: 10px;
         }
         
@@ -1483,12 +1480,14 @@
                 });
 
                 categoryOrder.forEach(cat => {
+                    let sectionHTML = '';
                     if (cat) {
-                        toolsList.innerHTML += `<h4 style="margin: 16px 0 8px; color: var(--gradient-1, #667eea); font-size: 0.95em; text-transform: uppercase; letter-spacing: 0.05em;">${cat.charAt(0).toUpperCase() + cat.slice(1)}</h4>`;
+                        sectionHTML += `<h4 style="margin: 20px 0 10px; color: var(--gradient-1, #667eea); font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1px solid rgba(102,126,234,0.2); padding-bottom: 6px;">${cat.charAt(0).toUpperCase() + cat.slice(1)}</h4>`;
                     }
+                    sectionHTML += `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">`;
                     groups[cat].forEach(tool => {
                         const checked = tool.required ? 'checked disabled' : '';
-                        toolsList.innerHTML += `
+                        sectionHTML += `
                             <div class="checkbox-item" style="display: flex; align-items: center; gap: 10px; padding: 8px 0;">
                                 <input type="checkbox" id="tool_${tool.id}" name="${tool.id}" ${checked}>
                                 <label for="tool_${tool.id}" style="flex: 1;">
@@ -1499,6 +1498,8 @@
                             </div>
                         `;
                     });
+                    sectionHTML += `</div>`;
+                    toolsList.innerHTML += sectionHTML;
                 });
             }
         }
