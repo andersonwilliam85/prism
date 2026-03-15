@@ -282,6 +282,7 @@ def get_tools(package_name):
             seen[tid] = {
                 "id": tid,
                 "name": reg.get("label", tid.replace("-", " ").title()),
+                "summary": reg.get("summary", ""),
                 "description": reg.get("description", ""),
                 "required": True,
                 "category": reg.get("category", ""),
@@ -294,6 +295,7 @@ def get_tools(package_name):
                 seen[tid] = {
                     "id": tid,
                     "name": reg.get("label", tid.replace("-", " ").title()),
+                    "summary": reg.get("summary", ""),
                     "description": reg.get("description", ""),
                     "required": False,
                     "category": reg.get("category", ""),

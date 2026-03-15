@@ -1,9 +1,17 @@
 # Tool Registry — single source of truth for every installable tool.
 # Child configs reference tools by name only (e.g. "- git").
 # Sub-prisms can define their own tool-registry.yaml to add tools.
+#
+# Fields:
+#   label       — display name (shown in UI)
+#   summary     — short tagline (always visible next to label)
+#   description — full explanation (shown on hover)
+#   category    — grouping key
+#   platforms   — explicit install commands per OS
 
 git:
   label: Git
+  summary: Version control
   description: Track changes, branch, merge, and collaborate on code
   category: core
   platforms:
@@ -11,8 +19,10 @@ git:
     ubuntu: sudo apt-get install -y git
     linux: sudo apt-get install -y git
     windows: winget install Git.Git
+
 curl:
   label: cURL
+  summary: HTTP client
   description: Transfer data to/from servers — test endpoints, download files
   category: core
   platforms:
@@ -20,8 +30,10 @@ curl:
     ubuntu: sudo apt-get install -y curl
     linux: sudo apt-get install -y curl
     windows: winget install cURL.cURL
+
 cursor:
   label: Cursor
+  summary: AI code editor
   description: VS Code fork with built-in AI pair programming (Copilot++)
   category: editor
   platforms:
@@ -29,8 +41,10 @@ cursor:
     ubuntu: curl -fsSL https://www.cursor.com/download/linux | sh
     linux: curl -fsSL https://www.cursor.com/download/linux | sh
     windows: winget install Anysphere.Cursor
+
 code:
   label: VS Code
+  summary: Extensible editor
   description: Microsoft's extensible editor — huge ecosystem of extensions
   category: editor
   platforms:
@@ -38,17 +52,21 @@ code:
     ubuntu: sudo snap install code --classic
     linux: sudo snap install code --classic
     windows: winget install Microsoft.VisualStudioCode
+
 zed:
   label: Zed
-  description: GPU-accelerated editor built in Rust — blazing fast on large files
+  summary: GPU-accelerated editor
+  description: Built in Rust — blazing fast on large files, multiplayer editing
   category: editor
   platforms:
     mac: brew install --cask zed
     ubuntu: curl -fsSL https://zed.dev/install.sh | sh
     linux: curl -fsSL https://zed.dev/install.sh | sh
     windows: winget install Zed.Zed
+
 nvim:
   label: Neovim
+  summary: Terminal editor
   description: Highly configurable terminal editor — Lua plugins, LSP, treesitter
   category: editor
   platforms:
@@ -56,73 +74,85 @@ nvim:
     ubuntu: sudo apt-get install -y neovim
     linux: sudo apt-get install -y neovim
     windows: winget install Neovim.Neovim
+
 subl:
   label: Sublime Text
-  description: Lightweight, fast text editor — great for quick edits
+  summary: Lightweight editor
+  description: Fast text editor — great for quick edits and large files
   category: editor
   platforms:
     mac: brew install --cask sublime-text
     ubuntu: sudo snap install sublime-text --classic
     linux: sudo snap install sublime-text --classic
     windows: winget install SublimeHQ.SublimeText.4
+
 docker:
   label: Docker
-  description: Build, ship, and run apps in containers (paid license for orgs >250)
+  summary: Container runtime
+  description: Build, ship, and run apps in containers (paid license for orgs >250 employees)
   category: containers
   platforms:
     mac: brew install --cask docker
     ubuntu: curl -fsSL https://get.docker.com | sh
     linux: curl -fsSL https://get.docker.com | sh
     windows: winget install Docker.DockerDesktop
+
 rancher:
   label: Rancher Desktop
-  description: Free Docker/k8s desktop — no license fees, includes containerd + k3s
+  summary: Free Docker + K8s
+  description: No license fees — includes containerd, dockerd, and k3s out of the box
   category: containers
   platforms:
     mac: brew install --cask rancher
     ubuntu: sudo snap install rancher-desktop
     linux: sudo snap install rancher-desktop
     windows: winget install suse.RancherDesktop
+
 podman:
   label: Podman
-  description: Run containers without a daemon — drop-in Docker replacement
+  summary: Daemonless containers
+  description: Run containers without a daemon — drop-in Docker replacement, rootless by default
   category: containers
   platforms:
     mac: brew install podman
     ubuntu: sudo apt install -y podman
     linux: sudo apt install -y podman
     windows: winget install RedHat.Podman
+
 nvm:
   label: nvm
+  summary: Node version manager
   description: Install and switch between Node.js versions per project
   category: runtime
   platforms:
-    mac: curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh
-      | bash
-    ubuntu: curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh
-      | bash
-    linux: curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh
-      | bash
+    mac: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash"
+    ubuntu: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash"
+    linux: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash"
     windows: winget install CoreyButler.NVMforWindows
+
 pyenv:
   label: pyenv
+  summary: Python version manager
   description: Install and switch between Python versions — isolate from system Python
   category: runtime
   platforms:
     mac: brew install pyenv
-    ubuntu: curl https://pyenv.run | bash
-    linux: curl https://pyenv.run | bash
+    ubuntu: "curl https://pyenv.run | bash"
+    linux: "curl https://pyenv.run | bash"
+
 sdk:
   label: SDKMAN
-  description: Manage Java, Gradle, Maven, Kotlin versions — one tool for the JVM
-    ecosystem
+  summary: JVM version manager
+  description: Manage Java, Gradle, Maven, Kotlin versions — one tool for the JVM ecosystem
   category: runtime
   platforms:
-    mac: curl -s https://get.sdkman.io | bash
-    ubuntu: curl -s https://get.sdkman.io | bash
-    linux: curl -s https://get.sdkman.io | bash
+    mac: "curl -s https://get.sdkman.io | bash"
+    ubuntu: "curl -s https://get.sdkman.io | bash"
+    linux: "curl -s https://get.sdkman.io | bash"
+
 dotnet:
   label: .NET SDK
+  summary: C# / F# / .NET
   description: Build C#, F#, and .NET apps — includes runtime, compiler, and CLI
   category: runtime
   platforms:
@@ -130,89 +160,108 @@ dotnet:
     ubuntu: sudo apt install -y dotnet-sdk-8.0
     linux: sudo apt install -y dotnet-sdk-8.0
     windows: winget install Microsoft.DotNet.SDK.8
+
 rustup:
   label: Rust
-  description: Install Rust and switch between stable/nightly toolchains
+  summary: Systems language
+  description: Install Rust and switch between stable/nightly toolchains via rustup
   category: runtime
   platforms:
-    mac: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-    ubuntu: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-    linux: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    mac: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+    ubuntu: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+    linux: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
     windows: winget install Rustlang.Rustup
+
 go:
   label: Go
-  description: Compiled language for cloud services, CLIs, and systems — fast builds
+  summary: Cloud & CLI language
+  description: Compiled language for cloud services, CLIs, and systems — fast builds, single binary output
   category: runtime
   platforms:
     mac: brew install go
     ubuntu: sudo snap install go --classic
     linux: sudo snap install go --classic
     windows: winget install GoLang.Go
+
 perl:
   label: Perl
-  description: Text processing, sysadmin scripting, and legacy system glue
+  summary: Text & sysadmin scripting
+  description: Text processing, sysadmin scripting, regex powerhouse, and legacy system glue
   category: runtime
   platforms:
     mac: brew install perl
     ubuntu: sudo apt install -y perl
     linux: sudo apt install -y perl
     windows: winget install StrawberryPerl.StrawberryPerl
+
 rbenv:
   label: Ruby (rbenv)
+  summary: Ruby version manager
   description: Install and switch between Ruby versions per project
   category: runtime
   platforms:
     mac: brew install rbenv
     ubuntu: sudo apt install -y rbenv
     linux: sudo apt install -y rbenv
+
 aws:
   label: AWS CLI
-  description: Manage AWS resources — S3, EC2, Lambda, IAM, and 200+ services
+  summary: Amazon Web Services
+  description: Manage S3, EC2, Lambda, IAM, and 200+ AWS services from your terminal
   category: cloud
   platforms:
     mac: brew install awscli
     ubuntu: sudo apt install -y awscli
     linux: sudo apt install -y awscli
     windows: winget install Amazon.AWSCLI
+
 az:
   label: Azure CLI
-  description: Manage Azure resources — VMs, App Service, AKS, and more
+  summary: Microsoft Azure
+  description: Manage VMs, App Service, AKS, Functions, and more on Azure
   category: cloud
   platforms:
     mac: brew install azure-cli
-    ubuntu: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-    linux: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+    ubuntu: "curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash"
+    linux: "curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash"
     windows: winget install Microsoft.AzureCLI
+
 gcloud:
   label: Google Cloud CLI
-  description: Manage GCP resources — Compute, GKE, Cloud Run, BigQuery, and more
+  summary: Google Cloud Platform
+  description: Manage Compute, GKE, Cloud Run, BigQuery, and more on GCP
   category: cloud
   platforms:
     mac: brew install --cask google-cloud-sdk
     ubuntu: sudo snap install google-cloud-cli --classic
     linux: sudo snap install google-cloud-cli --classic
     windows: winget install Google.CloudSDK
+
 terraform:
   label: Terraform
-  description: Define infrastructure as code — provision any cloud with HCL configs
+  summary: Infrastructure as code
+  description: Define infrastructure as code — provision any cloud with declarative HCL configs
   category: cloud
   platforms:
     mac: brew install terraform
     ubuntu: brew install terraform
     linux: brew install terraform
     windows: winget install Hashicorp.Terraform
+
 pulumi:
   label: Pulumi
-  description: Infrastructure as code using real languages — Python, TypeScript, Go,
-    C#
+  summary: IaC with real languages
+  description: Infrastructure as code using Python, TypeScript, Go, or C# instead of HCL
   category: cloud
   platforms:
     mac: brew install pulumi
-    ubuntu: curl -fsSL https://get.pulumi.com | sh
-    linux: curl -fsSL https://get.pulumi.com | sh
+    ubuntu: "curl -fsSL https://get.pulumi.com | sh"
+    linux: "curl -fsSL https://get.pulumi.com | sh"
     windows: winget install Pulumi.Pulumi
+
 kubectl:
   label: kubectl
+  summary: K8s CLI
   description: Deploy, inspect, and manage workloads on any Kubernetes cluster
   category: kubernetes
   platforms:
@@ -220,8 +269,10 @@ kubectl:
     ubuntu: sudo snap install kubectl --classic
     linux: sudo snap install kubectl --classic
     windows: winget install Kubernetes.kubectl
+
 helm:
   label: Helm
+  summary: K8s package manager
   description: Install and manage complex apps on Kubernetes with reusable charts
   category: kubernetes
   platforms:
@@ -229,80 +280,93 @@ helm:
     ubuntu: sudo snap install helm --classic
     linux: sudo snap install helm --classic
     windows: winget install Helm.Helm
+
 k9s:
   label: K9s
-  description: Navigate pods, logs, and resources in a terminal dashboard
+  summary: K8s terminal dashboard
+  description: Navigate pods, logs, and resources in a rich terminal UI
   category: kubernetes
   platforms:
     mac: brew install k9s
     ubuntu: sudo snap install k9s
     linux: sudo snap install k9s
     windows: winget install Derailed.k9s
+
 kubectx:
   label: kubectx
-  description: Switch between clusters and namespaces in one keystroke
+  summary: Context switching
+  description: Switch between Kubernetes clusters and namespaces in one keystroke
   category: kubernetes
   platforms:
     mac: brew install kubectx
     ubuntu: sudo apt install -y kubectx
     linux: sudo apt install -y kubectx
+
 stern:
   label: Stern
-  description: Tail logs from multiple pods at once — filter by label, container,
-    regex
+  summary: Multi-pod log tailing
+  description: Tail logs from multiple pods at once — filter by label, container, or regex
   category: kubernetes
   platforms:
     mac: brew install stern
     ubuntu: brew install stern
     linux: brew install stern
+
 kustomize:
   label: Kustomize
-  description: Patch and overlay Kubernetes YAML without templates or Helm
+  summary: YAML overlays
+  description: Patch and overlay Kubernetes YAML without templates or Helm charts
   category: kubernetes
   platforms:
     mac: brew install kustomize
     ubuntu: sudo snap install kustomize
     linux: sudo snap install kustomize
+
 skaffold:
   label: Skaffold
-  description: Auto-rebuild and redeploy to Kubernetes as you code — dev inner loop
+  summary: K8s dev inner loop
+  description: Auto-rebuild and redeploy to Kubernetes as you code — watch mode for clusters
   category: kubernetes
   platforms:
     mac: brew install skaffold
-    ubuntu: curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
-      && sudo install skaffold /usr/local/bin/
-    linux: curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
-      && sudo install skaffold /usr/local/bin/
+    ubuntu: "curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install skaffold /usr/local/bin/"
+    linux: "curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install skaffold /usr/local/bin/"
+
 argocd:
   label: Argo CD
-  description: GitOps continuous delivery — sync your cluster state from a git repo
+  summary: GitOps delivery
+  description: Continuous delivery for Kubernetes — sync your cluster state from a git repo
   category: kubernetes
   platforms:
     mac: brew install argocd
-    ubuntu: curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-      && sudo install argocd /usr/local/bin/
-    linux: curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-      && sudo install argocd /usr/local/bin/
+    ubuntu: "curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64 && sudo install argocd /usr/local/bin/"
+    linux: "curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64 && sudo install argocd /usr/local/bin/"
+
 gh:
   label: GitHub CLI
-  description: Create PRs, manage issues, and run Actions from your terminal
+  summary: PRs, issues, Actions
+  description: Create PRs, manage issues, and trigger Actions from your terminal
   category: cli
   platforms:
     mac: brew install gh
     ubuntu: sudo apt-get install -y gh
     linux: sudo apt-get install -y gh
     windows: winget install GitHub.cli
+
 httpie:
   label: HTTPie
-  description: Test APIs from the terminal with human-readable output
+  summary: API testing
+  description: Test APIs from the terminal with colorized, human-readable output
   category: cli
   platforms:
     mac: brew install httpie
     ubuntu: sudo apt install -y httpie
     linux: sudo apt install -y httpie
     windows: winget install HTTPie.HTTPie
+
 jq:
   label: jq
+  summary: JSON processing
   description: Slice, filter, and transform JSON on the command line
   category: cli
   platforms:
@@ -310,44 +374,54 @@ jq:
     ubuntu: sudo apt-get install -y jq
     linux: sudo apt-get install -y jq
     windows: winget install jqlang.jq
+
 tmux:
   label: tmux
-  description: Split your terminal into panes, detach and reattach sessions
+  summary: Terminal multiplexer
+  description: Split your terminal into panes, detach and reattach sessions across SSH
   category: cli
   platforms:
     mac: brew install tmux
     ubuntu: sudo apt install -y tmux
     linux: sudo apt install -y tmux
+
 ripgrep:
   label: ripgrep
-  description: Search file contents recursively — 10x faster than grep
+  summary: Fast code search
+  description: Search file contents recursively — 10x faster than grep, respects .gitignore
   category: cli
   platforms:
     mac: brew install ripgrep
     ubuntu: sudo apt install -y ripgrep
     linux: sudo apt install -y ripgrep
     windows: winget install BurntSushi.ripgrep.MSVC
+
 fd:
   label: fd
-  description: Find files by name — faster, friendlier alternative to find
+  summary: Fast file finder
+  description: Find files by name — faster, friendlier alternative to find, respects .gitignore
   category: cli
   platforms:
     mac: brew install fd
     ubuntu: sudo apt install -y fd-find
     linux: sudo apt install -y fd-find
     windows: winget install sharkdp.fd
+
 fzf:
   label: fzf
-  description: Fuzzy search anything — files, history, branches, processes
+  summary: Fuzzy finder
+  description: Fuzzy search anything — files, history, branches, processes, and pipe output
   category: cli
   platforms:
     mac: brew install fzf
     ubuntu: sudo apt install -y fzf
     linux: sudo apt install -y fzf
     windows: winget install junegunn.fzf
+
 lazygit:
   label: lazygit
-  description: Full git workflow in a terminal UI — stage, commit, rebase visually
+  summary: Git terminal UI
+  description: Full git workflow in a terminal UI — stage, commit, rebase, cherry-pick visually
   category: cli
   platforms:
     mac: brew install lazygit
