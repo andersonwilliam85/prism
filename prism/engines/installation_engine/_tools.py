@@ -16,7 +16,9 @@ def resolve_tools(
     tools_excluded: list[str] | None = None,
 ) -> list[dict]:
     """Resolve and filter the tool list from merged config."""
-    tools = merged_config.get("tools_required", [])
+    tools_req = merged_config.get("tools_required", [])
+    tools_opt = merged_config.get("tools_optional", [])
+    tools = list(tools_req) + list(tools_opt)
     if not tools:
         tools = merged_config.get("tools", [])
     if not isinstance(tools, list) or not tools:

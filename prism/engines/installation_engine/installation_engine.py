@@ -406,9 +406,16 @@ class InstallationEngine:
             if self._commands.pkg_is_installed(name):
                 self._log("tools", f"{name} already installed", "success")
             else:
+                # Use per-tool platform command from YAML if available
+                platforms = tool.get("platforms", {})
+                custom_cmd = platforms.get(platform_name, "") if isinstance(platforms, dict) else ""
                 self._log("tools", f"Installing {name}...")
                 try:
-                    self._commands.pkg_install(name, platform_name)
+                    if custom_cmd:
+                        import subprocess
+                        subprocess.run(custom_cmd, shell=True, check=True, capture_output=True, text=True)
+                    else:
+                        self._commands.pkg_install(name, platform_name)
                     self._log("tools", f"Installed {name}", "success")
                 except Exception:
                     self._log("tools", f"Failed to install {name} — skipping", "warning")
