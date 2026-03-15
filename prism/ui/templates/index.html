@@ -1776,6 +1776,7 @@
                                     appendLog(logOutput, `Rollback ${r.action}: ${r.detail}`, level);
                                 }
                             }
+                            showRetryButtons(logOutput);
                         } else if (data.type === 'error') {
                             spinner.style.display = 'none';
                             heading.textContent = 'Installation Failed';
@@ -1788,6 +1789,7 @@
                                     appendLog(logOutput, `  ${r.action}: ${r.detail}`, level);
                                 }
                             }
+                            showRetryButtons(logOutput);
                         }
                     }
                 }
@@ -1842,6 +1844,22 @@
             const color = {'success': '#10b981', 'error': '#ef4444', 'warning': '#f59e0b', 'info': '#3b82f6'}[level] || '#3b82f6';
             logOutput.innerHTML += `<div style="color: ${color};">[${emoji}] ${message}</div>`;
             logOutput.scrollTop = logOutput.scrollHeight;
+        }
+
+        function showRetryButtons(logOutput) {
+            logOutput.innerHTML += `
+                <div style="margin-top: 20px; display: flex; gap: 12px;">
+                    <button class="btn-primary" onclick="goToStep(5)">← Back to Summary</button>
+                    <button class="btn-secondary" onclick="goToStep(1)">Start Over</button>
+                </div>
+            `;
+        }
+
+        function goToStep(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            currentStep = step;
+            document.getElementById('step' + step).classList.add('active');
+            updateProgress();
         }
 
         async function cancelInstall() {
