@@ -416,9 +416,15 @@ class InstallationEngine:
                 self._log("tools", f"{name} — no install command for {platform_name}, skipping", "warning")
                 continue
 
+            # Get uninstall command for rollback
+            uninstall_cmd = tool.get("uninstall", {})
+            if isinstance(uninstall_cmd, dict):
+                uninstall_cmd = uninstall_cmd.get(platform_name, "")
+
             self._log("tools", f"Installing {name}...")
             try:
                 subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
+                self._record("tool_installed", name, rollback_command=uninstall_cmd)
                 self._log("tools", f"Installed {name}", "success")
             except Exception:
                 self._log("tools", f"Failed to install {name} — skipping", "warning")
@@ -508,6 +514,28 @@ class InstallationEngine:
         )
         self._files.write_text(marker, marker_data)
         self._record("file_created", str(marker))
+
+        # Persist rollback manifest so we can undo later
+        if self._rollback_state and self._rollback_state.actions:
+            manifest = {
+                "installed_at": datetime.now().isoformat(),
+                "package": package_name,
+                "platform": platform_name,
+                "actions": [
+                    {
+                        "type": str(a.action_type),
+                        "target": str(a.target),
+                        "rollback_command": str(a.rollback_command) if a.rollback_command else "",
+                        "original_value": str(a.original_value) if a.original_value else "",
+                    }
+                    for a in self._rollback_state.actions
+                ],
+            }
+            manifest_path = workspace_root / ".prism_rollback.json"
+            self._files.write_text(manifest_path, json.dumps(manifest, indent=2))
+            self._record("file_created", str(manifest_path))
+            self._log("finalize", f"Rollback manifest saved to {manifest_path}")
+
         self._log("finalize", "Installation complete!", "success")
 
         post_msg = config.get("setup", {}).get("post_install", {}).get("message")

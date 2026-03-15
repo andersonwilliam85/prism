@@ -8,6 +8,7 @@
 #   description — full explanation (shown on hover)
 #   category    — grouping key
 #   platforms   — explicit install commands per OS
+#   uninstall   — explicit uninstall commands per OS (for rollback)
 
 git:
   label: Git
@@ -19,6 +20,11 @@ git:
     ubuntu: sudo apt-get install -y git
     linux: sudo apt-get install -y git
     windows: winget install Git.Git
+  uninstall:
+    mac: brew uninstall git
+    ubuntu: sudo apt-get remove -y git
+    linux: sudo apt-get remove -y git
+    windows: winget uninstall Git.Git
 
 curl:
   label: cURL
@@ -30,6 +36,11 @@ curl:
     ubuntu: sudo apt-get install -y curl
     linux: sudo apt-get install -y curl
     windows: winget install cURL.cURL
+  uninstall:
+    mac: brew uninstall curl
+    ubuntu: sudo apt-get remove -y curl
+    linux: sudo apt-get remove -y curl
+    windows: winget uninstall cURL.cURL
 
 cursor:
   label: Cursor
@@ -41,6 +52,9 @@ cursor:
     ubuntu: curl -fsSL https://www.cursor.com/download/linux | sh
     linux: curl -fsSL https://www.cursor.com/download/linux | sh
     windows: winget install Anysphere.Cursor
+  uninstall:
+    mac: brew uninstall --cask cursor
+    windows: winget uninstall Anysphere.Cursor
 
 code:
   label: VS Code
@@ -52,6 +66,11 @@ code:
     ubuntu: sudo snap install code --classic
     linux: sudo snap install code --classic
     windows: winget install Microsoft.VisualStudioCode
+  uninstall:
+    mac: brew uninstall --cask visual-studio-code
+    ubuntu: sudo snap remove code
+    linux: sudo snap remove code
+    windows: winget uninstall Microsoft.VisualStudioCode
 
 zed:
   label: Zed
@@ -63,6 +82,9 @@ zed:
     ubuntu: curl -fsSL https://zed.dev/install.sh | sh
     linux: curl -fsSL https://zed.dev/install.sh | sh
     windows: winget install Zed.Zed
+  uninstall:
+    mac: brew uninstall --cask zed
+    windows: winget uninstall Zed.Zed
 
 nvim:
   label: Neovim
@@ -74,6 +96,11 @@ nvim:
     ubuntu: sudo apt-get install -y neovim
     linux: sudo apt-get install -y neovim
     windows: winget install Neovim.Neovim
+  uninstall:
+    mac: brew uninstall neovim
+    ubuntu: sudo apt-get remove -y neovim
+    linux: sudo apt-get remove -y neovim
+    windows: winget uninstall Neovim.Neovim
 
 subl:
   label: Sublime Text
@@ -85,6 +112,11 @@ subl:
     ubuntu: sudo snap install sublime-text --classic
     linux: sudo snap install sublime-text --classic
     windows: winget install SublimeHQ.SublimeText.4
+  uninstall:
+    mac: brew uninstall --cask sublime-text
+    ubuntu: sudo snap remove sublime-text
+    linux: sudo snap remove sublime-text
+    windows: winget uninstall SublimeHQ.SublimeText.4
 
 docker:
   label: Docker
@@ -96,6 +128,11 @@ docker:
     ubuntu: curl -fsSL https://get.docker.com | sh
     linux: curl -fsSL https://get.docker.com | sh
     windows: winget install Docker.DockerDesktop
+  uninstall:
+    mac: brew uninstall --cask docker
+    ubuntu: sudo apt-get remove -y docker-ce docker-ce-cli containerd.io
+    linux: sudo apt-get remove -y docker-ce docker-ce-cli containerd.io
+    windows: winget uninstall Docker.DockerDesktop
 
 rancher:
   label: Rancher Desktop
@@ -107,6 +144,11 @@ rancher:
     ubuntu: sudo snap install rancher-desktop
     linux: sudo snap install rancher-desktop
     windows: winget install suse.RancherDesktop
+  uninstall:
+    mac: brew uninstall --cask rancher
+    ubuntu: sudo snap remove rancher-desktop
+    linux: sudo snap remove rancher-desktop
+    windows: winget uninstall suse.RancherDesktop
 
 podman:
   label: Podman
@@ -118,6 +160,11 @@ podman:
     ubuntu: sudo apt install -y podman
     linux: sudo apt install -y podman
     windows: winget install RedHat.Podman
+  uninstall:
+    mac: brew uninstall podman
+    ubuntu: sudo apt remove -y podman
+    linux: sudo apt remove -y podman
+    windows: winget uninstall RedHat.Podman
 
 nvm:
   label: nvm
@@ -129,6 +176,11 @@ nvm:
     ubuntu: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash"
     linux: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash"
     windows: winget install CoreyButler.NVMforWindows
+  uninstall:
+    mac: "rm -rf \"$NVM_DIR\" && sed -i '' '/NVM_DIR/d' ~/.zshrc ~/.bashrc 2>/dev/null"
+    ubuntu: "rm -rf \"$NVM_DIR\" && sed -i '/NVM_DIR/d' ~/.zshrc ~/.bashrc 2>/dev/null"
+    linux: "rm -rf \"$NVM_DIR\" && sed -i '/NVM_DIR/d' ~/.zshrc ~/.bashrc 2>/dev/null"
+    windows: winget uninstall CoreyButler.NVMforWindows
 
 pyenv:
   label: pyenv
@@ -139,6 +191,10 @@ pyenv:
     mac: brew install pyenv
     ubuntu: "curl https://pyenv.run | bash"
     linux: "curl https://pyenv.run | bash"
+  uninstall:
+    mac: brew uninstall pyenv
+    ubuntu: "rm -rf ~/.pyenv && sed -i '/pyenv/d' ~/.zshrc ~/.bashrc 2>/dev/null"
+    linux: "rm -rf ~/.pyenv && sed -i '/pyenv/d' ~/.zshrc ~/.bashrc 2>/dev/null"
 
 sdk:
   label: SDKMAN
@@ -149,6 +205,10 @@ sdk:
     mac: "curl -s https://get.sdkman.io | bash"
     ubuntu: "curl -s https://get.sdkman.io | bash"
     linux: "curl -s https://get.sdkman.io | bash"
+  uninstall:
+    mac: "rm -rf ~/.sdkman && sed -i '' '/sdkman/d' ~/.zshrc ~/.bashrc 2>/dev/null"
+    ubuntu: "rm -rf ~/.sdkman && sed -i '/sdkman/d' ~/.zshrc ~/.bashrc 2>/dev/null"
+    linux: "rm -rf ~/.sdkman && sed -i '/sdkman/d' ~/.zshrc ~/.bashrc 2>/dev/null"
 
 dotnet:
   label: .NET SDK
@@ -160,6 +220,11 @@ dotnet:
     ubuntu: sudo apt install -y dotnet-sdk-8.0
     linux: sudo apt install -y dotnet-sdk-8.0
     windows: winget install Microsoft.DotNet.SDK.8
+  uninstall:
+    mac: brew uninstall dotnet-sdk
+    ubuntu: sudo apt remove -y dotnet-sdk-8.0
+    linux: sudo apt remove -y dotnet-sdk-8.0
+    windows: winget uninstall Microsoft.DotNet.SDK.8
 
 rustup:
   label: Rust
@@ -167,10 +232,15 @@ rustup:
   description: Install Rust and switch between stable/nightly toolchains via rustup
   category: runtime
   platforms:
-    mac: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
-    ubuntu: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
-    linux: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+    mac: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y"
+    ubuntu: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y"
+    linux: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y"
     windows: winget install Rustlang.Rustup
+  uninstall:
+    mac: rustup self uninstall -y
+    ubuntu: rustup self uninstall -y
+    linux: rustup self uninstall -y
+    windows: winget uninstall Rustlang.Rustup
 
 go:
   label: Go
@@ -182,6 +252,11 @@ go:
     ubuntu: sudo snap install go --classic
     linux: sudo snap install go --classic
     windows: winget install GoLang.Go
+  uninstall:
+    mac: brew uninstall go
+    ubuntu: sudo snap remove go
+    linux: sudo snap remove go
+    windows: winget uninstall GoLang.Go
 
 perl:
   label: Perl
@@ -193,6 +268,11 @@ perl:
     ubuntu: sudo apt install -y perl
     linux: sudo apt install -y perl
     windows: winget install StrawberryPerl.StrawberryPerl
+  uninstall:
+    mac: brew uninstall perl
+    ubuntu: sudo apt remove -y perl
+    linux: sudo apt remove -y perl
+    windows: winget uninstall StrawberryPerl.StrawberryPerl
 
 rbenv:
   label: Ruby (rbenv)
@@ -203,6 +283,10 @@ rbenv:
     mac: brew install rbenv
     ubuntu: sudo apt install -y rbenv
     linux: sudo apt install -y rbenv
+  uninstall:
+    mac: brew uninstall rbenv
+    ubuntu: sudo apt remove -y rbenv
+    linux: sudo apt remove -y rbenv
 
 aws:
   label: AWS CLI
@@ -214,6 +298,11 @@ aws:
     ubuntu: sudo apt install -y awscli
     linux: sudo apt install -y awscli
     windows: winget install Amazon.AWSCLI
+  uninstall:
+    mac: brew uninstall awscli
+    ubuntu: sudo apt remove -y awscli
+    linux: sudo apt remove -y awscli
+    windows: winget uninstall Amazon.AWSCLI
 
 az:
   label: Azure CLI
@@ -225,6 +314,11 @@ az:
     ubuntu: "curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash"
     linux: "curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash"
     windows: winget install Microsoft.AzureCLI
+  uninstall:
+    mac: brew uninstall azure-cli
+    ubuntu: sudo apt remove -y azure-cli
+    linux: sudo apt remove -y azure-cli
+    windows: winget uninstall Microsoft.AzureCLI
 
 gcloud:
   label: Google Cloud CLI
@@ -236,6 +330,11 @@ gcloud:
     ubuntu: sudo snap install google-cloud-cli --classic
     linux: sudo snap install google-cloud-cli --classic
     windows: winget install Google.CloudSDK
+  uninstall:
+    mac: brew uninstall --cask google-cloud-sdk
+    ubuntu: sudo snap remove google-cloud-cli
+    linux: sudo snap remove google-cloud-cli
+    windows: winget uninstall Google.CloudSDK
 
 terraform:
   label: Terraform
@@ -247,6 +346,11 @@ terraform:
     ubuntu: brew install terraform
     linux: brew install terraform
     windows: winget install Hashicorp.Terraform
+  uninstall:
+    mac: brew uninstall terraform
+    ubuntu: brew uninstall terraform
+    linux: brew uninstall terraform
+    windows: winget uninstall Hashicorp.Terraform
 
 pulumi:
   label: Pulumi
@@ -258,6 +362,11 @@ pulumi:
     ubuntu: "curl -fsSL https://get.pulumi.com | sh"
     linux: "curl -fsSL https://get.pulumi.com | sh"
     windows: winget install Pulumi.Pulumi
+  uninstall:
+    mac: brew uninstall pulumi
+    ubuntu: "rm -rf ~/.pulumi"
+    linux: "rm -rf ~/.pulumi"
+    windows: winget uninstall Pulumi.Pulumi
 
 kubectl:
   label: kubectl
@@ -269,6 +378,11 @@ kubectl:
     ubuntu: sudo snap install kubectl --classic
     linux: sudo snap install kubectl --classic
     windows: winget install Kubernetes.kubectl
+  uninstall:
+    mac: brew uninstall kubernetes-cli
+    ubuntu: sudo snap remove kubectl
+    linux: sudo snap remove kubectl
+    windows: winget uninstall Kubernetes.kubectl
 
 helm:
   label: Helm
@@ -280,6 +394,11 @@ helm:
     ubuntu: sudo snap install helm --classic
     linux: sudo snap install helm --classic
     windows: winget install Helm.Helm
+  uninstall:
+    mac: brew uninstall helm
+    ubuntu: sudo snap remove helm
+    linux: sudo snap remove helm
+    windows: winget uninstall Helm.Helm
 
 k9s:
   label: K9s
@@ -291,6 +410,11 @@ k9s:
     ubuntu: sudo snap install k9s
     linux: sudo snap install k9s
     windows: winget install Derailed.k9s
+  uninstall:
+    mac: brew uninstall k9s
+    ubuntu: sudo snap remove k9s
+    linux: sudo snap remove k9s
+    windows: winget uninstall Derailed.k9s
 
 kubectx:
   label: kubectx
@@ -301,6 +425,10 @@ kubectx:
     mac: brew install kubectx
     ubuntu: sudo apt install -y kubectx
     linux: sudo apt install -y kubectx
+  uninstall:
+    mac: brew uninstall kubectx
+    ubuntu: sudo apt remove -y kubectx
+    linux: sudo apt remove -y kubectx
 
 stern:
   label: Stern
@@ -311,6 +439,10 @@ stern:
     mac: brew install stern
     ubuntu: brew install stern
     linux: brew install stern
+  uninstall:
+    mac: brew uninstall stern
+    ubuntu: brew uninstall stern
+    linux: brew uninstall stern
 
 kustomize:
   label: Kustomize
@@ -321,6 +453,10 @@ kustomize:
     mac: brew install kustomize
     ubuntu: sudo snap install kustomize
     linux: sudo snap install kustomize
+  uninstall:
+    mac: brew uninstall kustomize
+    ubuntu: sudo snap remove kustomize
+    linux: sudo snap remove kustomize
 
 skaffold:
   label: Skaffold
@@ -331,6 +467,10 @@ skaffold:
     mac: brew install skaffold
     ubuntu: "curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install skaffold /usr/local/bin/"
     linux: "curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install skaffold /usr/local/bin/"
+  uninstall:
+    mac: brew uninstall skaffold
+    ubuntu: sudo rm -f /usr/local/bin/skaffold
+    linux: sudo rm -f /usr/local/bin/skaffold
 
 argocd:
   label: Argo CD
@@ -341,6 +481,10 @@ argocd:
     mac: brew install argocd
     ubuntu: "curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64 && sudo install argocd /usr/local/bin/"
     linux: "curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64 && sudo install argocd /usr/local/bin/"
+  uninstall:
+    mac: brew uninstall argocd
+    ubuntu: sudo rm -f /usr/local/bin/argocd
+    linux: sudo rm -f /usr/local/bin/argocd
 
 gh:
   label: GitHub CLI
@@ -352,6 +496,11 @@ gh:
     ubuntu: sudo apt-get install -y gh
     linux: sudo apt-get install -y gh
     windows: winget install GitHub.cli
+  uninstall:
+    mac: brew uninstall gh
+    ubuntu: sudo apt-get remove -y gh
+    linux: sudo apt-get remove -y gh
+    windows: winget uninstall GitHub.cli
 
 httpie:
   label: HTTPie
@@ -363,6 +512,11 @@ httpie:
     ubuntu: sudo apt install -y httpie
     linux: sudo apt install -y httpie
     windows: winget install HTTPie.HTTPie
+  uninstall:
+    mac: brew uninstall httpie
+    ubuntu: sudo apt remove -y httpie
+    linux: sudo apt remove -y httpie
+    windows: winget uninstall HTTPie.HTTPie
 
 jq:
   label: jq
@@ -374,6 +528,11 @@ jq:
     ubuntu: sudo apt-get install -y jq
     linux: sudo apt-get install -y jq
     windows: winget install jqlang.jq
+  uninstall:
+    mac: brew uninstall jq
+    ubuntu: sudo apt-get remove -y jq
+    linux: sudo apt-get remove -y jq
+    windows: winget uninstall jqlang.jq
 
 tmux:
   label: tmux
@@ -384,6 +543,10 @@ tmux:
     mac: brew install tmux
     ubuntu: sudo apt install -y tmux
     linux: sudo apt install -y tmux
+  uninstall:
+    mac: brew uninstall tmux
+    ubuntu: sudo apt remove -y tmux
+    linux: sudo apt remove -y tmux
 
 ripgrep:
   label: ripgrep
@@ -395,6 +558,11 @@ ripgrep:
     ubuntu: sudo apt install -y ripgrep
     linux: sudo apt install -y ripgrep
     windows: winget install BurntSushi.ripgrep.MSVC
+  uninstall:
+    mac: brew uninstall ripgrep
+    ubuntu: sudo apt remove -y ripgrep
+    linux: sudo apt remove -y ripgrep
+    windows: winget uninstall BurntSushi.ripgrep.MSVC
 
 fd:
   label: fd
@@ -406,6 +574,11 @@ fd:
     ubuntu: sudo apt install -y fd-find
     linux: sudo apt install -y fd-find
     windows: winget install sharkdp.fd
+  uninstall:
+    mac: brew uninstall fd
+    ubuntu: sudo apt remove -y fd-find
+    linux: sudo apt remove -y fd-find
+    windows: winget uninstall sharkdp.fd
 
 fzf:
   label: fzf
@@ -417,6 +590,11 @@ fzf:
     ubuntu: sudo apt install -y fzf
     linux: sudo apt install -y fzf
     windows: winget install junegunn.fzf
+  uninstall:
+    mac: brew uninstall fzf
+    ubuntu: sudo apt remove -y fzf
+    linux: sudo apt remove -y fzf
+    windows: winget uninstall junegunn.fzf
 
 lazygit:
   label: lazygit
@@ -428,3 +606,8 @@ lazygit:
     ubuntu: brew install lazygit
     linux: brew install lazygit
     windows: winget install JesseDuffield.lazygit
+  uninstall:
+    mac: brew uninstall lazygit
+    ubuntu: brew uninstall lazygit
+    linux: brew uninstall lazygit
+    windows: winget uninstall JesseDuffield.lazygit
