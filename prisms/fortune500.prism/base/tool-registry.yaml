@@ -1,5 +1,5 @@
-# Tool Registry — custom tools for fortune500.prism
-# Tools not found in the base prism.prism/base/tool-registry.yaml.
+# Tool Registry — tools not in prism.prism/base/tool-registry.yaml
+# Enterprise-specific: security scanners, monorepo tools, cloud auth helpers
 
 python3:
   label: Python 3
@@ -17,6 +17,54 @@ python3:
     linux: sudo apt-get remove -y python3
     windows: winget uninstall Python.Python.3.12
 
+nodejs:
+  label: Node.js
+  summary: JavaScript runtime
+  description: Server-side JavaScript runtime — web servers, CLIs, and build tooling
+  category: runtime
+  platforms:
+    mac: brew install node
+    ubuntu: sudo apt-get install -y nodejs
+    linux: sudo apt-get install -y nodejs
+    windows: winget install OpenJS.NodeJS
+  uninstall:
+    mac: brew uninstall node
+    ubuntu: sudo apt-get remove -y nodejs
+    linux: sudo apt-get remove -y nodejs
+    windows: winget uninstall OpenJS.NodeJS
+
+java:
+  label: Java (Temurin 21)
+  summary: JVM runtime
+  description: Enterprise Java runtime — Spring Boot, Kafka consumers, backend services
+  category: runtime
+  platforms:
+    mac: brew install --cask temurin@21
+    ubuntu: sudo apt-get install -y temurin-21-jdk
+    linux: sudo apt-get install -y temurin-21-jdk
+    windows: winget install EclipseAdoptium.Temurin.21.JDK
+  uninstall:
+    mac: brew uninstall --cask temurin@21
+    ubuntu: sudo apt-get remove -y temurin-21-jdk
+    linux: sudo apt-get remove -y temurin-21-jdk
+    windows: winget uninstall EclipseAdoptium.Temurin.21.JDK
+
+ansible:
+  label: Ansible
+  summary: Config management
+  description: Agentless IT automation — configure servers, deploy apps, orchestrate workflows
+  category: cloud
+  platforms:
+    mac: brew install ansible
+    ubuntu: sudo apt-get install -y ansible
+    linux: sudo apt-get install -y ansible
+    windows: pip install ansible
+  uninstall:
+    mac: brew uninstall ansible
+    ubuntu: sudo apt-get remove -y ansible
+    linux: sudo apt-get remove -y ansible
+    windows: pip uninstall ansible
+
 vscode:
   label: VS Code
   summary: Extensible editor
@@ -33,34 +81,170 @@ vscode:
     linux: sudo snap remove code
     windows: winget uninstall Microsoft.VisualStudioCode
 
-nodejs:
-  label: Node.js
-  summary: JavaScript runtime
-  description: Server-side JavaScript runtime — build web servers, CLIs, and tooling
-  category: runtime
-  platforms:
-    mac: brew install node
-    ubuntu: sudo apt-get install -y nodejs
-    linux: sudo apt-get install -y nodejs
-    windows: winget install OpenJS.NodeJS
-  uninstall:
-    mac: brew uninstall node
-    ubuntu: sudo apt-get remove -y nodejs
-    linux: sudo apt-get remove -y nodejs
-    windows: winget uninstall OpenJS.NodeJS
+# --- Security scanning tools ---
 
-ansible:
-  label: Ansible
-  summary: Automation & config management
-  description: Agentless IT automation — configure servers, deploy apps, orchestrate workflows
-  category: cloud
+trivy:
+  label: Trivy
+  summary: Vulnerability scanner
+  description: Scan containers, filesystems, and IaC for vulnerabilities and misconfigs
+  category: security
   platforms:
-    mac: brew install ansible
-    ubuntu: sudo apt-get install -y ansible
-    linux: sudo apt-get install -y ansible
-    windows: pip install ansible
+    mac: brew install trivy
+    ubuntu: "curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin"
+    linux: "curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin"
+    windows: winget install AquaSecurity.Trivy
   uninstall:
-    mac: brew uninstall ansible
-    ubuntu: sudo apt-get remove -y ansible
-    linux: sudo apt-get remove -y ansible
-    windows: pip uninstall ansible
+    mac: brew uninstall trivy
+    ubuntu: sudo rm -f /usr/local/bin/trivy
+    linux: sudo rm -f /usr/local/bin/trivy
+    windows: winget uninstall AquaSecurity.Trivy
+
+gitleaks:
+  label: Gitleaks
+  summary: Secrets detection
+  description: Detect hardcoded secrets in git repos — API keys, passwords, tokens
+  category: security
+  platforms:
+    mac: brew install gitleaks
+    ubuntu: brew install gitleaks
+    linux: brew install gitleaks
+    windows: winget install Gitleaks.Gitleaks
+  uninstall:
+    mac: brew uninstall gitleaks
+    ubuntu: brew uninstall gitleaks
+    linux: brew uninstall gitleaks
+    windows: winget uninstall Gitleaks.Gitleaks
+
+semgrep:
+  label: Semgrep
+  summary: SAST scanner
+  description: Static analysis for security bugs — supports 30+ languages, OWASP rules
+  category: security
+  platforms:
+    mac: brew install semgrep
+    ubuntu: pip install semgrep
+    linux: pip install semgrep
+    windows: pip install semgrep
+  uninstall:
+    mac: brew uninstall semgrep
+    ubuntu: pip uninstall semgrep
+    linux: pip uninstall semgrep
+    windows: pip uninstall semgrep
+
+snyk:
+  label: Snyk
+  summary: Dependency security
+  description: Find and fix vulnerabilities in open-source dependencies and container images
+  category: security
+  platforms:
+    mac: brew install snyk-cli
+    ubuntu: npm install -g snyk
+    linux: npm install -g snyk
+    windows: npm install -g snyk
+  uninstall:
+    mac: brew uninstall snyk-cli
+    ubuntu: npm uninstall -g snyk
+    linux: npm uninstall -g snyk
+    windows: npm uninstall -g snyk
+
+# --- Monorepo & build tools ---
+
+bazel:
+  label: Bazel
+  summary: Monorepo build system
+  description: Scalable build system for monorepos — remote caching, remote execution, hermetic builds
+  category: build
+  platforms:
+    mac: brew install bazelisk
+    ubuntu: "npm install -g @bazel/bazelisk"
+    linux: "npm install -g @bazel/bazelisk"
+    windows: winget install Bazel.Bazelisk
+  uninstall:
+    mac: brew uninstall bazelisk
+    ubuntu: "npm uninstall -g @bazel/bazelisk"
+    linux: "npm uninstall -g @bazel/bazelisk"
+    windows: winget uninstall Bazel.Bazelisk
+
+nx:
+  label: Nx
+  summary: JS/TS monorepo tool
+  description: Smart monorepo build system — affected-only builds, computation caching, task pipelines
+  category: build
+  platforms:
+    mac: npm install -g nx
+    ubuntu: npm install -g nx
+    linux: npm install -g nx
+    windows: npm install -g nx
+  uninstall:
+    mac: npm uninstall -g nx
+    ubuntu: npm uninstall -g nx
+    linux: npm uninstall -g nx
+    windows: npm uninstall -g nx
+
+# --- Observability ---
+
+datadog-agent:
+  label: Datadog Agent
+  summary: Monitoring agent
+  description: Collect metrics, traces, and logs from your local dev environment
+  category: observability
+  platforms:
+    mac: brew install datadog-agent
+    ubuntu: "DD_API_KEY=<key> bash -c \"$(curl -L https://install.datadoghq.com/scripts/install_script_agent7.sh)\""
+    linux: "DD_API_KEY=<key> bash -c \"$(curl -L https://install.datadoghq.com/scripts/install_script_agent7.sh)\""
+  uninstall:
+    mac: brew uninstall datadog-agent
+    ubuntu: sudo apt-get remove -y datadog-agent
+    linux: sudo apt-get remove -y datadog-agent
+
+# --- Data / ML tools ---
+
+dbt:
+  label: dbt CLI
+  summary: Data transformation
+  description: Transform data in your warehouse with SQL — version-controlled, testable analytics code
+  category: data
+  platforms:
+    mac: brew install dbt-labs/dbt/dbt-core
+    ubuntu: pip install dbt-core
+    linux: pip install dbt-core
+    windows: pip install dbt-core
+  uninstall:
+    mac: brew uninstall dbt-core
+    ubuntu: pip uninstall dbt-core
+    linux: pip uninstall dbt-core
+    windows: pip uninstall dbt-core
+
+# --- Vault ---
+
+vault:
+  label: HashiCorp Vault
+  summary: Secrets management
+  description: Securely access secrets, tokens, encryption keys — enterprise secret store CLI
+  category: security
+  platforms:
+    mac: brew install vault
+    ubuntu: brew install vault
+    linux: brew install vault
+    windows: winget install Hashicorp.Vault
+  uninstall:
+    mac: brew uninstall vault
+    ubuntu: brew uninstall vault
+    linux: brew uninstall vault
+    windows: winget uninstall Hashicorp.Vault
+
+# --- Service mesh ---
+
+istioctl:
+  label: Istio CLI
+  summary: Service mesh control
+  description: Install, configure, and debug Istio service mesh on Kubernetes
+  category: kubernetes
+  platforms:
+    mac: brew install istioctl
+    ubuntu: "curl -L https://istio.io/downloadIstio | sh - && sudo mv istio-*/bin/istioctl /usr/local/bin/"
+    linux: "curl -L https://istio.io/downloadIstio | sh - && sudo mv istio-*/bin/istioctl /usr/local/bin/"
+  uninstall:
+    mac: brew uninstall istioctl
+    ubuntu: sudo rm -f /usr/local/bin/istioctl
+    linux: sudo rm -f /usr/local/bin/istioctl

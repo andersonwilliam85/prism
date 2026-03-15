@@ -1,24 +1,96 @@
 # ============================================================================
-# PLATFORM TEAM (Example)
+# PLATFORM TEAM
 # ============================================================================
+# 8 engineers. Owns: AWS infrastructure, CI/CD pipelines, Kubernetes
+# migration (from ECS), developer tooling, observability.
+# This team is building the foundations as Acme scales.
 
 team:
   id: "platform-team"
-  name: "Platform Engineering Team"
-  manager: "Jane Smith"
-  tech_lead: "John Doe"
-  slack_channel: "#platform-team"
+  name: "Platform Team"
+  description: "Infrastructure, CI/CD, developer experience, cloud"
+  size: 8
+  slack_channels:
+    - "#platform-team"
+    - "#platform-support"
+    - "#infra-alerts"
+  oncall: "Weekly rotation — see #platform-team pinned message for schedule"
 
-# Team repositories
-repositories:
-  - name: "platform-api"
-    url: "https://github.acmecorp.com/platform/api"
-  
-  - name: "platform-ui"
-    url: "https://github.acmecorp.com/platform/ui"
-
-# Team-specific tools
 tools_required:
-  - kubernetes
   - terraform
+  - kubectl
   - helm
+  - k9s
+  - aws
+  - docker
+  - gh
+  - jq
+  - gitleaks
+
+tools_optional:
+  - kubectx
+  - stern
+  - argocd
+  - ansible
+  - ripgrep
+  - tmux
+
+workspace:
+  directories:
+    - path: "~/work/infrastructure/terraform"
+      description: "Terraform modules — VPC, ECS, RDS, EKS, IAM"
+    - path: "~/work/infrastructure/kubernetes"
+      description: "Kubernetes manifests (EKS migration in progress)"
+    - path: "~/work/infrastructure/github-actions"
+      description: "Shared GitHub Actions workflow templates"
+    - path: "~/work/services/platform-tools"
+      description: "Internal CLI tools and developer utilities"
+
+repositories:
+  - name: "infrastructure"
+    url: "https://github.com/acmecorp/infrastructure"
+    description: "All Terraform configs — modules, environments, state"
+  - name: "k8s-configs"
+    url: "https://github.com/acmecorp/k8s-configs"
+    description: "Kubernetes manifests for the EKS migration"
+  - name: "github-actions-shared"
+    url: "https://github.com/acmecorp/.github"
+    description: "Shared CI/CD workflow templates"
+  - name: "acme-cli"
+    url: "https://github.com/acmecorp/acme-cli"
+    description: "Internal CLI — scaffolding, deploy, logs, secret management"
+  - name: "monitoring-config"
+    url: "https://github.com/acmecorp/monitoring-config"
+    description: "Datadog dashboards, monitors, SLOs as code"
+
+tech_stack:
+  infrastructure:
+    - "Terraform (all AWS resources)"
+    - "ECS Fargate (current container platform)"
+    - "EKS (migrating to — new services deploy here)"
+    - "Helm (Kubernetes packaging)"
+  ci_cd:
+    - "GitHub Actions (primary)"
+    - "Argo CD (GitOps for EKS services)"
+  observability:
+    - "Datadog (metrics, APM, logs)"
+    - "Sentry (error tracking)"
+    - "PagerDuty (on-call alerting)"
+
+current_projects:
+  - name: "ECS to EKS migration"
+    status: "In progress — 4 services migrated, 12 remaining"
+    doc: "https://dev.acmecorp.com/docs/eks-migration"
+  - name: "CI/CD standardization"
+    status: "Defining shared workflows for all teams"
+    doc: "https://dev.acmecorp.com/docs/cicd-standards"
+  - name: "Developer portal"
+    status: "Building self-service tooling for service creation"
+
+day_one_checklist:
+  - "Get AWS SSO access (request via IT ticket)"
+  - "Run 'aws sso login' and verify 'aws sts get-caller-identity'"
+  - "Clone infrastructure repo and run 'terraform init' in dev/"
+  - "Set up kubectl for the EKS dev cluster"
+  - "Access Datadog and verify you can see dashboards"
+  - "Join PagerDuty and the on-call schedule"

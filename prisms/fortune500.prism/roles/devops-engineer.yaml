@@ -1,15 +1,71 @@
 # ============================================================================
-# DEVOPS ENGINEER ROLE
+# DEVOPS / SRE ROLE
 # ============================================================================
+# Infrastructure, CI/CD pipelines, reliability, observability, on-call.
 
 role:
   id: "devops-engineer"
-  name: "DevOps Engineer"
-  description: "Infrastructure and CI/CD"
+  name: "DevOps / SRE"
+  description: "Infrastructure, CI/CD, reliability, on-call"
 
 tools_required:
   - terraform
   - ansible
   - kubectl
+  - helm
+  - k9s
+  - kubectx
+  - stern
+  - argocd
   - docker
   - git
+  - gh
+  - aws
+  - az
+  - gcloud
+  - jq
+  - vault
+  - trivy
+
+tools_optional:
+  - kustomize
+  - skaffold
+  - pulumi
+  - istioctl
+  - datadog-agent
+  - ripgrep
+  - tmux
+
+day_one_checklist:
+  - "Configure kubectl contexts for all clusters (dev, staging, prod)"
+  - "Run 'kubectx' and 'kubens' to verify context switching"
+  - "Authenticate to all three cloud providers (AWS SSO, az login, gcloud auth)"
+  - "Clone infra-terraform and run 'terraform plan' on a dev workspace"
+  - "Access Grafana dashboards and verify you can see your team's metrics"
+  - "Join the PagerDuty schedule and install the mobile app"
+  - "Review the incident response runbook"
+  - "Run a Trivy scan on a container image: trivy image docker.company.com/example:latest"
+
+oncall:
+  rotation: "1 week primary, 1 week secondary, 4 weeks off"
+  escalation:
+    - "PagerDuty alert -> primary on-call"
+    - "No ack in 5 min -> secondary on-call"
+    - "No ack in 10 min -> engineering manager"
+  tools:
+    - "PagerDuty (alerting)"
+    - "Grafana (dashboards)"
+    - "Kibana (log search)"
+    - "kubectl (cluster inspection)"
+    - "#inc-<service> Slack channel (coordination)"
+  runbooks: "https://runbooks.company.com"
+
+training:
+  required:
+    - "Incident commander certification"
+    - "Cloud security best practices"
+    - "Terraform at scale"
+  recommended:
+    - "Kubernetes CKA certification"
+    - "Site Reliability Engineering (Google SRE book)"
+    - "Chaos engineering fundamentals"

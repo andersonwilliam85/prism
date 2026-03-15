@@ -1,21 +1,122 @@
 # ============================================================================
 # RUBY ON RAILS STACK
 # ============================================================================
+# Convention over configuration. Ship features fast with batteries included.
+# Good for: SaaS products, CRUD apps, marketplaces, admin-heavy tools.
 
 stack:
   id: "rails"
   name: "Ruby on Rails"
-  description: "Rails + PostgreSQL"
+  description: "Rails 7+ with PostgreSQL and Redis — convention over configuration"
 
 tools_required:
+  - rbenv
+  - ruby-build
   - docker
   - git
+  - gh
+  - postgresql
+  - redis-cli
+  - curl
 
+tools_optional:
+  - foreman
+  - flyctl
+  - railway-cli
+  - aws
+  - sentry-cli
+  - act
+  - lazygit
+  - imagemagick
+
+# ---------- Stack details ----------
 tech_stack:
   backend:
-    - Ruby on Rails
+    - Ruby 3.2+ via rbenv
+    - Rails 7+ with Hotwire (Turbo + Stimulus)
+    - Sidekiq for background jobs
+    - Devise for authentication
+  frontend:
+    - Hotwire Turbo for SPA-like navigation
+    - Stimulus for JavaScript sprinkles
+    - Tailwind CSS via cssbundling-rails
+    - Import maps or esbuild for JS bundling
   databases:
-    - PostgreSQL
-  tools:
-    - Bundler
-    - RSpec
+    - PostgreSQL 15+ (primary — via Docker)
+    - Redis (Sidekiq jobs, Action Cable, caching)
+  testing:
+    - RSpec + FactoryBot
+    - Capybara + Playwright for system tests
+    - SimpleCov for coverage
+  deployment:
+    - Docker for production builds
+    - GitHub Actions CI pipeline
+    - Fly.io or Railway for hosting
+    - Kamal for container deploys to any VPS
+
+# ---------- Local dev setup ----------
+local_dev:
+  docker_compose_services:
+    - postgres (port 5432)
+    - redis (port 6379)
+  dev_commands:
+    start_services: "docker compose up -d postgres redis"
+    start_app: "bin/dev"
+    console: "bin/rails console"
+    db_create: "bin/rails db:create"
+    db_migrate: "bin/rails db:migrate"
+    db_seed: "bin/rails db:seed"
+    db_reset: "bin/rails db:reset"
+    test: "bundle exec rspec"
+    routes: "bin/rails routes"
+
+# ---------- Shell aliases for Rails ----------
+shell:
+  aliases:
+    rc: "bin/rails console"
+    rs: "bin/rails server"
+    rr: "bin/rails routes"
+    rg: "bin/rails generate"
+    rdm: "bin/rails db:migrate"
+    rdr: "bin/rails db:rollback"
+    rds: "bin/rails db:seed"
+    rdc: "bin/rails db:create"
+    rspec: "bundle exec rspec"
+    guard: "bundle exec guard"
+    bi: "bundle install"
+    be: "bundle exec"
+    sidekiq: "bundle exec sidekiq"
+    dev: "bin/dev"
+    pg: "docker compose exec postgres psql -U postgres"
+    rediscli: "docker compose exec redis redis-cli"
+    taillog: "tail -f log/development.log"
+    routes: "bin/rails routes | fzf"
+
+# ---------- Recommended project structure ----------
+project_structure:
+  description: "Standard Rails with Docker for services"
+  layout:
+    - app/
+    -   controllers/    # Request handling
+    -   models/         # ActiveRecord models
+    -   views/          # ERB/Hotwire templates
+    -   jobs/           # Sidekiq background jobs
+    -   mailers/        # Email templates
+    -   components/     # ViewComponent classes
+    - config/
+    - db/
+    -   migrate/        # Database migrations
+    -   seeds.rb        # Seed data
+    - spec/             # RSpec tests
+    -   models/
+    -   requests/
+    -   system/
+    -   factories/
+    - infrastructure/
+    -   docker-compose.yaml
+    -   Dockerfile
+    -   Procfile.dev     # foreman/overmind processes
+    - .github/
+    -   workflows/
+    -     ci.yaml        # Lint, test, security scan on every PR
+    -     deploy.yaml    # Deploy on merge to main

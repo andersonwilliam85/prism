@@ -1,13 +1,44 @@
 # ============================================================================
-# IT STAFF USER TYPE
+# IT STAFF ROLE
 # ============================================================================
+# University IT support and system administration.
 
 user_type:
   id: "staff"
   name: "IT Staff"
   description: "University IT support and administration"
 
+# ── Tools ─────────────────────────────────────────────────────────────────────
+
 tools_required:
   - git
-  - docker
   - python3
+  - docker
+  - curl
+  - tmux
+
+tools_optional:
+  - code
+  - gh
+  - ripgrep
+  - fd
+  - jq
+  - kubectl
+  - terraform
+
+# ── Workspace ─────────────────────────────────────────────────────────────────
+
+workspace:
+  structure:
+    "~/infrastructure":
+      - "scripts/"
+      - "configs/"
+      - "monitoring/"
+      - "docs/"
+
+# ── Git Configuration ────────────────────────────────────────────────────────
+
+git:
+  aliases:
+    hist: "log --oneline --graph --decorate -30"
+    last: "log -1 HEAD --stat"

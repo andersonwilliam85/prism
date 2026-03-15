@@ -1,0 +1,96 @@
+# ============================================================================
+# DATA & ML ENGINEERING TEAM
+# ============================================================================
+# Owns: data pipelines, ML model training/serving, analytics platform,
+# feature stores, data quality, data governance.
+
+team:
+  id: "data-ml"
+  name: "Data & ML Engineering"
+  description: "Data pipelines, ML training/serving, analytics, feature stores"
+  slack_channels:
+    - "#data-engineering"
+    - "#ml-platform"
+    - "#data-quality"
+  oncall_rotation: "https://company.pagerduty.com/schedules/data"
+
+tools_required:
+  - python3
+  - pyenv
+  - docker
+  - aws
+  - jq
+  - dbt
+  - gh
+
+tools_optional:
+  - gcloud
+  - kubectl
+  - k9s
+
+workspace:
+  directories:
+    - path: "~/work/services/data-pipelines"
+      description: "Airflow DAGs, Spark jobs, streaming pipelines"
+    - path: "~/work/services/ml-models"
+      description: "ML model training code, experiment configs"
+    - path: "~/work/services/ml-serving"
+      description: "Model serving APIs and inference services"
+    - path: "~/work/libraries/data-utils"
+      description: "Shared data processing utilities"
+    - path: "~/work/infrastructure/data-infra"
+      description: "Terraform for data infrastructure (EMR, Redshift, S3)"
+    - path: "~/work/docs/data-catalog"
+      description: "Dataset documentation and data dictionary"
+
+repositories:
+  - name: "data-pipelines"
+    url: "https://github.company.com/data/data-pipelines"
+    description: "Airflow DAGs and Spark jobs"
+  - name: "ml-platform"
+    url: "https://github.company.com/data/ml-platform"
+    description: "MLflow, feature store, model registry"
+  - name: "dbt-models"
+    url: "https://github.company.com/data/dbt-models"
+    description: "dbt transformations for the analytics warehouse"
+  - name: "data-contracts"
+    url: "https://github.company.com/data/data-contracts"
+    description: "Schema definitions and data quality expectations"
+  - name: "ml-serving"
+    url: "https://github.company.com/data/ml-serving"
+    description: "Model serving infrastructure (Seldon, KServe)"
+
+tech_stack:
+  languages:
+    - "Python 3.11+ (primary — pandas, PySpark, PyTorch, scikit-learn)"
+    - "SQL (dbt, warehouse queries)"
+    - "Scala (legacy Spark jobs)"
+  orchestration:
+    - "Airflow (DAG scheduling)"
+    - "Argo Workflows (ML training pipelines)"
+    - "Prefect (newer pipelines)"
+  compute:
+    - "Apache Spark on EMR (batch processing)"
+    - "Flink (stream processing)"
+    - "Ray (distributed ML training)"
+  storage:
+    - "S3 / GCS (data lake)"
+    - "Snowflake (analytics warehouse)"
+    - "Redshift (legacy warehouse)"
+    - "Delta Lake (lakehouse format)"
+  ml:
+    - "MLflow (experiment tracking, model registry)"
+    - "SageMaker / Vertex AI (managed training)"
+    - "Seldon / KServe (model serving on K8s)"
+    - "Great Expectations (data quality)"
+  visualization:
+    - "Looker (BI dashboards)"
+    - "Jupyter (exploration, notebooks)"
+    - "Streamlit (internal ML tools)"
+
+conventions:
+  python_version: "Managed via pyenv, pinned in .python-version"
+  dependency_management: "Poetry or pip-tools (pinned requirements)"
+  data_quality: "Great Expectations suites run on every pipeline"
+  model_governance: "All production models registered in MLflow with approval"
+  pii_handling: "PII columns must be tagged in data catalog, encrypted at rest"

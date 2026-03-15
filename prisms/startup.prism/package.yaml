@@ -1,27 +1,27 @@
 # ============================================================================
-# STARTUP PRISM - FAST & LEAN CONFIGURATION
+# STARTUP PRISM — SHIP FROM DAY ONE
 # ============================================================================
-# For fast-moving startups (10-100 people)
-# Move fast, ship code, iterate quickly!
+# For early-stage startups (2-50 engineers) who need to move fast.
+# Opinionated: trunk-based dev, deploy on merge, observe from day one.
 
 package:
   name: "startup-prism"
-  version: "1.0.0"
-  description: "Startup prism - fast, lean, and flexible dev environment"
+  version: "2.0.0"
+  description: "Dev environment for startups — fast iteration, full-stack, cloud-first, CI/CD ready"
   author: "Engineering Team"
-  homepage: "https://startup.com"
+  homepage: "https://github.com/your-startup"
   support:
     slack: "#engineering"
-  
+
   type: "startup"
-  
+
   requires:
     onboarding_version: ">=1.0.0"
     python_version: ">=3.8"
 
 # PRISM META-CONFIGURATION
 prism_config:
-  theme: "sunset"
+  theme: "launchpad"
   theme_options:
     - "sunset"
     - "ocean"
@@ -40,128 +40,137 @@ prism_config:
     - url: "local"
       name: "Built-in Prisms"
       type: "local"
-  
-  npm_registry: ""  # Use default (fast!)
-  
-  # Startup branding
+
+  npm_registry: ""
+
   branding:
     name: "[Startup] Prism"
-    tagline: "Ship fast, iterate faster"
-    primary_color: "#f97316"  # Orange
-    secondary_color: "#eab308"  # Yellow
+    tagline: "Ship from day one"
+    primary_color: "#f97316"
+    secondary_color: "#eab308"
 
 # BUNDLED SETUP PRISMS
 bundled_prisms:
-  # Base (minimal!)
   base:
     - id: "startup-base"
       name: "Startup Base Setup"
-      description: "Minimal base configuration"
+      description: "Core tools, git config, shell aliases, and workspace structure every engineer needs"
       required: true
       config: "base/startup.yaml"
-  
-  # Roles (flat structure)
+
   roles:
     - id: "full-stack"
       name: "Full-Stack Engineer"
-      description: "Frontend + Backend"
+      description: "Own features end-to-end — frontend, backend, database, and deployment"
       config: "roles/full-stack.yaml"
       tools:
-        - vscode
-        - docker
-        - git
-    
+        - "git"
+        - "docker"
+        - "nvm"
+        - "nodejs"
+        - "gh"
+
     - id: "frontend"
       name: "Frontend Engineer"
-      description: "React/Vue/Svelte"
+      description: "Build the UI — React, TypeScript, design systems, and fast iteration"
       config: "roles/frontend.yaml"
       tools:
-        - vscode
-        - node
-        - npm
-    
+        - "git"
+        - "nvm"
+        - "nodejs"
+        - "gh"
+        - "vercel-cli"
+
     - id: "backend"
       name: "Backend Engineer"
-      description: "APIs and services"
+      description: "APIs, services, databases, and infrastructure"
       config: "roles/backend.yaml"
       tools:
-        - vscode
-        - docker
-        - postman
-  
-  # Stacks (optional)
+        - "git"
+        - "docker"
+        - "gh"
+        - "postgresql"
+        - "redis-cli"
+
   stacks:
     - id: "mern"
       name: "MERN Stack"
-      description: "MongoDB, Express, React, Node"
+      description: "MongoDB + Express + React + Node.js — JavaScript everywhere"
       config: "stacks/mern.yaml"
-    
+
     - id: "jamstack"
       name: "JAMstack"
-      description: "Next.js, Vercel, Serverless"
+      description: "Next.js + Vercel — static-first with serverless backends"
       config: "stacks/jamstack.yaml"
-    
+
     - id: "rails"
       name: "Ruby on Rails"
-      description: "Rails + PostgreSQL"
+      description: "Rails 7+ with PostgreSQL, Redis, and Sidekiq"
       config: "stacks/rails.yaml"
 
 # SETUP CONFIGURATION
 setup:
   install:
     target_dir: "config/"
-    
+
     files:
       - source: "welcome.yaml"
         dest: "config/welcome.yaml"
-      
+
       - source: "resources.yaml"
         dest: "config/resources.yaml"
-    
+
     directories:
       - source: "base/"
         dest: "config/base/"
-      
+
       - source: "roles/"
         dest: "config/roles/"
-  
+
   post_install:
     message: |
-      🚀 Welcome to the team!
-      
-      We move FAST here. Ship code on day 1!
-      
-      ⚡ Resources:
-      - Slack: #engineering
-      - Docs: Notion
-      - Deploy: Just push to main 😅
-      
-      Next:
-      1. Join Slack
-      2. Clone the repo
-      3. Ship it!
+      Welcome to the team!
 
-# User info fields (minimal!)
+      Your dev environment is ready. Here is what was set up:
+        - Git configured for trunk-based development (rebase, auto-prune)
+        - Shell aliases for fast git, Docker, and GitHub workflows
+        - Workspace created at ~/dev/<startup-name>/
+        - CI/CD ready with GitHub Actions
+
+      Quick start:
+        1. Run 'gsync' to stay on top of main
+        2. Run 'dcu' to start local services (database, Redis)
+        3. Run 'nrd' or 'bin/dev' to start the dev server
+        4. Run 'pr' to open a pull request when ready
+
+      Key channels:
+        - Slack: #engineering for help, #deploys for deploy notifications
+        - Docs: Check ~/dev/<startup-name>/docs/ for architecture decisions
+
+      Ship it.
+
+# User info fields
 user_info_fields:
   - id: "name"
-    label: "Name"
+    label: "Full Name"
     type: "text"
     required: true
-    placeholder: "Alex"
-    description: "First name is fine!"
-  
+    placeholder: "Alex Chen"
+    description: "Used for git commits and team directory"
+
   - id: "email"
     label: "Email"
     type: "email"
     required: true
     placeholder: "alex@startup.com"
-  
+
   - id: "github_username"
-    label: "GitHub"
+    label: "GitHub Username"
     type: "text"
     required: true
     placeholder: "alexcodes"
-  
+    description: "Must match your GitHub account — used for repo access and PR assignment"
+
   - id: "role"
     label: "Role"
     type: "select"
@@ -184,6 +193,7 @@ user_info_fields:
       Full-Stack:
         - "MERN"
         - "Rails"
+        - "JAMstack"
       Frontend:
         - "JAMstack"
         - "MERN"
@@ -192,10 +202,18 @@ user_info_fields:
         - "MERN"
 
   - id: "slack_handle"
-    label: "Slack"
+    label: "Slack Handle"
     type: "text"
     required: true
     placeholder: "@alex"
+    description: "For deploy notifications and on-call mentions"
+
+  - id: "startup_name"
+    label: "Startup/Project Name"
+    type: "text"
+    required: true
+    placeholder: "acmeco"
+    description: "Used for workspace directory (~/dev/<this-value>/)"
 
 # Distribution
 distribution:
@@ -207,11 +225,10 @@ distribution:
 metadata:
   tags:
     - startup
-    - fast
-    - lean
-    - agile
-  
+    - full-stack
+    - cloud-first
+    - trunk-based
+    - fast-iteration
   company_size: "small"
   regions: ["Global"]
-  
-  last_updated: "2026-03-04"
+  last_updated: "2026-03-15"

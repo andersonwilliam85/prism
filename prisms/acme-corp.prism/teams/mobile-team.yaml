@@ -1,0 +1,87 @@
+# ============================================================================
+# MOBILE TEAM
+# ============================================================================
+# 8 engineers. Owns: iOS and Android apps built with React Native,
+# native modules, app store releases. Small but growing team.
+
+team:
+  id: "mobile-team"
+  name: "Mobile Team"
+  description: "iOS and Android apps, React Native shared code"
+  size: 8
+  slack_channels:
+    - "#mobile-team"
+    - "#mobile-releases"
+
+tools_required:
+  - nodejs
+  - nvm
+  - docker
+  - gh
+  - react-native-cli
+  - gitleaks
+
+tools_optional:
+  - cocoapods
+  - fastlane
+  - vscode
+  - jq
+  - ripgrep
+
+workspace:
+  directories:
+    - path: "~/work/services/acme-mobile"
+      description: "React Native app (iOS + Android)"
+    - path: "~/work/libraries/acme-mobile-utils"
+      description: "Shared React Native components and hooks"
+
+prerequisites:
+  mac_only:
+    - "Xcode (latest stable from App Store)"
+    - "Xcode Command Line Tools: xcode-select --install"
+    - "CocoaPods: brew install cocoapods"
+    - "Android Studio (for Android builds and emulator)"
+    - "Java 17 (required by Android build tools)"
+  note: "iOS development requires macOS. Android can be built on any OS."
+
+repositories:
+  - name: "acme-mobile"
+    url: "https://github.com/acmecorp/acme-mobile"
+    description: "React Native app — shared codebase for iOS and Android"
+  - name: "acme-mobile-utils"
+    url: "https://github.com/acmecorp/acme-mobile-utils"
+    description: "Shared RN components, hooks, navigation helpers"
+  - name: "mobile-ci"
+    url: "https://github.com/acmecorp/mobile-ci"
+    description: "Fastlane configs, code signing, CI workflows"
+
+tech_stack:
+  framework: "React Native 0.73+"
+  languages:
+    - "TypeScript (shared code)"
+    - "Swift (iOS native modules)"
+    - "Kotlin (Android native modules)"
+  navigation: "React Navigation"
+  state: "React Query + Zustand (same patterns as web team)"
+  testing:
+    - "Jest + React Native Testing Library (unit/component)"
+    - "Detox (E2E — runs on CI with simulators)"
+  ci_cd:
+    - "GitHub Actions (builds)"
+    - "Fastlane (App Store Connect + Google Play deployment)"
+    - "CodePush (OTA updates for JS-only changes)"
+
+conventions:
+  release_cadence: "Bi-weekly App Store / Play Store releases"
+  branching: "release/<version> cut from main, cherry-pick hotfixes"
+  code_sharing: "Share hooks and API client with web team via @acme/shared-utils"
+  deep_linking: "Universal links (iOS) + App Links (Android) — schema in api-specs repo"
+
+day_one_checklist:
+  - "Install Xcode from App Store and accept license"
+  - "Install Android Studio and set up an emulator"
+  - "Clone acme-mobile, run 'pnpm install'"
+  - "iOS: cd ios && pod install && pnpm ios"
+  - "Android: pnpm android"
+  - "Request Apple Developer Program access from your manager"
+  - "Request Google Play Console access via IT ticket"

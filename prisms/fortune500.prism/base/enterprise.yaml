@@ -1,7 +1,8 @@
 # ============================================================================
 # ENTERPRISE BASE CONFIGURATION
 # ============================================================================
-# Core setup applied to all Fortune 500 / enterprise users.
+# Applied to every developer. Covers: network, registries, git compliance,
+# security scanning, workspace layout, and multi-cloud auth.
 
 tool_registry_file: "tool-registry.yaml"
 
@@ -10,16 +11,53 @@ company:
   domain: "company.com"
   internal_domain: ".company.com"
 
+# ---------------------------------------------------------------------------
+# NETWORK — proxy, VPN, internal DNS
+# ---------------------------------------------------------------------------
 environment:
   proxy:
     enabled: true
     http: "http://proxy.company.com:8080"
     https: "http://proxy.company.com:8080"
-    no_proxy: "localhost,127.0.0.1,.company.com"
+    no_proxy: "localhost,127.0.0.1,.company.com,10.0.0.0/8,172.16.0.0/12,artifactory.company.com,docker.company.com"
+    # Shell exports — add to ~/.bashrc or ~/.zshrc
+    shell_exports:
+      - "export HTTP_PROXY=http://proxy.company.com:8080"
+      - "export HTTPS_PROXY=http://proxy.company.com:8080"
+      - "export NO_PROXY=localhost,127.0.0.1,.company.com,10.0.0.0/8,172.16.0.0/12"
   vpn:
     required: true
-    name: "Company VPN"
+    name: "Company GlobalProtect VPN"
+    instructions: "Connect via GlobalProtect before accessing any internal resource. Profile auto-installs via MDM."
+  dns:
+    internal_resolvers:
+      - "10.0.0.2"
+      - "10.0.0.3"
 
+# ---------------------------------------------------------------------------
+# INTERNAL PACKAGE REGISTRIES — Artifactory / Nexus
+# ---------------------------------------------------------------------------
+registries:
+  npm:
+    url: "https://artifactory.company.com/api/npm/npm-virtual/"
+    config_command: "npm config set registry https://artifactory.company.com/api/npm/npm-virtual/"
+    scope_example: "npm config set @company:registry https://artifactory.company.com/api/npm/npm-company/"
+  pypi:
+    url: "https://artifactory.company.com/api/pypi/pypi-virtual/simple"
+    config_command: "pip config set global.index-url https://artifactory.company.com/api/pypi/pypi-virtual/simple"
+  maven:
+    url: "https://artifactory.company.com/libs-release"
+    settings_path: "~/.m2/settings.xml"
+  docker:
+    url: "docker.company.com"
+    login_command: "docker login docker.company.com"
+  go:
+    proxy: "https://artifactory.company.com/api/go/go-virtual"
+    config_command: "go env -w GOPROXY=https://artifactory.company.com/api/go/go-virtual,direct"
+
+# ---------------------------------------------------------------------------
+# GIT — signed commits, branch protection, enterprise GitHub
+# ---------------------------------------------------------------------------
 git:
   user:
     name: "${USER}"
@@ -27,18 +65,188 @@ git:
   enterprise:
     enabled: true
     enterprise_url: "https://github.company.com"
+    api_url: "https://github.company.com/api/v3"
+  commit_signing:
+    required: true
+    method: "gpg"
+    instructions:
+      - "Generate a GPG key: gpg --full-generate-key (use your @company.com email)"
+      - "Get key ID: gpg --list-secret-keys --keyid-format=long"
+      - "Configure git: git config --global user.signingkey <KEY_ID>"
+      - "Enable signing: git config --global commit.gpgsign true"
+      - "Upload public key to GitHub Enterprise: Settings > SSH and GPG keys"
+  branch_protection:
+    default_branch: "main"
+    rules:
+      - "Require pull request reviews (minimum 1 approval)"
+      - "Require status checks to pass (CI, security scan, license check)"
+      - "Require signed commits"
+      - "No force pushes to main"
+      - "Require linear history (squash or rebase merges)"
+  hooks:
+    pre_commit:
+      - "secret-detection (gitleaks)"
+      - "license-header-check"
+      - "lint (language-specific)"
+    commit_msg:
+      - "conventional-commits format required (feat|fix|chore|docs|refactor|test|ci):"
 
+# ---------------------------------------------------------------------------
+# WORKSPACE LAYOUT
+# ---------------------------------------------------------------------------
+workspace:
+  base_dir: "~/work"
+  directories:
+    - path: "~/work/services"
+      description: "Microservices — one repo per service"
+    - path: "~/work/libraries"
+      description: "Shared libraries and SDKs"
+    - path: "~/work/infrastructure"
+      description: "Terraform modules, Kubernetes manifests, Helm charts"
+    - path: "~/work/docs"
+      description: "Internal documentation, architecture decision records"
+    - path: "~/work/tools"
+      description: "Internal CLIs and developer tools"
+  monorepo:
+    tool: "Bazel or Nx (team-dependent)"
+    build_cache: "https://buildcache.company.com"
+    remote_execution: "https://rbe.company.com"
+
+# ---------------------------------------------------------------------------
+# MULTI-CLOUD AUTHENTICATION
+# ---------------------------------------------------------------------------
+cloud:
+  aws:
+    sso_start_url: "https://company.awsapps.com/start"
+    sso_region: "us-east-1"
+    profiles:
+      - name: "company-dev"
+        account_id: "111111111111"
+        role: "DeveloperAccess"
+      - name: "company-staging"
+        account_id: "222222222222"
+        role: "DeveloperAccess"
+      - name: "company-prod"
+        account_id: "333333333333"
+        role: "ReadOnlyAccess"
+    login_command: "aws sso login --profile company-dev"
+  azure:
+    tenant_id: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    login_command: "az login --tenant xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    subscriptions:
+      - name: "Company-Dev"
+        id: "dev-sub-id"
+      - name: "Company-Prod"
+        id: "prod-sub-id"
+  gcp:
+    organization: "company.com"
+    login_command: "gcloud auth login --update-adc"
+    projects:
+      - "company-dev-123456"
+      - "company-staging-789012"
+      - "company-prod-345678"
+
+# ---------------------------------------------------------------------------
+# SECURITY SCANNING — runs locally and in CI
+# ---------------------------------------------------------------------------
+security:
+  sso_required: true
+  mfa_required: true
+  scanning:
+    sast:
+      tool: "semgrep"
+      config: "p/default p/owasp-top-ten"
+      ci_blocking: true
+    dependency_scanning:
+      tool: "trivy"
+      command: "trivy fs --severity HIGH,CRITICAL ."
+      ci_blocking: true
+    secrets_detection:
+      tool: "gitleaks"
+      command: "gitleaks detect --source ."
+      pre_commit: true
+    container_scanning:
+      tool: "trivy"
+      command: "trivy image docker.company.com/<image>:<tag>"
+    license_compliance:
+      tool: "fossa"
+      approved_licenses:
+        - "MIT"
+        - "Apache-2.0"
+        - "BSD-2-Clause"
+        - "BSD-3-Clause"
+        - "ISC"
+      blocked_licenses:
+        - "GPL-3.0"
+        - "AGPL-3.0"
+        - "SSPL"
+
+# ---------------------------------------------------------------------------
+# COMPLIANCE & GOVERNANCE
+# ---------------------------------------------------------------------------
+compliance:
+  frameworks:
+    - sox
+    - gdpr
+    - hipaa
+    - pci-dss
+  audit_trail:
+    git_log_retention: "7 years"
+    ci_artifact_retention: "5 years"
+  approved_tools:
+    note: "Only tools on the approved list may be installed on corporate devices. See https://devportal.company.com/approved-tools"
+
+# ---------------------------------------------------------------------------
+# REQUIRED TOOLS — installed for every developer
+# ---------------------------------------------------------------------------
 tools_required:
   - git
   - docker
   - kubectl
-  - python3
+  - helm
+  - aws
+  - jq
+  - gh
+  - trivy
+  - gitleaks
+  - semgrep
 
-security:
-  sso_required: true
-  mfa_required: true
-  vpn_required: true
+tools_optional:
+  - k9s
+  - kubectx
+  - stern
+  - ripgrep
+  - fd
+  - fzf
+  - lazygit
+  - httpie
+  - tmux
 
-compliance:
-  - sox
-  - gdpr
+# ---------------------------------------------------------------------------
+# ON-CALL & INCIDENT RESPONSE
+# ---------------------------------------------------------------------------
+oncall:
+  pagerduty:
+    url: "https://company.pagerduty.com"
+    escalation_policy: "See your team's PagerDuty schedule"
+  runbooks:
+    location: "https://runbooks.company.com"
+  status_page: "https://status.company.com"
+  incident_channel_prefix: "#inc-"
+  monitoring:
+    dashboards: "https://grafana.company.com"
+    logs: "https://kibana.company.com"
+    apm: "https://datadog.company.com"
+
+# ---------------------------------------------------------------------------
+# INTERNAL TOOLING LINKS
+# ---------------------------------------------------------------------------
+internal_tools:
+  jira: "https://jira.company.com"
+  confluence: "https://confluence.company.com"
+  artifactory: "https://artifactory.company.com"
+  sonarqube: "https://sonar.company.com"
+  vault: "https://vault.company.com"
+  argocd: "https://argocd.company.com"
+  grafana: "https://grafana.company.com"
+  sentry: "https://sentry.company.com"

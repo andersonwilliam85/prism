@@ -1,23 +1,189 @@
 # ============================================================================
-# HEALTHCARE CLIENT CONFIGURATION
+# HEALTHCARE CLIENT — "SOLACE HEALTH"
 # ============================================================================
+# Azure-based .NET backend with React frontend. HIPAA compliance.
+# Patient portal, provider tools, and healthcare data integrations.
 
 client:
   id: "client-healthcare"
-  name: "Healthcare Client"
-  description: "Healthcare technology client engagement"
+  slug: "solace"
+  name: "Solace Health"
+  description: "Patient engagement platform — .NET on Azure with React frontend"
+  status: "active"
+  engagement_type: "project-based"
 
+  contacts:
+    tech_lead: "Priya Sharma <priya.sharma@solacehealth.io>"
+    product_owner: "David Park <david.park@solacehealth.io>"
+    security_officer: "Linda Torres <linda.torres@solacehealth.io>"
+
+  communication:
+    slack_workspace: "solace-eng"
+    standup: "Daily 10:00 AM CT"
+    sprint_cadence: "2-week sprints, Mon start"
+    jira_project: "SOL"
+
+# ---------------------------------------------------------------------------
+# COMPLIANCE
+# ---------------------------------------------------------------------------
 compliance:
-  - hipaa
-  - gdpr
+  frameworks:
+    - hipaa
+    - soc2
+  requirements:
+    - "PHI must never appear in logs, error messages, or debug output"
+    - "All PHI at rest encrypted with AES-256"
+    - "All PHI in transit over TLS 1.2+"
+    - "Access to PHI requires role-based authorization"
+    - "Audit logging on all PHI access (who, what, when)"
+    - "No PHI in development/staging environments — use synthetic data only"
+    - "Background checks required for all personnel with PHI access"
+    - "Minimum necessary principle — request only data you need"
+  pre_commit_checks:
+    - "Run PHI detection scanner before committing"
+    - "No patient identifiers in test fixtures"
+    - "Verify no PHI in error messages or log statements"
 
+# ---------------------------------------------------------------------------
+# SECURITY & ACCESS
+# ---------------------------------------------------------------------------
 security:
-  vpn_required: true
+  vpn:
+    required: true
+    name: "Solace VPN (Zscaler)"
+    endpoint: "vpn.solacehealth.io"
+    group: "external-dev"
   mfa_required: true
   data_classification: "phi"
   encryption_required: true
+  credential_rotation: "60 days"
+  additional:
+    - "Use only Solace-issued dev certificates"
+    - "No PHI on local machines — use remote dev environment for PHI workflows"
+    - "Disk encryption (FileVault/BitLocker) required on dev machines"
+    - "Screen lock timeout: 5 minutes maximum"
 
-environment:
-  vpn:
-    required: true
-    name: "Healthcare Client VPN"
+# ---------------------------------------------------------------------------
+# GIT IDENTITY & REPOS
+# ---------------------------------------------------------------------------
+git:
+  user:
+    name: "${USER_NAME}"
+    email: "${USER_NAME_SLUG}@solacehealth.io"
+  ssh_key: "~/.ssh/id_ed25519_solace"
+  primary_repos:
+    - name: "patient-portal-api"
+      url: "git@solace-github:solace/patient-portal-api.git"
+      description: ".NET 8 Web API — patient-facing backend"
+    - name: "patient-portal-web"
+      url: "git@solace-github:solace/patient-portal-web.git"
+      description: "React/TypeScript frontend for patients"
+    - name: "provider-tools"
+      url: "git@solace-github:solace/provider-tools.git"
+      description: "Internal tools for healthcare providers"
+    - name: "fhir-integration"
+      url: "git@solace-github:solace/fhir-integration.git"
+      description: "HL7 FHIR integration layer for EHR systems"
+  branching:
+    strategy: "trunk-based"
+    main: "main"
+    feature_prefix: "feat/"
+    bugfix_prefix: "fix/"
+    pr_required: true
+    min_reviewers: 2
+    security_review_required_for:
+      - "any PHI-adjacent code"
+      - "authentication/authorization changes"
+      - "API endpoint additions"
+
+# ---------------------------------------------------------------------------
+# TECH STACK
+# ---------------------------------------------------------------------------
+tech_stack:
+  languages:
+    - "C# (.NET 8)"
+    - "TypeScript (React frontend)"
+    - "SQL (Azure SQL)"
+  frameworks:
+    - "ASP.NET Core Web API"
+    - "Entity Framework Core"
+    - "React 18 with Next.js"
+    - "xUnit (testing)"
+    - "MediatR (CQRS)"
+  infrastructure:
+    - "Azure (App Service, Azure SQL, Blob Storage, Key Vault, Service Bus)"
+    - "Azure SQL Database"
+    - "Azure Cache for Redis"
+    - "Azure API Management"
+  ci_cd:
+    - "Azure DevOps Pipelines"
+    - "Bicep for infrastructure-as-code"
+  observability:
+    - "Azure Application Insights"
+    - "Azure Monitor"
+    - "Splunk (audit logs)"
+  healthcare_specific:
+    - "HL7 FHIR R4"
+    - "SMART on FHIR (auth)"
+    - "ICD-10 / CPT code libraries"
+
+# ---------------------------------------------------------------------------
+# CLOUD CREDENTIALS
+# ---------------------------------------------------------------------------
+cloud:
+  provider: "azure"
+  subscription: "${SOLACE_AZURE_SUBSCRIPTION_ID}"
+  tenant: "${SOLACE_AZURE_TENANT_ID}"
+  region: "eastus2"
+  setup_commands:
+    - "az login --tenant ${SOLACE_AZURE_TENANT_ID}"
+    - "az account set --subscription ${SOLACE_AZURE_SUBSCRIPTION_ID}"
+  environment_variables:
+    AZURE_SUBSCRIPTION_ID: "${SOLACE_AZURE_SUBSCRIPTION_ID}"
+    AZURE_TENANT_ID: "${SOLACE_AZURE_TENANT_ID}"
+
+# ---------------------------------------------------------------------------
+# LOCAL DEVELOPMENT
+# ---------------------------------------------------------------------------
+local_dev:
+  setup:
+    - "cd repos/patient-portal-api && dotnet restore && dotnet build"
+    - "cd repos/patient-portal-web && npm install"
+    - "docker compose up -d sqlserver redis"
+    - "dotnet ef database update"
+  env_file: ".env.development"
+  ports:
+    api: 5000
+    frontend: 3000
+    sqlserver: 1433
+    redis: 6379
+  notes:
+    - "Use synthetic patient data only — never copy production PHI"
+    - "Dev seed script: dotnet run --project tools/SeedData"
+
+# ---------------------------------------------------------------------------
+# TOOLS
+# ---------------------------------------------------------------------------
+tools_required:
+  - git
+  - docker
+  - dotnet
+  - az
+  - nodejs
+  - jq
+
+tools_optional:
+  - postman
+  - code
+  - lazygit
+
+# ---------------------------------------------------------------------------
+# DIRENV
+# ---------------------------------------------------------------------------
+direnv:
+  envrc: |
+    export AZURE_SUBSCRIPTION_ID=${SOLACE_AZURE_SUBSCRIPTION_ID}
+    export AZURE_TENANT_ID=${SOLACE_AZURE_TENANT_ID}
+    export CLIENT_NAME="Solace Health"
+    export JIRA_PROJECT=SOL
+    export DOTNET_ENVIRONMENT=Development

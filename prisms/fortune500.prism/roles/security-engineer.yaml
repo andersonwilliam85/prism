@@ -1,19 +1,63 @@
 # ============================================================================
 # SECURITY ENGINEER ROLE
 # ============================================================================
+# Application security, scanning pipelines, compliance, incident response.
 
 role:
   id: "security-engineer"
   name: "Security Engineer"
-  description: "AppSec and security tooling"
+  description: "Application security, scanning, compliance"
 
 tools_required:
   - git
-  - python3
+  - gh
   - docker
+  - python3
+  - trivy
+  - gitleaks
+  - semgrep
+  - snyk
+  - vault
+  - kubectl
+  - aws
+  - jq
 
-security:
-  tools:
-    - Burp Suite
-    - Wireshark
-    - OWASP ZAP
+tools_optional:
+  - k9s
+  - stern
+  - httpie
+  - code
+  - ripgrep
+  - tmux
+
+day_one_checklist:
+  - "Run Semgrep against a sample repo: semgrep scan --config p/owasp-top-ten ."
+  - "Run Trivy against a container: trivy image docker.company.com/example:latest"
+  - "Run Gitleaks: gitleaks detect --source /path/to/repo"
+  - "Run Snyk test: snyk test --all-projects"
+  - "Access SonarQube at https://sonar.company.com"
+  - "Review the security scanning pipeline configs"
+  - "Access Vault: vault login -method=oidc"
+  - "Join #security-incidents and #vulnerability-reports Slack channels"
+  - "Review open vulnerability backlog in Jira"
+
+dev_workflow:
+  branching: "security/<JIRA-ID>-short-description"
+  commit_format: "fix(security): description"
+  pr_checklist:
+    - "Scanning rule has test cases (true positive and false positive)"
+    - "Policy as code has unit tests (OPA/Rego)"
+    - "Documentation updated"
+    - "Minimum 1 security team reviewer"
+  vulnerability_triage: "Daily triage of new findings, prioritize by CVSS score and exploitability"
+
+training:
+  required:
+    - "OWASP Top 10 (annual)"
+    - "Incident response procedures"
+    - "Secure code review methodology"
+    - "Cloud security (AWS/Azure/GCP)"
+  recommended:
+    - "OSCP or equivalent certification"
+    - "Kubernetes security (CKS)"
+    - "Threat modeling (STRIDE)"

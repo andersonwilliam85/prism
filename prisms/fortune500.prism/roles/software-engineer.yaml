@@ -1,15 +1,61 @@
 # ============================================================================
 # SOFTWARE ENGINEER ROLE
 # ============================================================================
+# Backend or full-stack developer working on microservices, APIs,
+# and shared libraries.
 
 role:
   id: "software-engineer"
   name: "Software Engineer"
-  description: "Full-stack or backend development"
+  description: "Backend or full-stack development"
 
 tools_required:
-  - vscode
+  - code
   - docker
   - kubectl
   - git
+  - gh
+  - jq
+  - httpie
   - python3
+
+tools_optional:
+  - java
+  - go
+  - sdk
+  - k9s
+  - stern
+  - skaffold
+  - lazygit
+  - ripgrep
+  - tmux
+
+day_one_checklist:
+  - "Clone your team's repos into ~/work/services/"
+  - "Run 'docker compose up' in the service template to verify Docker works"
+  - "Run 'kubectl get pods -n dev' to verify cluster access"
+  - "Set up GPG key and verify signed commits: git log --show-signature -1"
+  - "Run 'gitleaks detect --source .' in a repo to verify pre-commit hooks"
+  - "Open a test PR to verify CI pipeline runs (lint, test, security scan)"
+  - "Set up your IDE extensions: ESLint, Prettier, GitLens, Docker, Kubernetes"
+
+dev_workflow:
+  branching: "feature/<JIRA-ID>-short-description"
+  commit_format: "feat(scope): description (Jira: PROJ-123)"
+  pr_checklist:
+    - "Tests pass locally"
+    - "No new security findings (semgrep, snyk)"
+    - "API changes have updated OpenAPI spec"
+    - "Minimum 1 reviewer approval"
+  local_dev: "docker compose up — runs service with all dependencies"
+  debugging: "Attach debugger to container, or use kubectl port-forward for remote"
+
+training:
+  required:
+    - "Security awareness (annual)"
+    - "Incident response basics"
+    - "Data privacy and GDPR"
+  recommended:
+    - "Kubernetes fundamentals"
+    - "Distributed systems design"
+    - "Performance optimization"

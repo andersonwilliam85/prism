@@ -1,10 +1,10 @@
-# Tool Registry — custom tools for ACME Corp prism.
-# Tools defined here extend the base prism tool registry.
+# Tool Registry — tools not in prism.prism/base/tool-registry.yaml
+# Acme-specific additions for the team's stack.
 
 python3:
   label: Python 3
   summary: Python runtime
-  description: General-purpose programming language — scripts, web backends, data science, and automation
+  description: General-purpose language — powers the monolith (Django) and new FastAPI services
   category: runtime
   platforms:
     mac: brew install python@3
@@ -20,7 +20,7 @@ python3:
 nodejs:
   label: Node.js
   summary: JavaScript runtime
-  description: Server-side JavaScript runtime — powers web apps, APIs, and build tooling
+  description: Server-side JS runtime — powers the frontend build, notifications service, and BFF
   category: runtime
   platforms:
     mac: brew install node
@@ -34,25 +34,25 @@ nodejs:
     windows: winget uninstall OpenJS.NodeJS
 
 java:
-  label: Java
-  summary: JVM language
-  description: Enterprise-grade language and runtime — Spring Boot, Android, and big data
+  label: Java (Temurin 21)
+  summary: JVM runtime
+  description: JVM runtime — used by some internal data tools
   category: runtime
   platforms:
-    mac: brew install openjdk
-    ubuntu: sudo apt-get install -y default-jdk
-    linux: sudo apt-get install -y default-jdk
+    mac: brew install --cask temurin@21
+    ubuntu: sudo apt-get install -y temurin-21-jdk
+    linux: sudo apt-get install -y temurin-21-jdk
     windows: winget install EclipseAdoptium.Temurin.21.JDK
   uninstall:
-    mac: brew uninstall openjdk
-    ubuntu: sudo apt-get remove -y default-jdk
-    linux: sudo apt-get remove -y default-jdk
+    mac: brew uninstall --cask temurin@21
+    ubuntu: sudo apt-get remove -y temurin-21-jdk
+    linux: sudo apt-get remove -y temurin-21-jdk
     windows: winget uninstall EclipseAdoptium.Temurin.21.JDK
 
 vscode:
   label: VS Code
   summary: Extensible editor
-  description: Microsoft's extensible editor — huge ecosystem of extensions
+  description: Microsoft's extensible editor — the standard IDE at Acme
   category: editor
   platforms:
     mac: brew install --cask visual-studio-code
@@ -68,7 +68,7 @@ vscode:
 postman:
   label: Postman
   summary: API platform
-  description: Design, test, and document APIs with a visual interface and collections
+  description: Design, test, and document APIs — shared Acme collections available
   category: cli
   platforms:
     mac: brew install --cask postman
@@ -81,18 +81,74 @@ postman:
     linux: sudo snap remove postman
     windows: winget uninstall Postman.Postman
 
-kubernetes:
-  label: Kubernetes CLI
-  summary: K8s CLI (alias)
-  description: Alias entry for kubectl — deploy, inspect, and manage workloads on any Kubernetes cluster
-  category: kubernetes
+gitleaks:
+  label: Gitleaks
+  summary: Secrets detection
+  description: Detect hardcoded secrets in git repos — pre-commit hook runs this automatically
+  category: security
   platforms:
-    mac: brew install kubernetes-cli
-    ubuntu: sudo snap install kubectl --classic
-    linux: sudo snap install kubectl --classic
-    windows: winget install Kubernetes.kubectl
+    mac: brew install gitleaks
+    ubuntu: brew install gitleaks
+    linux: brew install gitleaks
+    windows: winget install Gitleaks.Gitleaks
   uninstall:
-    mac: brew uninstall kubernetes-cli
-    ubuntu: sudo snap remove kubectl
-    linux: sudo snap remove kubectl
-    windows: winget uninstall Kubernetes.kubectl
+    mac: brew uninstall gitleaks
+    ubuntu: brew uninstall gitleaks
+    linux: brew uninstall gitleaks
+    windows: winget uninstall Gitleaks.Gitleaks
+
+dbt:
+  label: dbt CLI
+  summary: Data transformation
+  description: Transform data in the warehouse with SQL — used by the data team for analytics models
+  category: data
+  platforms:
+    mac: brew install dbt-labs/dbt/dbt-core
+    ubuntu: pip install dbt-core
+    linux: pip install dbt-core
+    windows: pip install dbt-core
+  uninstall:
+    mac: brew uninstall dbt-core
+    ubuntu: pip uninstall dbt-core
+    linux: pip uninstall dbt-core
+    windows: pip uninstall dbt-core
+
+react-native-cli:
+  label: React Native CLI
+  summary: Mobile dev framework
+  description: Build iOS and Android apps from a shared React codebase
+  category: mobile
+  platforms:
+    mac: npm install -g react-native-cli
+    ubuntu: npm install -g react-native-cli
+    linux: npm install -g react-native-cli
+    windows: npm install -g react-native-cli
+  uninstall:
+    mac: npm uninstall -g react-native-cli
+    ubuntu: npm uninstall -g react-native-cli
+    linux: npm uninstall -g react-native-cli
+    windows: npm uninstall -g react-native-cli
+
+cocoapods:
+  label: CocoaPods
+  summary: iOS dependency manager
+  description: Manage iOS native dependencies for React Native builds
+  category: mobile
+  platforms:
+    mac: brew install cocoapods
+  uninstall:
+    mac: brew uninstall cocoapods
+
+fastlane:
+  label: Fastlane
+  summary: Mobile CI/CD
+  description: Automate iOS and Android builds, testing, and App Store/Play Store releases
+  category: mobile
+  platforms:
+    mac: brew install fastlane
+    ubuntu: sudo gem install fastlane
+    linux: sudo gem install fastlane
+  uninstall:
+    mac: brew uninstall fastlane
+    ubuntu: sudo gem uninstall fastlane
+    linux: sudo gem uninstall fastlane

@@ -1,24 +1,26 @@
 # ============================================================================
-# FORTUNE 500 PRISM - ENTERPRISE TEMPLATE
+# FORTUNE 500 PRISM - ENTERPRISE DEVELOPMENT ENVIRONMENT
 # ============================================================================
-# Template for large enterprise organizations (Fortune 500)
-# Customize this for your company
+# Production-ready configuration for large enterprise engineering orgs.
+# Covers: proxy/VPN, internal registries, compliance, multi-cloud,
+# monorepo tooling, security scanning, on-call, and governance.
 
 package:
   name: "fortune500-prism"
-  version: "1.0.0"
-  description: "Fortune 500 enterprise prism - secure, compliant, multi-tier development environment"
-  author: "Enterprise DevOps Team"
-  homepage: "https://company.com/devtools"
+  version: "2.0.0"
+  description: "Fortune 500 enterprise prism — proxy-aware, compliant, multi-cloud development environment"
+  author: "Enterprise Platform Engineering"
+  homepage: "https://devportal.company.com"
   support:
-    slack: "#engineering-support"
-    portal: "https://devportal.company.com"
-  
+    slack: "#platform-engineering"
+    portal: "https://devportal.company.com/support"
+    pagerduty: "https://company.pagerduty.com"
+
   type: "enterprise"
-  
+
   requires:
     onboarding_version: ">=1.0.0"
-    python_version: ">=3.8"
+    python_version: ">=3.10"
 
 # PRISM META-CONFIGURATION
 prism_config:
@@ -39,161 +41,140 @@ prism_config:
     - url: "local"
       name: "Built-in Prisms"
       type: "local"
-    
+
     - url: "https://prism-registry.company.com"
       name: "Company Internal Registry"
       type: "remote"
       auth_required: true
-  
-  npm_registry: "https://npm.company.com"
+
+  # Internal package registries — all tools pull from these, not public Internet
+  npm_registry: "https://artifactory.company.com/api/npm/npm-virtual/"
   unpkg_url: "https://cdn.company.com/unpkg"
-  
-  # Corporate proxies
+  pypi_registry: "https://artifactory.company.com/api/pypi/pypi-virtual/simple"
+  maven_registry: "https://artifactory.company.com/libs-release"
+  docker_registry: "docker.company.com"
+
+  # Corporate proxy — required for any external network access
   proxies:
     http: "http://proxy.company.com:8080"
     https: "http://proxy.company.com:8080"
-  
-  # Company branding
+    no_proxy: "localhost,127.0.0.1,.company.com,docker.company.com,artifactory.company.com,10.0.0.0/8,172.16.0.0/12"
+
   branding:
-    name: "Company Prism"
-    tagline: "Empowering Enterprise Development"
-    logo_url: "https://company.com/assets/logo.svg"
-    primary_color: "#1e3a8a"  # Corporate blue
-    secondary_color: "#f59e0b"  # Accent gold
+    name: "Company Developer Platform"
+    tagline: "Ship fast. Ship safe."
+    logo_url: "https://cdn.company.com/assets/logo.svg"
+    primary_color: "#1e3a8a"
+    secondary_color: "#f59e0b"
 
 # BUNDLED SETUP PRISMS
+# Hierarchy: base (required) -> team (pick one) -> role (pick one)
 bundled_prisms:
-  # Base (required)
   base:
     - id: "enterprise-base"
       name: "Enterprise Base Configuration"
-      description: "Core enterprise dev setup"
+      description: "Proxy, VPN, registries, git signing, security scanning — applied to everyone"
       required: true
       config: "base/enterprise.yaml"
-  
-  # Divisions (user selects one)
-  divisions:
-    - id: "technology"
-      name: "Technology Division"
-      description: "IT and software engineering"
-      config: "divisions/technology.yaml"
-    
-    - id: "digital"
-      name: "Digital Division"
-      description: "Digital products and platforms"
-      config: "divisions/digital.yaml"
-    
-    - id: "data-analytics"
-      name: "Data & Analytics"
-      description: "Data science and analytics"
-      config: "divisions/data-analytics.yaml"
-  
-  # Roles (user selects one)
+
+  teams:
+    - id: "platform-infra"
+      name: "Platform & Infrastructure"
+      description: "Cloud infra, Kubernetes, CI/CD pipelines, IaC, observability"
+      config: "teams/platform-infra.yaml"
+
+    - id: "backend-services"
+      name: "Backend Services"
+      description: "Microservices, APIs, event-driven systems, databases"
+      config: "teams/backend-services.yaml"
+
+    - id: "frontend-web"
+      name: "Frontend & Web"
+      description: "Web apps, design systems, CDN, performance optimization"
+      config: "teams/frontend-web.yaml"
+
+    - id: "data-ml"
+      name: "Data & ML Engineering"
+      description: "Data pipelines, ML training/serving, analytics, feature stores"
+      config: "teams/data-ml.yaml"
+
+    - id: "security"
+      name: "Security Engineering"
+      description: "AppSec, SAST/DAST, dependency scanning, incident response"
+      config: "teams/security.yaml"
+
   roles:
     - id: "software-engineer"
       name: "Software Engineer"
-      description: "Full-stack or backend development"
+      description: "Backend or full-stack development"
       config: "roles/software-engineer.yaml"
       tools:
-        - ide
-        - docker
-        - kubernetes
-        - git-enterprise
-    
-    - id: "frontend-engineer"
-      name: "Frontend Engineer"
-      description: "UI/UX development"
-      config: "roles/frontend-engineer.yaml"
-      tools:
-        - vscode
-        - node
-        - npm
-    
+        - "code"
+        - "docker"
+        - "kubectl"
+        - "gh"
+
     - id: "devops-engineer"
-      name: "DevOps Engineer"
-      description: "Infrastructure and CI/CD"
+      name: "DevOps / SRE"
+      description: "Infrastructure, CI/CD, reliability, on-call"
       config: "roles/devops-engineer.yaml"
       tools:
-        - terraform
-        - ansible
-        - jenkins
-        - kubernetes
-    
+        - "terraform"
+        - "kubectl"
+        - "helm"
+        - "argocd"
+
+    - id: "frontend-engineer"
+      name: "Frontend Engineer"
+      description: "UI/UX development, design systems"
+      config: "roles/frontend-engineer.yaml"
+      tools:
+        - "code"
+        - "nvm"
+
     - id: "data-engineer"
-      name: "Data Engineer"
-      description: "Data pipelines and warehousing"
+      name: "Data / ML Engineer"
+      description: "Data pipelines, ML models, analytics"
       config: "roles/data-engineer.yaml"
       tools:
-        - spark
-        - airflow
-        - sql-clients
-    
+        - "pyenv"
+        - "docker"
+
     - id: "security-engineer"
       name: "Security Engineer"
-      description: "AppSec and security tooling"
+      description: "Application security, scanning, compliance"
       config: "roles/security-engineer.yaml"
       tools:
-        - burp-suite
-        - wireshark
-        - security-scanners
-  
-  # Business units (optional, multi-select)
-  business_units:
-    - id: "retail"
-      name: "Retail Division"
-      description: "Retail operations tech"
-      config: "business_units/retail.yaml"
-    
-    - id: "finance"
-      name: "Finance Division"
-      description: "Financial services tech"
-      config: "business_units/finance.yaml"
-    
-    - id: "healthcare"
-      name: "Healthcare Division"
-      description: "Healthcare tech (HIPAA compliant)"
-      config: "business_units/healthcare.yaml"
+        - "docker"
+        - "git"
+        - "trivy"
 
 # SETUP CONFIGURATION
 setup:
   install:
     target_dir: "config/"
-    
+
     files:
       - source: "welcome.yaml"
         dest: "config/welcome.yaml"
-      
+
       - source: "resources.yaml"
         dest: "config/resources.yaml"
-      
-      - source: "compliance.yaml"
-        dest: "config/compliance.yaml"
-        description: "SOX, GDPR, HIPAA compliance guidelines"
-      
-      - source: "security.yaml"
-        dest: "config/security.yaml"
-        description: "InfoSec policies"
-    
+
     directories:
       - source: "base/"
         dest: "config/base/"
-      
-      - source: "divisions/"
-        dest: "config/divisions/"
-      
+
+      - source: "teams/"
+        dest: "config/teams/"
+
       - source: "roles/"
         dest: "config/roles/"
-      
-      - source: "business_units/"
-        dest: "config/business_units/"
-  
+
   privileged_steps:
-    - name: "Install enterprise security tools"
-      command: "apt-get install -y snyk trivy"
-      description: "Installs required security scanning tools (requires sudo)"
-    - name: "Configure corporate CA certificate"
+    - name: "Install corporate CA certificate"
       command: "cp config/certs/company-ca.crt /usr/local/share/ca-certificates/ && update-ca-certificates"
-      description: "Installs corporate CA certificate for proxy HTTPS inspection"
+      description: "Required for HTTPS inspection through corporate proxy"
 
   rollback:
     enabled: true
@@ -201,27 +182,31 @@ setup:
 
   post_install:
     message: |
-      🎉 Welcome to [Company Name]!
-      
       Your enterprise development environment is configured.
-      
-      🔐 Security & Compliance:
-      - All code must pass security scans
-      - Follow SOX/GDPR/HIPAA guidelines
-      - Use VPN for remote access
-      
-      📚 Resources:
-      - Developer Portal: https://devportal.company.com
-      - Support: #engineering-support on Slack
-      - Training: https://learning.company.com
-      
-      🚀 Next Steps:
-      1. Complete security training
-      2. Set up MFA on all accounts
-      3. Join your division's Slack channels
-      4. Review compliance docs
-      
-      Happy coding!
+
+      Network:
+      - Corporate proxy is set for all package managers
+      - Internal registries: Artifactory for npm/PyPI/Maven/Docker
+      - VPN required for access to internal services
+
+      Security & Compliance:
+      - GPG commit signing is mandatory
+      - Pre-commit hooks: secret detection, license checks
+      - Branch protection enforced on all repos
+      - Security scans run in CI — blocking on critical/high
+
+      Workspace layout:
+        ~/work/services/       Your team's microservices
+        ~/work/libraries/      Shared libraries
+        ~/work/infrastructure/ Terraform/Kubernetes configs
+        ~/work/docs/           Internal documentation
+
+      Next steps:
+      1. Run 'gpg --list-keys' to verify your signing key
+      2. Run 'docker login docker.company.com' with your SSO credentials
+      3. Run 'aws sso login --profile company-dev' to authenticate
+      4. Join your team's Slack channel and PagerDuty schedule
+      5. Review security training at https://learning.company.com/security
 
 # User info fields
 user_info_fields:
@@ -229,103 +214,100 @@ user_info_fields:
     label: "Full Name"
     type: "text"
     required: true
-    placeholder: "Jordan Enterprise"
-  
+    placeholder: "Jordan Chen"
+
   - id: "email"
     label: "Corporate Email"
     type: "email"
     required: true
-    placeholder: "jordan@company.com"
-  
+    placeholder: "jchen@company.com"
+
   - id: "employee_id"
     label: "Employee ID"
     type: "text"
     required: true
     placeholder: "EMP123456"
-  
-  - id: "division"
-    label: "Division"
+
+  - id: "team"
+    label: "Team"
     type: "select"
     required: true
     options:
-      - "Technology"
-      - "Digital"
-      - "Data & Analytics"
-      - "Other"
+      - "Platform & Infrastructure"
+      - "Backend Services"
+      - "Frontend & Web"
+      - "Data & ML Engineering"
+      - "Security Engineering"
 
   - id: "role"
     label: "Role"
     type: "select"
     required: true
-    depends_on: "division"
+    depends_on: "team"
     options:
       - "Software Engineer"
+      - "DevOps / SRE"
       - "Frontend Engineer"
-      - "DevOps Engineer"
-      - "Data Engineer"
+      - "Data / ML Engineer"
       - "Security Engineer"
-      - "Other"
     option_map:
-      Technology:
+      "Platform & Infrastructure":
+        - "DevOps / SRE"
         - "Software Engineer"
-        - "DevOps Engineer"
         - "Security Engineer"
-        - "Other"
-      Digital:
+      "Backend Services":
+        - "Software Engineer"
+        - "DevOps / SRE"
+      "Frontend & Web":
         - "Frontend Engineer"
         - "Software Engineer"
-        - "Other"
-      "Data & Analytics":
-        - "Data Engineer"
+      "Data & ML Engineering":
+        - "Data / ML Engineer"
         - "Software Engineer"
-        - "Other"
-      Other:
-        - "Software Engineer"
-        - "Frontend Engineer"
-        - "DevOps Engineer"
-        - "Data Engineer"
+      "Security Engineering":
         - "Security Engineer"
-        - "Other"
-  
+        - "Software Engineer"
+        - "DevOps / SRE"
+
   - id: "manager_email"
     label: "Manager Email"
     type: "email"
     required: true
     placeholder: "manager@company.com"
-  
+
   - id: "cost_center"
     label: "Cost Center"
     type: "text"
     required: false
-    placeholder: "CC-1234"
+    placeholder: "CC-ENG-4200"
 
-# Distribution
+  - id: "cloud_primary"
+    label: "Primary Cloud Provider"
+    type: "select"
+    required: true
+    options:
+      - "AWS"
+      - "Azure"
+      - "GCP"
+
 distribution:
   local:
     path: "prisms/fortune500.prism/"
     discoverable: true
-  
+
   internal:
     url: "https://prism-registry.company.com/fortune500"
     auth_required: true
 
-# Metadata
 metadata:
   tags:
     - enterprise
     - fortune-500
-    - secure
     - compliant
-    - multi-tier
-  
-  keywords:
-    - enterprise
-    - corporate
-    - large-organization
-  
+    - multi-cloud
+    - monorepo
   company_size: "enterprise"
   regions: ["Global", "US", "EU", "APAC"]
-  
   security:
     classification: "internal-use-only"
     compliance:
@@ -333,5 +315,4 @@ metadata:
       - gdpr
       - hipaa
       - pci-dss
-  
-  last_updated: "2026-03-04"
+  last_updated: "2026-03-15"

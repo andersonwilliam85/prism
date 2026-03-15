@@ -1,26 +1,165 @@
 # ============================================================================
-# FINTECH CLIENT CONFIGURATION
+# FINTECH CLIENT — "MERIDIAN FINANCIAL"
 # ============================================================================
+# AWS-based Python microservices. SOX and PCI-DSS compliance.
+# Heavy on data pipelines, PostgreSQL, and internal APIs.
 
 client:
   id: "client-fintech"
-  name: "FinTech Client"
-  description: "Financial technology client engagement"
+  slug: "meridian"
+  name: "Meridian Financial"
+  description: "Payment processing platform — Python microservices on AWS"
+  status: "active"
+  engagement_type: "staff-augmentation"
 
+  contacts:
+    tech_lead: "Alex Chen <alex.chen@meridianfin.com>"
+    product_owner: "Sarah Kim <sarah.kim@meridianfin.com>"
+    devops: "Marcus Lee <marcus.lee@meridianfin.com>"
+
+  communication:
+    slack_workspace: "meridian-eng"
+    standup: "Daily 9:30 AM ET"
+    sprint_cadence: "2-week sprints, Tue start"
+    jira_project: "MER"
+
+# ---------------------------------------------------------------------------
+# COMPLIANCE
+# ---------------------------------------------------------------------------
 compliance:
-  - sox
-  - pci-dss
+  frameworks:
+    - sox
+    - pci-dss
+  requirements:
+    - "No PII in log output"
+    - "All database queries via parameterized statements"
+    - "Audit trail on all financial transactions"
+    - "Code review required — no direct push to main"
+    - "Secrets must be in AWS Secrets Manager, never in code"
+    - "Data encryption at rest and in transit"
+  pre_commit_checks:
+    - "Run detect-secrets scan before committing"
+    - "No hardcoded credentials, tokens, or API keys"
 
+# ---------------------------------------------------------------------------
+# SECURITY & ACCESS
+# ---------------------------------------------------------------------------
 security:
-  vpn_required: true
-  mfa_required: true
-  data_classification: "confidential"
-
-tools_required:
-  - docker
-  - python3
-
-environment:
   vpn:
     required: true
-    name: "FinTech Client VPN"
+    name: "Meridian VPN (Cisco AnyConnect)"
+    endpoint: "vpn.meridianfin.com"
+    group: "consultants"
+  mfa_required: true
+  data_classification: "confidential"
+  credential_rotation: "90 days"
+
+# ---------------------------------------------------------------------------
+# GIT IDENTITY & REPOS
+# ---------------------------------------------------------------------------
+git:
+  user:
+    name: "${USER_NAME}"
+    email: "${USER_NAME_SLUG}@meridianfin.com"
+  ssh_key: "~/.ssh/id_ed25519_meridian"
+  primary_repos:
+    - name: "payment-api"
+      url: "git@meridian-github:meridian/payment-api.git"
+      description: "Core payment processing service"
+    - name: "data-pipeline"
+      url: "git@meridian-github:meridian/data-pipeline.git"
+      description: "ETL pipelines — Airflow DAGs"
+    - name: "merchant-portal"
+      url: "git@meridian-github:meridian/merchant-portal.git"
+      description: "React frontend for merchant dashboard"
+  branching:
+    strategy: "gitflow"
+    main: "main"
+    develop: "develop"
+    feature_prefix: "feature/"
+    release_prefix: "release/"
+    pr_required: true
+    min_reviewers: 2
+
+# ---------------------------------------------------------------------------
+# TECH STACK
+# ---------------------------------------------------------------------------
+tech_stack:
+  languages:
+    - "Python 3.11+"
+    - "TypeScript (frontend)"
+    - "SQL (PostgreSQL)"
+  frameworks:
+    - "FastAPI"
+    - "SQLAlchemy"
+    - "Alembic (migrations)"
+    - "React 18"
+    - "Airflow"
+  infrastructure:
+    - "AWS (ECS, RDS, S3, Lambda, SQS, Secrets Manager)"
+    - "PostgreSQL 15 on RDS"
+    - "Redis (ElastiCache)"
+    - "Docker containers on ECS Fargate"
+  ci_cd:
+    - "GitHub Actions"
+    - "Terraform for infrastructure"
+  observability:
+    - "Datadog (APM, logs, metrics)"
+    - "PagerDuty (on-call)"
+
+# ---------------------------------------------------------------------------
+# CLOUD CREDENTIALS
+# ---------------------------------------------------------------------------
+cloud:
+  provider: "aws"
+  profile: "meridian"
+  region: "us-east-1"
+  setup_commands:
+    - "aws configure --profile meridian"
+    - "aws sso login --profile meridian"
+  environment_variables:
+    AWS_PROFILE: "meridian"
+    AWS_DEFAULT_REGION: "us-east-1"
+
+# ---------------------------------------------------------------------------
+# LOCAL DEVELOPMENT
+# ---------------------------------------------------------------------------
+local_dev:
+  setup:
+    - "cd repos/payment-api && python -m venv .venv && source .venv/bin/activate && pip install -r requirements-dev.txt"
+    - "docker compose up -d postgres redis"
+    - "alembic upgrade head"
+  env_file: ".env.development"
+  ports:
+    api: 8000
+    frontend: 3000
+    postgres: 5432
+    redis: 6379
+
+# ---------------------------------------------------------------------------
+# TOOLS
+# ---------------------------------------------------------------------------
+tools_required:
+  - git
+  - docker
+  - python3
+  - aws
+  - terraform
+  - jq
+
+tools_optional:
+  - postman
+  - k9s
+  - lazygit
+
+# ---------------------------------------------------------------------------
+# DIRENV — auto-load client context
+# ---------------------------------------------------------------------------
+# Place this in ~/clients/active/meridian/.envrc
+direnv:
+  envrc: |
+    export AWS_PROFILE=meridian
+    export AWS_DEFAULT_REGION=us-east-1
+    export CLIENT_NAME="Meridian Financial"
+    export JIRA_PROJECT=MER
+    # Python virtualenv auto-activation handled per-repo

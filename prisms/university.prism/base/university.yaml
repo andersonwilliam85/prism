@@ -1,30 +1,81 @@
 # ============================================================================
 # UNIVERSITY BASE CONFIGURATION
 # ============================================================================
-# Core academic development environment for all users.
+# Applied to every user regardless of role. Installs the absolute minimum
+# tools and configures Git with sensible defaults for academic work.
 
 institution:
   name: "[University Name]"
   domain: "university.edu"
 
+# Network — set these if your campus requires VPN or proxy for package managers
 environment:
   vpn:
     required: false
+    instructions: "https://university.edu/vpn"
   proxy:
     enabled: false
+    # http_proxy: "http://proxy.university.edu:8080"
+    # https_proxy: "http://proxy.university.edu:8080"
 
-git:
-  user:
-    name: "${USER}"
-    email: "${USER}@university.edu"
-
+# Tool registry for this package (tools not in the base prism registry)
 tool_registry_file: "tool-registry.yaml"
+
+# ── Core Tools (everyone gets these) ─────────────────────────────────────────
 
 tools_required:
   - git
   - python3
+  - curl
 
 tools_optional:
-  - vscode
-  - jupyter
-  - docker
+  - code
+  - gh
+
+# ── Git Configuration ────────────────────────────────────────────────────────
+# Sane defaults for people who may be using Git for the first time.
+
+git:
+  user:
+    name: "${USER_FULL_NAME}"
+    email: "${USER_EMAIL}"
+  config:
+    # Readable default branch name
+    init.defaultBranch: "main"
+    # Prevent accidental pushes to wrong branch
+    push.default: "current"
+    # Show helpful context in merge conflicts
+    merge.conflictstyle: "diff3"
+    # Colorize output
+    color.ui: "auto"
+    # Store credentials so students don't retype passwords constantly
+    credential.helper: "store"
+    # Use patience diff for cleaner diffs
+    diff.algorithm: "patience"
+    # Avoid line-ending headaches in mixed OS labs
+    core.autocrlf: "input"
+
+# ── Editor Configuration ─────────────────────────────────────────────────────
+
+editor:
+  recommended: "code"
+  alternatives:
+    - "cursor"
+    - "nvim"
+    - "subl"
+  vscode_extensions:
+    # Language support
+    - "ms-python.python"
+    - "ms-python.vscode-pylance"
+    - "redhat.java"
+    - "ms-vscode.cpptools"
+    # Jupyter in VS Code
+    - "ms-toolsai.jupyter"
+    # Git helpers
+    - "eamodio.gitlens"
+    # Remote development (for HPC)
+    - "ms-vscode-remote.remote-ssh"
+    # Markdown for notes
+    - "yzhang.markdown-all-in-one"
+    # LaTeX
+    - "james-yu.latex-workshop"
