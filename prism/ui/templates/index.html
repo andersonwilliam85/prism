@@ -1921,12 +1921,18 @@
         }
 
         function showRetryButtons(logOutput) {
-            logOutput.innerHTML += `
-                <div style="margin-top: 20px; display: flex; gap: 12px;">
-                    <button class="btn-primary" onclick="goToStep(5)">← Back to Summary</button>
-                    <button class="btn-secondary" onclick="goToStep(1)">Start Over</button>
-                </div>
+            // Remove any existing retry buttons
+            const existing = document.getElementById('retryButtons');
+            if (existing) existing.remove();
+
+            const container = document.createElement('div');
+            container.id = 'retryButtons';
+            container.style.cssText = 'margin-top: 20px; display: flex; gap: 12px;';
+            container.innerHTML = `
+                <button class="btn-primary" onclick="goToStep(5)">← Back to Summary</button>
+                <button class="btn-secondary" onclick="goToStep(1)">Start Over</button>
             `;
+            logOutput.parentElement.appendChild(container);
         }
 
         function goToStep(step) {
