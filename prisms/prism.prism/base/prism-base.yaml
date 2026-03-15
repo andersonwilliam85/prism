@@ -19,7 +19,7 @@ workspace:
 
 tools_required:
   - name: "git"
-    description: "Version control"
+    description: "Track changes, branch, merge, and collaborate on code"
     category: "core"
     platforms:
       mac: "brew install git"
@@ -30,7 +30,7 @@ tools_required:
 tools_optional:
   # ── Editors ──
   - name: "cursor"
-    description: "AI-powered code editor"
+    description: "VS Code fork with built-in AI pair programming (Copilot++)"
     category: "editor"
     platforms:
       mac: "brew install --cask cursor"
@@ -39,7 +39,7 @@ tools_optional:
       windows: "winget install Anysphere.Cursor"
 
   - name: "code"
-    description: "Visual Studio Code"
+    description: "Microsoft's extensible editor — huge ecosystem of extensions"
     category: "editor"
     platforms:
       mac: "brew install --cask visual-studio-code"
@@ -48,7 +48,7 @@ tools_optional:
       windows: "winget install Microsoft.VisualStudioCode"
 
   - name: "zed"
-    description: "High-performance code editor"
+    description: "GPU-accelerated editor built in Rust — blazing fast on large files"
     category: "editor"
     platforms:
       mac: "brew install --cask zed"
@@ -57,7 +57,7 @@ tools_optional:
       windows: "winget install Zed.Zed"
 
   - name: "nvim"
-    description: "Neovim"
+    description: "Highly configurable terminal editor — Lua plugins, LSP, treesitter"
     category: "editor"
     platforms:
       mac: "brew install neovim"
@@ -66,7 +66,7 @@ tools_optional:
       windows: "winget install Neovim.Neovim"
 
   - name: "subl"
-    description: "Sublime Text"
+    description: "Lightweight, fast text editor — great for quick edits"
     category: "editor"
     platforms:
       mac: "brew install --cask sublime-text"
@@ -76,7 +76,7 @@ tools_optional:
 
   # ── Containers ──
   - name: "docker"
-    description: "Docker Desktop (paid license for large orgs)"
+    description: "Build, ship, and run apps in containers (paid license for orgs >250)"
     category: "containers"
     platforms:
       mac: "brew install --cask docker"
@@ -85,16 +85,16 @@ tools_optional:
       windows: "winget install Docker.DockerDesktop"
 
   - name: "rancher"
-    description: "Rancher Desktop (free, open source, includes k8s)"
+    description: "Free Docker/k8s desktop — no license fees, includes containerd + k3s"
     category: "containers"
     platforms:
       mac: "brew install --cask rancher"
-      ubuntu: "curl -s https://download.opensuse.org/repositories/isv:/Rancher:/stable/deb/Release.key | gpg --dearmor | sudo tee /usr/share/keyrings/isv-rancher-stable-archive-keyring.gpg && echo 'deb [signed-by=/usr/share/keyrings/isv-rancher-stable-archive-keyring.gpg] https://download.opensuse.org/repositories/isv:/Rancher:/stable/deb/ ./' | sudo tee /etc/apt/sources.list.d/isv-rancher-stable.list && sudo apt update && sudo apt install -y rancher-desktop"
+      ubuntu: "sudo snap install rancher-desktop"
       linux: "sudo snap install rancher-desktop"
       windows: "winget install suse.RancherDesktop"
 
   - name: "podman"
-    description: "Podman — daemonless container engine"
+    description: "Run containers without a daemon — drop-in Docker replacement"
     category: "containers"
     platforms:
       mac: "brew install podman"
@@ -104,7 +104,7 @@ tools_optional:
 
   # ── Runtimes & Language Managers ──
   - name: "nvm"
-    description: "Node Version Manager"
+    description: "Install and switch between Node.js versions per project"
     category: "runtime"
     platforms:
       mac: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash"
@@ -113,7 +113,7 @@ tools_optional:
       windows: "winget install CoreyButler.NVMforWindows"
 
   - name: "pyenv"
-    description: "Python version manager"
+    description: "Install and switch between Python versions — isolate from system Python"
     category: "runtime"
     platforms:
       mac: "brew install pyenv"
@@ -121,7 +121,7 @@ tools_optional:
       linux: "curl https://pyenv.run | bash"
 
   - name: "sdk"
-    description: "SDKMAN — Java/JVM version manager (Java, Gradle, Maven)"
+    description: "Manage Java, Gradle, Maven, Kotlin versions — one tool for the JVM ecosystem"
     category: "runtime"
     platforms:
       mac: "curl -s https://get.sdkman.io | bash"
@@ -129,7 +129,7 @@ tools_optional:
       linux: "curl -s https://get.sdkman.io | bash"
 
   - name: "dotnet"
-    description: ".NET SDK"
+    description: "Build C#, F#, and .NET apps — includes runtime, compiler, and CLI"
     category: "runtime"
     platforms:
       mac: "brew install dotnet-sdk"
@@ -138,7 +138,7 @@ tools_optional:
       windows: "winget install Microsoft.DotNet.SDK.8"
 
   - name: "rustup"
-    description: "Rust toolchain installer"
+    description: "Install Rust and switch between stable/nightly toolchains"
     category: "runtime"
     platforms:
       mac: "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
@@ -147,7 +147,7 @@ tools_optional:
       windows: "winget install Rustlang.Rustup"
 
   - name: "go"
-    description: "Go programming language"
+    description: "Compiled language for cloud services, CLIs, and systems — fast builds"
     category: "runtime"
     platforms:
       mac: "brew install go"
@@ -156,7 +156,7 @@ tools_optional:
       windows: "winget install GoLang.Go"
 
   - name: "perl"
-    description: "Perl"
+    description: "Text processing, sysadmin scripting, and legacy system glue"
     category: "runtime"
     platforms:
       mac: "brew install perl"
@@ -165,7 +165,7 @@ tools_optional:
       windows: "winget install StrawberryPerl.StrawberryPerl"
 
   - name: "rbenv"
-    description: "Ruby version manager"
+    description: "Install and switch between Ruby versions per project"
     category: "runtime"
     platforms:
       mac: "brew install rbenv"
@@ -174,7 +174,7 @@ tools_optional:
 
   # ── Cloud CLIs ──
   - name: "aws"
-    description: "AWS CLI"
+    description: "Manage AWS resources — S3, EC2, Lambda, IAM, and 200+ services"
     category: "cloud"
     platforms:
       mac: "brew install awscli"
@@ -183,7 +183,7 @@ tools_optional:
       windows: "winget install Amazon.AWSCLI"
 
   - name: "az"
-    description: "Azure CLI"
+    description: "Manage Azure resources — VMs, App Service, AKS, and more"
     category: "cloud"
     platforms:
       mac: "brew install azure-cli"
@@ -192,7 +192,7 @@ tools_optional:
       windows: "winget install Microsoft.AzureCLI"
 
   - name: "gcloud"
-    description: "Google Cloud CLI"
+    description: "Manage GCP resources — Compute, GKE, Cloud Run, BigQuery, and more"
     category: "cloud"
     platforms:
       mac: "brew install --cask google-cloud-sdk"
@@ -201,7 +201,7 @@ tools_optional:
       windows: "winget install Google.CloudSDK"
 
   - name: "terraform"
-    description: "Infrastructure as code (HashiCorp)"
+    description: "Define infrastructure as code — provision any cloud with HCL configs"
     category: "cloud"
     platforms:
       mac: "brew install terraform"
@@ -210,7 +210,7 @@ tools_optional:
       windows: "winget install Hashicorp.Terraform"
 
   - name: "pulumi"
-    description: "Infrastructure as code (general-purpose languages)"
+    description: "Infrastructure as code using real languages — Python, TypeScript, Go, C#"
     category: "cloud"
     platforms:
       mac: "brew install pulumi"
@@ -220,7 +220,7 @@ tools_optional:
 
   # ── Kubernetes ──
   - name: "kubectl"
-    description: "Kubernetes CLI"
+    description: "Deploy, inspect, and manage workloads on any Kubernetes cluster"
     category: "kubernetes"
     platforms:
       mac: "brew install kubernetes-cli"
@@ -229,7 +229,7 @@ tools_optional:
       windows: "winget install Kubernetes.kubectl"
 
   - name: "helm"
-    description: "Kubernetes package manager"
+    description: "Install and manage complex apps on Kubernetes with reusable charts"
     category: "kubernetes"
     platforms:
       mac: "brew install helm"
@@ -238,7 +238,7 @@ tools_optional:
       windows: "winget install Helm.Helm"
 
   - name: "k9s"
-    description: "Terminal UI for Kubernetes"
+    description: "Navigate pods, logs, and resources in a terminal dashboard"
     category: "kubernetes"
     platforms:
       mac: "brew install k9s"
@@ -247,7 +247,7 @@ tools_optional:
       windows: "winget install Derailed.k9s"
 
   - name: "kubectx"
-    description: "Fast Kubernetes context/namespace switching"
+    description: "Switch between clusters and namespaces in one keystroke"
     category: "kubernetes"
     platforms:
       mac: "brew install kubectx"
@@ -255,7 +255,7 @@ tools_optional:
       linux: "sudo apt install -y kubectx"
 
   - name: "stern"
-    description: "Multi-pod log tailing for Kubernetes"
+    description: "Tail logs from multiple pods at once — filter by label, container, regex"
     category: "kubernetes"
     platforms:
       mac: "brew install stern"
@@ -263,7 +263,7 @@ tools_optional:
       linux: "brew install stern"
 
   - name: "kustomize"
-    description: "Template-free Kubernetes configuration"
+    description: "Patch and overlay Kubernetes YAML without templates or Helm"
     category: "kubernetes"
     platforms:
       mac: "brew install kustomize"
@@ -271,7 +271,7 @@ tools_optional:
       linux: "sudo snap install kustomize"
 
   - name: "skaffold"
-    description: "Local Kubernetes development workflow"
+    description: "Auto-rebuild and redeploy to Kubernetes as you code — dev inner loop"
     category: "kubernetes"
     platforms:
       mac: "brew install skaffold"
@@ -279,7 +279,7 @@ tools_optional:
       linux: "curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install skaffold /usr/local/bin/"
 
   - name: "argocd"
-    description: "Argo CD CLI for GitOps deployments"
+    description: "GitOps continuous delivery — sync your cluster state from a git repo"
     category: "kubernetes"
     platforms:
       mac: "brew install argocd"
