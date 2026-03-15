@@ -11,6 +11,7 @@ Volatility: low-medium — installation surface evolves slowly.
 from __future__ import annotations
 
 import json
+import os
 import secrets
 import subprocess
 import threading
@@ -423,9 +424,12 @@ class InstallationEngine:
 
             self._log("tools", f"Installing {name}...")
             try:
-                subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
+                env = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}
+                subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True, timeout=300, env=env)
                 self._record("tool_installed", name, rollback_command=uninstall_cmd)
                 self._log("tools", f"Installed {name}", "success")
+            except subprocess.TimeoutExpired:
+                self._log("tools", f"Timed out installing {name} — skipping", "warning")
             except Exception:
                 self._log("tools", f"Failed to install {name} — skipping", "warning")
 

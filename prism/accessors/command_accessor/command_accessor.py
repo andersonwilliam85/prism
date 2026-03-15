@@ -9,6 +9,7 @@ Volatility: low — CLI tool interfaces are stable.
 
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 from pathlib import Path
@@ -48,8 +49,11 @@ class CommandAccessor:
     def git_clone(self, url: str, target: Path) -> None:
         """Clone a git repository to the target directory."""
         cmd = ["git", "clone", url, str(target)]
+        env = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}
         try:
-            subprocess.run(cmd, check=True, capture_output=True, text=True)
+            subprocess.run(cmd, check=True, capture_output=True, text=True, timeout=120, env=env)
+        except subprocess.TimeoutExpired:
+            raise TimeoutError(f"git clone timed out for {url}")
         except FileNotFoundError:
             raise FileNotFoundError("git is not installed or not on PATH")
 
