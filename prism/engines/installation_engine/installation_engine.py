@@ -544,11 +544,21 @@ class InstallationEngine:
         else:
             dirs = ["projects", "experiments", "learning", "archived", "docs", "tooling"]
 
-        extra = merged_config.get("workspace", {}).get("directories", [])
-        if isinstance(extra, list):
-            for d in extra:
-                if isinstance(d, str) and d not in dirs:
-                    dirs.append(d)
+        # Collect directories from both workspace.directories and environment.directories
+        for key in ("workspace", "environment"):
+            extra = merged_config.get(key, {}).get("directories", [])
+            if isinstance(extra, list):
+                for d in extra:
+                    if not isinstance(d, str):
+                        continue
+                    # Strip ~/dev/ or similar prefixes — make relative to workspace_root
+                    d = d.replace("~/", "").strip("/")
+                    # Remove workspace_root prefix if present (e.g. "dev/projects" -> "projects")
+                    ws_root_name = merged_config.get("environment", {}).get("workspace_root", "").replace("~/", "").strip("/")
+                    if ws_root_name and d.startswith(ws_root_name + "/"):
+                        d = d[len(ws_root_name) + 1:]
+                    if d and d not in dirs:
+                        dirs.append(d)
         return dirs
 
     def _plan_repo_clones(self, merged_config: dict, workspace_root: str) -> list[dict]:
