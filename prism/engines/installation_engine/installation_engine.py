@@ -403,6 +403,7 @@ class InstallationEngine:
             return
 
         for tool in tools:
+            self._check_cancelled()
             name = tool["name"]
             if self._commands.pkg_is_installed(name):
                 self._log("tools", f"{name} already installed", "success")
