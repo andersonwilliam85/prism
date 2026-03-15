@@ -72,3 +72,30 @@ tools_optional:
       ubuntu: "sudo snap install sublime-text --classic"
       linux: "sudo snap install sublime-text --classic"
       windows: "winget install SublimeHQ.SublimeText.4"
+
+  - name: "nvm"
+    description: "Node Version Manager (use instead of node)"
+    category: "runtime"
+    platforms:
+      mac: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash"
+      ubuntu: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash"
+      linux: "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash"
+      windows: "winget install CoreyButler.NVMforWindows"
+
+  - name: "az"
+    description: "Azure CLI"
+    category: "devops"
+    platforms:
+      mac: "brew install azure-cli"
+      ubuntu: "curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash"
+      linux: "curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash"
+      windows: "winget install Microsoft.AzureCLI"
+
+  - name: "gcloud"
+    description: "Google Cloud CLI"
+    category: "devops"
+    platforms:
+      mac: "brew install --cask google-cloud-sdk"
+      ubuntu: "curl https://sdk.cloud.google.com | bash"
+      linux: "curl https://sdk.cloud.google.com | bash"
+      windows: "winget install Google.CloudSDK"
