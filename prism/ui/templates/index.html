@@ -1470,18 +1470,44 @@
             toolsList.innerHTML = '';
 
             if (data.tools && data.tools.length > 0) {
+                // Group tools by category
+                const groups = {};
                 data.tools.forEach(tool => {
-                    const checked = tool.required ? 'checked disabled' : 'checked';
-                    toolsList.innerHTML += `
-                        <div class="checkbox-item" style="display: flex; align-items: center; gap: 10px; padding: 8px 0;">
-                            <input type="checkbox" id="tool_${tool.id}" name="${tool.id}" ${checked}>
-                            <label for="tool_${tool.id}" style="flex: 1;">
-                                <strong>${tool.name}</strong>
-                                ${tool.description ? `<span style="color: #888; font-size: 0.9em;"> — ${tool.description}</span>` : ''}
-                                ${tool.required ? '<span style="color: var(--gradient-1); font-size: 0.8em;"> (required)</span>' : ''}
-                            </label>
-                        </div>
-                    `;
+                    const cat = tool.category || 'optional';
+                    if (!groups[cat]) groups[cat] = [];
+                    groups[cat].push(tool);
+                });
+
+                const categoryLabels = {
+                    core: 'Core',
+                    editor: 'Editors',
+                    optional: 'Optional Tools',
+                    devops: 'DevOps',
+                    runtime: 'Runtimes',
+                };
+                const categoryOrder = ['core', 'editor', 'runtime', 'devops', 'optional'];
+                const sortedKeys = Object.keys(groups).sort((a, b) => {
+                    const ai = categoryOrder.indexOf(a);
+                    const bi = categoryOrder.indexOf(b);
+                    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+                });
+
+                sortedKeys.forEach(cat => {
+                    const label = categoryLabels[cat] || cat.charAt(0).toUpperCase() + cat.slice(1);
+                    toolsList.innerHTML += `<h4 style="margin: 16px 0 8px; color: var(--gradient-1, #667eea); font-size: 0.95em; text-transform: uppercase; letter-spacing: 0.05em;">${label}</h4>`;
+                    groups[cat].forEach(tool => {
+                        const checked = tool.required ? 'checked disabled' : '';
+                        toolsList.innerHTML += `
+                            <div class="checkbox-item" style="display: flex; align-items: center; gap: 10px; padding: 8px 0;">
+                                <input type="checkbox" id="tool_${tool.id}" name="${tool.id}" ${checked}>
+                                <label for="tool_${tool.id}" style="flex: 1;">
+                                    <strong>${tool.name}</strong>
+                                    ${tool.description ? `<span style="color: #888; font-size: 0.9em;"> — ${tool.description}</span>` : ''}
+                                    ${tool.required ? '<span style="color: var(--gradient-1); font-size: 0.8em;"> (required)</span>' : ''}
+                                </label>
+                            </div>
+                        `;
+                    });
                 });
             }
         }
