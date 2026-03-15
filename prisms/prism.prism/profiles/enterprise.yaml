@@ -90,7 +90,7 @@ tools_required:
 
   - name: "docker"
     description: "Container runtime"
-    category: "devops"
+    category: "cloud"
     platforms:
       mac: "brew install --cask docker"
       ubuntu: "curl -fsSL https://get.docker.com | sh"
@@ -109,7 +109,7 @@ tools_optional:
 
   - name: "aws"
     description: "AWS CLI"
-    category: "devops"
+    category: "cloud"
     platforms:
       mac: "brew install awscli"
       ubuntu: "sudo apt-get install -y awscli"
@@ -118,7 +118,7 @@ tools_optional:
 
   - name: "kubectl"
     description: "Kubernetes CLI"
-    category: "devops"
+    category: "kubernetes"
     platforms:
       mac: "brew install kubectl"
       ubuntu: "sudo snap install kubectl --classic"

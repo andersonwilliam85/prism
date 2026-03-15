@@ -27,13 +27,11 @@ git:
 
 # Tools for GitHub workflow
 tools_required:
-  - git
-  - gh              # GitHub CLI - essential!
-
-tools_available:
-  - vscode          # Great GitHub integration
-  - docker
-  - docker-compose
+  - name: "git"
+    category: "core"
+  - name: "gh"
+    description: "GitHub CLI"
+    category: "cli"
 
 # GitHub repositories to clone (your personal repos)
 repositories:
