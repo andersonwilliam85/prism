@@ -273,6 +273,8 @@ def get_tools(package_name):
 
         seen = {}
         for tool in tools_required:
+            if isinstance(tool, str):
+                tool = {"name": tool, "description": ""}
             if isinstance(tool, dict):
                 tid = tool.get("name", "")
                 seen[tid] = {
@@ -283,6 +285,8 @@ def get_tools(package_name):
                 }
 
         for tool in tools_optional:
+            if isinstance(tool, str):
+                tool = {"name": tool, "description": ""}
             if isinstance(tool, dict):
                 tid = tool.get("name", "")
                 if tid not in seen:
