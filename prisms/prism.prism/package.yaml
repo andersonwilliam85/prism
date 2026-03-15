@@ -202,18 +202,6 @@ user_info_fields:
     placeholder: "janedev"
     description: "Your username on chosen git platform"
 
-  - id: "primary_language"
-    label: "Primary Language"
-    type: "select"
-    required: false
-    options:
-      - "JavaScript/TypeScript"
-      - "Python"
-      - "Go"
-      - "Rust"
-      - "Java"
-      - "Other"
-
 # Distribution
 distribution:
   local:
