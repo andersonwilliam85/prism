@@ -171,36 +171,6 @@ user_info_fields:
     placeholder: "alexcodes"
     description: "Must match your GitHub account — used for repo access and PR assignment"
 
-  - id: "role"
-    label: "Role"
-    type: "select"
-    required: true
-    options:
-      - "Full-Stack"
-      - "Frontend"
-      - "Backend"
-
-  - id: "stack"
-    label: "Primary Stack"
-    type: "select"
-    required: true
-    depends_on: "role"
-    options:
-      - "MERN"
-      - "JAMstack"
-      - "Rails"
-    option_map:
-      Full-Stack:
-        - "MERN"
-        - "Rails"
-        - "JAMstack"
-      Frontend:
-        - "JAMstack"
-        - "MERN"
-      Backend:
-        - "Rails"
-        - "MERN"
-
   - id: "slack_handle"
     label: "Slack Handle"
     type: "text"

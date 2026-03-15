@@ -198,17 +198,6 @@ user_info_fields:
       - "Researcher"
       - "IT Staff"
 
-  - id: "department"
-    label: "Department"
-    type: "select"
-    required: true
-    options:
-      - "Computer Science"
-      - "Data Science"
-      - "Engineering"
-      - "Mathematics"
-      - "Other"
-
   - id: "semester"
     label: "Current Semester"
     type: "select"
@@ -218,32 +207,6 @@ user_info_fields:
       - "spring-2026"
       - "summer-2026"
       - "fall-2026"
-
-  - id: "course"
-    label: "Primary Course"
-    type: "select"
-    required: false
-    depends_on: "department"
-    options:
-      - "CS 101: Intro to Programming"
-      - "CS 201: Data Structures"
-      - "CS 301: Systems Programming"
-    option_map:
-      Computer Science:
-        - "CS 101: Intro to Programming"
-        - "CS 201: Data Structures"
-        - "CS 301: Systems Programming"
-      Data Science:
-        - "DS 101: Intro to Data Science"
-        - "DS 201: Machine Learning"
-      Engineering:
-        - "ENGR 101: Engineering Design"
-        - "ENGR 201: Systems Engineering"
-      Mathematics:
-        - "MATH 201: Linear Algebra"
-        - "MATH 301: Real Analysis"
-      Other:
-        - "N/A"
 
 # Distribution
 distribution:
