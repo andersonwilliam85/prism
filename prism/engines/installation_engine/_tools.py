@@ -68,7 +68,7 @@ def resolve_tools(
             deduped.append(t)
     normalised = deduped
 
-    if tools_selected:
+    if tools_selected is not None:
         selected_set = set(tools_selected)
         normalised = [t for t in normalised if t["name"] in selected_set]
     if tools_excluded:
