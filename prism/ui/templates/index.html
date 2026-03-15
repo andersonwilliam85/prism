@@ -1702,12 +1702,19 @@
 
             logOutput.innerHTML = '<div>Starting installation...</div>';
 
+            // Collect selected tools from checkboxes
+            const toolsSelected = [];
+            document.querySelectorAll('#toolsList input[type="checkbox"]:checked').forEach(cb => {
+                toolsSelected.push(cb.name);
+            });
+
             const payload = {
                 package: selectedPackage,
                 userInfo: userInfo,
                 registry: registry,
                 unpkgUrl: unpkgUrl,
                 selectedSubPrisms: selectedSubPrisms,
+                toolsSelected: toolsSelected,
                 targetDir: document.getElementById('targetDir').value || '~/prism-config'
             };
 
