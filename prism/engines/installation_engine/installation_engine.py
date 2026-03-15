@@ -123,24 +123,6 @@ class InstallationEngine:
                 )
             result.steps.append(StepResult(step="config_package", success=True))
 
-            # Inject user-selected editor into tool list
-            editor_choice = context.user_info.get("editor", "")
-            editors_map = context.config.get("editors", {})
-            if editor_choice and editor_choice in editors_map:
-                editor_def = editors_map[editor_choice]
-                if editor_def.get("tool_name"):
-                    editor_tool = {
-                        "name": editor_def["tool_name"],
-                        "description": editor_choice,
-                        "platforms": editor_def.get("platforms", {}),
-                    }
-                    tools_req = context.merged_config.setdefault("tools_required", [])
-                    if not any(
-                        (t.get("name") if isinstance(t, dict) else t) == editor_def["tool_name"]
-                        for t in tools_req
-                    ):
-                        tools_req.append(editor_tool)
-
             # Tool installation
             effective = _tools.build_effective_tool_config(context.merged_config, context.config)
             if context.skip_privileged:
