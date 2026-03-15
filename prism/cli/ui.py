@@ -31,14 +31,12 @@ def _run(args: Namespace) -> None:
         sys.exit(1)
 
     import logging
-    import os
 
     app = create_app()
     url = f"http://{args.host}:{args.port}"
 
     # Suppress Flask/Werkzeug dev server noise
     logging.getLogger("werkzeug").setLevel(logging.ERROR)
-    os.environ["WERKZEUG_RUN_MAIN"] = "true"  # suppress startup banner
 
     if not args.no_browser:
 
