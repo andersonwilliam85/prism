@@ -1362,12 +1362,33 @@
         }
         
         function nextStep() {
-            // Validate package selection on step 1
-            if (currentStep === 1 && !selectedPackage) {
-                alert('Please select a prism!');
-                return;
+            // Validate package selection and tier choices on step 1
+            if (currentStep === 1) {
+                if (!selectedPackage) {
+                    alert('Please select a prism!');
+                    return;
+                }
+                // Check if any tier sections exist and at least one option is selected per tier
+                const tierSections = document.querySelectorAll('.tier-section');
+                if (tierSections.length > 0 && Object.keys(selectedSubPrisms).length === 0) {
+                    alert('Please select at least one configuration option.');
+                    return;
+                }
             }
-            
+
+            // Validate required user info fields on step 2
+            if (currentStep === 2) {
+                const requiredFields = document.querySelectorAll('#userInfoFields input[required], #userInfoFields select[required]');
+                for (const field of requiredFields) {
+                    if (!field.value.trim()) {
+                        const label = field.previousElementSibling?.textContent || field.name;
+                        alert(`Please fill in: ${label.replace(' *', '')}`);
+                        field.focus();
+                        return;
+                    }
+                }
+            }
+
             document.getElementById('step' + currentStep).classList.remove('active');
             const next = getNextActiveStep(currentStep);
             currentStep = next;
