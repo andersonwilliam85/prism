@@ -65,7 +65,7 @@ def plan_privileged_installs(
     for tool in tools:
         name = tool["name"]
         if not is_installed_fn(name):
-            cmd = get_install_command(name, platform_name)
+            cmd = get_install_command(tool, platform_name)
             steps.append(PrivilegedStep(name=name, command=cmd, needs_sudo=needs_sudo, platform=platform_name))
 
     return steps
@@ -90,12 +90,9 @@ def matches_platform(tool: dict, platform_name: str) -> bool:
     return True
 
 
-def get_install_command(tool_name: str, platform_name: str) -> str:
-    """Return the platform-specific install command for a tool."""
-    if platform_name == "mac":
-        return f"brew install {tool_name}"
-    elif platform_name in ("ubuntu", "linux"):
-        return f"sudo apt-get install -y {tool_name}"
-    elif platform_name == "windows":
-        return f"choco install {tool_name} -y"
-    return f"install {tool_name}"
+def get_install_command(tool: dict, platform_name: str) -> str:
+    """Return the platform-specific install command from the tool's config."""
+    platforms = tool.get("platforms", {})
+    if isinstance(platforms, dict):
+        return platforms.get(platform_name, "")
+    return ""
