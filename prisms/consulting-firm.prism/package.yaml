@@ -161,18 +161,6 @@ user_info_fields:
       - "Jira Tempo"
       - "Other"
 
-  - id: "preferred_editor"
-    label: "Preferred Editor"
-    type: "select"
-    required: false
-    options:
-      - "VS Code"
-      - "Cursor"
-      - "Neovim"
-      - "Zed"
-      - "IntelliJ"
-      - "Other"
-
 distribution:
   local:
     path: "prisms/consulting-firm.prism/"
