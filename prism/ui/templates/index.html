@@ -1334,7 +1334,7 @@
         let selectedPackage = null;
         let packages = [];
         let hasOrganizations = false;
-        let hasTools = false;
+        let hasTools = true;
         
         // Determine which steps are active
         function getNextActiveStep(current) {
@@ -1378,7 +1378,7 @@
             updateProgress();
             
             // Load data for specific steps
-            if (currentStep === 2) loadUserInfoFields();  // Load dynamic fields
+            if (currentStep === 2) loadUserInfoFields();
             if (currentStep === 3) loadPrismTiers();
             if (currentStep === 4) loadTools();
             if (currentStep === 5) showSummary();
