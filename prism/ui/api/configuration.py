@@ -67,6 +67,17 @@ def get_tools():
     return jsonify({"tools": tools})
 
 
+@configuration_bp.route("/api/history")
+def get_history():
+    """Scan for previous prism installations."""
+    from prism.cli.history import _find_installs
+
+    home = Path.home()
+    search = [home, home / "dev", home / "projects", home / "workspace", home / "Development"]
+    installs = _find_installs(search)
+    return jsonify({"installs": installs})
+
+
 @configuration_bp.route("/assets/<path:filename>")
 def serve_assets(filename):
     """Serve static assets (branding, etc.)."""
