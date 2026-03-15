@@ -267,6 +267,9 @@ def get_tools(package_name):
         # Merge tiers to get the effective config
         merged = im.merge_tiers(config, selected_sub_prisms)
 
+        # Detect platform to filter tools
+        platform_name = container.system_accessor.get_platform()[0]
+
         # Resolve tools against registry
         registry = merged.get("tool_registry", config.get("tool_registry", {}))
         tools_required = merged.get("tools_required", config.get("tools_required", []))
@@ -275,10 +278,18 @@ def get_tools(package_name):
         def _resolve(name):
             return registry.get(name, {}) if isinstance(name, str) else {}
 
+        def _has_platform(reg, platform):
+            platforms = reg.get("platforms", {})
+            if not platforms:
+                return True
+            return platform in platforms
+
         seen = {}
         for tool in tools_required:
             tid = tool.get("name", tool) if isinstance(tool, dict) else tool
             reg = _resolve(tid)
+            if not _has_platform(reg, platform_name):
+                continue
             seen[tid] = {
                 "id": tid,
                 "name": reg.get("label", tid.replace("-", " ").title()),
@@ -291,6 +302,8 @@ def get_tools(package_name):
         for tool in tools_optional:
             tid = tool.get("name", tool) if isinstance(tool, dict) else tool
             reg = _resolve(tid)
+            if not _has_platform(reg, platform_name):
+                continue
             if tid not in seen:
                 seen[tid] = {
                     "id": tid,
