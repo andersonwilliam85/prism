@@ -183,6 +183,7 @@ def get_user_fields(package_name):
                         "options": f.options if f.options else None,
                         "depends_on": f.depends_on or None,
                         "option_map": f.option_map if f.option_map else None,
+                        "validation": f.validation if f.validation else None,
                     }
                     for f in ordered
                 ]

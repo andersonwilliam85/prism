@@ -1420,16 +1420,24 @@
 
             // Validate required user info fields on step 2
             if (currentStep === 2) {
-                const requiredFields = document.querySelectorAll('#userInfoFields input[required], #userInfoFields select[required]');
-                for (const field of requiredFields) {
-                    if (!field.value.trim()) {
+                const allFields = document.querySelectorAll('#userInfoFields input, #userInfoFields select');
+                for (const field of allFields) {
+                    if (field.required && !field.value.trim()) {
                         showValidationError('This field is required', field);
                         return;
                     }
-                    // Basic email validation
                     if (field.type === 'email' && field.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value)) {
                         showValidationError('Enter a valid email address', field);
                         return;
+                    }
+                    const pattern = field.getAttribute('data-pattern');
+                    if (pattern && field.value) {
+                        const regex = new RegExp(pattern);
+                        if (!regex.test(field.value)) {
+                            const msg = field.getAttribute('data-pattern-message') || 'Invalid format';
+                            showValidationError(msg, field);
+                            return;
+                        }
                     }
                 }
             }
@@ -2275,6 +2283,10 @@
                     input.name = field.id;
                     input.placeholder = field.placeholder || '';
                     if (field.required) input.required = true;
+                    if (field.validation && field.validation.pattern) {
+                        input.setAttribute('data-pattern', field.validation.pattern);
+                        input.setAttribute('data-pattern-message', field.validation.message || 'Invalid format');
+                    }
                     div.appendChild(input);
                 }
 
