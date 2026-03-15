@@ -162,6 +162,25 @@
             border-color: #667eea;
         }
         
+        .validation-error {
+            color: #ef4444;
+            font-size: 0.85em;
+            margin-top: 4px;
+            padding: 6px 10px;
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 3px solid #ef4444;
+            border-radius: 4px;
+            animation: shake 0.3s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+        .field-error {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+        }
         .checkbox-group {
             margin-top: 10px;
         }
@@ -1361,17 +1380,40 @@
             document.getElementById('progressFill').style.width = progress + '%';
         }
         
+        function showValidationError(message, targetEl) {
+            // Remove any existing error
+            clearValidationErrors();
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'validation-error';
+            errorDiv.textContent = message;
+            if (targetEl) {
+                targetEl.classList.add('field-error');
+                targetEl.parentElement.appendChild(errorDiv);
+                targetEl.focus();
+            } else {
+                // Show at top of current step
+                const step = document.getElementById('step' + currentStep);
+                step.insertBefore(errorDiv, step.children[1]);
+            }
+        }
+
+        function clearValidationErrors() {
+            document.querySelectorAll('.validation-error').forEach(el => el.remove());
+            document.querySelectorAll('.field-error').forEach(el => el.classList.remove('field-error'));
+        }
+
         function nextStep() {
+            clearValidationErrors();
+
             // Validate package selection and tier choices on step 1
             if (currentStep === 1) {
                 if (!selectedPackage) {
-                    alert('Please select a prism!');
+                    showValidationError('Select a prism to continue');
                     return;
                 }
-                // Check if any tier sections exist and at least one option is selected per tier
                 const tierSections = document.querySelectorAll('.tier-section');
                 if (tierSections.length > 0 && Object.keys(selectedSubPrisms).length === 0) {
-                    alert('Please select at least one configuration option.');
+                    showValidationError('Select at least one option from the configurations above');
                     return;
                 }
             }
@@ -1381,9 +1423,12 @@
                 const requiredFields = document.querySelectorAll('#userInfoFields input[required], #userInfoFields select[required]');
                 for (const field of requiredFields) {
                     if (!field.value.trim()) {
-                        const label = field.previousElementSibling?.textContent || field.name;
-                        alert(`Please fill in: ${label.replace(' *', '')}`);
-                        field.focus();
+                        showValidationError('This field is required', field);
+                        return;
+                    }
+                    // Basic email validation
+                    if (field.type === 'email' && field.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value)) {
+                        showValidationError('Enter a valid email address', field);
                         return;
                     }
                 }
