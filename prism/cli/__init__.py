@@ -11,6 +11,7 @@ import sys
 
 from prism.cli.install import register as register_install
 from prism.cli.packages import register as register_packages
+from prism.cli.rollback import register as register_rollback
 from prism.cli.ui import register as register_ui
 
 
@@ -27,6 +28,7 @@ def _build_parser() -> argparse.ArgumentParser:
     register_install(sub)
     register_ui(sub)
     register_packages(sub)
+    register_rollback(sub)
 
     return parser
 
