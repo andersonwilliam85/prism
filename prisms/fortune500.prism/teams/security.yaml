@@ -1,0 +1,99 @@
+# ============================================================================
+# SECURITY ENGINEERING TEAM
+# ============================================================================
+# Owns: application security, SAST/DAST pipelines, dependency scanning,
+# secrets management, penetration testing, security incident response,
+# compliance automation, security training.
+
+team:
+  id: "security"
+  name: "Security Engineering"
+  description: "AppSec, SAST/DAST, dependency scanning, incident response"
+  slack_channels:
+    - "#security-engineering"
+    - "#security-incidents"
+    - "#vulnerability-reports"
+  oncall_rotation: "https://company.pagerduty.com/schedules/security"
+
+tools_required:
+  - git
+  - docker
+  - python3
+  - trivy
+  - gitleaks
+  - semgrep
+  - snyk
+  - vault
+  - aws
+  - kubectl
+  - jq
+
+tools_optional:
+  - k9s
+  - httpie
+  - gh
+
+workspace:
+  directories:
+    - path: "~/work/services/security-tools"
+      description: "Internal security scanning tools and automation"
+    - path: "~/work/infrastructure/security"
+      description: "WAF rules, IAM policies, network security configs"
+    - path: "~/work/docs/security-policies"
+      description: "Security policies, threat models, pen test reports"
+
+repositories:
+  - name: "security-scanning-pipeline"
+    url: "https://github.company.com/security/scanning-pipeline"
+    description: "CI/CD security scanning integration (SAST, DAST, SCA)"
+  - name: "security-policies"
+    url: "https://github.company.com/security/policies"
+    description: "Security policies as code (OPA/Rego)"
+  - name: "incident-response"
+    url: "https://github.company.com/security/incident-response"
+    description: "IR playbooks and automation scripts"
+  - name: "threat-models"
+    url: "https://github.company.com/security/threat-models"
+    description: "Threat models for all critical services"
+  - name: "vulnerability-management"
+    url: "https://github.company.com/security/vuln-management"
+    description: "Vulnerability tracking, SLA dashboards, exception requests"
+
+tech_stack:
+  sast:
+    - "Semgrep (custom rules + OWASP rulesets)"
+    - "SonarQube (code quality + security)"
+    - "CodeQL (GitHub Advanced Security)"
+  dast:
+    - "OWASP ZAP (automated scanning)"
+    - "Burp Suite (manual pen testing)"
+  dependency_scanning:
+    - "Snyk (SCA — open-source vulnerabilities)"
+    - "Trivy (container + filesystem scanning)"
+    - "FOSSA (license compliance)"
+  secrets:
+    - "Gitleaks (pre-commit + CI)"
+    - "HashiCorp Vault (runtime secrets)"
+    - "AWS Secrets Manager (cloud secrets)"
+  infrastructure_security:
+    - "Checkov (IaC security scanning)"
+    - "OPA/Gatekeeper (Kubernetes policy enforcement)"
+    - "Falco (runtime container security)"
+  incident_response:
+    - "PagerDuty (alerting)"
+    - "Jira (vulnerability tracking)"
+    - "Slack #security-incidents (coordination)"
+
+scanning_slas:
+  critical: "Fix within 24 hours"
+  high: "Fix within 7 days"
+  medium: "Fix within 30 days"
+  low: "Fix within 90 days"
+
+compliance_checks:
+  - "All repos must have branch protection enabled"
+  - "All commits must be signed"
+  - "All dependencies scanned before merge"
+  - "No secrets in source code (gitleaks pre-commit hook)"
+  - "Container images scanned before deployment"
+  - "Production access requires approval and is time-bound"

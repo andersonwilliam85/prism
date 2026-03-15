@@ -1,24 +1,23 @@
 # ============================================================================
-# UNIVERSITY PRISM - ACADEMIC CONFIGURATION
+# UNIVERSITY PRISM — Academic Development Environment
 # ============================================================================
-# For universities, colleges, and academic institutions
-# Research, teaching, and learning focused
+# Configures tools and workspaces for students, faculty, and researchers.
+# Designed to be forked and customized per institution.
 
 package:
   name: "university-prism"
-  version: "1.0.0"
-  description: "University prism - academic development environment for students and faculty"
+  version: "2.0.0"
+  description: "Academic development environment for students, faculty, and researchers"
   author: "University IT Department"
   homepage: "https://university.edu/it"
   support:
     helpdesk: "it-help@university.edu"
     portal: "https://help.university.edu"
-  
+
   type: "academic"
-  
+
   requires:
     onboarding_version: ">=1.0.0"
-    python_version: ">=3.8"
 
 # PRISM META-CONFIGURATION
 prism_config:
@@ -40,150 +39,133 @@ prism_config:
     - url: "local"
       name: "Built-in Prisms"
       type: "local"
-    
+
     - url: "https://prism.university.edu"
       name: "University Prism Registry"
       type: "remote"
-      auth_required: true  # Requires .edu login
-  
-  npm_registry: ""  # Use default
-  
-  # University branding
+      auth_required: true
+
+  npm_registry: ""
+
   branding:
     name: "University Prism"
     tagline: "Empowering Learning & Research"
     logo_url: "https://university.edu/assets/seal.svg"
-    primary_color: "#059669"  # University green
-    secondary_color: "#dc2626"  # School red
+    primary_color: "#059669"
+    secondary_color: "#dc2626"
 
 # BUNDLED SETUP PRISMS
 bundled_prisms:
-  # Base
+  # Base — always applied
   base:
     - id: "university-base"
       name: "University Base Setup"
-      description: "Core academic dev environment"
+      description: "Core tools every university member needs: Git, Python, an editor"
       required: true
       config: "base/university.yaml"
-  
-  # User type (student, faculty, staff)
+
+  # Role selection — pick one
   user_type:
     - id: "student"
       name: "Student"
-      description: "Undergraduate or graduate student"
+      description: "Undergrad or grad student — get language tools, Jupyter, and a clean course workspace"
       config: "users/student.yaml"
-      tools:
-        - vscode
-        - jupyter
-        - git
-    
+
     - id: "faculty"
-      name: "Faculty"
-      description: "Professor or instructor"
+      name: "Faculty / TA"
+      description: "Instructor or teaching assistant — grading tools, LaTeX, multi-language support"
       config: "users/faculty.yaml"
-      tools:
-        - vscode
-        - jupyter
-        - latex
-        - git
-    
+
     - id: "researcher"
       name: "Researcher"
-      description: "PhD student or research scientist"
+      description: "PhD student, postdoc, or research scientist — data science stack, HPC access, LaTeX"
       config: "users/researcher.yaml"
-      tools:
-        - vscode
-        - jupyter
-        - hpc-access
-        - git
-    
+
     - id: "staff"
       name: "IT Staff"
-      description: "University IT staff"
+      description: "University IT — system administration and infrastructure tools"
       config: "users/staff.yaml"
-  
-  # Departments (optional, multi-select)
+
+  # Department selection — pick one or more
   departments:
     - id: "computer-science"
       name: "Computer Science"
-      description: "CS department resources"
+      description: "Full dev stack: Python, Java, C/C++, Git, Docker, databases"
       config: "departments/cs.yaml"
-    
-    - id: "engineering"
-      name: "Engineering"
-      description: "Engineering resources"
-      config: "departments/engineering.yaml"
-    
+
     - id: "data-science"
       name: "Data Science"
-      description: "Data science program"
+      description: "Python, R, Jupyter, SQL, conda environments, visualization libraries"
       config: "departments/data-science.yaml"
-    
+
+    - id: "engineering"
+      name: "Engineering"
+      description: "C/C++, GNU Octave (MATLAB alternative), FreeCAD, debuggers"
+      config: "departments/engineering.yaml"
+
     - id: "math"
       name: "Mathematics"
-      description: "Math department"
+      description: "LaTeX, SageMath, Python for computation"
       config: "departments/math.yaml"
-  
-  # Courses (optional, for students)
+
+  # Course selection — optional, for students
   courses:
     - id: "cs101"
       name: "CS 101: Intro to Programming"
+      description: "Python basics — no prior experience needed"
       config: "courses/cs101.yaml"
-    
+
     - id: "cs201"
       name: "CS 201: Data Structures"
+      description: "Java-based data structures and algorithms"
       config: "courses/cs201.yaml"
-    
+
     - id: "cs301"
-      name: "CS 301: Algorithms"
+      name: "CS 301: Systems Programming"
+      description: "C/C++, memory management, operating systems concepts"
       config: "courses/cs301.yaml"
 
 # SETUP CONFIGURATION
 setup:
   install:
     target_dir: "config/"
-    
+
     files:
       - source: "welcome.yaml"
         dest: "config/welcome.yaml"
-      
+
       - source: "resources.yaml"
         dest: "config/resources.yaml"
         description: "Library, HPC, canvas, etc."
-      
-      - source: "academic-integrity.yaml"
-        dest: "config/academic-integrity.yaml"
-        description: "Honor code and academic integrity"
-    
+
     directories:
       - source: "base/"
         dest: "config/base/"
-      
+
       - source: "users/"
         dest: "config/users/"
-      
+
       - source: "departments/"
         dest: "config/departments/"
-  
+
   post_install:
     message: |
-      🎓 Welcome to [University Name]!
-      
-      Your academic development environment is ready.
-      
-      📚 Resources:
-      - Canvas: https://canvas.university.edu
-      - Library: https://library.university.edu
-      - HPC Cluster: hpc.university.edu
-      - IT Help: it-help@university.edu
-      
-      🚀 Next Steps:
-      1. Log in to Canvas
-      2. Join your course channels
-      3. Review academic integrity policy
-      4. Start learning!
-      
-      Good luck with your studies! 🎓
+      Welcome to your university development environment.
+
+      Your tools are installed. Here is what to do next:
+
+      1. Open VS Code:   code .
+      2. Start Jupyter:  jupyter lab
+      3. Check Git:      git config --list
+
+      Key resources:
+        Canvas:      https://canvas.university.edu
+        Library:     https://library.university.edu
+        HPC Cluster: ssh hpc  (after HPC setup)
+        IT Help:     it-help@university.edu
+
+      Your workspace directories have been created.
+      Run `ls ~/courses` or `ls ~/research` to see them.
 
 # User info fields
 user_info_fields:
@@ -191,20 +173,20 @@ user_info_fields:
     label: "Full Name"
     type: "text"
     required: true
-    placeholder: "Taylor Student"
-  
+    placeholder: "Alex Chen"
+
   - id: "email"
     label: "University Email"
     type: "email"
     required: true
-    placeholder: "taylor@university.edu"
-  
+    placeholder: "achen@university.edu"
+
   - id: "student_id"
     label: "Student/Employee ID"
     type: "text"
     required: true
     placeholder: "12345678"
-  
+
   - id: "user_type"
     label: "I am a..."
     type: "select"
@@ -212,20 +194,30 @@ user_info_fields:
     options:
       - "Student (Undergrad)"
       - "Student (Graduate)"
-      - "Faculty"
+      - "Faculty / TA"
       - "Researcher"
-      - "Staff"
-  
+      - "IT Staff"
+
   - id: "department"
     label: "Department"
     type: "select"
     required: true
     options:
       - "Computer Science"
-      - "Engineering"
       - "Data Science"
+      - "Engineering"
       - "Mathematics"
       - "Other"
+
+  - id: "semester"
+    label: "Current Semester"
+    type: "select"
+    required: false
+    options:
+      - "fall-2025"
+      - "spring-2026"
+      - "summer-2026"
+      - "fall-2026"
 
   - id: "course"
     label: "Primary Course"
@@ -235,49 +227,22 @@ user_info_fields:
     options:
       - "CS 101: Intro to Programming"
       - "CS 201: Data Structures"
-      - "CS 301: Algorithms"
+      - "CS 301: Systems Programming"
     option_map:
       Computer Science:
         - "CS 101: Intro to Programming"
         - "CS 201: Data Structures"
-        - "CS 301: Algorithms"
-      Engineering:
-        - "ENGR 101: Engineering Design"
-        - "ENGR 201: Systems Engineering"
+        - "CS 301: Systems Programming"
       Data Science:
         - "DS 101: Intro to Data Science"
         - "DS 201: Machine Learning"
+      Engineering:
+        - "ENGR 101: Engineering Design"
+        - "ENGR 201: Systems Engineering"
       Mathematics:
         - "MATH 201: Linear Algebra"
         - "MATH 301: Real Analysis"
       Other:
-        - "N/A"
-
-  - id: "year"
-    label: "Year"
-    type: "select"
-    required: false
-    depends_on: "user_type"
-    options:
-      - "Freshman"
-      - "Sophomore"
-      - "Junior"
-      - "Senior"
-      - "Graduate"
-      - "N/A"
-    option_map:
-      "Student (Undergrad)":
-        - "Freshman"
-        - "Sophomore"
-        - "Junior"
-        - "Senior"
-      "Student (Graduate)":
-        - "Graduate"
-      Faculty:
-        - "N/A"
-      Researcher:
-        - "N/A"
-      Staff:
         - "N/A"
 
 # Distribution
@@ -285,7 +250,7 @@ distribution:
   local:
     path: "prisms/university.prism/"
     discoverable: true
-  
+
   internal:
     url: "https://prism.university.edu"
     auth_required: true
@@ -298,13 +263,14 @@ metadata:
     - education
     - research
     - students
-  
+    - faculty
+
   keywords:
     - higher-education
     - university
     - college
-  
+
   company_size: "academic"
   regions: ["Global"]
-  
-  last_updated: "2026-03-04"
+
+  last_updated: "2026-03-15"

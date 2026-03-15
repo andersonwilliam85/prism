@@ -1,15 +1,16 @@
 # Tool Registry — custom tools for consulting-firm.prism
-# Tools not found in the base prism.prism/base/tool-registry.yaml.
+# Tools here supplement the base prism.prism/base/tool-registry.yaml.
+# Only define tools NOT already in the base registry.
 
 python3:
   label: Python 3
   summary: Python runtime
-  description: General-purpose programming language — scripts, web backends, data science
+  description: General-purpose programming language — scripts, automation, data work
   category: runtime
   platforms:
     mac: brew install python@3
-    ubuntu: sudo apt-get install -y python3
-    linux: sudo apt-get install -y python3
+    ubuntu: sudo apt-get install -y python3 python3-venv python3-pip
+    linux: sudo apt-get install -y python3 python3-venv python3-pip
     windows: winget install Python.Python.3.12
   uninstall:
     mac: brew uninstall python@3
@@ -17,27 +18,11 @@ python3:
     linux: sudo apt-get remove -y python3
     windows: winget uninstall Python.Python.3.12
 
-vscode:
-  label: VS Code
-  summary: Extensible editor
-  description: Microsoft's extensible editor — huge ecosystem of extensions
-  category: editor
-  platforms:
-    mac: brew install --cask visual-studio-code
-    ubuntu: sudo snap install code --classic
-    linux: sudo snap install code --classic
-    windows: winget install Microsoft.VisualStudioCode
-  uninstall:
-    mac: brew uninstall --cask visual-studio-code
-    ubuntu: sudo snap remove code
-    linux: sudo snap remove code
-    windows: winget uninstall Microsoft.VisualStudioCode
-
 postman:
   label: Postman
   summary: API development platform
-  description: Design, test, and document APIs with a visual interface and collaboration tools
-  category: cli
+  description: Design, test, and document APIs — share collections across team
+  category: api
   platforms:
     mac: brew install --cask postman
     ubuntu: sudo snap install postman
@@ -52,15 +37,93 @@ postman:
 nodejs:
   label: Node.js
   summary: JavaScript runtime
-  description: Server-side JavaScript runtime — build web servers, CLIs, and tooling
+  description: Server-side JavaScript — web servers, CLIs, build tooling
   category: runtime
   platforms:
     mac: brew install node
-    ubuntu: sudo apt-get install -y nodejs
-    linux: sudo apt-get install -y nodejs
+    ubuntu: sudo apt-get install -y nodejs npm
+    linux: sudo apt-get install -y nodejs npm
     windows: winget install OpenJS.NodeJS
   uninstall:
     mac: brew uninstall node
-    ubuntu: sudo apt-get remove -y nodejs
-    linux: sudo apt-get remove -y nodejs
+    ubuntu: sudo apt-get remove -y nodejs npm
+    linux: sudo apt-get remove -y nodejs npm
     windows: winget uninstall OpenJS.NodeJS
+
+age:
+  label: age
+  summary: File encryption
+  description: Simple, modern file encryption — encrypt client secrets and .env files at rest
+  category: security
+  platforms:
+    mac: brew install age
+    ubuntu: sudo apt-get install -y age
+    linux: sudo apt-get install -y age
+    windows: winget install FiloSottile.age
+  uninstall:
+    mac: brew uninstall age
+    ubuntu: sudo apt-get remove -y age
+    linux: sudo apt-get remove -y age
+    windows: winget uninstall FiloSottile.age
+
+sops:
+  label: SOPS
+  summary: Secrets in git
+  description: Encrypt secrets in YAML/JSON files — commit encrypted configs safely to git
+  category: security
+  platforms:
+    mac: brew install sops
+    ubuntu: brew install sops
+    linux: brew install sops
+    windows: winget install Mozilla.sops
+  uninstall:
+    mac: brew uninstall sops
+    ubuntu: brew uninstall sops
+    linux: brew uninstall sops
+    windows: winget uninstall Mozilla.sops
+
+direnv:
+  label: direnv
+  summary: Per-directory env vars
+  description: Auto-load/unload environment variables when entering a directory — perfect for client isolation
+  category: cli
+  platforms:
+    mac: brew install direnv
+    ubuntu: sudo apt-get install -y direnv
+    linux: sudo apt-get install -y direnv
+    windows: winget install direnv.direnv
+  uninstall:
+    mac: brew uninstall direnv
+    ubuntu: sudo apt-get remove -y direnv
+    linux: sudo apt-get remove -y direnv
+    windows: winget uninstall direnv.direnv
+
+1password-cli:
+  label: 1Password CLI
+  summary: Secrets manager CLI
+  description: Inject secrets from 1Password into scripts and env vars without files on disk
+  category: security
+  platforms:
+    mac: brew install --cask 1password-cli
+    ubuntu: sudo snap install 1password-cli
+    linux: sudo snap install 1password-cli
+    windows: winget install AgileBits.1Password.CLI
+  uninstall:
+    mac: brew uninstall --cask 1password-cli
+    ubuntu: sudo snap remove 1password-cli
+    linux: sudo snap remove 1password-cli
+    windows: winget uninstall AgileBits.1Password.CLI
+
+mise:
+  label: mise
+  summary: Polyglot version manager
+  description: Single tool to manage Node, Python, Ruby, Go, Java versions per project — replaces nvm, pyenv, rbenv
+  category: runtime
+  platforms:
+    mac: brew install mise
+    ubuntu: "curl https://mise.run | sh"
+    linux: "curl https://mise.run | sh"
+  uninstall:
+    mac: brew uninstall mise
+    ubuntu: rm -rf ~/.local/share/mise ~/.local/bin/mise
+    linux: rm -rf ~/.local/share/mise ~/.local/bin/mise

@@ -1,46 +1,65 @@
 # ============================================================================
-# ACME CORP WELCOME PAGE (Example)
+# ACME CORP WELCOME PAGE
 # ============================================================================
 
 company:
-  name: "ACME Corp"
-  tagline: "Building the future"
+  name: "Acme Corp"
+  tagline: "Build. Ship. Iterate."
 
 welcome:
-  title: "Welcome to ACME Corp Engineering"
-  subtitle: "Your development environment is ready!"
+  title: "Welcome to Acme Engineering"
+  subtitle: "Your development environment is ready."
   hero_message: |
-    This is your personal knowledge base for all things ACME.
+    You're joining a team of ~200 engineers building Acme's products.
+    We're in the middle of an exciting transition from a Django monolith
+    to microservices on AWS, and there's plenty of impactful work to do.
 
   getting_started:
-    title: "🎯 Getting Started"
+    title: "Getting Started"
     items:
-      - text: "Check out our **Engineering Handbook**"
-        icon: "📚"
-        link: "https://handbook.acmecorp.com"
-      
-      - text: "Join **#engineering** on Slack"
-        icon: "💬"
+      - text: "Read the **Engineering Handbook** for coding standards and practices"
+        link: "https://dev.acmecorp.com/handbook"
+
+      - text: "Join **#engineering** on Slack for company-wide announcements"
+        link: "https://acmecorp.slack.com/channels/engineering"
+
+      - text: "Set up your local dev environment with the **day-one checklist** in your team config"
+
+      - text: "Understand the **monolith migration strategy** (especially if you're on Backend)"
+        link: "https://dev.acmecorp.com/docs/monolith-migration"
 
 installation:
   prerequisites:
     title: "Before You Start"
     items:
-      - text: "**Connect to VPN** if working remotely"
+      - text: "**Okta SSO** — verify you can log in at acmecorp.okta.com"
+        required: true
+      - text: "**GitHub access** — confirm you're in the acmecorp org on github.com"
+        required: true
+      - text: "**AWS SSO** — run 'aws sso login' to authenticate"
+        required: true
+      - text: "**Slack** — join your team channel (listed in your team config)"
+        required: true
+      - text: "**VPN** — install WireGuard if you need production database access"
         required: false
-        icon: "🔒"
 
 support:
   contacts:
-    - name: "IT Support"
+    - name: "Platform Team"
+      description: "Dev environment, CI/CD, infrastructure issues"
       channels:
-        email: "it@acmecorp.com"
+        slack: "#platform-support"
+        email: "platform-team@acmecorp.com"
+    - name: "IT Support"
+      description: "Laptop, Okta, VPN, general access issues"
+      channels:
         slack: "#it-support"
-      hours: "9am-5pm"
+        email: "it@acmecorp.com"
+        jira: "https://acmecorp.atlassian.net/servicedesk"
+      hours: "9am-6pm ET"
 
 branding:
   colors:
-    primary: "#FF6B35"    # ACME Orange
-    secondary: "#004E89"  # ACME Blue
-  
-  footer_text: "Built with ❤️ by ACME Engineering"
+    primary: "#FF6B35"
+    secondary: "#004E89"
+  footer_text: "Built by Acme Platform Team"

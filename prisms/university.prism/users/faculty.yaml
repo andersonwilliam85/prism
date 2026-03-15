@@ -1,14 +1,132 @@
 # ============================================================================
-# FACULTY USER TYPE
+# FACULTY / TA ROLE
 # ============================================================================
+# For professors, lecturers, and teaching assistants. Focuses on:
+#   - Grading tools (nbgrader for Jupyter-based courses)
+#   - LaTeX for papers, exams, and course materials
+#   - Multi-language support (you may teach Python, Java, and C in different courses)
+#   - Jupyter for live demos and interactive lectures
+#   - Pandoc for converting materials between formats
 
 user_type:
   id: "faculty"
-  name: "Faculty"
-  description: "Professor or instructor"
+  name: "Faculty / TA"
+  description: "Professor, lecturer, or teaching assistant"
+
+# ── Tools ─────────────────────────────────────────────────────────────────────
 
 tools_required:
-  - vscode
   - git
   - python3
+  - code
   - jupyter
+  - latex
+  - pandoc
+
+tools_optional:
+  - nbgrader
+  - openjdk
+  - gcc
+  - gh
+  - zotero
+
+# ── Workspace Structure ──────────────────────────────────────────────────────
+# Organized by course and research activity.
+# Example result:
+#   ~/teaching/cs101/lectures/
+#   ~/teaching/cs101/assignments/
+#   ~/teaching/cs101/grading/
+#   ~/research/papers/
+#   ~/research/grants/
+
+workspace:
+  structure:
+    "~/teaching/${COURSE_ID}":
+      - "lectures/"
+      - "assignments/"
+      - "solutions/"
+      - "grading/"
+      - "exams/"
+      - "resources/"
+    "~/research":
+      - "papers/"
+      - "grants/"
+      - "presentations/"
+
+# ── Git Configuration ────────────────────────────────────────────────────────
+
+git:
+  aliases:
+    hist: "log --oneline --graph --decorate -30"
+    # Useful for distributing starter code
+    archive-branch: "archive --format=zip"
+
+# ── Grading Workflow ─────────────────────────────────────────────────────────
+# nbgrader setup for Jupyter-based assignment grading.
+
+grading:
+  tool: "nbgrader"
+  setup_steps:
+    - "Install nbgrader: pip3 install nbgrader"
+    - "Initialize course: nbgrader quickstart ${COURSE_ID}"
+    - "Create assignment: nbgrader generate_assignment assignment1"
+    - "After students submit, auto-grade: nbgrader autograde assignment1"
+    - "Manual review: nbgrader formgrade"
+    - "Generate feedback: nbgrader generate_feedback assignment1"
+  directory: "~/teaching/${COURSE_ID}/grading"
+
+# ── LaTeX Templates ──────────────────────────────────────────────────────────
+
+latex:
+  templates:
+    exam: |
+      % Quick exam template — customize the header and add questions
+      \documentclass[12pt]{article}
+      \usepackage[margin=1in]{geometry}
+      \usepackage{amsmath,amssymb}
+      \begin{document}
+      \begin{center}
+      {\Large\bfseries ${COURSE_ID} --- Exam} \\[6pt]
+      Name: \underline{\hspace{3in}} \quad Date: \underline{\hspace{1.5in}}
+      \end{center}
+      \vspace{1em}
+      \begin{enumerate}
+        \item Question here (10 pts)
+      \end{enumerate}
+      \end{document}
+    syllabus: |
+      \documentclass[11pt]{article}
+      \usepackage[margin=1in]{geometry}
+      \begin{document}
+      \begin{center}
+      {\Large\bfseries ${COURSE_ID} --- Syllabus} \\
+      Instructor: ${USER_FULL_NAME} \\
+      ${USER_EMAIL}
+      \end{center}
+      \section*{Course Description}
+      \section*{Learning Objectives}
+      \section*{Schedule}
+      \section*{Grading Policy}
+      \section*{Academic Integrity}
+      \end{document}
+
+# ── VS Code Extensions ───────────────────────────────────────────────────────
+
+vscode:
+  extensions:
+    - "ms-python.python"
+    - "ms-toolsai.jupyter"
+    - "james-yu.latex-workshop"
+    - "redhat.java"
+    - "ms-vscode.cpptools"
+    - "eamodio.gitlens"
+    - "ms-vscode-remote.remote-ssh"
+
+quickstart:
+  title: "Faculty Quick Start"
+  steps:
+    - "Set up a course workspace:  mkdir -p ~/teaching/cs101/{lectures,assignments,grading}"
+    - "Write in LaTeX:  code ~/teaching/cs101/exams/midterm.tex"
+    - "Convert lecture notes:  pandoc lecture.md -o lecture.pdf"
+    - "Start Jupyter for a demo:  cd ~/teaching/cs101/lectures && jupyter lab"
+    - "Set up grading:  pip3 install nbgrader && nbgrader quickstart cs101"

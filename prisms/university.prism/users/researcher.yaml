@@ -1,21 +1,158 @@
 # ============================================================================
-# RESEARCHER USER TYPE
+# RESEARCHER ROLE
 # ============================================================================
+# For PhD students, postdocs, and research scientists. Focuses on:
+#   - Full data science stack: Python, R, Jupyter, conda/mamba
+#   - HPC cluster access via SSH
+#   - LaTeX and Zotero for writing papers
+#   - DVC and Git LFS for versioning datasets and models
+#   - Reproducible environments via conda
 
 user_type:
   id: "researcher"
   name: "Researcher"
-  description: "PhD student or research scientist"
+  description: "PhD student, postdoc, or research scientist"
+
+# ── Tools ─────────────────────────────────────────────────────────────────────
 
 tools_required:
-  - vscode
   - git
   - python3
+  - code
   - jupyter
-  - docker
+  - conda
+  - latex
+  - hpc-tools
+  - git-lfs
 
-tech_stack:
-  focus:
-    - High-performance computing
-    - Machine learning
-    - Data analysis
+tools_optional:
+  - r-lang
+  - rstudio
+  - datasci-python
+  - dvc
+  - pandoc
+  - zotero
+  - docker
+  - gh
+  - tmux
+
+# ── Workspace Structure ──────────────────────────────────────────────────────
+# Organized for research workflows.
+# Example result:
+#   ~/research/projects/my-experiment/
+#   ~/research/papers/icml-2026/
+#   ~/research/data/
+#   ~/research/notebooks/
+
+workspace:
+  structure:
+    "~/research":
+      - "projects/"
+      - "papers/"
+      - "data/"
+      - "notebooks/"
+      - "presentations/"
+      - "literature/"
+
+# ── Git Configuration ────────────────────────────────────────────────────────
+
+git:
+  config:
+    # Track large files with LFS automatically for common research formats
+    "lfs.track": "*.csv,*.parquet,*.h5,*.hdf5,*.pkl,*.pt,*.pth,*.onnx"
+  aliases:
+    hist: "log --oneline --graph --decorate -30"
+    # Show what changed in each experiment
+    difftool: "difftool --dir-diff"
+
+# ── Conda Environment Templates ──────────────────────────────────────────────
+# Pre-built environment files for common research stacks.
+
+conda:
+  environments:
+    datascience:
+      file: "environment-datascience.yml"
+      contents: |
+        name: datascience
+        channels:
+          - conda-forge
+        dependencies:
+          - python=3.12
+          - numpy
+          - pandas
+          - matplotlib
+          - seaborn
+          - scikit-learn
+          - scipy
+          - statsmodels
+          - jupyterlab
+          - ipykernel
+    deeplearning:
+      file: "environment-deeplearning.yml"
+      contents: |
+        name: deeplearning
+        channels:
+          - conda-forge
+          - pytorch
+        dependencies:
+          - python=3.12
+          - pytorch
+          - torchvision
+          - numpy
+          - pandas
+          - matplotlib
+          - jupyterlab
+          - tensorboard
+          - ipykernel
+
+# ── HPC Cluster Access ───────────────────────────────────────────────────────
+
+hpc:
+  connection:
+    hostname: "hpc.university.edu"
+    ssh_key: "~/.ssh/hpc_cluster"
+    instructions:
+      - "Your SSH key was generated during setup at ~/.ssh/hpc_cluster"
+      - "Send ~/.ssh/hpc_cluster.pub to hpc-admin@university.edu to get access"
+      - "Once approved, connect with:  ssh hpc"
+      - "To forward Jupyter from the cluster:  ssh -L 8888:localhost:8888 hpc"
+      - "Use VS Code Remote SSH for editing files on the cluster directly"
+  common_commands:
+    submit_job: "sbatch job.sh"
+    check_queue: "squeue -u $USER"
+    cancel_job: "scancel <job_id>"
+    interactive: "srun --pty -t 2:00:00 --mem=8G bash"
+
+# ── Paper Writing Workflow ───────────────────────────────────────────────────
+
+paper_workflow:
+  steps:
+    - "Create paper directory:  mkdir -p ~/research/papers/my-paper && cd $_"
+    - "Initialize Git:  git init && git lfs install"
+    - "Use a LaTeX template or start from scratch:  code main.tex"
+    - "Manage references with Zotero, export as .bib"
+    - "Build PDF:  latexmk -pdf main.tex"
+    - "Convert to Word for collaborators:  pandoc main.tex -o main.docx"
+
+# ── VS Code Extensions ───────────────────────────────────────────────────────
+
+vscode:
+  extensions:
+    - "ms-python.python"
+    - "ms-python.vscode-pylance"
+    - "ms-toolsai.jupyter"
+    - "james-yu.latex-workshop"
+    - "eamodio.gitlens"
+    - "ms-vscode-remote.remote-ssh"
+    - "mhutchie.git-graph"
+
+quickstart:
+  title: "Researcher Quick Start"
+  steps:
+    - "Create a project:  mkdir ~/research/projects/my-experiment && cd $_"
+    - "Set up a conda environment:  conda create -n myproject python=3.12 numpy pandas jupyterlab"
+    - "Activate it:  conda activate myproject"
+    - "Initialize version control:  git init && git lfs install"
+    - "Start Jupyter:  jupyter lab"
+    - "Connect to HPC:  ssh hpc"
+    - "Submit a batch job:  sbatch job.sh"
