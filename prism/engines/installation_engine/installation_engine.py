@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import secrets
+import subprocess
 import threading
 from dataclasses import replace
 from datetime import datetime, timedelta
@@ -416,7 +417,6 @@ class InstallationEngine:
 
             self._log("tools", f"Installing {name}...")
             try:
-                import subprocess
                 subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
                 self._log("tools", f"Installed {name}", "success")
             except Exception:
@@ -563,9 +563,11 @@ class InstallationEngine:
                     # Strip ~/dev/ or similar prefixes — make relative to workspace_root
                     d = d.replace("~/", "").strip("/")
                     # Remove workspace_root prefix if present (e.g. "dev/projects" -> "projects")
-                    ws_root_name = merged_config.get("environment", {}).get("workspace_root", "").replace("~/", "").strip("/")
+                    ws_root_name = (
+                        merged_config.get("environment", {}).get("workspace_root", "").replace("~/", "").strip("/")
+                    )
                     if ws_root_name and d.startswith(ws_root_name + "/"):
-                        d = d[len(ws_root_name) + 1:]
+                        d = d[len(ws_root_name) + 1 :]
                     if d and d not in dirs:
                         dirs.append(d)
         return dirs

@@ -241,3 +241,19 @@ tools_optional:
       mac: "brew install kustomize"
       ubuntu: "sudo snap install kustomize"
       linux: "sudo snap install kustomize"
+
+  - name: "skaffold"
+    description: "Local Kubernetes development workflow"
+    category: "kubernetes"
+    platforms:
+      mac: "brew install skaffold"
+      ubuntu: "curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install skaffold /usr/local/bin/"
+      linux: "curl -Lo skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64 && sudo install skaffold /usr/local/bin/"
+
+  - name: "argocd"
+    description: "Argo CD CLI for GitOps deployments"
+    category: "kubernetes"
+    platforms:
+      mac: "brew install argocd"
+      ubuntu: "curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64 && sudo install argocd /usr/local/bin/"
+      linux: "curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64 && sudo install argocd /usr/local/bin/"
