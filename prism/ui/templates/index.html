@@ -1020,7 +1020,10 @@
                 <div id="postInstallMessage" style="display: none; text-align: left; margin-top: 15px; padding: 20px; background: #f8f9fa; border-radius: 8px; white-space: pre-wrap; font-size: 0.95em; color: #333;">
                 </div>
 
-                <button class="btn-primary" style="margin-top: 20px;" onclick="location.reload()">Start Over</button>
+                <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center;">
+                    <button class="btn-primary" onclick="location.reload()">Start Over</button>
+                    <button class="btn-danger" onclick="rollbackFromUI()">Rollback Installation</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1933,6 +1936,39 @@
                 <button class="btn-secondary" onclick="goToStep(1)">Start Over</button>
             `;
             logOutput.parentElement.appendChild(container);
+        }
+
+        async function rollbackFromUI() {
+            const workspace = document.getElementById('targetDir')?.value || '';
+            if (!confirm('This will undo the entire installation — uninstall tools, remove directories, and restore git config. Continue?')) return;
+
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Rolling back...';
+
+            try {
+                const resp = await fetch('/api/rollback', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ workspace: workspace })
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    btn.textContent = 'Rolled back';
+                    btn.style.background = '#10b981';
+                    const details = document.getElementById('completionDetails');
+                    if (details) {
+                        details.innerHTML = `<h4>Rollback Complete</h4><p>${data.actions_undone} actions reversed.</p>`;
+                    }
+                } else {
+                    btn.textContent = 'Rollback failed';
+                    alert(data.error || 'Rollback failed');
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                btn.textContent = 'Rollback failed';
+                btn.disabled = false;
+            }
         }
 
         function goToStep(step) {
