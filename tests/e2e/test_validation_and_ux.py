@@ -251,8 +251,8 @@ class TestConfigurationPersistence:
         html = page.locator("html")
         expect(html).to_have_attribute("data-theme", theme_id)
 
-        # Close settings panel
-        page.locator(".hamburger-menu").click()
+        # Close settings panel via Close button
+        page.locator("button").filter(has_text="Close").click()
         page.wait_for_timeout(300)
 
         # Navigate through steps
