@@ -1185,8 +1185,13 @@
 
             // Save to config
             prismConfig.theme = themeName;
-            // Save custom gradients for reload (built-ins are hardcoded)
-            if (gradients && !['ocean','purple','forest','sunset','midnight'].includes(themeName)) {
+            // Save per-package theme
+            if (selectedPackage) {
+                if (!prismConfig.packageThemes) prismConfig.packageThemes = {};
+                prismConfig.packageThemes[selectedPackage] = themeName;
+            }
+            // Save custom gradients for reload
+            if (gradients) {
                 prismConfig.customGradients = gradients;
             }
             savePrismConfig(prismConfig);
@@ -2098,14 +2103,21 @@
         
         async function selectPackage(packageName, resetTheme = true) {
             const isNewPackage = selectedPackage !== packageName;
+
+            // Save current package's theme before switching
+            if (isNewPackage && selectedPackage && prismConfig.theme) {
+                if (!prismConfig.packageThemes) prismConfig.packageThemes = {};
+                prismConfig.packageThemes[selectedPackage] = prismConfig.theme;
+            }
+
             selectedPackage = packageName;
-            // Save selected package
             prismConfig.selectedPackage = packageName;
             // Clear previous tier selections
             Object.keys(selectedSubPrisms).forEach(k => delete selectedSubPrisms[k]);
-            // Reset theme only when switching to a genuinely different package
+            // Restore saved theme for this package, or null to use package default
             if (isNewPackage && resetTheme) {
-                prismConfig.theme = null;
+                const savedThemeForPkg = (prismConfig.packageThemes || {})[packageName];
+                prismConfig.theme = savedThemeForPkg || null;
                 delete prismConfig.customGradients;
                 _themeGradients = {};
             }
