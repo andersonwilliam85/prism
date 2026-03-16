@@ -136,8 +136,8 @@ class PrismValidator:
         """Validate the prism_config section."""
         theme = prism_config.get("theme")
         if theme:
-            custom_ids = {
-                ct.get("id") for ct in prism_config.get("custom_themes", []) if isinstance(ct, dict) and ct.get("id")
+            custom_ids: set[str] = {
+                str(ct["id"]) for ct in prism_config.get("custom_themes", []) if isinstance(ct, dict) and "id" in ct
             }
             all_valid = VALID_THEMES | custom_ids
             if theme not in all_valid:
