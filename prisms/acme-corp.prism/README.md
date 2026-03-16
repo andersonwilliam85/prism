@@ -1,105 +1,43 @@
-# ACME Corp Config Package (Example Template)
+# Acme Corp Prism
 
-**Version:** 1.0.0  
-**Type:** Example / Template  
+**Version:** 2.0.0
+**Type:** Mid-size company (~200 engineers)
 
-This is a **minimal example** of a company configuration package. Use it as a template to create your own!
+Development environment configuration for Acme Corp, a mid-size company standardizing its engineering practices during a monolith-to-microservices migration.
 
-## What's Included
+## What It Covers
 
-### Minimal Structure
-- **Base company config** - Proxy, VPN, Git, tools
-- **One sub-org** - Engineering division example
-- **One team** - Platform team example
-- **Welcome page** - Company-specific welcome content
-- **Resources** - Internal links and tools
+- **AWS-first cloud setup** with SSO authentication for dev/staging/prod accounts
+- **Monolith migration context** so new engineers understand the Django-to-microservices transition
+- **5 team configs** with real repo lists, tech stacks, and day-one checklists
+- **CI/CD via GitHub Actions** with shared workflow templates
+- **Internal registries** for npm (@acme scope), Docker (ECR), and PyPI
+- **Security basics** (Dependabot, gitleaks pre-commit, Okta SSO + MFA)
 
-## How to Use as Template
+## Teams
 
-### 1. Copy this package
-```bash
-cp -r config-packages/acme-corp config-packages/your-company
-cd config-packages/your-company
-```
-
-### 2. Customize package.yaml
-```yaml
-package:
-  name: "your-company-config"
-  description: "Your Company dev environment"
-  author: "Your IT Team"
-  homepage: "https://dev.yourcompany.com"
-```
-
-### 3. Update base config
-Edit `base/your-company.yaml`:
-- Company name and domain
-- Proxy settings (if any)
-- GitHub Enterprise URL
-- Required tools
-- Cloud accounts
-
-### 4. Add your orgs/teams
-Create files in:
-- `orgs/` - Your divisions/business units
-- `departments/` - Engineering departments
-- `teams/` - Individual teams
-
-### 5. Customize welcome page
-Edit `welcome.yaml`:
-- Welcome message
-- Getting started steps
-- Installation guidance
-- Support contacts
-- Company branding
-
-### 6. Update resources
-Edit `resources.yaml`:
-- Internal tools and links
-- Documentation sites
-- Communication platforms
-
-### 7. Test installation
-```bash
-cd ../../  # Back to prism root
-python3 scripts/package_manager.py install your-company-config
-```
+| Team | Size | Focus |
+|------|------|-------|
+| Platform | 8 | AWS infra, ECS-to-EKS migration, CI/CD, observability |
+| Backend | 25 | Monolith, microservices, APIs, databases |
+| Frontend | 15 | Next.js web app, design system, accessibility |
+| Data | 10 | Snowflake warehouse, Airflow pipelines, ML experiments |
+| Mobile | 8 | React Native iOS/Android apps |
 
 ## Package Structure
 
 ```
-acme-corp/
-├── package.yaml          # Package metadata
-├── README.md             # This file
-├── welcome.yaml          # Welcome page content
-├── resources.yaml        # Company resources
-├── base/
-│   └── acme-corp.yaml    # Company base config
-├── orgs/
-│   └── acme-engineering.yaml
-└── teams/
-    └── platform-team.yaml
+acme-corp.prism/
+  package.yaml          Package metadata and team selection
+  welcome.yaml          Onboarding welcome page
+  resources.yaml        Links to internal tools and docs
+  base/
+    acme-corp.yaml      Company-wide: git, AWS, registries, workspace layout
+    tool-registry.yaml  Tools not in the base prism registry
+  teams/
+    platform-team.yaml  Platform team repos, tools, projects
+    backend-team.yaml   Backend team + monolith migration guide
+    frontend-team.yaml  Frontend team + Next.js migration
+    data-team.yaml      Data team + Snowflake/dbt/Airflow
+    mobile-team.yaml    Mobile team + React Native setup
 ```
-
-## Minimal vs Complete
-
-**This package (minimal):**
-- 1 base config
-- 1 sub-org
-- 1 team
-- ~6 files
-
-**Fortune500 package (complete enterprise template):**
-- 1 base config
-- Multiple sub-orgs
-- Multiple departments
-- Multiple teams
-- Detailed welcome guidance
-- Troubleshooting docs
-- ~15+ files
-
-**Choose what fits your company size!**
-
----
-
-**Built with ❤️ as an example template**

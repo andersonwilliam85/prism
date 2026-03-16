@@ -1,28 +1,351 @@
 # ============================================================================
 # CONSULTING FIRM BASE CONFIGURATION
 # ============================================================================
+# Everything a consultant needs regardless of which client they're on:
+# workspace layout, multi-identity git, shell aliases for context switching,
+# credential isolation patterns, and firm-wide tooling.
+
+tool_registry_file: "tool-registry.yaml"
 
 firm:
   name: "[Consulting Firm Name]"
   domain: "consultingfirm.com"
 
+# ---------------------------------------------------------------------------
+# WORKSPACE STRUCTURE
+# ---------------------------------------------------------------------------
+# Enforce a consistent directory layout so context switching is instant
+# and client data never leaks across engagements.
+workspace:
+  directories:
+    # Active client engagements — one folder per client
+    - path: "~/clients/active"
+      description: "Current client engagements"
+
+    # Archived engagements — move here when a contract ends
+    - path: "~/clients/archived"
+      description: "Past client engagements (read-only reference)"
+
+    # Firm internal tooling and automation
+    - path: "~/internal/tools"
+      description: "Firm's internal scripts, CLIs, and automation"
+
+    # Templates for proposals, SOWs, invoices, status reports
+    - path: "~/internal/templates"
+      description: "SOW, proposal, invoice, and status report templates"
+
+    # Learning and skill development
+    - path: "~/learning"
+      description: "Courses, certifications, side projects between gigs"
+
+  # Each client directory gets this scaffolding via 'client-init'
+  client_scaffold:
+    - ".client/config.yaml"        # Client metadata (name, contacts, SOW ref)
+    - ".client/git-config"         # Per-client git identity
+    - ".client/ssh-config"         # Per-client SSH key references
+    - ".client/env.encrypted"      # Per-client secrets (encrypted at rest)
+    - "repos/"                     # Client's git repositories go here
+    - "docs/"                      # SOW, meeting notes, architecture docs
+    - "docs/decisions/"            # Architecture decision records
+    - "docs/handoff/"              # Documentation for client handoff
+    - "scripts/"                   # Client-specific automation
+    - "notes/"                     # Personal working notes
+    - "notes/standup.md"           # Running standup notes
+    - "notes/blockers.md"          # Current blockers and escalations
+
+# ---------------------------------------------------------------------------
+# GIT — MULTI-IDENTITY CONFIGURATION
+# ---------------------------------------------------------------------------
+# Consultants need different git identities per context:
+# - Firm email for internal repos
+# - Client-specific email when committing to client repos
+# - Personal email for open source
+#
+# This uses git's includeIf to auto-switch based on directory.
+git:
+  # Default identity (firm)
+  user:
+    name: "${USER_NAME}"
+    email: "${USER_FIRM_EMAIL}"
+
+  # Directory-based identity switching
+  # Add these to ~/.gitconfig:
+  includeIf:
+    - pattern: "~/clients/active/meridian/**"
+      config: "~/clients/active/meridian/.client/git-config"
+    - pattern: "~/clients/active/solace/**"
+      config: "~/clients/active/solace/.client/git-config"
+    - pattern: "~/clients/active/brightcart/**"
+      config: "~/clients/active/brightcart/.client/git-config"
+    - pattern: "~/learning/**"
+      config: "~/.gitconfig-personal"
+
+  # Useful global git settings for consulting work
+  config:
+    # Rebase by default to keep client commit history clean
+    pull.rebase: true
+    # Sign commits when clients require it
+    commit.gpgsign: false
+    # Diff algorithm that handles moved code better
+    diff.algorithm: "histogram"
+    # Auto-setup remote tracking branches
+    push.autoSetupRemote: true
+
+  # Template for per-client git-config files
+  client_git_config_template: |
+    [user]
+        name = ${USER_NAME}
+        email = ${CLIENT_EMAIL}
+    [core]
+        sshCommand = ssh -i ~/.ssh/${CLIENT_SSH_KEY} -F /dev/null
+
+# ---------------------------------------------------------------------------
+# SSH — PER-CLIENT KEY MANAGEMENT
+# ---------------------------------------------------------------------------
+ssh:
+  # Each client gets its own SSH key pair, never shared across clients
+  key_naming: "~/.ssh/id_ed25519_${CLIENT_SLUG}"
+
+  # Template for ~/.ssh/config entries
+  config_template: |
+    # --- ${CLIENT_NAME} ---
+    Host ${CLIENT_SLUG}-github
+        HostName github.com
+        User git
+        IdentityFile ~/.ssh/id_ed25519_${CLIENT_SLUG}
+        IdentitiesOnly yes
+
+    Host ${CLIENT_SLUG}-gitlab
+        HostName gitlab.com
+        User git
+        IdentityFile ~/.ssh/id_ed25519_${CLIENT_SLUG}
+        IdentitiesOnly yes
+
+# ---------------------------------------------------------------------------
+# CREDENTIALS & SECRETS ISOLATION
+# ---------------------------------------------------------------------------
+credentials:
+  # Cloud credential isolation strategy
+  # Each client's cloud creds live in their own profile/config, never in
+  # the default profile.
+  strategy: "per-client-profiles"
+
+  aws:
+    # Use named profiles, never the default profile
+    # ~/.aws/credentials should have [meridian], [solace], [brightcart] profiles
+    config_pattern: "AWS_PROFILE=${CLIENT_SLUG}"
+
+  azure:
+    # Use az account set to switch subscriptions per client
+    config_pattern: "AZURE_SUBSCRIPTION_ID=${CLIENT_AZURE_SUB}"
+
+  gcp:
+    # Use gcloud config configurations for per-client isolation
+    config_pattern: "gcloud config configurations activate ${CLIENT_SLUG}"
+
+  # Secrets management
+  secrets:
+    # Client .env files must be encrypted and gitignored
+    encryption: "age"  # or gpg, sops
+    gitignore_patterns:
+      - ".env"
+      - ".env.*"
+      - "*.pem"
+      - "*.key"
+      - ".client/env.encrypted"
+      - "credentials.json"
+      - "service-account*.json"
+
+# ---------------------------------------------------------------------------
+# SHELL ALIASES — CONSULTING WORKFLOW
+# ---------------------------------------------------------------------------
+# Add these to ~/.zshrc or ~/.bashrc
+shell:
+  aliases:
+    # --- Client Context Switching ---
+    # Usage: cswitch meridian
+    cswitch: |
+      cswitch() {
+        local client="$1"
+        local client_dir="$HOME/clients/active/$client"
+        if [ ! -d "$client_dir" ]; then
+          echo "No client directory: $client_dir"
+          echo "Active clients:"; ls ~/clients/active/
+          return 1
+        fi
+        cd "$client_dir"
+        # Load client-specific env if it exists
+        [ -f ".client/env.sh" ] && source .client/env.sh
+        # Set AWS profile if applicable
+        [ -f ".client/config.yaml" ] && export AWS_PROFILE="$client" 2>/dev/null
+        echo "Switched to client: $client"
+        echo "  Git identity: $(git config user.email 2>/dev/null || echo 'not set')"
+        echo "  Cloud profile: ${AWS_PROFILE:-none}"
+      }
+
+    # --- Client Directory Init ---
+    # Usage: client-init meridian "Meridian Financial"
+    client-init: |
+      client-init() {
+        local slug="$1"
+        local name="${2:-$1}"
+        local base="$HOME/clients/active/$slug"
+        if [ -d "$base" ]; then
+          echo "Client directory already exists: $base"
+          return 1
+        fi
+        mkdir -p "$base"/{.client,repos,docs/decisions,docs/handoff,scripts,notes}
+        cat > "$base/.client/config.yaml" << YAML
+      client:
+        slug: "$slug"
+        name: "$name"
+        created: "$(date +%Y-%m-%d)"
+        status: active
+        contacts: []
+        sow_ref: ""
+        billing_code: ""
+      YAML
+        cat > "$base/.client/git-config" << GIT
+      [user]
+          name = $(git config user.name)
+          email = CHANGE_ME@$slug.com
+      GIT
+        echo "# Standup Notes — $name" > "$base/notes/standup.md"
+        echo "# Blockers — $name" > "$base/notes/blockers.md"
+        echo "Client '$name' initialized at $base"
+        echo "ACTION REQUIRED: Update .client/git-config with your client email"
+      }
+
+    # --- Quick Navigation ---
+    ca: "cd ~/clients/active"
+    ci: "cd ~/internal"
+    ct: "cd ~/internal/templates"
+    cl: "cd ~/learning"
+
+    # --- Status Dashboard ---
+    # Show all active clients and their latest commit
+    clients: |
+      clients() {
+        echo "=== Active Client Engagements ==="
+        for dir in ~/clients/active/*/; do
+          [ -d "$dir" ] || continue
+          local name=$(basename "$dir")
+          local repos=$(find "$dir/repos" -maxdepth 1 -type d 2>/dev/null | wc -l)
+          local last_commit=$(find "$dir/repos" -name ".git" -maxdepth 2 -exec git -C "$(dirname {})" log -1 --format="%ar" 2>/dev/null \; | head -1)
+          printf "  %-20s %d repos   last commit: %s\n" "$name" "$((repos - 1))" "${last_commit:-never}"
+        done
+      }
+
+    # --- Archive a Client ---
+    # Usage: client-archive meridian
+    client-archive: |
+      client-archive() {
+        local slug="$1"
+        local src="$HOME/clients/active/$slug"
+        local dst="$HOME/clients/archived/$slug"
+        if [ ! -d "$src" ]; then
+          echo "No active client: $slug"
+          return 1
+        fi
+        mv "$src" "$dst"
+        echo "Archived: $slug -> ~/clients/archived/$slug"
+      }
+
+    # --- Time Tracking Helpers ---
+    # Quick log format: client hours description
+    tlog: |
+      tlog() {
+        local client="$1" hours="$2"; shift 2; local desc="$*"
+        local logfile="$HOME/internal/timelog.csv"
+        [ ! -f "$logfile" ] && echo "date,client,hours,description" > "$logfile"
+        echo "$(date +%Y-%m-%d),$client,$hours,$desc" >> "$logfile"
+        echo "Logged ${hours}h for $client: $desc"
+      }
+
+    # Weekly timesheet summary
+    tweek: |
+      tweek() {
+        local logfile="$HOME/internal/timelog.csv"
+        [ ! -f "$logfile" ] && echo "No time entries found." && return 1
+        local start=$(date -v-7d +%Y-%m-%d 2>/dev/null || date -d "7 days ago" +%Y-%m-%d)
+        echo "=== Time Summary (since $start) ==="
+        awk -F, -v start="$start" 'NR>1 && $1>=start {sum[$2]+=$3} END {for(c in sum) printf "  %-20s %.1fh\n", c, sum[c]}' "$logfile"
+      }
+
+    # --- Git Helpers for Consulting ---
+    # Who am I committing as right now?
+    whoamigit: "echo \"$(git config user.name) <$(git config user.email)>\""
+
+    # Clone into the right client folder
+    # Usage: client-clone meridian git@github.com:meridian/api.git
+    client-clone: |
+      client-clone() {
+        local client="$1" repo_url="$2"
+        local dest="$HOME/clients/active/$client/repos/$(basename "$repo_url" .git)"
+        git clone "$repo_url" "$dest"
+        echo "Cloned to $dest"
+      }
+
+# ---------------------------------------------------------------------------
+# ENVIRONMENT / PROXY / VPN
+# ---------------------------------------------------------------------------
 environment:
   proxy:
     enabled: false
+    # Override per-client if they require a proxy
   vpn:
     required: false
+    # Per-client VPN configs are in each client's sub-prism
 
-git:
-  user:
-    name: "${USER}"
-    email: "${USER}@consultingfirm.com"
-
+# ---------------------------------------------------------------------------
+# TOOLS — FIRM-WIDE REQUIREMENTS
+# ---------------------------------------------------------------------------
+# Tools every consultant needs regardless of client.
+# Client-specific tools are in each client sub-prism.
 tools_required:
   - git
+  - curl
+  - jq
+  - ripgrep
+  - fd
+  - fzf
   - docker
-  - python3
+  - gh
 
-tools_available:
-  - vscode
-  - postman
-  - terraform
+tools_optional:
+  - code
+  - cursor
+  - nvim
+  - zed
+  - tmux
+  - lazygit
+  - httpie
+
+# ---------------------------------------------------------------------------
+# ONBOARDING CHECKLIST — NEW CONSULTANT
+# ---------------------------------------------------------------------------
+onboarding:
+  steps:
+    - title: "Generate firm SSH key"
+      command: "ssh-keygen -t ed25519 -C '${USER_FIRM_EMAIL}' -f ~/.ssh/id_ed25519_firm"
+      verify: "test -f ~/.ssh/id_ed25519_firm"
+
+    - title: "Create workspace directories"
+      command: "mkdir -p ~/clients/{active,archived} ~/internal/{tools,templates} ~/learning"
+      verify: "test -d ~/clients/active && test -d ~/internal/templates"
+
+    - title: "Configure git includeIf for identity switching"
+      description: "Add directory-based identity switching to ~/.gitconfig"
+      manual: true
+
+    - title: "Install required tools"
+      description: "Run the prism tool installer"
+      manual: false
+
+    - title: "Set up time tracking"
+      description: "Connect your time tracking system and verify billing codes"
+      manual: true
+
+    - title: "Initialize your first client"
+      command: "client-init <client-slug> '<Client Name>'"
+      manual: true

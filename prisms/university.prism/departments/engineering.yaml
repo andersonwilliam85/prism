@@ -1,18 +1,64 @@
 # ============================================================================
 # ENGINEERING DEPARTMENT
 # ============================================================================
+# C/C++ development, numerical computing, CAD, and debugging tools.
+# Uses free/open-source alternatives where possible (Octave for MATLAB,
+# FreeCAD for AutoCAD/SolidWorks).
 
 department:
   id: "engineering"
   name: "Engineering"
 
-tools_required:
-  - vscode
-  - python3
-  - git
+# ── Tools ─────────────────────────────────────────────────────────────────────
 
-tech_stack:
-  tools:
-    - MATLAB
-    - ANSYS
-    - AutoCAD
+tools_required:
+  - git
+  - python3
+  - gcc
+  - cmake
+  - code
+
+tools_optional:
+  - octave
+  - freecad
+  - gdb
+  - valgrind
+  - jupyter
+  - conda
+  - docker
+  - gh
+
+# ── Language & Tool Notes ─────────────────────────────────────────────────────
+
+languages:
+  c_cpp:
+    compiler: "gcc/g++"
+    build_system: "cmake"
+    debugger: "gdb"
+    memory_checker: "valgrind (Linux only)"
+    notes: "Core language for embedded systems, control systems, and numerical methods"
+  python:
+    notes: "Used for scripting, simulation, and data analysis in engineering courses"
+  octave:
+    notes: "Drop-in MATLAB replacement — runs most .m files from MATLAB-based courses"
+    post_install: "octave --version"
+    getting_started: "Launch with: octave --gui"
+
+# ── CAD & Modeling ────────────────────────────────────────────────────────────
+
+cad:
+  tool: "freecad"
+  notes: "Free parametric 3D modeler. If your course requires AutoCAD or SolidWorks, check with your department for university licenses."
+  alternatives:
+    - "OpenSCAD — programmatic 3D modeling (brew install openscad)"
+    - "KiCad — PCB/circuit board design (brew install --cask kicad)"
+
+# ── VS Code Extensions ───────────────────────────────────────────────────────
+
+vscode:
+  extensions:
+    - "ms-vscode.cpptools"
+    - "ms-vscode.cmake-tools"
+    - "ms-python.python"
+    - "ms-toolsai.jupyter"
+    - "eamodio.gitlens"

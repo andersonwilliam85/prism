@@ -27,7 +27,7 @@ git:
 tools_required:
   - git
 
-tools_available:
+tools_optional:
   - vscode          # Bitbucket extensions available
   - sourcetree      # Atlassian's Git GUI
   - docker

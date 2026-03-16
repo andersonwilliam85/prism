@@ -25,12 +25,6 @@ proxy:
   https: ""
   no_proxy: "localhost,127.0.0.1,.internal.company.com"
 
-editor:
-  default: "code"
-  tab_size: 2
-  format_on_save: true
-  shared_settings: true
-
 workspace:
   directories:
     - "projects"
@@ -67,83 +61,12 @@ security:
   audit_logging: true
 
 tools_required:
-  - name: "git"
-    description: "Version control"
-    platforms:
-      mac: "brew install git"
-      ubuntu: "sudo apt-get install -y git"
-      linux: "sudo apt-get install -y git"
-      windows: "winget install Git.Git"
-
-  - name: "curl"
-    description: "HTTP client"
-    platforms:
-      mac: "brew install curl"
-      ubuntu: "sudo apt-get install -y curl"
-      linux: "sudo apt-get install -y curl"
-      windows: "winget install cURL.cURL"
-
-  - name: "node"
-    description: "Node.js runtime"
-    platforms:
-      mac: "brew install node"
-      ubuntu: "curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - && sudo apt-get install -y nodejs"
-      linux: "curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - && sudo apt-get install -y nodejs"
-      windows: "winget install OpenJS.NodeJS.LTS"
-
-  - name: "python3"
-    description: "Python interpreter"
-    platforms:
-      mac: "brew install python@3.12"
-      ubuntu: "sudo apt-get install -y python3 python3-pip python3-venv"
-      linux: "sudo apt-get install -y python3 python3-pip python3-venv"
-      windows: "winget install Python.Python.3.12"
-
-  - name: "gh"
-    description: "GitHub CLI — PR workflows"
-    platforms:
-      mac: "brew install gh"
-      ubuntu: "sudo apt-get install -y gh"
-      linux: "sudo apt-get install -y gh"
-      windows: "winget install GitHub.cli"
-
-  - name: "docker"
-    description: "Container runtime"
-    platforms:
-      mac: "brew install --cask docker"
-      ubuntu: "curl -fsSL https://get.docker.com | sh"
-      linux: "curl -fsSL https://get.docker.com | sh"
-      windows: "winget install Docker.DockerDesktop"
+  - "git"
+  - "curl"
+  - "gh"
+  - "docker"
 
 tools_optional:
-  - name: "code"
-    description: "Visual Studio Code"
-    platforms:
-      mac: "brew install --cask visual-studio-code"
-      ubuntu: "sudo snap install code --classic"
-      linux: "sudo snap install code --classic"
-      windows: "winget install Microsoft.VisualStudioCode"
-
-  - name: "jq"
-    description: "JSON processor"
-    platforms:
-      mac: "brew install jq"
-      ubuntu: "sudo apt-get install -y jq"
-      linux: "sudo apt-get install -y jq"
-      windows: "winget install jqlang.jq"
-
-  - name: "aws"
-    description: "AWS CLI"
-    platforms:
-      mac: "brew install awscli"
-      ubuntu: "sudo apt-get install -y awscli"
-      linux: "sudo apt-get install -y awscli"
-      windows: "winget install Amazon.AWSCLI"
-
-  - name: "kubectl"
-    description: "Kubernetes CLI"
-    platforms:
-      mac: "brew install kubectl"
-      ubuntu: "sudo snap install kubectl --classic"
-      linux: "sudo snap install kubectl --classic"
-      windows: "winget install Kubernetes.kubectl"
+  - "jq"
+  - "aws"
+  - "kubectl"

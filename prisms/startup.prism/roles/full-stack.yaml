@@ -1,26 +1,89 @@
 # ============================================================================
 # FULL-STACK ENGINEER ROLE
 # ============================================================================
+# The generalist who owns features end-to-end: UI to database to deploy.
+# At a startup, this is most of the engineering team.
 
 role:
   id: "full-stack"
   name: "Full-Stack Engineer"
-  description: "Frontend + Backend development"
+  description: "Own features end-to-end — frontend, backend, database, and deployment"
 
 tools_required:
-  - vscode
-  - docker
   - git
+  - gh
+  - docker
+  - nvm
   - nodejs
-  - python3
+  - curl
+  - jq
+  - ripgrep
+  - fzf
+  - prettier
+  - eslint
 
+tools_optional:
+  - python3
+  - aws
+  - gcloud
+  - terraform
+  - railway-cli
+  - vercel-cli
+  - sentry-cli
+  - lazygit
+  - httpie
+  - act
+
+# ---------- What you will build ----------
 tech_stack:
   frontend:
-    - React
+    - React / Next.js
     - TypeScript
+    - Tailwind CSS
   backend:
-    - Node.js
-    - Python
+    - Node.js + Express or Fastify
+    - Python + FastAPI (for ML/data endpoints)
   databases:
-    - PostgreSQL
-    - Redis
+    - PostgreSQL (primary data store)
+    - Redis (caching, sessions, queues)
+    - MongoDB (if on MERN stack)
+  infrastructure:
+    - Docker Compose for local dev
+    - GitHub Actions for CI/CD
+    - Vercel / Railway / AWS for production
+
+# ---------- Shell extras for full-stack work ----------
+shell:
+  aliases:
+    # Frontend
+    nrd: "npm run dev"
+    nrb: "npm run build"
+    nrt: "npm run test"
+    nrl: "npm run lint"
+    yi: "yarn install"
+    yd: "yarn dev"
+
+    # Backend
+    apilogs: "docker compose logs -f api"
+    dbconsole: "docker compose exec db psql -U postgres"
+    rediscli: "docker compose exec redis redis-cli"
+
+    # Full-stack workflow
+    devup: "docker compose up -d db redis && npm run dev"
+    devdown: "docker compose down"
+    resetdb: "docker compose exec api npm run db:reset"
+    seed: "docker compose exec api npm run db:seed"
+    migrate: "docker compose exec api npm run db:migrate"
+
+# ---------- VS Code extensions for full-stack ----------
+vscode:
+  extensions:
+    - ms-vscode.vscode-typescript-next
+    - dbaeumer.vscode-eslint
+    - esbenp.prettier-vscode
+    - ms-azuretools.vscode-docker
+    - prisma.prisma
+    - bradlc.vscode-tailwindcss
+    - github.copilot
+    - ms-vscode.vscode-jest
+    - humao.rest-client

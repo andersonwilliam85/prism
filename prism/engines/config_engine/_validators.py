@@ -96,6 +96,56 @@ def validate_user_info_fields(user_fields: list, errors: list[str], warnings: li
             )
 
 
+def validate_tool_registry(registry: dict, errors: list[str], warnings: list[str]) -> None:
+    """Validate the tool_registry section."""
+    if not isinstance(registry, dict):
+        errors.append("'tool_registry' must be a dictionary")
+        return
+
+    for tool_name, tool_def in registry.items():
+        if not isinstance(tool_def, dict):
+            errors.append(f"tool_registry.{tool_name} must be a dictionary")
+            continue
+
+        if "label" not in tool_def:
+            warnings.append(f"tool_registry.{tool_name} missing 'label'")
+
+        if "category" not in tool_def:
+            warnings.append(f"tool_registry.{tool_name} missing 'category'")
+
+        platforms = tool_def.get("platforms", {})
+        uninstall = tool_def.get("uninstall", {})
+
+        if not platforms:
+            warnings.append(f"tool_registry.{tool_name} has no install commands (platforms)")
+
+        if not uninstall:
+            warnings.append(
+                f"tool_registry.{tool_name} has no uninstall commands — "
+                "rollback will not be able to remove this tool"
+            )
+
+        # Every platform with an install must have an uninstall
+        if isinstance(platforms, dict) and isinstance(uninstall, dict):
+            for platform in platforms:
+                if platform not in uninstall:
+                    warnings.append(
+                        f"tool_registry.{tool_name} has install for '{platform}' " "but no matching uninstall command"
+                    )
+
+
+def validate_tool_references(config: dict, registry: dict, errors: list[str], warnings: list[str]) -> None:
+    """Validate that tools_required/tools_optional reference valid registry entries."""
+    for key in ("tools_required", "tools_optional"):
+        tools = config.get(key, [])
+        if not isinstance(tools, list):
+            continue
+        for tool in tools:
+            name = tool if isinstance(tool, str) else tool.get("name", "") if isinstance(tool, dict) else ""
+            if name and name not in registry:
+                warnings.append(f"{key} references '{name}' which is not in the tool registry")
+
+
 def validate_metadata(config: dict, errors: list[str]) -> None:
     """Validate the optional metadata section."""
     metadata = config.get("metadata")

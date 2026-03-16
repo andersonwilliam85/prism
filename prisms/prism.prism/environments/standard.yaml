@@ -2,15 +2,14 @@
 # Good default for most developers
 
 tools_required:
-  - git
-  - vscode
-  - node
-  - docker
+  - "git"
+  - "nvm"
+  - "docker"
 
 tools_optional:
-  - gh
-  - httpie
-  - jq
+  - "gh"
+  - "httpie"
+  - "jq"
 
 environment:
   workspace_root: "~/projects"

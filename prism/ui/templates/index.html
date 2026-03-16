@@ -162,10 +162,26 @@
             border-color: #667eea;
         }
         
+        .validation-error {
+            color: #ef4444;
+            font-size: 0.85em;
+            margin-top: 4px;
+            padding: 6px 10px;
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 3px solid #ef4444;
+            border-radius: 4px;
+            animation: shake 0.3s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-4px); }
+            75% { transform: translateX(4px); }
+        }
+        .field-error {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+        }
         .checkbox-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
             margin-top: 10px;
         }
         
@@ -871,6 +887,14 @@
             <div class="progress-fill" id="progressFill" style="width: 20%"></div>
         </div>
         
+        <!-- Environments -->
+        <div id="previousInstalls" style="display: none; margin-bottom: 20px; padding: 16px 20px; background: linear-gradient(135deg, rgba(102,126,234,0.06), rgba(118,75,162,0.06)); border: 1px solid rgba(102,126,234,0.15); border-radius: 10px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                <h4 style="margin: 0; font-size: 0.95em; color: #444;">Your Environments</h4>
+            </div>
+            <div id="previousInstallsList"></div>
+        </div>
+
         <!-- Step 1: Environment Selection (tiers from loaded prism) -->
         <div class="step active" id="step1">
             <h2 id="step1Title">Choose Your Setup</h2>
@@ -931,7 +955,7 @@
         <!-- Step 4: Tools -->
         <div class="step" id="step4">
             <h2>Select Tools</h2>
-            <p>Choose optional tools to install (required tools are pre-selected)</p>
+            <p>Choose optional tools to install (required tools are pre-selected)<br><span style="color: #999; font-size: 0.85em;">Hover over any tool for more details</span></p>
             
             <div class="checkbox-group" id="toolsList">
                 <!-- Populated by JS -->
@@ -1004,7 +1028,10 @@
                 <div id="postInstallMessage" style="display: none; text-align: left; margin-top: 15px; padding: 20px; background: #f8f9fa; border-radius: 8px; white-space: pre-wrap; font-size: 0.95em; color: #333;">
                 </div>
 
-                <button class="btn-primary" style="margin-top: 20px;" onclick="location.reload()">Start Over</button>
+                <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center;">
+                    <button class="btn-primary" onclick="location.reload()">Start Over</button>
+                    <button class="btn-danger" onclick="rollbackFromUI()">Rollback Installation</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1334,7 +1361,7 @@
         let selectedPackage = null;
         let packages = [];
         let hasOrganizations = false;
-        let hasTools = false;
+        let hasTools = true;
         
         // Determine which steps are active
         function getNextActiveStep(current) {
@@ -1364,13 +1391,68 @@
             document.getElementById('progressFill').style.width = progress + '%';
         }
         
-        function nextStep() {
-            // Validate package selection on step 1
-            if (currentStep === 1 && !selectedPackage) {
-                alert('Please select a prism!');
-                return;
+        function showValidationError(message, targetEl) {
+            // Remove any existing error
+            clearValidationErrors();
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'validation-error';
+            errorDiv.textContent = message;
+            if (targetEl) {
+                targetEl.classList.add('field-error');
+                targetEl.parentElement.appendChild(errorDiv);
+                targetEl.focus();
+            } else {
+                // Show at top of current step
+                const step = document.getElementById('step' + currentStep);
+                step.insertBefore(errorDiv, step.children[1]);
             }
-            
+        }
+
+        function clearValidationErrors() {
+            document.querySelectorAll('.validation-error').forEach(el => el.remove());
+            document.querySelectorAll('.field-error').forEach(el => el.classList.remove('field-error'));
+        }
+
+        function nextStep() {
+            clearValidationErrors();
+
+            // Validate package selection and tier choices on step 1
+            if (currentStep === 1) {
+                if (!selectedPackage) {
+                    showValidationError('Select a prism to continue');
+                    return;
+                }
+                const tierSections = document.querySelectorAll('.tier-section');
+                if (tierSections.length > 0 && Object.keys(selectedSubPrisms).length === 0) {
+                    showValidationError('Select at least one option from the configurations above');
+                    return;
+                }
+            }
+
+            // Validate required user info fields on step 2
+            if (currentStep === 2) {
+                const allFields = document.querySelectorAll('#userInfoFields input, #userInfoFields select');
+                for (const field of allFields) {
+                    if (field.required && !field.value.trim()) {
+                        showValidationError('This field is required', field);
+                        return;
+                    }
+                    if (field.type === 'email' && field.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value)) {
+                        showValidationError('Enter a valid email address', field);
+                        return;
+                    }
+                    const pattern = field.getAttribute('data-pattern');
+                    if (pattern && field.value) {
+                        const regex = new RegExp(pattern);
+                        if (!regex.test(field.value)) {
+                            const msg = field.getAttribute('data-pattern-message') || 'Invalid format';
+                            showValidationError(msg, field);
+                            return;
+                        }
+                    }
+                }
+            }
+
             document.getElementById('step' + currentStep).classList.remove('active');
             const next = getNextActiveStep(currentStep);
             currentStep = next;
@@ -1378,7 +1460,8 @@
             updateProgress();
             
             // Load data for specific steps
-            if (currentStep === 2) loadUserInfoFields();  // Load dynamic fields
+            if (currentStep === 2) loadUserInfoFields();
+            if (currentStep === 3) loadPrismTiers();
             if (currentStep === 4) loadTools();
             if (currentStep === 5) showSummary();
         }
@@ -1469,18 +1552,39 @@
             toolsList.innerHTML = '';
 
             if (data.tools && data.tools.length > 0) {
+                // Group tools by category (from API, not hardcoded)
+                const groups = {};
+                const categoryOrder = [];
                 data.tools.forEach(tool => {
-                    const checked = tool.required ? 'checked disabled' : 'checked';
-                    toolsList.innerHTML += `
-                        <div class="checkbox-item" style="display: flex; align-items: center; gap: 10px; padding: 8px 0;">
-                            <input type="checkbox" id="tool_${tool.id}" name="${tool.id}" ${checked}>
-                            <label for="tool_${tool.id}" style="flex: 1;">
-                                <strong>${tool.name}</strong>
-                                ${tool.description ? `<span style="color: #888; font-size: 0.9em;"> — ${tool.description}</span>` : ''}
-                                ${tool.required ? '<span style="color: var(--gradient-1); font-size: 0.8em;"> (required)</span>' : ''}
-                            </label>
-                        </div>
-                    `;
+                    const cat = tool.category || '';
+                    if (!groups[cat]) {
+                        groups[cat] = [];
+                        categoryOrder.push(cat);
+                    }
+                    groups[cat].push(tool);
+                });
+
+                categoryOrder.forEach(cat => {
+                    let sectionHTML = '';
+                    if (cat) {
+                        sectionHTML += `<h4 style="margin: 20px 0 10px; color: var(--gradient-1, #667eea); font-size: 0.85em; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1px solid rgba(102,126,234,0.2); padding-bottom: 6px;">${cat.charAt(0).toUpperCase() + cat.slice(1)}</h4>`;
+                    }
+                    sectionHTML += `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;">`;
+                    groups[cat].forEach(tool => {
+                        const checked = tool.required ? 'checked disabled' : '';
+                        sectionHTML += `
+                            <div class="checkbox-item" style="display: flex; align-items: center; gap: 10px; padding: 8px 0;" title="${tool.description || ''}">
+                                <input type="checkbox" id="tool_${tool.id}" name="${tool.id}" ${checked}>
+                                <label for="tool_${tool.id}" style="flex: 1; cursor: pointer;">
+                                    <strong>${tool.name}</strong>
+                                    ${tool.summary ? `<span style="color: #888; font-size: 0.85em;"> — ${tool.summary}</span>` : ''}
+                                    ${tool.required ? '<span style="color: var(--gradient-1); font-size: 0.8em;"> (required)</span>' : ''}
+                                </label>
+                            </div>
+                        `;
+                    });
+                    sectionHTML += `</div>`;
+                    toolsList.innerHTML += sectionHTML;
                 });
             }
         }
@@ -1683,12 +1787,19 @@
 
             logOutput.innerHTML = '<div>Starting installation...</div>';
 
+            // Collect selected tools from checkboxes
+            const toolsSelected = [];
+            document.querySelectorAll('#toolsList input[type="checkbox"]:checked').forEach(cb => {
+                toolsSelected.push(cb.name);
+            });
+
             const payload = {
                 package: selectedPackage,
                 userInfo: userInfo,
                 registry: registry,
                 unpkgUrl: unpkgUrl,
                 selectedSubPrisms: selectedSubPrisms,
+                toolsSelected: toolsSelected,
                 targetDir: document.getElementById('targetDir').value || '~/prism-config'
             };
 
@@ -1750,6 +1861,7 @@
                                     appendLog(logOutput, `Rollback ${r.action}: ${r.detail}`, level);
                                 }
                             }
+                            showRetryButtons(logOutput);
                         } else if (data.type === 'error') {
                             spinner.style.display = 'none';
                             heading.textContent = 'Installation Failed';
@@ -1762,6 +1874,7 @@
                                     appendLog(logOutput, `  ${r.action}: ${r.detail}`, level);
                                 }
                             }
+                            showRetryButtons(logOutput);
                         }
                     }
                 }
@@ -1816,6 +1929,61 @@
             const color = {'success': '#10b981', 'error': '#ef4444', 'warning': '#f59e0b', 'info': '#3b82f6'}[level] || '#3b82f6';
             logOutput.innerHTML += `<div style="color: ${color};">[${emoji}] ${message}</div>`;
             logOutput.scrollTop = logOutput.scrollHeight;
+        }
+
+        function showRetryButtons(logOutput) {
+            // Remove any existing retry buttons
+            const existing = document.getElementById('retryButtons');
+            if (existing) existing.remove();
+
+            const container = document.createElement('div');
+            container.id = 'retryButtons';
+            container.style.cssText = 'margin-top: 20px; display: flex; gap: 12px;';
+            container.innerHTML = `
+                <button class="btn-primary" onclick="goToStep(5)">← Back to Summary</button>
+                <button class="btn-secondary" onclick="goToStep(1)">Start Over</button>
+            `;
+            logOutput.parentElement.appendChild(container);
+        }
+
+        async function rollbackFromUI() {
+            const workspace = document.getElementById('targetDir')?.value || '';
+            if (!confirm('This will undo the entire installation — uninstall tools, remove directories, and restore git config. Continue?')) return;
+
+            const btn = event.target;
+            btn.disabled = true;
+            btn.textContent = 'Rolling back...';
+
+            try {
+                const resp = await fetch('/api/rollback', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ workspace: workspace })
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    btn.textContent = 'Rolled back';
+                    btn.style.background = '#10b981';
+                    const details = document.getElementById('completionDetails');
+                    if (details) {
+                        details.innerHTML = `<h4>Rollback Complete</h4><p>${data.actions_undone} actions reversed.</p>`;
+                    }
+                } else {
+                    btn.textContent = 'Rollback failed';
+                    alert(data.error || 'Rollback failed');
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                btn.textContent = 'Rollback failed';
+                btn.disabled = false;
+            }
+        }
+
+        function goToStep(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            currentStep = step;
+            document.getElementById('step' + step).classList.add('active');
+            updateProgress();
         }
 
         async function cancelInstall() {
@@ -2165,6 +2333,10 @@
                     input.name = field.id;
                     input.placeholder = field.placeholder || '';
                     if (field.required) input.required = true;
+                    if (field.validation && field.validation.pattern) {
+                        input.setAttribute('data-pattern', field.validation.pattern);
+                        input.setAttribute('data-pattern-message', field.validation.message || 'Invalid format');
+                    }
                     div.appendChild(input);
                 }
 
@@ -2212,9 +2384,68 @@
             });
         }
         
+        // Check for previous installations
+        async function checkPreviousInstalls() {
+            try {
+                const resp = await fetch('/api/history');
+                const data = await resp.json();
+                const installs = data.installs || [];
+                if (installs.length === 0) return;
+
+                const container = document.getElementById('previousInstallsList');
+                const wrapper = document.getElementById('previousInstalls');
+                wrapper.style.display = 'block';
+
+                container.innerHTML = installs.map((inst, i) => `
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: white; border-radius: 8px; margin-bottom: 6px; border: 1px solid #eee;">
+                        <div style="flex: 1;">
+                            <strong style="font-size: 0.9em;">${inst.package || 'Unknown'}</strong>
+                            <span style="color: #888; font-size: 0.8em; margin-left: 8px;">${inst.workspace}</span>
+                            ${inst.installed_at ? `<span style="color: #aaa; font-size: 0.75em; margin-left: 8px;">${new Date(inst.installed_at).toLocaleDateString()}</span>` : ''}
+                            ${inst.tools_installed ? `<div style="color: #888; font-size: 0.75em; margin-top: 2px;">${inst.tools_installed.length} tools installed</div>` : ''}
+                        </div>
+                        ${inst.has_rollback ? `
+                            <button class="btn-danger" style="font-size: 0.8em; padding: 5px 14px;"
+                                onclick="rollbackPrevious('${inst.workspace}', this)">Rollback</button>
+                        ` : `
+                            <span style="color: #aaa; font-size: 0.75em;">No rollback available</span>
+                        `}
+                    </div>
+                `).join('');
+            } catch (e) {
+                // Silently fail — not critical
+            }
+        }
+
+        async function rollbackPrevious(workspace, btn) {
+            if (!confirm('Rollback this installation? This will uninstall tools and remove directories.')) return;
+            btn.disabled = true;
+            btn.textContent = 'Rolling back...';
+            try {
+                const resp = await fetch('/api/rollback', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ workspace })
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    btn.textContent = 'Done';
+                    btn.style.background = '#10b981';
+                    setTimeout(() => checkPreviousInstalls(), 1000);
+                } else {
+                    btn.textContent = 'Failed';
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                btn.textContent = 'Failed';
+                btn.disabled = false;
+            }
+        }
+
         // Initialize
         updateProgress();
         loadPackages();
+        checkPreviousInstalls();
     </script>
 </body>
 </html>

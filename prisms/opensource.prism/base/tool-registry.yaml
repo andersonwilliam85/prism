@@ -1,0 +1,223 @@
+# Tool Registry — tools for the Open Source prism that are NOT in the base registry.
+# Tools defined here extend the base tool registry from prism.prism.
+# Only tools absent from prism.prism/base/tool-registry.yaml belong here.
+
+# ---------------------------------------------------------------------------
+# GPG — commit signing
+# ---------------------------------------------------------------------------
+gpg:
+  label: GnuPG
+  summary: Commit and tag signing
+  description: Sign git commits and tags for verified badges on GitHub — required by many OSS projects
+  category: security
+  platforms:
+    mac: brew install gnupg
+    ubuntu: sudo apt-get install -y gnupg
+    linux: sudo apt-get install -y gnupg
+    windows: winget install GnuPG.GnuPG
+  uninstall:
+    mac: brew uninstall gnupg
+    ubuntu: sudo apt-get remove -y gnupg
+    linux: sudo apt-get remove -y gnupg
+    windows: winget uninstall GnuPG.GnuPG
+
+# ---------------------------------------------------------------------------
+# CODE QUALITY
+# ---------------------------------------------------------------------------
+pre-commit:
+  label: pre-commit
+  summary: Git hook framework
+  description: Run linters, formatters, and checks automatically on every commit via configurable hooks
+  category: quality
+  platforms:
+    mac: brew install pre-commit
+    ubuntu: pip install pre-commit
+    linux: pip install pre-commit
+    windows: pip install pre-commit
+  uninstall:
+    mac: brew uninstall pre-commit
+    ubuntu: pip uninstall -y pre-commit
+    linux: pip uninstall -y pre-commit
+    windows: pip uninstall -y pre-commit
+
+shellcheck:
+  label: ShellCheck
+  summary: Shell script linter
+  description: Static analysis for bash/sh scripts — catches common bugs, quoting issues, and portability problems
+  category: quality
+  platforms:
+    mac: brew install shellcheck
+    ubuntu: sudo apt-get install -y shellcheck
+    linux: sudo apt-get install -y shellcheck
+    windows: winget install koalaman.shellcheck
+  uninstall:
+    mac: brew uninstall shellcheck
+    ubuntu: sudo apt-get remove -y shellcheck
+    linux: sudo apt-get remove -y shellcheck
+    windows: winget uninstall koalaman.shellcheck
+
+actionlint:
+  label: actionlint
+  summary: GitHub Actions linter
+  description: Validate GitHub Actions workflow YAML — catches syntax errors, type mismatches, and shell issues before push
+  category: quality
+  platforms:
+    mac: brew install actionlint
+    ubuntu: go install github.com/rhysd/actionlint/cmd/actionlint@latest
+    linux: go install github.com/rhysd/actionlint/cmd/actionlint@latest
+  uninstall:
+    mac: brew uninstall actionlint
+
+delta:
+  label: delta
+  summary: Better git diffs
+  description: Syntax-highlighted, side-by-side diffs with line numbers — drop-in replacement for git's pager
+  category: quality
+  platforms:
+    mac: brew install git-delta
+    ubuntu: brew install git-delta
+    linux: brew install git-delta
+    windows: winget install dandavison.delta
+  uninstall:
+    mac: brew uninstall git-delta
+    ubuntu: brew uninstall git-delta
+    linux: brew uninstall git-delta
+    windows: winget uninstall dandavison.delta
+
+# ---------------------------------------------------------------------------
+# SECURITY SCANNING
+# ---------------------------------------------------------------------------
+trivy:
+  label: Trivy
+  summary: Vulnerability scanner
+  description: Scan container images, filesystems, and IaC for CVEs, secrets, and misconfigurations
+  category: security
+  platforms:
+    mac: brew install trivy
+    ubuntu: sudo apt-get install -y trivy
+    linux: sudo apt-get install -y trivy
+  uninstall:
+    mac: brew uninstall trivy
+    ubuntu: sudo apt-get remove -y trivy
+    linux: sudo apt-get remove -y trivy
+
+hadolint:
+  label: Hadolint
+  summary: Dockerfile linter
+  description: Lint Dockerfiles against best practices — catches inefficient layers, missing pinning, and security issues
+  category: security
+  platforms:
+    mac: brew install hadolint
+    ubuntu: brew install hadolint
+    linux: brew install hadolint
+    windows: winget install hadolint.hadolint
+  uninstall:
+    mac: brew uninstall hadolint
+    ubuntu: brew uninstall hadolint
+    linux: brew uninstall hadolint
+    windows: winget uninstall hadolint.hadolint
+
+# ---------------------------------------------------------------------------
+# DOCUMENTATION
+# ---------------------------------------------------------------------------
+mkdocs:
+  label: MkDocs
+  summary: Project documentation
+  description: Build static documentation sites from Markdown — Material theme, search, versioning, GitHub Pages deploy
+  category: docs
+  platforms:
+    mac: pip install mkdocs mkdocs-material
+    ubuntu: pip install mkdocs mkdocs-material
+    linux: pip install mkdocs mkdocs-material
+    windows: pip install mkdocs mkdocs-material
+  uninstall:
+    mac: pip uninstall -y mkdocs mkdocs-material
+    ubuntu: pip uninstall -y mkdocs mkdocs-material
+    linux: pip uninstall -y mkdocs mkdocs-material
+    windows: pip uninstall -y mkdocs mkdocs-material
+
+# ---------------------------------------------------------------------------
+# RELEASE AND CHANGELOG
+# ---------------------------------------------------------------------------
+git-cliff:
+  label: git-cliff
+  summary: Changelog generator
+  description: Generate changelogs from Conventional Commits — customizable templates, integrates with release workflows
+  category: release
+  platforms:
+    mac: brew install git-cliff
+    ubuntu: cargo install git-cliff
+    linux: cargo install git-cliff
+    windows: cargo install git-cliff
+  uninstall:
+    mac: brew uninstall git-cliff
+    ubuntu: cargo uninstall git-cliff
+    linux: cargo uninstall git-cliff
+    windows: cargo uninstall git-cliff
+
+cargo-release:
+  label: cargo-release
+  summary: Rust release automation
+  description: Automate version bumps, changelog updates, tagging, and publishing for Rust crates
+  category: release
+  platforms:
+    mac: cargo install cargo-release
+    ubuntu: cargo install cargo-release
+    linux: cargo install cargo-release
+    windows: cargo install cargo-release
+  uninstall:
+    mac: cargo uninstall cargo-release
+    ubuntu: cargo uninstall cargo-release
+    linux: cargo uninstall cargo-release
+    windows: cargo uninstall cargo-release
+
+# ---------------------------------------------------------------------------
+# LANGUAGES / RUNTIMES (not in base registry)
+# ---------------------------------------------------------------------------
+python3:
+  label: Python 3
+  summary: General-purpose language
+  description: Interpreted language for scripting, automation, data science, and web backends
+  category: runtime
+  platforms:
+    mac: brew install python3
+    ubuntu: sudo apt-get install -y python3 python3-pip python3-venv
+    linux: sudo apt-get install -y python3 python3-pip python3-venv
+    windows: winget install Python.Python.3.12
+  uninstall:
+    mac: brew uninstall python3
+    ubuntu: sudo apt-get remove -y python3
+    linux: sudo apt-get remove -y python3
+    windows: winget uninstall Python.Python.3.12
+
+nodejs:
+  label: Node.js
+  summary: JavaScript runtime
+  description: Server-side JavaScript runtime — run JS outside the browser, power APIs and tooling
+  category: runtime
+  platforms:
+    mac: brew install node
+    ubuntu: sudo apt-get install -y nodejs
+    linux: sudo apt-get install -y nodejs
+    windows: winget install OpenJS.NodeJS
+  uninstall:
+    mac: brew uninstall node
+    ubuntu: sudo apt-get remove -y nodejs
+    linux: sudo apt-get remove -y nodejs
+    windows: winget uninstall OpenJS.NodeJS
+
+vscode:
+  label: VS Code
+  summary: Extensible editor
+  description: Microsoft's extensible editor — huge ecosystem of extensions
+  category: editor
+  platforms:
+    mac: brew install --cask visual-studio-code
+    ubuntu: sudo snap install code --classic
+    linux: sudo snap install code --classic
+    windows: winget install Microsoft.VisualStudioCode
+  uninstall:
+    mac: brew uninstall --cask visual-studio-code
+    ubuntu: sudo snap remove code
+    linux: sudo snap remove code
+    windows: winget uninstall Microsoft.VisualStudioCode

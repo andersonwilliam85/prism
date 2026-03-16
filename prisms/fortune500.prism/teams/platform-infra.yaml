@@ -1,0 +1,115 @@
+# ============================================================================
+# PLATFORM & INFRASTRUCTURE TEAM
+# ============================================================================
+# Owns: cloud infrastructure, Kubernetes clusters, CI/CD pipelines,
+# developer tooling, observability stack, cost optimization.
+
+team:
+  id: "platform-infra"
+  name: "Platform & Infrastructure"
+  description: "Cloud infra, Kubernetes, CI/CD pipelines, IaC, observability"
+  slack_channels:
+    - "#platform-engineering"
+    - "#infra-alerts"
+    - "#cicd-support"
+  oncall_rotation: "https://company.pagerduty.com/schedules/platform"
+
+tools_required:
+  - terraform
+  - kubectl
+  - helm
+  - k9s
+  - kubectx
+  - stern
+  - argocd
+  - aws
+  - az
+  - gcloud
+  - ansible
+  - vault
+  - istioctl
+  - docker
+  - jq
+  - trivy
+
+tools_optional:
+  - kustomize
+  - skaffold
+  - pulumi
+  - datadog-agent
+
+workspace:
+  directories:
+    - path: "~/work/infrastructure/terraform"
+      description: "Terraform modules and environment configs"
+    - path: "~/work/infrastructure/kubernetes"
+      description: "Kubernetes manifests, Helm charts, Kustomize overlays"
+    - path: "~/work/infrastructure/ci-cd"
+      description: "Pipeline definitions (GitHub Actions, Jenkins)"
+    - path: "~/work/infrastructure/monitoring"
+      description: "Grafana dashboards, alerting rules, SLO definitions"
+
+repositories:
+  - name: "infra-terraform"
+    url: "https://github.company.com/platform/infra-terraform"
+    description: "All Terraform modules and environment state"
+  - name: "k8s-manifests"
+    url: "https://github.company.com/platform/k8s-manifests"
+    description: "Kubernetes configs for all clusters"
+  - name: "helm-charts"
+    url: "https://github.company.com/platform/helm-charts"
+    description: "Internal Helm chart repository"
+  - name: "ci-cd-templates"
+    url: "https://github.company.com/platform/ci-cd-templates"
+    description: "Reusable GitHub Actions workflows and Jenkins shared libraries"
+  - name: "monitoring-config"
+    url: "https://github.company.com/platform/monitoring-config"
+    description: "Grafana dashboards, Prometheus rules, PagerDuty integrations"
+
+tech_stack:
+  iac:
+    - "Terraform (multi-cloud)"
+    - "Helm (Kubernetes packaging)"
+    - "Kustomize (environment overlays)"
+    - "Ansible (legacy VM provisioning)"
+  kubernetes:
+    - "EKS / AKS / GKE (multi-cloud)"
+    - "Istio (service mesh)"
+    - "Argo CD (GitOps deployments)"
+    - "Cert-manager (TLS automation)"
+  ci_cd:
+    - "GitHub Actions (primary)"
+    - "Jenkins (legacy pipelines)"
+    - "Argo Workflows (batch/ML pipelines)"
+  observability:
+    - "Datadog (metrics, APM, logs)"
+    - "Grafana (dashboards)"
+    - "PagerDuty (alerting)"
+    - "Sentry (error tracking)"
+
+environments:
+  clusters:
+    - name: "dev-us-east-1"
+      cloud: "AWS"
+      purpose: "Development workloads"
+      context: "arn:aws:eks:us-east-1:111111111111:cluster/dev"
+    - name: "staging-us-east-1"
+      cloud: "AWS"
+      purpose: "Pre-production validation"
+      context: "arn:aws:eks:us-east-1:222222222222:cluster/staging"
+    - name: "prod-us-east-1"
+      cloud: "AWS"
+      purpose: "Production (US)"
+      context: "arn:aws:eks:us-east-1:333333333333:cluster/prod-us"
+    - name: "prod-eu-west-1"
+      cloud: "AWS"
+      purpose: "Production (EU — GDPR)"
+      context: "arn:aws:eks:eu-west-1:333333333333:cluster/prod-eu"
+
+runbooks:
+  - name: "Cluster scaling"
+    url: "https://runbooks.company.com/platform/cluster-scaling"
+  - name: "Certificate rotation"
+    url: "https://runbooks.company.com/platform/cert-rotation"
+  - name: "Incident response"
+    url: "https://runbooks.company.com/platform/incident-response"

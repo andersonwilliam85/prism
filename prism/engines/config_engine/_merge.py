@@ -12,6 +12,7 @@ DEFAULT_RULES: dict = {
     "merge_strategy": {
         "arrays": {
             "tools_required": "union",
+            "tools_optional": "union",
             "tools_selected": "union",
             "tools_excluded": "union",
             "repositories": "append",
@@ -23,6 +24,7 @@ DEFAULT_RULES: dict = {
             "git": "override",
             "career": "user_only",
             "tools": "deep_merge",
+            "tool_registry": "deep_merge",
         },
         "conflicts": {"default": "override"},
     }
@@ -59,11 +61,24 @@ def merge_value(key: str, base_value: Any, overlay_value: Any, level: str, rules
             try:
                 return list(set(base_value + overlay_value))
             except TypeError:
-                seen: list = []
+                # For tool lists: deduplicate by name, prefer dict over string,
+                # and prefer the entry with more detail
+                seen_names: dict = {}
                 for item in base_value + overlay_value:
-                    if item not in seen:
-                        seen.append(item)
-                return seen
+                    name = item.get("name") if isinstance(item, dict) else item if isinstance(item, str) else None
+                    if name is None:
+                        continue
+                    existing = seen_names.get(name)
+                    if existing is None:
+                        seen_names[name] = item
+                    elif isinstance(item, dict) and not isinstance(existing, dict):
+                        seen_names[name] = item
+                    elif isinstance(item, dict) and isinstance(existing, dict):
+                        # Merge: overlay wins for each key
+                        merged = dict(existing)
+                        merged.update(item)
+                        seen_names[name] = merged
+                return list(seen_names.values())
         elif array_strategy == "append":
             return base_value + overlay_value
         else:

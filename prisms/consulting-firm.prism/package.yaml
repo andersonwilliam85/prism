@@ -1,13 +1,18 @@
 # ============================================================================
 # CONSULTING FIRM PRISM
 # ============================================================================
-# For consulting/agency firms working with multiple clients.
-# Each client gets their own sub-prism with context-specific tools and config.
+# For consultants and agency developers who work across multiple clients
+# simultaneously. Handles the real pain points: environment isolation,
+# credential management, context switching, time tracking, and keeping
+# client data separate.
+#
+# Each client gets a sub-prism with its own git identity, cloud credentials,
+# SSH keys, VPN config, and tooling requirements.
 
 package:
   name: "consulting-firm-prism"
-  version: "1.0.0"
-  description: "Consulting firm prism — multi-client support with per-client configuration"
+  version: "2.0.0"
+  description: "Multi-client consulting setup — isolated environments, credential management, and fast context switching"
   author: "Consulting Firm IT"
   homepage: "https://consultingfirm.com"
   support:
@@ -17,7 +22,6 @@ package:
 
   requires:
     onboarding_version: ">=1.0.0"
-    python_version: ">=3.8"
 
 # PRISM META-CONFIGURATION
 prism_config:
@@ -26,7 +30,6 @@ prism_config:
     - "purple"
     - "midnight"
     - "ocean"
-    - "consultant"
   custom_themes:
     - id: "consultant"
       name: "Consultant"
@@ -43,34 +46,36 @@ prism_config:
 
   branding:
     name: "Consulting Firm Prism"
-    tagline: "Adapt to every client"
+    tagline: "Isolated environments, every client"
     primary_color: "#7c3aed"
     secondary_color: "#06b6d4"
 
 # BUNDLED SUB-PRISMS
-# base is required; clients are optional (user picks one)
+# base is required and sets up the workspace structure, shell aliases,
+# git multi-identity, and firm-wide tooling.
+# Client configs are optional — pick the ones matching your engagements.
 bundled_prisms:
   base:
     - id: "consulting-base"
       name: "Consulting Base"
-      description: "Core consulting firm setup"
+      description: "Workspace structure, shell aliases, git multi-identity, firm tools"
       required: true
       config: "base/consulting-firm.yaml"
 
   clients:
     - id: "client-fintech"
-      name: "FinTech Client"
-      description: "Financial technology — SOX, PCI-DSS compliant"
+      name: "FinTech Client (Meridian)"
+      description: "AWS stack, SOX/PCI-DSS, Python microservices, PostgreSQL"
       config: "clients/fintech-client.yaml"
 
     - id: "client-healthcare"
-      name: "Healthcare Client"
-      description: "Healthcare technology — HIPAA compliant"
+      name: "Healthcare Client (Solace Health)"
+      description: "Azure stack, HIPAA, .NET backend, React frontend"
       config: "clients/healthcare-client.yaml"
 
     - id: "client-retail"
-      name: "Retail Client"
-      description: "Retail/e-commerce — PCI-DSS compliant"
+      name: "Retail Client (BrightCart)"
+      description: "GCP stack, PCI-DSS, Node.js/TypeScript, Shopify integrations"
       config: "clients/retail-client.yaml"
 
 # SETUP CONFIGURATION
@@ -92,29 +97,40 @@ setup:
 
   post_install:
     message: |
-      🎯 Consulting firm prism installed!
+      Consulting firm prism installed.
 
-      You'll be working across multiple client projects.
-      Each client has their own configuration and compliance requirements.
+      Your workspace will be organized as:
+        ~/clients/active/<client>/    Current engagements
+        ~/clients/archived/<client>/  Past engagements
+        ~/internal/tools/             Firm's internal tools
+        ~/internal/templates/         SOW, proposal, invoice templates
+        ~/learning/                   Skill development between gigs
 
       Next steps:
-      1. Select your primary client engagement
-      2. Review client-specific compliance docs
-      3. Set up client VPN/access if required
+        1. Run 'client-init <client-name>' to scaffold a new client directory
+        2. Run 'cswitch <client-name>' to activate a client context
+        3. Review per-client git/SSH/cloud configs in each client's .client/ folder
 
-# User info fields
+# User info fields — collected during onboarding
 user_info_fields:
   - id: "name"
     label: "Full Name"
     type: "text"
     required: true
-    placeholder: "Jordan Consultant"
+    placeholder: "Jordan Rivera"
 
-  - id: "email"
-    label: "Company Email"
+  - id: "firm_email"
+    label: "Firm Email"
     type: "email"
     required: true
     placeholder: "jordan@consultingfirm.com"
+
+  - id: "personal_email"
+    label: "Personal / GitHub Email"
+    type: "email"
+    required: false
+    placeholder: "jordan@example.com"
+    description: "Used for open-source and personal commits"
 
   - id: "consultant_id"
     label: "Consultant ID"
@@ -122,46 +138,26 @@ user_info_fields:
     required: true
     placeholder: "CON-123"
 
-  - id: "primary_client"
-    label: "Primary Client"
+  - id: "active_clients"
+    label: "Active Client Engagements"
     type: "select"
     required: true
     options:
-      - "FinTech Client"
-      - "Healthcare Client"
-      - "Retail Client"
+      - "FinTech Client (Meridian)"
+      - "Healthcare Client (Solace Health)"
+      - "Retail Client (BrightCart)"
       - "Other"
-    description: "The client engagement you'll be working on"
-
-  - id: "compliance_framework"
-    label: "Compliance Framework"
-    type: "select"
-    required: true
-    depends_on: "primary_client"
-    options:
-      - "SOX"
-      - "PCI-DSS"
-      - "HIPAA"
-      - "General"
-    option_map:
-      "FinTech Client":
-        - "SOX"
-        - "PCI-DSS"
-      "Healthcare Client":
-        - "HIPAA"
-      "Retail Client":
-        - "PCI-DSS"
-      "Other":
-        - "General"
+    description: "Select all clients you are currently staffed on"
 
   - id: "billable_hours_tracker"
     label: "Time Tracking System"
     type: "select"
-    required: false
+    required: true
     options:
       - "Harvest"
       - "Toggl"
       - "Clockify"
+      - "Jira Tempo"
       - "Other"
 
 distribution:
@@ -175,7 +171,8 @@ metadata:
     - agency
     - multi-client
     - professional-services
-
-  company_size: "medium"
+    - freelance
+    - contractor
+  company_size: "any"
   regions: ["Global"]
-  last_updated: "2026-03-05"
+  last_updated: "2026-03-15"

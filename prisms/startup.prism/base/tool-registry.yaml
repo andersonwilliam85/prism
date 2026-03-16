@@ -1,0 +1,335 @@
+# Tool Registry — tools specific to the Startup prism.
+# Extends the base tool registry from prism.prism.
+# Only define tools here that are NOT in the base registry.
+
+# ---------- Runtimes & Language Managers ----------
+
+python3:
+  label: Python 3
+  summary: General-purpose language
+  description: Interpreted language for scripting, automation, data science, and web backends
+  category: runtime
+  platforms:
+    mac: brew install python3
+    ubuntu: sudo apt-get install -y python3
+    linux: sudo apt-get install -y python3
+    windows: winget install Python.Python.3.12
+  uninstall:
+    mac: brew uninstall python3
+    ubuntu: sudo apt-get remove -y python3
+    linux: sudo apt-get remove -y python3
+    windows: winget uninstall Python.Python.3.12
+
+nodejs:
+  label: Node.js (via nvm)
+  summary: JavaScript runtime
+  description: Installed via nvm for version switching — powers APIs, CLIs, and frontend tooling
+  category: runtime
+  platforms:
+    mac: "source \"$NVM_DIR/nvm.sh\" && nvm install --lts"
+    ubuntu: "source \"$NVM_DIR/nvm.sh\" && nvm install --lts"
+    linux: "source \"$NVM_DIR/nvm.sh\" && nvm install --lts"
+    windows: nvm install lts && nvm use lts
+  uninstall:
+    mac: "source \"$NVM_DIR/nvm.sh\" && nvm deactivate && nvm uninstall --lts"
+    ubuntu: "source \"$NVM_DIR/nvm.sh\" && nvm deactivate && nvm uninstall --lts"
+    linux: "source \"$NVM_DIR/nvm.sh\" && nvm deactivate && nvm uninstall --lts"
+    windows: nvm uninstall lts
+
+# ---------- Databases ----------
+
+mongosh:
+  label: MongoDB Shell
+  summary: MongoDB CLI
+  description: Interactive shell for MongoDB — query, admin, and aggregation pipelines
+  category: database
+  platforms:
+    mac: brew install mongosh
+    ubuntu: sudo apt-get install -y mongosh
+    linux: sudo apt-get install -y mongosh
+    windows: winget install MongoDB.Shell
+  uninstall:
+    mac: brew uninstall mongosh
+    ubuntu: sudo apt-get remove -y mongosh
+    linux: sudo apt-get remove -y mongosh
+    windows: winget uninstall MongoDB.Shell
+
+mongodb-database-tools:
+  label: MongoDB Database Tools
+  summary: mongodump, mongorestore, etc.
+  description: Import, export, dump, and restore MongoDB data — essential for backups and migrations
+  category: database
+  platforms:
+    mac: brew install mongodb-database-tools
+    ubuntu: sudo apt-get install -y mongodb-database-tools
+    linux: sudo apt-get install -y mongodb-database-tools
+    windows: winget install MongoDB.DatabaseTools
+  uninstall:
+    mac: brew uninstall mongodb-database-tools
+    ubuntu: sudo apt-get remove -y mongodb-database-tools
+    linux: sudo apt-get remove -y mongodb-database-tools
+    windows: winget uninstall MongoDB.DatabaseTools
+
+postgresql:
+  label: PostgreSQL Client
+  summary: Postgres CLI tools
+  description: psql, pg_dump, pg_restore — connect to and manage PostgreSQL databases
+  category: database
+  platforms:
+    mac: brew install libpq && brew link --force libpq
+    ubuntu: sudo apt-get install -y postgresql-client
+    linux: sudo apt-get install -y postgresql-client
+    windows: winget install PostgreSQL.PostgreSQL
+  uninstall:
+    mac: brew uninstall libpq
+    ubuntu: sudo apt-get remove -y postgresql-client
+    linux: sudo apt-get remove -y postgresql-client
+    windows: winget uninstall PostgreSQL.PostgreSQL
+
+redis-cli:
+  label: Redis CLI
+  summary: Redis client
+  description: Connect to Redis for caching, queues, and pub/sub — essential for session stores and job queues
+  category: database
+  platforms:
+    mac: brew install redis
+    ubuntu: sudo apt-get install -y redis-tools
+    linux: sudo apt-get install -y redis-tools
+    windows: winget install Redis.Redis
+  uninstall:
+    mac: brew uninstall redis
+    ubuntu: sudo apt-get remove -y redis-tools
+    linux: sudo apt-get remove -y redis-tools
+    windows: winget uninstall Redis.Redis
+
+# ---------- Deployment CLIs ----------
+
+vercel-cli:
+  label: Vercel CLI
+  summary: Deploy to Vercel
+  description: Deploy frontend and serverless functions to Vercel — preview deploys on every PR
+  category: deployment
+  platforms:
+    mac: npm install -g vercel
+    ubuntu: npm install -g vercel
+    linux: npm install -g vercel
+    windows: npm install -g vercel
+  uninstall:
+    mac: npm uninstall -g vercel
+    ubuntu: npm uninstall -g vercel
+    linux: npm uninstall -g vercel
+    windows: npm uninstall -g vercel
+
+netlify-cli:
+  label: Netlify CLI
+  summary: Deploy to Netlify
+  description: Deploy static sites and serverless functions to Netlify — instant rollbacks
+  category: deployment
+  platforms:
+    mac: npm install -g netlify-cli
+    ubuntu: npm install -g netlify-cli
+    linux: npm install -g netlify-cli
+    windows: npm install -g netlify-cli
+  uninstall:
+    mac: npm uninstall -g netlify-cli
+    ubuntu: npm uninstall -g netlify-cli
+    linux: npm uninstall -g netlify-cli
+    windows: npm uninstall -g netlify-cli
+
+railway-cli:
+  label: Railway CLI
+  summary: Deploy to Railway
+  description: Deploy databases and services to Railway — zero-config Postgres, Redis, and app hosting
+  category: deployment
+  platforms:
+    mac: brew install railway
+    ubuntu: "curl -fsSL https://railway.app/install.sh | sh"
+    linux: "curl -fsSL https://railway.app/install.sh | sh"
+    windows: winget install Railway.Railway
+  uninstall:
+    mac: brew uninstall railway
+    ubuntu: rm -f /usr/local/bin/railway
+    linux: rm -f /usr/local/bin/railway
+    windows: winget uninstall Railway.Railway
+
+flyctl:
+  label: Fly.io CLI
+  summary: Deploy to Fly.io
+  description: Deploy containers globally on Fly.io — great for APIs and databases close to users
+  category: deployment
+  platforms:
+    mac: brew install flyctl
+    ubuntu: "curl -L https://fly.io/install.sh | sh"
+    linux: "curl -L https://fly.io/install.sh | sh"
+    windows: winget install Fly.flyctl
+  uninstall:
+    mac: brew uninstall flyctl
+    ubuntu: rm -rf ~/.fly
+    linux: rm -rf ~/.fly
+    windows: winget uninstall Fly.flyctl
+
+# ---------- CI/CD & DevOps ----------
+
+act:
+  label: act
+  summary: Local GitHub Actions
+  description: Run GitHub Actions workflows locally before pushing — fast feedback on CI configs
+  category: ci
+  platforms:
+    mac: brew install act
+    ubuntu: "curl -s https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash"
+    linux: "curl -s https://raw.githubusercontent.com/nektos/act/master/install.sh | sudo bash"
+    windows: winget install nektos.act
+  uninstall:
+    mac: brew uninstall act
+    ubuntu: sudo rm -f /usr/local/bin/act
+    linux: sudo rm -f /usr/local/bin/act
+    windows: winget uninstall nektos.act
+
+# ---------- Monitoring & Observability ----------
+
+sentry-cli:
+  label: Sentry CLI
+  summary: Error tracking
+  description: Upload source maps, manage releases, and track errors with Sentry from the terminal
+  category: monitoring
+  platforms:
+    mac: brew install getsentry/tools/sentry-cli
+    ubuntu: "curl -sL https://sentry.io/get-cli/ | bash"
+    linux: "curl -sL https://sentry.io/get-cli/ | bash"
+    windows: npm install -g @sentry/cli
+  uninstall:
+    mac: brew uninstall sentry-cli
+    ubuntu: rm -f /usr/local/bin/sentry-cli
+    linux: rm -f /usr/local/bin/sentry-cli
+    windows: npm uninstall -g @sentry/cli
+
+# ---------- Communication ----------
+
+slack-cli:
+  label: Slack CLI
+  summary: Slack automation
+  description: Send messages, build workflows, and automate Slack from the terminal — deploy notifications, alerts
+  category: communication
+  platforms:
+    mac: brew install slack-cli
+    ubuntu: "curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash"
+    linux: "curl -fsSL https://downloads.slack-edge.com/slack-cli/install.sh | bash"
+  uninstall:
+    mac: brew uninstall slack-cli
+    ubuntu: rm -f /usr/local/bin/slack
+    linux: rm -f /usr/local/bin/slack
+
+# ---------- Code Quality ----------
+
+prettier:
+  label: Prettier
+  summary: Code formatter
+  description: Opinionated formatter for JS, TS, CSS, JSON, Markdown — end style debates forever
+  category: code-quality
+  platforms:
+    mac: npm install -g prettier
+    ubuntu: npm install -g prettier
+    linux: npm install -g prettier
+    windows: npm install -g prettier
+  uninstall:
+    mac: npm uninstall -g prettier
+    ubuntu: npm uninstall -g prettier
+    linux: npm uninstall -g prettier
+    windows: npm uninstall -g prettier
+
+eslint:
+  label: ESLint
+  summary: JS/TS linter
+  description: Find and fix problems in JavaScript and TypeScript code — catches bugs before runtime
+  category: code-quality
+  platforms:
+    mac: npm install -g eslint
+    ubuntu: npm install -g eslint
+    linux: npm install -g eslint
+    windows: npm install -g eslint
+  uninstall:
+    mac: npm uninstall -g eslint
+    ubuntu: npm uninstall -g eslint
+    linux: npm uninstall -g eslint
+    windows: npm uninstall -g eslint
+
+# ---------- Static Site & Frontend Tools ----------
+
+hugo:
+  label: Hugo
+  summary: Static site generator
+  description: Blazing-fast static site generator in Go — great for docs, blogs, and marketing sites
+  category: frontend
+  platforms:
+    mac: brew install hugo
+    ubuntu: sudo snap install hugo
+    linux: sudo snap install hugo
+    windows: winget install Hugo.Hugo.Extended
+  uninstall:
+    mac: brew uninstall hugo
+    ubuntu: sudo snap remove hugo
+    linux: sudo snap remove hugo
+    windows: winget uninstall Hugo.Hugo.Extended
+
+imagemagick:
+  label: ImageMagick
+  summary: Image processing
+  description: Resize, crop, convert, and optimize images from the CLI — automate asset pipelines
+  category: frontend
+  platforms:
+    mac: brew install imagemagick
+    ubuntu: sudo apt-get install -y imagemagick
+    linux: sudo apt-get install -y imagemagick
+    windows: winget install ImageMagick.ImageMagick
+  uninstall:
+    mac: brew uninstall imagemagick
+    ubuntu: sudo apt-get remove -y imagemagick
+    linux: sudo apt-get remove -y imagemagick
+    windows: winget uninstall ImageMagick.ImageMagick
+
+# ---------- Security ----------
+
+trivy:
+  label: Trivy
+  summary: Container scanner
+  description: Scan container images and IaC for vulnerabilities — catch security issues before deploy
+  category: security
+  platforms:
+    mac: brew install trivy
+    ubuntu: "curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin"
+    linux: "curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin"
+  uninstall:
+    mac: brew uninstall trivy
+    ubuntu: sudo rm -f /usr/local/bin/trivy
+    linux: sudo rm -f /usr/local/bin/trivy
+
+# ---------- Rails-specific ----------
+
+ruby-build:
+  label: ruby-build
+  summary: Ruby installer for rbenv
+  description: Plugin for rbenv that compiles and installs Ruby versions from source
+  category: runtime
+  platforms:
+    mac: brew install ruby-build
+    ubuntu: "git clone https://github.com/rbenv/ruby-build.git \"$(rbenv root)\"/plugins/ruby-build"
+    linux: "git clone https://github.com/rbenv/ruby-build.git \"$(rbenv root)\"/plugins/ruby-build"
+  uninstall:
+    mac: brew uninstall ruby-build
+    ubuntu: "rm -rf \"$(rbenv root)\"/plugins/ruby-build"
+    linux: "rm -rf \"$(rbenv root)\"/plugins/ruby-build"
+
+foreman:
+  label: Foreman
+  summary: Procfile runner
+  description: Run all your app processes from a Procfile — web server, workers, and jobs in one command
+  category: runtime
+  platforms:
+    mac: gem install foreman
+    ubuntu: gem install foreman
+    linux: gem install foreman
+  uninstall:
+    mac: gem uninstall foreman
+    ubuntu: gem uninstall foreman
+    linux: gem uninstall foreman

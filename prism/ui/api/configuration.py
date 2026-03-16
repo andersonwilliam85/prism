@@ -67,8 +67,23 @@ def get_tools():
     return jsonify({"tools": tools})
 
 
+@configuration_bp.route("/api/history")
+def get_history():
+    """Scan for previous prism installations."""
+    from prism.cli.history import _find_installs
+
+    home = Path.home()
+    search = [home, home / "dev", home / "projects", home / "workspace", home / "Development"]
+    installs = _find_installs(search)
+    return jsonify({"installs": installs})
+
+
 @configuration_bp.route("/assets/<path:filename>")
 def serve_assets(filename):
     """Serve static assets (branding, etc.)."""
     assets_dir = _root_dir() / "assets"
+    if not (assets_dir / filename).exists():
+        # Fall back to bundled assets when running from pip install
+        bundled_dir = Path(__file__).parent.parent / "static" / "assets"
+        return send_from_directory(str(bundled_dir), filename)
     return send_from_directory(str(assets_dir), filename)

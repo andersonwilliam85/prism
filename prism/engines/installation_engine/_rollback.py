@@ -10,7 +10,7 @@ from prism.accessors.command_accessor.i_command_accessor import ICommandAccessor
 from prism.accessors.rollback_accessor.i_rollback_accessor import IRollbackAccessor
 from prism.models.installation import RollbackAction, RollbackState
 
-_AUTO_ROLLBACK_TYPES = {"file_created", "dir_created"}
+_AUTO_ROLLBACK_TYPES = {"file_created", "dir_created", "tool_installed"}
 
 
 def compute_rollback_plan(state: RollbackState) -> list[RollbackAction]:

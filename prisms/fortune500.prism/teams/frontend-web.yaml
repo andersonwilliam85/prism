@@ -1,0 +1,84 @@
+# ============================================================================
+# FRONTEND & WEB TEAM
+# ============================================================================
+# Owns: web applications, design system component library,
+# CDN/edge configuration, web performance, accessibility.
+
+team:
+  id: "frontend-web"
+  name: "Frontend & Web"
+  description: "Web apps, design systems, CDN, performance optimization"
+  slack_channels:
+    - "#frontend-engineering"
+    - "#design-system"
+    - "#web-performance"
+  oncall_rotation: "https://company.pagerduty.com/schedules/frontend"
+
+tools_required:
+  - nodejs
+  - nvm
+  - docker
+  - gh
+  - jq
+
+tools_optional:
+  - nx
+  - code
+
+workspace:
+  directories:
+    - path: "~/work/services/web-apps"
+      description: "Customer-facing web applications"
+    - path: "~/work/libraries/design-system"
+      description: "Shared component library (React/Storybook)"
+    - path: "~/work/libraries/shared-hooks"
+      description: "Shared React hooks and utilities"
+    - path: "~/work/infrastructure/cdn"
+      description: "CDN and edge configuration"
+
+repositories:
+  - name: "web-monorepo"
+    url: "https://github.company.com/frontend/web-monorepo"
+    description: "Nx monorepo with all web apps and shared packages"
+  - name: "design-system"
+    url: "https://github.company.com/frontend/design-system"
+    description: "Component library — React, Storybook, design tokens"
+  - name: "web-platform"
+    url: "https://github.company.com/frontend/web-platform"
+    description: "Shared build configs, ESLint rules, Webpack/Vite presets"
+  - name: "cdn-config"
+    url: "https://github.company.com/frontend/cdn-config"
+    description: "CloudFront/Fastly edge configuration"
+
+tech_stack:
+  languages:
+    - "TypeScript (strict mode, no implicit any)"
+  frameworks:
+    - "React 18+ (primary UI framework)"
+    - "Next.js (SSR/SSG applications)"
+    - "Remix (data-heavy apps)"
+  build:
+    - "Nx (monorepo orchestration)"
+    - "Vite (dev server and bundling)"
+    - "Turborepo (build caching)"
+  testing:
+    - "Vitest (unit tests)"
+    - "Playwright (E2E tests)"
+    - "Storybook (visual testing, Chromatic)"
+    - "Lighthouse CI (performance regression)"
+  styling:
+    - "Tailwind CSS (utility-first)"
+    - "CSS Modules (component scoped)"
+    - "Design tokens (from Figma via Style Dictionary)"
+
+conventions:
+  node_version: "LTS (managed via .nvmrc per repo)"
+  package_manager: "pnpm (workspace protocol for monorepo)"
+  registry: "npm packages published to Artifactory @company scope"
+  accessibility: "WCAG 2.1 AA compliance required"
+  browser_support: "Last 2 versions of Chrome, Firefox, Safari, Edge"
+  performance_budgets:
+    lcp: "< 2.5s"
+    fid: "< 100ms"
+    cls: "< 0.1"
+    bundle_size: "< 200KB gzipped per route"

@@ -1,0 +1,396 @@
+# Tool Registry — academic-specific tools for the university prism.
+# These supplement the base tool registry at prism.prism/base/tool-registry.yaml.
+# Tools already in the base registry (git, code, docker, gh, etc.) are referenced
+# by name only in configs — they do NOT need entries here.
+
+# ── Languages & Runtimes ─────────────────────────────────────────────────────
+
+python3:
+  label: Python 3
+  summary: General-purpose language
+  description: Python interpreter with pip and venv — the default language for most courses, data science, and research
+  category: runtime
+  platforms:
+    mac: brew install python@3
+    ubuntu: sudo apt-get install -y python3 python3-pip python3-venv
+    linux: sudo apt-get install -y python3 python3-pip python3-venv
+    windows: winget install Python.Python.3.12
+  uninstall:
+    mac: brew uninstall python@3
+    ubuntu: sudo apt-get remove -y python3 python3-pip python3-venv
+    linux: sudo apt-get remove -y python3 python3-pip python3-venv
+    windows: winget uninstall Python.Python.3.12
+
+openjdk:
+  label: OpenJDK
+  summary: Java Development Kit
+  description: Open-source Java compiler and runtime — needed for CS data structures, algorithms, and software engineering courses
+  category: runtime
+  platforms:
+    mac: brew install openjdk
+    ubuntu: sudo apt-get install -y default-jdk
+    linux: sudo apt-get install -y default-jdk
+    windows: winget install EclipseAdoptium.Temurin.21.JDK
+  uninstall:
+    mac: brew uninstall openjdk
+    ubuntu: sudo apt-get remove -y default-jdk
+    linux: sudo apt-get remove -y default-jdk
+    windows: winget uninstall EclipseAdoptium.Temurin.21.JDK
+
+gcc:
+  label: GCC
+  summary: C/C++ compiler
+  description: GNU Compiler Collection for C and C++ — required for systems programming, OS, and engineering courses
+  category: runtime
+  platforms:
+    mac: xcode-select --install
+    ubuntu: sudo apt-get install -y build-essential
+    linux: sudo apt-get install -y build-essential
+    windows: winget install GnuWin32.Make
+  uninstall:
+    mac: sudo rm -rf /Library/Developer/CommandLineTools
+    ubuntu: sudo apt-get remove -y build-essential
+    linux: sudo apt-get remove -y build-essential
+    windows: winget uninstall GnuWin32.Make
+
+cmake:
+  label: CMake
+  summary: C/C++ build system
+  description: Cross-platform build system generator for C/C++ projects — used in engineering and systems courses
+  category: runtime
+  platforms:
+    mac: brew install cmake
+    ubuntu: sudo apt-get install -y cmake
+    linux: sudo apt-get install -y cmake
+    windows: winget install Kitware.CMake
+  uninstall:
+    mac: brew uninstall cmake
+    ubuntu: sudo apt-get remove -y cmake
+    linux: sudo apt-get remove -y cmake
+    windows: winget uninstall Kitware.CMake
+
+r-lang:
+  label: R
+  summary: Statistical computing
+  description: Language for statistical computing, data visualization, and bioinformatics — widely used in data science and social sciences
+  category: runtime
+  platforms:
+    mac: brew install r
+    ubuntu: sudo apt-get install -y r-base r-base-dev
+    linux: sudo apt-get install -y r-base r-base-dev
+    windows: winget install RProject.R
+  uninstall:
+    mac: brew uninstall r
+    ubuntu: sudo apt-get remove -y r-base r-base-dev
+    linux: sudo apt-get remove -y r-base r-base-dev
+    windows: winget uninstall RProject.R
+
+rstudio:
+  label: RStudio
+  summary: R IDE
+  description: Full IDE for R with data viewer, plot pane, and integrated package manager
+  category: editor
+  platforms:
+    mac: brew install --cask rstudio
+    ubuntu: sudo apt-get install -y rstudio
+    linux: sudo apt-get install -y rstudio
+    windows: winget install Posit.RStudio
+  uninstall:
+    mac: brew uninstall --cask rstudio
+    ubuntu: sudo apt-get remove -y rstudio
+    linux: sudo apt-get remove -y rstudio
+    windows: winget uninstall Posit.RStudio
+
+# ── Data Science & Notebooks ─────────────────────────────────────────────────
+
+jupyter:
+  label: JupyterLab
+  summary: Interactive notebooks
+  description: Browser-based notebooks for Python, R, Julia — essential for data science courses, research, and teaching demos
+  category: data-science
+  platforms:
+    mac: pip3 install --user jupyterlab notebook ipykernel
+    ubuntu: pip3 install --user jupyterlab notebook ipykernel
+    linux: pip3 install --user jupyterlab notebook ipykernel
+    windows: pip install jupyterlab notebook ipykernel
+  uninstall:
+    mac: pip3 uninstall -y jupyterlab notebook ipykernel
+    ubuntu: pip3 uninstall -y jupyterlab notebook ipykernel
+    linux: pip3 uninstall -y jupyterlab notebook ipykernel
+    windows: pip uninstall -y jupyterlab notebook ipykernel
+
+conda:
+  label: Miniforge (conda)
+  summary: Environment manager
+  description: Conda package and environment manager via Miniforge — isolate dependencies per project or course without conflicts
+  category: data-science
+  platforms:
+    mac: brew install miniforge
+    ubuntu: "curl -L -O https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh && bash Miniforge3-Linux-x86_64.sh -b -p $HOME/miniforge3 && rm Miniforge3-Linux-x86_64.sh"
+    linux: "curl -L -O https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh && bash Miniforge3-Linux-x86_64.sh -b -p $HOME/miniforge3 && rm Miniforge3-Linux-x86_64.sh"
+    windows: winget install CondaForge.Miniforge3
+  uninstall:
+    mac: brew uninstall miniforge
+    ubuntu: rm -rf $HOME/miniforge3
+    linux: rm -rf $HOME/miniforge3
+    windows: winget uninstall CondaForge.Miniforge3
+
+datasci-python:
+  label: Python Data Science Stack
+  summary: numpy, pandas, matplotlib, scikit-learn
+  description: Core Python libraries for data science courses — numpy, pandas, matplotlib, seaborn, scikit-learn installed together
+  category: data-science
+  platforms:
+    mac: pip3 install --user numpy pandas matplotlib seaborn scikit-learn scipy
+    ubuntu: pip3 install --user numpy pandas matplotlib seaborn scikit-learn scipy
+    linux: pip3 install --user numpy pandas matplotlib seaborn scikit-learn scipy
+    windows: pip install numpy pandas matplotlib seaborn scikit-learn scipy
+  uninstall:
+    mac: pip3 uninstall -y numpy pandas matplotlib seaborn scikit-learn scipy
+    ubuntu: pip3 uninstall -y numpy pandas matplotlib seaborn scikit-learn scipy
+    linux: pip3 uninstall -y numpy pandas matplotlib seaborn scikit-learn scipy
+    windows: pip uninstall -y numpy pandas matplotlib seaborn scikit-learn scipy
+
+# ── Academic Writing & Publishing ─────────────────────────────────────────────
+
+latex:
+  label: LaTeX (TeX Live)
+  summary: Typesetting system
+  description: Professional typesetting for papers, theses, dissertations, and course materials — the standard in academia
+  category: academic
+  platforms:
+    mac: brew install --cask mactex-no-gui
+    ubuntu: sudo apt-get install -y texlive-full
+    linux: sudo apt-get install -y texlive-full
+    windows: winget install MiKTeX.MiKTeX
+  uninstall:
+    mac: brew uninstall --cask mactex-no-gui
+    ubuntu: sudo apt-get remove -y texlive-full
+    linux: sudo apt-get remove -y texlive-full
+    windows: winget uninstall MiKTeX.MiKTeX
+
+pandoc:
+  label: Pandoc
+  summary: Document converter
+  description: Convert between Markdown, LaTeX, PDF, DOCX, HTML — useful for converting lecture notes and papers between formats
+  category: academic
+  platforms:
+    mac: brew install pandoc
+    ubuntu: sudo apt-get install -y pandoc
+    linux: sudo apt-get install -y pandoc
+    windows: winget install JohnMacFarlane.Pandoc
+  uninstall:
+    mac: brew uninstall pandoc
+    ubuntu: sudo apt-get remove -y pandoc
+    linux: sudo apt-get remove -y pandoc
+    windows: winget uninstall JohnMacFarlane.Pandoc
+
+zotero:
+  label: Zotero
+  summary: Reference manager
+  description: Collect, organize, and cite research sources — integrates with Word, LibreOffice, and BibTeX for LaTeX
+  category: academic
+  platforms:
+    mac: brew install --cask zotero
+    ubuntu: sudo snap install zotero-snap
+    linux: sudo snap install zotero-snap
+    windows: winget install DigitalScholar.Zotero
+  uninstall:
+    mac: brew uninstall --cask zotero
+    ubuntu: sudo snap remove zotero-snap
+    linux: sudo snap remove zotero-snap
+    windows: winget uninstall DigitalScholar.Zotero
+
+# ── Database Tools ────────────────────────────────────────────────────────────
+
+sqlite3:
+  label: SQLite
+  summary: Embedded SQL database
+  description: Lightweight SQL database that lives in a single file — great for learning SQL and small projects
+  category: database
+  platforms:
+    mac: brew install sqlite
+    ubuntu: sudo apt-get install -y sqlite3
+    linux: sudo apt-get install -y sqlite3
+    windows: winget install SQLite.SQLite
+  uninstall:
+    mac: brew uninstall sqlite
+    ubuntu: sudo apt-get remove -y sqlite3
+    linux: sudo apt-get remove -y sqlite3
+    windows: winget uninstall SQLite.SQLite
+
+postgresql:
+  label: PostgreSQL
+  summary: Relational database
+  description: Production-grade relational database — used in database courses and backend projects
+  category: database
+  platforms:
+    mac: brew install postgresql@16
+    ubuntu: sudo apt-get install -y postgresql postgresql-client
+    linux: sudo apt-get install -y postgresql postgresql-client
+    windows: winget install PostgreSQL.PostgreSQL
+  uninstall:
+    mac: brew uninstall postgresql@16
+    ubuntu: sudo apt-get remove -y postgresql postgresql-client
+    linux: sudo apt-get remove -y postgresql postgresql-client
+    windows: winget uninstall PostgreSQL.PostgreSQL
+
+dbeaver:
+  label: DBeaver
+  summary: Database GUI
+  description: Visual database client for PostgreSQL, MySQL, SQLite, and more — helpful for learning SQL and inspecting data
+  category: database
+  platforms:
+    mac: brew install --cask dbeaver-community
+    ubuntu: sudo snap install dbeaver-ce
+    linux: sudo snap install dbeaver-ce
+    windows: winget install dbeaver.dbeaver
+  uninstall:
+    mac: brew uninstall --cask dbeaver-community
+    ubuntu: sudo snap remove dbeaver-ce
+    linux: sudo snap remove dbeaver-ce
+    windows: winget uninstall dbeaver.dbeaver
+
+# ── HPC & Remote Computing ───────────────────────────────────────────────────
+
+hpc-tools:
+  label: HPC Tools
+  summary: Cluster computing utilities
+  description: SSH config and tools for connecting to university HPC clusters — includes SSH key generation and config template
+  category: academic
+  platforms:
+    mac: "ssh-keygen -t ed25519 -f ~/.ssh/hpc_cluster -N '' -C 'university-hpc' 2>/dev/null; echo 'Host hpc\n  HostName hpc.university.edu\n  User ${USER}\n  IdentityFile ~/.ssh/hpc_cluster\n  ForwardAgent yes' >> ~/.ssh/config"
+    ubuntu: "ssh-keygen -t ed25519 -f ~/.ssh/hpc_cluster -N '' -C 'university-hpc' 2>/dev/null; echo 'Host hpc\n  HostName hpc.university.edu\n  User ${USER}\n  IdentityFile ~/.ssh/hpc_cluster\n  ForwardAgent yes' >> ~/.ssh/config"
+    linux: "ssh-keygen -t ed25519 -f ~/.ssh/hpc_cluster -N '' -C 'university-hpc' 2>/dev/null; echo 'Host hpc\n  HostName hpc.university.edu\n  User ${USER}\n  IdentityFile ~/.ssh/hpc_cluster\n  ForwardAgent yes' >> ~/.ssh/config"
+  uninstall:
+    mac: rm -f ~/.ssh/hpc_cluster ~/.ssh/hpc_cluster.pub
+    ubuntu: rm -f ~/.ssh/hpc_cluster ~/.ssh/hpc_cluster.pub
+    linux: rm -f ~/.ssh/hpc_cluster ~/.ssh/hpc_cluster.pub
+
+# ── Engineering Tools ─────────────────────────────────────────────────────────
+
+octave:
+  label: GNU Octave
+  summary: MATLAB alternative
+  description: Free, open-source MATLAB-compatible language for numerical computing — works with most MATLAB course materials
+  category: engineering
+  platforms:
+    mac: brew install octave
+    ubuntu: sudo apt-get install -y octave
+    linux: sudo apt-get install -y octave
+    windows: winget install JohnWEaton.Octave
+  uninstall:
+    mac: brew uninstall octave
+    ubuntu: sudo apt-get remove -y octave
+    linux: sudo apt-get remove -y octave
+    windows: winget uninstall JohnWEaton.Octave
+
+freecad:
+  label: FreeCAD
+  summary: 3D parametric modeler
+  description: Free open-source CAD tool for 3D modeling — alternative to AutoCAD and SolidWorks for engineering courses
+  category: engineering
+  platforms:
+    mac: brew install --cask freecad
+    ubuntu: sudo snap install freecad
+    linux: sudo snap install freecad
+    windows: winget install FreeCAD.FreeCAD
+  uninstall:
+    mac: brew uninstall --cask freecad
+    ubuntu: sudo snap remove freecad
+    linux: sudo snap remove freecad
+    windows: winget uninstall FreeCAD.FreeCAD
+
+gdb:
+  label: GDB
+  summary: C/C++ debugger
+  description: GNU Debugger for stepping through C/C++ programs — essential for systems programming and OS courses
+  category: engineering
+  platforms:
+    mac: brew install gdb
+    ubuntu: sudo apt-get install -y gdb
+    linux: sudo apt-get install -y gdb
+  uninstall:
+    mac: brew uninstall gdb
+    ubuntu: sudo apt-get remove -y gdb
+    linux: sudo apt-get remove -y gdb
+
+valgrind:
+  label: Valgrind
+  summary: Memory debugger
+  description: Detect memory leaks and errors in C/C++ programs — required for many systems programming courses
+  category: engineering
+  platforms:
+    ubuntu: sudo apt-get install -y valgrind
+    linux: sudo apt-get install -y valgrind
+  uninstall:
+    ubuntu: sudo apt-get remove -y valgrind
+    linux: sudo apt-get remove -y valgrind
+
+# ── Grading & Teaching ────────────────────────────────────────────────────────
+
+nbgrader:
+  label: nbgrader
+  summary: Jupyter grading tool
+  description: Create and grade Jupyter notebook assignments — auto-grading, manual grading, and feedback in one workflow
+  category: academic
+  platforms:
+    mac: pip3 install --user nbgrader
+    ubuntu: pip3 install --user nbgrader
+    linux: pip3 install --user nbgrader
+    windows: pip install nbgrader
+  uninstall:
+    mac: pip3 uninstall -y nbgrader
+    ubuntu: pip3 uninstall -y nbgrader
+    linux: pip3 uninstall -y nbgrader
+    windows: pip uninstall -y nbgrader
+
+# ── Collaboration & Version Control ──────────────────────────────────────────
+
+git-lfs:
+  label: Git LFS
+  summary: Large file storage
+  description: Track large files (datasets, models, images) in Git without bloating the repo — essential for research data
+  category: collaboration
+  platforms:
+    mac: brew install git-lfs && git lfs install
+    ubuntu: sudo apt-get install -y git-lfs && git lfs install
+    linux: sudo apt-get install -y git-lfs && git lfs install
+    windows: winget install GitHub.GitLFS
+  uninstall:
+    mac: brew uninstall git-lfs
+    ubuntu: sudo apt-get remove -y git-lfs
+    linux: sudo apt-get remove -y git-lfs
+    windows: winget uninstall GitHub.GitLFS
+
+dvc:
+  label: DVC
+  summary: Data version control
+  description: Version control for datasets and ML models — track experiments, share data, reproduce results
+  category: collaboration
+  platforms:
+    mac: pip3 install --user dvc
+    ubuntu: pip3 install --user dvc
+    linux: pip3 install --user dvc
+    windows: pip install dvc
+  uninstall:
+    mac: pip3 uninstall -y dvc
+    ubuntu: pip3 uninstall -y dvc
+    linux: pip3 uninstall -y dvc
+    windows: pip uninstall -y dvc
+
+# ── Math & Science ────────────────────────────────────────────────────────────
+
+sagemath:
+  label: SageMath
+  summary: Math computation system
+  description: Open-source computer algebra system — alternative to Mathematica and Maple for algebra, calculus, number theory
+  category: academic
+  platforms:
+    mac: brew install --cask sage
+    ubuntu: sudo apt-get install -y sagemath
+    linux: sudo apt-get install -y sagemath
+  uninstall:
+    mac: brew uninstall --cask sage
+    ubuntu: sudo apt-get remove -y sagemath
+    linux: sudo apt-get remove -y sagemath
