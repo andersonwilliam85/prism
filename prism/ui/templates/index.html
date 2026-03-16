@@ -1033,7 +1033,11 @@
             if (typeof packages !== 'undefined' && packages.length > 0) {
                 let html = '';
                 // Default prism first
-                const sorted = [...packages].sort((a, b) => (b.default ? 1 : 0) - (a.default ? 1 : 0));
+                const sorted = [...packages].sort((a, b) => {
+                    if (a.name === selectedPackage) return -1;
+                    if (b.name === selectedPackage) return 1;
+                    return (b.default ? 1 : 0) - (a.default ? 1 : 0);
+                });
                 sorted.forEach(pkg => {
                     const isSelected = selectedPackage === pkg.name;
                     const defaultBadge = pkg.default ? '<span style="display:inline-block;background:var(--gradient-1);color:white;font-size:0.7em;padding:2px 8px;border-radius:10px;margin-left:8px;vertical-align:middle;">Default</span>' : '';
