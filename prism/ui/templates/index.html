@@ -1208,9 +1208,31 @@
             }
         }
         
+        // Custom theme gradient cache (populated by renderThemeGrid)
+        let _customThemeGradients = {};
+
         function selectTheme(themeName) {
             // Update theme
             document.documentElement.setAttribute('data-theme', themeName);
+
+            // For custom themes, apply gradients via JS since they don't have CSS rules
+            const custom = _customThemeGradients[themeName];
+            if (custom) {
+                const root = document.documentElement.style;
+                if (custom.gradient_1) root.setProperty('--gradient-1', custom.gradient_1);
+                if (custom.gradient_2) root.setProperty('--gradient-2', custom.gradient_2);
+                if (custom.gradient_3) root.setProperty('--gradient-3', custom.gradient_3);
+                if (custom.gradient_4) root.setProperty('--gradient-4', custom.gradient_4);
+                if (custom.gradient_5) root.setProperty('--gradient-5', custom.gradient_5);
+            } else {
+                // Built-in theme — clear inline styles so CSS rules take over
+                const root = document.documentElement.style;
+                root.removeProperty('--gradient-1');
+                root.removeProperty('--gradient-2');
+                root.removeProperty('--gradient-3');
+                root.removeProperty('--gradient-4');
+                root.removeProperty('--gradient-5');
+            }
 
             // Update active state in settings
             document.querySelectorAll('.theme-option').forEach(opt => {
@@ -1221,8 +1243,9 @@
                 }
             });
 
-            // Save to config
+            // Save to config (include gradients for reload)
             prismConfig.theme = themeName;
+            if (custom) prismConfig.customGradients = custom;
             savePrismConfig(prismConfig);
         }
 
@@ -1230,8 +1253,17 @@
             const grid = document.getElementById('themeGrid');
             if (!grid || !themes || themes.length === 0) return;
 
-            // Inject CSS for any custom themes
+            // Cache custom theme gradients and inject CSS
             themes.forEach(t => {
+                if (t.gradient_1) {
+                    _customThemeGradients[t.id] = {
+                        gradient_1: t.gradient_1,
+                        gradient_2: t.gradient_2,
+                        gradient_3: t.gradient_3,
+                        gradient_4: t.gradient_4,
+                        gradient_5: t.gradient_5,
+                    };
+                }
                 if (t.gradient_1 && !document.querySelector(`style[data-theme-css="${t.id}"]`)) {
                     const style = document.createElement('style');
                     style.setAttribute('data-theme-css', t.id);
@@ -1329,6 +1361,18 @@
         (function() {
             // Apply saved theme
             document.documentElement.setAttribute('data-theme', prismConfig.theme);
+
+            // Restore custom theme gradients if saved
+            if (prismConfig.customGradients) {
+                _customThemeGradients[prismConfig.theme] = prismConfig.customGradients;
+                const g = prismConfig.customGradients;
+                const root = document.documentElement.style;
+                if (g.gradient_1) root.setProperty('--gradient-1', g.gradient_1);
+                if (g.gradient_2) root.setProperty('--gradient-2', g.gradient_2);
+                if (g.gradient_3) root.setProperty('--gradient-3', g.gradient_3);
+                if (g.gradient_4) root.setProperty('--gradient-4', g.gradient_4);
+                if (g.gradient_5) root.setProperty('--gradient-5', g.gradient_5);
+            }
             
             // Set active theme in settings
             document.querySelectorAll('.theme-option').forEach(opt => {
