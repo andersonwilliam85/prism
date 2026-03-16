@@ -34,15 +34,17 @@ Large organizations face configuration chaos:
 
 ### The Solution
 
+- **Centralized tool registry** — Tools defined once in `tool-registry.yaml` with per-platform install/uninstall commands; child configs reference tools by name only
 - **Configuration inheritance** — Define once at company level, override per team
 - **Multi-level hierarchies** — Support structures from flat (startups) to 5+ levels (enterprise)
-- **Web UI** — Visual prism selection and installation wizard with themes, cascading dropdowns, and real-time progress
-- **CLI tools** — Scriptable, automatable, CI/CD friendly
+- **Web UI** — Tool selection with categories, inline validation, hover tooltips, platform-aware filtering, and real-time progress
+- **CLI tools** — `prism install`, `prism rollback`, `prism history` — scriptable and CI/CD friendly
 - **NPM distribution** — Packages published to npm, no custom infrastructure needed
-- **Validation** — Catch errors before deployment
+- **Validation** — Config engine validates tool registry (install + uninstall), tool references, and email patterns from YAML
 - **Smart merging** — Deep-merge with configurable strategies (union, override, append)
-- **Installation rollback** — Every action tracked, automatic LIFO undo on failure
+- **Installation rollback** — `.prism_rollback.json` manifest persisted on install; `prism rollback <workspace>` reverses all actions
 - **Privilege separation** — Two-phase install with sudo session management
+- **No generic fallbacks** — Tools without explicit platform install commands are skipped; no guessing
 
 ---
 
@@ -63,15 +65,15 @@ make run
 | Prism | Use Case | Hierarchy | Scale |
 |-------|----------|-----------|-------|
 | `prism` | Default (ships as core) | Flat | Any |
-| `prism` | Solo developers | 3 environment tiers | 1 |
-| `startup` | Seed/Series A startups | 1 level | 10–50 |
-| `acme-corp` | Template for companies | 2 levels | 100–1K |
+| `startup` | Seed/Series A startups | 1 level | 10--50 |
+| `acme-corp` | Template for companies | 2 levels | 100--1K |
 | `consulting-firm` | Multi-client work | By client | Variable |
 | `fortune500` | Enterprise | 5 levels | 50K+ |
 | `university` | Academic institutions | Dept to Lab | Variable |
 | `opensource` | Community projects | Flat | Community |
+| `cli-test-prism` | CLI testing fixture | Flat | Testing |
 
-Each prism includes custom themes, cascading user fields, and rollback configuration.
+Each prism includes custom themes, cascading user fields, a centralized tool registry, and rollback configuration.
 
 ---
 
@@ -80,7 +82,7 @@ Each prism includes custom themes, cascading user fields, and rollback configura
 Prism follows a **VBD-inspired** (Volatility-Based Decomposition) layered architecture:
 
 - **Managers** — Orchestration — *the "what"*
-- **Engines** — Business logic — *the "how"*
+- **Engines** — Business logic — *the "how"* (includes `config_engine`, `installation_engine`, `rollback_engine`)
 - **Accessors** — External boundaries — *the "where"*
 - **Utilities** — Cross-cutting services
 - **Models** — Plain dataclasses
@@ -91,9 +93,10 @@ All wiring via dependency injection in `container.py`. See [Architecture](refere
 
 ## Key Features
 
+- [Tool Registry](reference/package-system.md) — Centralized tool definitions with categories
 - [Themes & Customization](user-guide/themes.md) — 5 built-in + custom themes
 - [Cascading Dropdowns](user-guide/cascading-dropdowns.md) — Dynamic field dependencies
-- [Rollback System](reference/rollback-system.md) — Installation safety
+- [Rollback System](reference/rollback-system.md) — `.prism_rollback.json` manifest + CLI/UI rollback
 - [Privilege Separation](reference/privilege-separation.md) — Sudo session management
 - [Config Inheritance](user-guide/config-inheritance.md) — Multi-level merge strategies
 - [Local Docs Server](user-guide/local-docs-server.md) — Post-install workspace browser

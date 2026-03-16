@@ -15,12 +15,92 @@ The Prism system lets organizations create, distribute, and install complete dev
 
 ### Key Benefits
 
-✅ **Hierarchical** — base → division → role → team, each layer inheriting the last
-✅ **Modular** — install only the sub-prisms you need
-✅ **Distributable** — share via git, registry, or local files
-✅ **Version-controlled** — track changes over time
-✅ **Discoverable** — auto-finds prisms in `prisms/`
-✅ **Validatable** — check structure before installing
+- **Hierarchical** — base -> division -> role -> team, each layer inheriting the last
+- **Modular** — install only the sub-prisms you need
+- **Centralized tool registry** — tools defined once in `tool-registry.yaml`, referenced by name
+- **Distributable** — share via git, registry, or local files
+- **Version-controlled** — track changes over time
+- **Discoverable** — auto-finds prisms in `prisms/`
+- **Validatable** — config engine validates tool registry, tool references, and email patterns
+- **Rollback** — `.prism_rollback.json` manifest enables `prism rollback`
+
+---
+
+## Tool Registry
+
+Each prism's base directory contains a `tool-registry.yaml` file — the single source of truth for every installable tool. Child configs reference tools by string name only (e.g., `- git`).
+
+### Tool Definition Format
+
+```yaml
+git:
+  label: Git
+  summary: Version control
+  description: Track changes, branch, merge, and collaborate on code
+  category: core
+  platforms:
+    mac: brew install git
+    ubuntu: sudo apt-get install -y git
+    linux: sudo apt-get install -y git
+    windows: winget install Git.Git
+  uninstall:
+    mac: brew uninstall git
+    ubuntu: sudo apt-get remove -y git
+    linux: sudo apt-get remove -y git
+    windows: winget uninstall Git.Git
+```
+
+### Fields
+
+| Field | Description |
+|---|---|
+| `label` | Display name shown in the UI |
+| `summary` | Short tagline, always visible next to the label |
+| `description` | Full explanation, shown on hover in the UI |
+| `category` | Grouping key for the UI |
+| `platforms` | Per-OS install commands (mac, ubuntu, linux, windows) |
+| `uninstall` | Per-OS uninstall commands (used by rollback) |
+
+### Tool Categories
+
+| Category | Examples |
+|---|---|
+| `core` | git, curl |
+| `editor` | VS Code, Cursor, Zed, Neovim, Sublime Text |
+| `containers` | Docker, Rancher Desktop, Podman |
+| `runtime` | nvm, pyenv, SDKMAN, .NET, Rust, Go, Perl, rbenv |
+| `cloud` | AWS CLI, Azure CLI, Google Cloud CLI, Terraform, Pulumi |
+| `kubernetes` | kubectl, Helm, K9s, kubectx, Stern, Kustomize, Skaffold, Argo CD |
+| `cli` | GitHub CLI, HTTPie, jq, tmux, ripgrep, fd, fzf, lazygit |
+
+### No Generic Fallbacks
+
+Tools without explicit platform install commands for the current OS are skipped. Prism does not guess install commands.
+
+### Validation
+
+The config engine validates the tool registry:
+- Every tool must have `platforms` (install commands)
+- Every tool should have `uninstall` commands (for rollback)
+- Every platform with an install command should have a matching uninstall command
+- Tool references in sub-prism configs (e.g., `tools_required: [git]`) must exist in the registry
+
+---
+
+## Starter Packages
+
+Prism ships with 8 starter packages in the `prisms/` directory:
+
+| Package | Directory | Use Case |
+|---|---|---|
+| `prism` | `prisms/prism.prism/` | Default — solo developers |
+| `startup` | `prisms/startup.prism/` | Startups (10--50) |
+| `acme-corp` | `prisms/acme-corp.prism/` | Template for companies (100--1K) |
+| `consulting-firm` | `prisms/consulting-firm.prism/` | Multi-client work |
+| `fortune500` | `prisms/fortune500.prism/` | Enterprise (50K+) |
+| `university` | `prisms/university.prism/` | Academic institutions |
+| `opensource` | `prisms/opensource.prism/` | Community projects |
+| `cli-test-prism` | `prisms/cli-test-prism.prism/` | CLI testing fixture |
 
 ---
 
@@ -29,45 +109,41 @@ The Prism system lets organizations create, distribute, and install complete dev
 ### List Available Prisms
 
 ```bash
-python3 scripts/package_manager.py list
-```
-
-```
-💎 Available Prisms
-
-  💎 acme-corp-prism (v1.0.0) 🌈
-     ACME Corp prism — example template for small-to-medium companies
-     Type: company | Size: medium | Theme: midnight
-     Sub-prism tiers: base (1), orgs (1), teams (1)
-
-  💎 fortune500-prism (v1.0.0) 🌈
-     Fortune 500 enterprise prism — secure, compliant, multi-tier
-     Type: enterprise | Size: enterprise | Theme: midnight
-     Sub-prism tiers: base (1), divisions (3), roles (5), business_units (3)
-
-  🌈 = has hierarchical sub-prisms
+prism packages list
 ```
 
 ### Get Prism Info
 
 ```bash
-python3 scripts/package_manager.py info acme-corp
+prism packages info acme-corp
 ```
 
 ### Install a Prism
 
 ```bash
 # Via CLI
-python3 install.py --prism acme-corp
+prism install --prism acme-corp
 
 # Via Web UI
 make run
 ```
 
+### Roll Back an Installation
+
+```bash
+prism rollback ~/workspace
+```
+
+### View Installation History
+
+```bash
+prism history
+```
+
 ### Validate a Prism
 
 ```bash
-python3 scripts/package_manager.py validate my-company
+prism packages validate my-company
 ```
 
 ---
@@ -77,36 +153,36 @@ python3 scripts/package_manager.py validate my-company
 ### Minimal Prism
 
 ```
-my-company/
-├── package.yaml          # REQUIRED — identity, prism_config, bundled_prisms
-├── README.md             # Recommended
-├── welcome.yaml          # Optional — welcome page content
-├── resources.yaml        # Optional — links and resources
-└── base/
-    └── my-company.yaml   # Referenced by bundled_prisms.base
+my-company.prism/
++-- package.yaml          # REQUIRED — identity, prism_config, bundled_prisms
++-- README.md             # Recommended
++-- base/
+    +-- my-company.yaml   # Referenced by bundled_prisms.base
+    +-- tool-registry.yaml # Centralized tool definitions
 ```
 
 ### Full Hierarchical Prism
 
 ```
-my-company/
-├── package.yaml
-├── README.md
-├── welcome.yaml
-├── resources.yaml
-├── base/
-│   └── my-company.yaml         # Company-wide settings
-├── divisions/
-│   ├── technology.yaml
-│   ├── digital.yaml
-│   └── data-analytics.yaml
-├── roles/
-│   ├── software-engineer.yaml
-│   ├── devops-engineer.yaml
-│   └── data-engineer.yaml
-└── teams/
-    ├── platform-team.yaml
-    └── mobile-team.yaml
+my-company.prism/
++-- package.yaml
++-- README.md
++-- welcome.yaml
++-- resources.yaml
++-- base/
+|   +-- my-company.yaml         # Company-wide settings
+|   +-- tool-registry.yaml      # Centralized tool definitions
++-- divisions/
+|   +-- technology.yaml
+|   +-- digital.yaml
+|   +-- data-analytics.yaml
++-- roles/
+|   +-- software-engineer.yaml
+|   +-- devops-engineer.yaml
+|   +-- data-engineer.yaml
++-- teams/
+    +-- platform-team.yaml
+    +-- mobile-team.yaml
 ```
 
 ---
@@ -127,32 +203,32 @@ See [Configuration Schema](configuration-schema.md) for the complete reference.
 
 ---
 
+## Installation Flow
+
+1. User selects a prism and sub-prisms
+2. UI presents tool selection page with categories — user checks the tools they want
+3. UI sends `toolsSelected` from checkboxes to the API
+4. Only checked tools get installed; `tools_selected=[]` means nothing is installed
+5. Installation engine executes install commands from the tool registry
+6. Subprocesses have timeouts and `GIT_TERMINAL_PROMPT=0`
+7. A `.prism_rollback.json` manifest is persisted for later rollback
+8. User can cancel/retry from the UI
+
+---
+
 ## Creating Your Own Prism
 
 ### Option 1: Scaffold Generator
 
 ```bash
-python3 scripts/package_manager.py create my-company --company "My Company"
-```
-
-Creates:
-```
-prisms/my-company/
-├── package.yaml
-├── README.md
-├── welcome.yaml
-├── resources.yaml
-├── base/
-│   └── my-company.yaml
-└── teams/
-    └── (empty — add your teams)
+prism packages create my-company --company "My Company"
 ```
 
 ### Option 2: Copy a Template
 
 ```bash
 # Small/medium company starting point
-cp -r prisms/acme-corp prisms/my-company
+cp -r prisms/acme-corp.prism prisms/my-company.prism
 
 # Enterprise starting point
 cp -r prisms/fortune500.prism prisms/my-company.prism
@@ -166,49 +242,62 @@ See [Creating Prisms](../user-guide/creating-configurations.md).
 
 ## CLI Reference
 
-### `list`
+### `prism install`
+
 ```bash
-python3 scripts/package_manager.py list
+prism install --prism <prism-name>
 ```
+
+### `prism rollback`
+
+```bash
+prism rollback <workspace>
+```
+
+Reads `.prism_rollback.json` and reverses all recorded actions in LIFO order.
+
+### `prism history`
+
+```bash
+prism history [search_paths...]
+```
+
+Scans for `.prism_installed` and `.prism_rollback.json` markers. Default search paths: `~`, `~/dev`, `~/projects`, `~/workspace`, `~/Development`. Also available via the `/api/history` endpoint.
+
+### `prism packages list`
+
 Lists all discoverable prisms in `prisms/`.
 
-### `info`
+### `prism packages info`
+
 ```bash
-python3 scripts/package_manager.py info <prism-name>
+prism packages info <prism-name>
 ```
+
 Shows full prism details — version, type, sub-prism tiers, metadata.
 
-### `install`
+### `prism packages validate`
+
 ```bash
-python3 scripts/package_manager.py install <prism-name>
-
-# Dry run — show what would be installed without doing it
-python3 scripts/package_manager.py install <prism-name> --dry-run
-
-# From a custom path
-python3 scripts/package_manager.py install <prism-name> --source /path/to/prism
+prism packages validate <prism-name>
 ```
 
-### `validate`
-```bash
-python3 scripts/package_manager.py validate <prism-name>
-```
 Checks:
-- ✅ `package.yaml` exists and is valid YAML
-- ✅ Required fields present
-- ✅ `bundled_prisms` config files exist on disk
-- ✅ `user_info_fields` have valid types
-- ✅ `prism_config.theme` is a valid theme name
+- `package.yaml` exists and is valid YAML
+- Required fields present
+- `bundled_prisms` config files exist on disk
+- `user_info_fields` have valid types
+- `prism_config.theme` is a valid theme name
+- Tool registry has install + uninstall commands
+- Tool references exist in the registry
 
-### `search`
+### `prism ui`
+
 ```bash
-python3 scripts/package_manager.py search enterprise
+prism ui
 ```
 
-### `create`
-```bash
-python3 scripts/package_manager.py create my-company --company "My Company Inc"
-```
+Launches the web UI at `http://localhost:5555`.
 
 ---
 
@@ -228,12 +317,12 @@ The `base` tier should have exactly one entry marked `required: true`. It holds 
 
 ### 3. Security
 
-⚠️ **Never include in prisms:**
+Never include in prisms:
 - API keys or secrets
 - Personal SSH keys
 - Private internal URLs (in public repos)
 
-✅ **Use environment variable placeholders:**
+Use environment variable placeholders:
 ```yaml
 git:
   user:
@@ -244,71 +333,26 @@ git:
 
 ```bash
 # Validate structure
-python3 scripts/package_manager.py validate my-company
-
-# Dry-run install
-python3 scripts/package_manager.py install my-company --dry-run
+prism packages validate my-company
 
 # Full install in clean environment
-rm -rf config/
-python3 install.py --prism my-company
+prism install --prism my-company
 ```
 
 ### 5. Documentation
 
 Always include:
-- ✅ `README.md` — what's included, how to customize
-- ✅ Comments in YAML sub-prism files
-
----
-
-## Use Cases
-
-### Company-wide rollout
-
-```bash
-# Create once
-python3 scripts/package_manager.py create acmecorp --company "ACME Corp"
-# ... customize ...
-
-# Every new hire runs:
-python3 install.py --prism acmecorp
-# or opens the web UI: make run
-```
-
-### Multiple engineering teams
-
-```
-my-company/
-├── base/my-company.yaml     # Company-wide
-└── teams/
-    ├── mobile.yaml          # Swift, Kotlin
-    ├── web.yaml             # React, TypeScript
-    ├── ml.yaml              # Python, TensorFlow
-    └── platform.yaml        # Go, Kubernetes
-```
-
-New hire selects their team in the installer.
-
-### Multi-region enterprise
-
-```
-my-company/
-├── base/my-company.yaml
-└── divisions/
-    ├── us.yaml              # US cloud accounts
-    ├── eu.yaml              # EU accounts, GDPR tooling
-    └── apac.yaml            # APAC accounts
-```
+- `README.md` — what's included, how to customize
+- Comments in YAML sub-prism files
 
 ---
 
 ## Support
 
-1. Check prism README: `prisms/<name>/README.md`
-2. Validate: `python3 scripts/package_manager.py validate <name>`
+1. Check prism README: `prisms/<name>.prism/README.md`
+2. Validate: `prism packages validate <name>`
 3. [Open an issue](https://github.com/andersonwilliam85/prism/issues)
 
 ---
 
-**💎 Prism — Refract complexity into clarity**
+**Prism — Refract complexity into clarity**

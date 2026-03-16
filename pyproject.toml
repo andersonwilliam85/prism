@@ -47,6 +47,7 @@ include = ["prism*"]
 
 [tool.setuptools.package-data]
 "prism.ui" = ["templates/**", "static/**"]
+"prism" = ["prisms/**"]
 
 [tool.setuptools_scm]
 version_file = "prism/_version.py"

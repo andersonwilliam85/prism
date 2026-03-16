@@ -6,6 +6,7 @@ import os
 import re
 import subprocess
 import time
+from pathlib import Path
 
 import pytest
 
@@ -24,7 +25,10 @@ def installer_server():
     subprocess.run("lsof -ti:5555 | xargs kill -9", shell=True, stderr=subprocess.DEVNULL)
 
     # Start server in background
-    process = subprocess.Popen(["python3", "install-ui.py"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    repo_root = str(Path(__file__).parent.parent.parent)
+    process = subprocess.Popen(
+        ["python3", "install-ui.py"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, cwd=repo_root
+    )
 
     # Wait for server to start
     time.sleep(3)
@@ -104,11 +108,11 @@ class TestInstallerFlow:
 
         # Verify step 2 is now active
         step2 = page.locator("#step2")
-        expect(step2).to_have_class("step active")
+        expect(step2).to_have_class(re.compile(r"active"))
 
         # Verify step 1 is not active
         step1 = page.locator("#step1")
-        expect(step1).not_to_have_class("step active")
+        expect(step1).not_to_have_class(re.compile(r"active"))
 
     def test_user_info_form(self, page: Page, installer_server):
         """Test user info form fields."""

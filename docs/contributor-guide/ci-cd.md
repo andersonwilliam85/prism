@@ -52,7 +52,7 @@ make run               # Start installer server
 
 # Testing
 make test              # Fast tests (unit + CLI)
-make test-all          # All tests (72 tests)
+make test-all          # All tests (590+ tests)
 make test-coverage     # With coverage report
 
 # Code Quality
@@ -77,7 +77,7 @@ See all commands: `make help`
 **Trigger:** PR to `dev`, `stage`, or `main`
 
 **Jobs (run in parallel):**
-- ✅ **Lint** → black, flake8, mypy
+- ✅ **Lint** → isort, black, flake8, mypy
 - ✅ **Unit Tests** → pytest tests/unit/
 - ✅ **CLI Tests** → pytest tests/e2e/test_cli_installer.py
 - ✅ **E2E Tests** → Playwright browser tests
@@ -128,7 +128,7 @@ See all commands: `make help`
 **Trigger:** Push to `main` branch OR git tag
 
 **Jobs:**
-1. Full Test Suite → All 72 tests
+1. Full Test Suite → All 590+ tests
 2. Build Distribution → Wheel + source + archive
 3. Publish Artifacts → Upload to GitHub
 4. GitHub Release → Auto-create (if tagged)
@@ -453,7 +453,7 @@ gh secret set DEPLOY_SSH_KEY < ~/.ssh/deploy_key
 | Prod Deploy | ✅ Complete |
 | Branch Protection | ⚠️ Setup Required |
 | Documentation | ✅ Complete |
-| Tests | ✅ Working (72 tests) |
+| Tests | ✅ Working (590+ tests) |
 
 ---
 

@@ -16,31 +16,37 @@ Complete guide to selecting the right Prism configuration for your organization.
 | Organization Type | Prism | Team Size | Hierarchy | Complexity |
 |---|---|---|---|---|
 | Freelancer / Indie Dev | `prism` | 1 | Flat | Low |
-| Startup | `startup` | 10–50 | Roles + Stacks | Low |
-| Small/Medium Company | `acme-corp` | 100–1K | Org → Team | Medium |
+| Startup | `startup` | 10--50 | Roles + Stacks | Low |
+| Small/Medium Company | `acme-corp` | 100--1K | Org -> Team | Medium |
 | Consulting Firm | `consulting-firm` | Variable | By client | Medium |
-| Fortune 500 | `fortune500` | 50K+ | Division → Role | High |
-| University | `university` | Variable | Dept → User type | Medium |
+| Fortune 500 | `fortune500` | 50K+ | Division -> Role | High |
+| University | `university` | Variable | Dept -> User type | Medium |
 | Open Source | `opensource` | Community | Flat | Low |
+
+An additional `cli-test-prism` package is included for CLI testing purposes.
 
 ---
 
 ## How Prisms Work
 
 Each prism contains:
-- **`prism_config`** — Prism tool settings (theme, proxy, registry, branding)
+- **`package.yaml`** — Manifest with identity, prism tool settings, sub-prism hierarchy, and user fields
+- **`tool-registry.yaml`** — Centralized tool definitions with per-platform install/uninstall commands
 - **`bundled_prisms`** — A hierarchy of sub-prisms you select from at install time
 - **`user_info_fields`** — The information collected from you
 
 During installation, required sub-prisms (like the base configuration) are applied automatically. Optional tiers (like roles, divisions, or teams) let you pick the one that matches your context. All selected sub-prisms are **deep-merged** in order, so each layer inherits and extends the previous one.
 
+The UI presents a **tool selection page** with categories (Core, Editor, Containers, Runtime, Cloud, Kubernetes, CLI). Only tools you check get installed. Hover tooltips show full tool descriptions. Tools without explicit install commands for your platform are filtered out.
+
 ```
 Prism
- ├── prism_config   (theme, proxy, registry)
- └── bundled_prisms
-      ├── base       → always applied
-      ├── [tier-2]   → user selects one
-      └── [tier-3]   → user selects one (optional)
+ +-- prism_config   (theme, proxy, registry)
+ +-- tool-registry.yaml (centralized tool definitions)
+ +-- bundled_prisms
+      +-- base       -> always applied
+      +-- [tier-2]   -> user selects one
+      +-- [tier-3]   -> user selects one (optional)
 ```
 
 ---
@@ -62,7 +68,7 @@ Prism
 
 **Installation:**
 ```bash
-python3 install.py --prism prism
+prism install --prism prism
 ```
 
 ---
@@ -83,17 +89,17 @@ python3 install.py --prism prism
 
 **Installation:**
 ```bash
-python3 install.py --prism startup
+prism install --prism startup
 ```
 
 ---
 
 ### 3. Small/Medium Company (`acme-corp`)
 
-**Perfect for:** Growing companies (100–1000 employees)
+**Perfect for:** Growing companies (100--1000 employees)
 
 **What you get:**
-- 2-level hierarchy: sub-org → team
+- 2-level hierarchy: sub-org -> team
 - Customizable template — replace ACME Corp with your company
 - Enterprise git (GitHub Enterprise)
 
@@ -105,13 +111,13 @@ python3 install.py --prism startup
 **Structure:**
 ```
 Company (base)
-└── Sub-Org (orgs)
-    └── Team (teams)
++-- Sub-Org (orgs)
+    +-- Team (teams)
 ```
 
 **Installation:**
 ```bash
-python3 install.py --prism acme-corp
+prism install --prism acme-corp
 ```
 
 ---
@@ -131,7 +137,7 @@ python3 install.py --prism acme-corp
 
 **Installation:**
 ```bash
-python3 install.py --prism consulting-firm
+prism install --prism consulting-firm
 ```
 
 ---
@@ -141,7 +147,7 @@ python3 install.py --prism consulting-firm
 **Perfect for:** Enterprise corporations (50,000+ employees)
 
 **What you get:**
-- Multi-tier hierarchy: division → role → business unit
+- Multi-tier hierarchy: division -> role -> business unit
 - Enterprise security (SSO, MFA, VPN)
 - Compliance templates (SOX, GDPR, HIPAA, PCI-DSS)
 
@@ -153,7 +159,7 @@ python3 install.py --prism consulting-firm
 
 **Installation:**
 ```bash
-python3 install.py --prism fortune500
+prism install --prism fortune500
 ```
 
 ---
@@ -175,7 +181,7 @@ python3 install.py --prism fortune500
 
 **Installation:**
 ```bash
-python3 install.py --prism university
+prism install --prism university
 ```
 
 ---
@@ -194,7 +200,7 @@ python3 install.py --prism university
 
 **Installation:**
 ```bash
-python3 install.py --prism opensource
+prism install --prism opensource
 ```
 
 ---
@@ -205,9 +211,9 @@ python3 install.py --prism opensource
 |---|---|---|---|---|---|---|---|
 | **Sub-prism tiers** | 2 | 3 | 3 | 2 | 4 | 4 | 1 |
 | **User info fields** | 4 | 4 | 3 | 5 | 7 | 6 | 5 |
-| **Typical size** | 1 | 10–50 | 100–1K | Variable | 50K+ | Variable | Community |
-| **Compliance** | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ | ❌ |
-| **Multi-client** | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| **Typical size** | 1 | 10--50 | 100--1K | Variable | 50K+ | Variable | Community |
+| **Compliance** | No | No | Yes | Yes | Yes | Yes | No |
+| **Multi-client** | No | No | No | Yes | No | No | No |
 | **Complexity** | Low | Low | Medium | Medium | High | Medium | Low |
 
 ---
@@ -215,21 +221,21 @@ python3 install.py --prism opensource
 ## Decision Tree
 
 **Are you working alone?**
-→ Yes: **`prism`**
+-> Yes: **`prism`**
 
 **Are you a consulting firm with multiple clients?**
-→ Yes: **`consulting-firm`**
+-> Yes: **`consulting-firm`**
 
 **Are you in academia or research?**
-→ Yes: **`university`**
+-> Yes: **`university`**
 
 **Is your project open source and community-driven?**
-→ Yes: **`opensource`**
+-> Yes: **`opensource`**
 
 **How many employees?**
-- 1–50: **`startup`**
-- 50–500: **`acme-corp`** (customize it!)
-- 500–5,000: **`acme-corp`** (customize heavily)
+- 1--50: **`startup`**
+- 50--500: **`acme-corp`** (customize it!)
+- 500--5,000: **`acme-corp`** (customize heavily)
 - 5,000+: **`fortune500`**
 
 ---
@@ -240,18 +246,20 @@ All prisms are templates. Copy and customize:
 
 ```bash
 # Copy a prism as your starting point
-cp -r prisms/acme-corp prisms/my-company
+cp -r prisms/acme-corp.prism prisms/my-company.prism
 
 # Edit to match your organization
-vim prisms/my-company/package.yaml
-vim prisms/my-company/base/my-company.yaml
+vim prisms/my-company.prism/package.yaml
+vim prisms/my-company.prism/base/my-company.yaml
 
-# Add your sub-prisms (orgs, teams, etc.)
+# Customize the tool registry
+vim prisms/my-company.prism/base/tool-registry.yaml
+
 # Validate
-python3 scripts/package_manager.py validate my-company
+prism packages validate my-company
 
 # Test
-python3 install.py --prism my-company
+prism install --prism my-company
 ```
 
 See [Creating Prisms](../user-guide/creating-configurations.md) for a full guide.
@@ -262,13 +270,19 @@ See [Creating Prisms](../user-guide/creating-configurations.md) for a full guide
 
 ```bash
 # List all available prisms
-python3 scripts/package_manager.py list
+prism packages list
 
 # Get detailed info about a prism
-python3 scripts/package_manager.py info <prism-name>
+prism packages info <prism-name>
 
 # Install via CLI
-python3 install.py --prism <prism-name>
+prism install --prism <prism-name>
+
+# Roll back an installation
+prism rollback <workspace>
+
+# View installation history
+prism history
 
 # Install via Web UI
 make run

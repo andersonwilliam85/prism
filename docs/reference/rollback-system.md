@@ -5,126 +5,41 @@ title: Rollback System
 
 # Rollback System
 
-Prism tracks every action during installation so it can undo them if something fails. Rollback is owned by the **InstallationEngine**, which receives a **RollbackAccessor** via constructor injection for I/O (state persistence, file deletion, command execution).
+Prism tracks every action during installation and persists a `.prism_rollback.json` manifest to disk. This manifest powers both the `prism rollback` CLI command and the UI rollback button.
+
+The rollback engine lives at `prism/engines/rollback_engine.py` and is shared by the CLI (`prism rollback`) and the API (`/api/rollback`).
 
 ---
 
-## Action Types
+## `.prism_rollback.json` Manifest
 
-Every install step records what it did as a `RollbackAction`:
-
-| Action Type | Target | Rollback Behavior |
-|---|---|---|
-| `file_created` | File path | Auto-rollback: delete the file |
-| `dir_created` | Directory path | Auto-rollback: delete the directory tree |
-| `command_executed` | Command string | Requires explicit `rollback_command` |
-| `package_installed` | Package name | Requires explicit `rollback_command` |
-| `config_changed` | Config key/path | Restores `original_value` if recorded |
-
-### Auto-Rollback vs Explicit Rollback
-
-- **Auto-rollback types** (`file_created`, `dir_created`): The accessor knows how to undo these without any additional information — it deletes the file or directory.
-- **Explicit rollback types** (`command_executed`, `package_installed`): These require a `rollback_command` string specified at recording time. If no rollback command is provided, the action is skipped during rollback and a warning is logged.
-- **Config changes**: Rolled back only if `original_value` was captured when the change was recorded.
-
----
-
-## LIFO Undo Sequence
-
-Actions are undone in reverse chronological order (Last-In-First-Out). If an installation creates a directory, writes files into it, then installs a package, the rollback sequence is:
-
-```
-1. Uninstall the package (rollback_command)
-2. Delete the files (auto)
-3. Delete the directory (auto)
-```
-
-This ensures dependent artifacts are removed before their containers.
-
----
-
-## InstallationEngine — Rollback Logic
-
-The InstallationEngine handles rollback computation and delegates I/O to the RollbackAccessor:
-
-```python
-engine = InstallationEngine(rollback_accessor=accessor, ...)
-
-# Create state for an installation
-state = engine.create_rollback_state("my-company-prism")
-
-# Record actions as installation progresses
-engine.record_rollback_action(state, "dir_created", "/home/user/workspace")
-engine.record_rollback_action(state, "file_created", "/home/user/workspace/config.yaml")
-engine.record_rollback_action(state, "command_executed", "npm install eslint",
-                              rollback_command="npm uninstall eslint")
-
-# Compute the undo plan (LIFO, filtered)
-plan = engine.compute_rollback_plan(state)
-
-# Validate completeness — warns about actions with no rollback path
-all_covered, warnings = engine.validate_rollback_completeness(state)
-```
-
----
-
-## RollbackAccessor (I/O)
-
-The accessor handles persistence and execution:
-
-### State Persistence
-
-Rollback state is serialized to JSON temp files (`/tmp/prism_rollback_*.json`). This survives crashes — if the process dies mid-install, the state file remains on disk for recovery.
-
-```python
-accessor = RollbackAccessor()
-
-# Save state to temp file
-path = accessor.save_state(state)
-# Returns something like: /tmp/prism_rollback_a1b2c3.json
-
-# Load state from temp file (e.g., after crash)
-recovered_state = accessor.load_state(path)
-```
-
-### Rollback Execution
-
-The accessor executes each action in the rollback plan:
-
-```python
-# Delete a file
-accessor.delete_file("/home/user/workspace/config.yaml")
-
-# Delete a directory tree
-accessor.delete_directory("/home/user/workspace")
-
-# Run a rollback command (60-second timeout)
-success, output = accessor.run_command("npm uninstall eslint")
-```
-
----
-
-## State File Format
+Every installation writes a `.prism_rollback.json` file to the workspace directory. This file records every action taken during the install so it can be reversed later.
 
 ```json
 {
   "package_name": "my-company-prism",
   "started_at": "2026-03-10T12:00:00",
-  "rolled_back": false,
   "actions": [
     {
-      "action_type": "dir_created",
+      "type": "dir_created",
       "target": "/home/user/workspace",
       "rollback_command": "",
       "original_value": "",
       "timestamp": "2026-03-10T12:00:01"
     },
     {
-      "action_type": "file_created",
+      "type": "file_created",
       "target": "/home/user/workspace/config.yaml",
       "rollback_command": "",
       "original_value": "",
       "timestamp": "2026-03-10T12:00:02"
+    },
+    {
+      "type": "tool_installed",
+      "target": "docker",
+      "rollback_command": "brew uninstall --cask docker",
+      "original_value": "",
+      "timestamp": "2026-03-10T12:00:03"
     }
   ]
 }
@@ -132,37 +47,112 @@ success, output = accessor.run_command("npm uninstall eslint")
 
 ---
 
+## Action Types
+
+Every install step records what it did as an action in the manifest:
+
+| Action Type | Target | Rollback Behavior |
+|---|---|---|
+| `tool_installed` | Tool name | Runs the `rollback_command` (uninstall command from tool registry) |
+| `file_created` | File path | Deletes the file |
+| `dir_created` | Directory path | Removes the directory (skips if not empty) |
+| `config_changed` | Config key/path | Restores `original_value` if recorded |
+
+### Tool Uninstall Commands
+
+Because tools are defined in the centralized `tool-registry.yaml` with explicit `uninstall` commands per platform, the rollback engine knows exactly how to reverse each tool installation. Tools without uninstall commands are skipped during rollback.
+
+---
+
+## LIFO Undo Sequence
+
+Actions are undone in reverse chronological order (Last-In-First-Out). If an installation creates a directory, writes files into it, then installs a tool, the rollback sequence is:
+
+```
+1. Uninstall the tool (rollback_command from registry)
+2. Delete the files
+3. Delete the directory
+```
+
+This ensures dependent artifacts are removed before their containers.
+
+---
+
+## CLI: `prism rollback`
+
+```bash
+# Roll back using workspace path
+prism rollback ~/workspace
+
+# Without arguments, searches common locations for .prism_rollback.json
+prism rollback
+```
+
+The CLI searches for `.prism_rollback.json` in these locations (in order):
+1. The provided workspace path
+2. `~/.prism_rollback.json`
+3. Current working directory
+
+After rollback completes, the manifest file is deleted.
+
+---
+
+## UI Rollback
+
+The web UI includes a rollback button. When clicked, it calls the `/api/rollback` endpoint, which uses the same `rollback_engine.py` as the CLI.
+
+---
+
+## Rollback Engine
+
+The rollback engine at `prism/engines/rollback_engine.py` provides three functions:
+
+```python
+from prism.engines.rollback_engine import find_manifest, load_manifest, execute_rollback
+
+# Find the manifest file
+manifest_path = find_manifest("/home/user/workspace")
+
+# Load and parse it
+manifest = load_manifest(manifest_path)
+
+# Execute rollback with optional progress callback
+results = execute_rollback(manifest, log_fn=lambda msg, level: print(msg))
+```
+
+Each result in the returned list contains:
+- `action` — the target (tool name, file path, etc.)
+- `type` — the action type
+- `success` — whether the rollback succeeded
+- `detail` — human-readable outcome ("uninstalled", "removed", "already gone", "not empty")
+
+---
+
 ## Crash Recovery
 
 If Prism crashes during installation:
 
-1. The rollback state file remains in `/tmp/prism_rollback_*.json`
-2. On next run, Prism can detect incomplete installations by scanning for state files
-3. The state is loaded via the RollbackAccessor's `load_state()` method
-4. The rollback plan is computed and executed to clean up partial state
-
-If the state file itself is corrupted (invalid JSON, missing keys), `load_state()` returns `None` and the recovery is skipped.
+1. The `.prism_rollback.json` manifest remains on disk
+2. On next run, `prism rollback` can find and load the manifest
+3. The rollback plan is computed and executed to clean up partial state
 
 ---
 
-## Completeness Validation
+## Installation History
 
-Before starting an install, the InstallationEngine can check if all planned actions have rollback coverage:
+The `prism history` command scans common directories for `.prism_installed` and `.prism_rollback.json` markers to list previous installations:
 
-```python
-all_covered, warnings = engine.validate_rollback_completeness(state)
-if not all_covered:
-    for w in warnings:
-        print(f"Warning: {w}")
-    # e.g., "No rollback for command_executed: custom-setup.sh"
+```bash
+prism history
+prism history ~/dev ~/projects
 ```
 
-Actions without rollback paths are silently skipped during rollback execution. The validation step lets you surface these gaps proactively.
+Also available via the `/api/history` endpoint.
 
 ---
 
 ## See Also
 
-- [Architecture](architecture.md) — Where InstallationEngine and RollbackAccessor fit in the system
+- [Architecture](architecture.md) — Where the rollback engine fits in the system
 - [Privilege Separation](privilege-separation.md) — How rollback interacts with sudo operations
 - [Installation](../getting-started/installation.md) — The install flow that generates rollback actions
