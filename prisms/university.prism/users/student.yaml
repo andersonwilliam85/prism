@@ -1,17 +1,91 @@
 # ============================================================================
-# STUDENT USER TYPE
+# STUDENT ROLE
 # ============================================================================
+# For undergrad and graduate students. Focuses on:
+#   - Language tools for coursework (Python, Java, C are added by department)
+#   - Jupyter for data science and lab work
+#   - Git configured for beginners (clear aliases, safe defaults)
+#   - A clean workspace organized by semester and course
 
 user_type:
   id: "student"
   name: "Student"
   description: "Undergraduate or graduate student"
 
+# ── Tools ─────────────────────────────────────────────────────────────────────
+
 tools_required:
-  - vscode
   - git
   - python3
+  - code
 
-tools_available:
+tools_optional:
   - jupyter
-  - docker
+  - gh
+  - sqlite3
+
+# ── Git for Beginners ────────────────────────────────────────────────────────
+# Aliases that make Git less intimidating for first-time users.
+
+git:
+  aliases:
+    # Plain-English aliases
+    save: "commit -am"
+    undo: "reset HEAD~1 --mixed"
+    history: "log --oneline --graph --decorate -20"
+    branches: "branch -a"
+    what: "status -sb"
+    # Safe pull that won't create merge commits by surprise
+    sync: "pull --rebase"
+
+# ── Workspace Structure ──────────────────────────────────────────────────────
+# Creates a tidy directory layout. Students select their semester during setup.
+# Example result:
+#   ~/courses/spring-2026/cs101/
+#   ~/courses/spring-2026/cs201/
+#   ~/courses/spring-2026/notes/
+
+workspace:
+  base_dir: "~/courses"
+  structure:
+    "${SEMESTER}":
+      - "${COURSE_ID}/"
+      - "notes/"
+      - "scratch/"
+
+  # Also create a personal projects area
+  extra_dirs:
+    - "~/projects"
+
+# ── VS Code Settings ─────────────────────────────────────────────────────────
+# Beginner-friendly VS Code configuration.
+
+vscode:
+  settings:
+    "editor.formatOnSave": true
+    "editor.tabSize": 4
+    "editor.wordWrap": "on"
+    "files.autoSave": "afterDelay"
+    "files.autoSaveDelay": 1000
+    "terminal.integrated.defaultProfile.osx": "zsh"
+    "python.analysis.typeCheckingMode": "basic"
+  extensions:
+    - "ms-python.python"
+    - "ms-toolsai.jupyter"
+    - "eamodio.gitlens"
+    - "yzhang.markdown-all-in-one"
+
+# ── Quick Reference ──────────────────────────────────────────────────────────
+
+quickstart:
+  title: "Student Quick Start"
+  steps:
+    - "Open your course folder:  cd ~/courses/${SEMESTER}/${COURSE_ID}"
+    - "Create a virtual environment:  python3 -m venv .venv"
+    - "Activate it:  source .venv/bin/activate"
+    - "Install packages:  pip install -r requirements.txt"
+    - "Start Jupyter:  jupyter lab"
+    - "Save your work with Git:"
+    - "  git add ."
+    - "  git commit -m 'describe what you changed'"
+    - "  git push"

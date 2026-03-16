@@ -171,9 +171,9 @@ setup:
 
       Your environment is ready. Here's what was set up:
 
-        Scale:       Individual / Team / Enterprise
-        Environment: Minimal / Standard / Full-Featured
-        Platform:    GitHub / GitLab / Bitbucket / Gitea / Multi
+        Scale:       {scale}
+        Environment: {environment}
+        Platform:    {platform}
 
       Next steps:
       1. Add your SSH key to your git provider
@@ -201,53 +201,6 @@ user_info_fields:
     required: true
     placeholder: "janedev"
     description: "Your username on chosen git platform"
-
-  - id: "scale"
-    label: "Scale"
-    type: "select"
-    required: true
-    options:
-      - "Individual"
-      - "Small Team"
-      - "Enterprise"
-    description: "Who is this environment for?"
-
-  - id: "environment"
-    label: "Environment"
-    type: "select"
-    required: true
-    options:
-      - "Minimal"
-      - "Standard"
-      - "Full-Featured"
-    description: "How much structure do you want?"
-
-  - id: "primary_language"
-    label: "Primary Language"
-    type: "select"
-    required: false
-    depends_on: "environment"
-    options:
-      - "JavaScript/TypeScript"
-      - "Python"
-      - "Go"
-      - "Rust"
-      - "Java"
-      - "Other"
-    option_map:
-      Minimal:
-        - "N/A"
-      Standard:
-        - "JavaScript/TypeScript"
-        - "Python"
-        - "Other"
-      Full-Featured:
-        - "JavaScript/TypeScript"
-        - "Python"
-        - "Go"
-        - "Rust"
-        - "Java"
-        - "Other"
 
 # Distribution
 distribution:

@@ -1,19 +1,64 @@
 # ============================================================================
-# DATA ENGINEER ROLE
+# DATA / ML ENGINEER ROLE
 # ============================================================================
+# Data pipelines, ML model training/serving, analytics engineering.
 
 role:
   id: "data-engineer"
-  name: "Data Engineer"
-  description: "Data pipelines and warehousing"
+  name: "Data / ML Engineer"
+  description: "Data pipelines, ML models, analytics"
 
 tools_required:
   - python3
+  - pyenv
   - docker
   - git
+  - gh
+  - aws
+  - jq
+  - dbt
 
-tech_stack:
-  tools:
-    - Apache Spark
-    - Airflow
-    - dbt
+tools_optional:
+  - gcloud
+  - kubectl
+  - k9s
+  - code
+  - ripgrep
+  - tmux
+
+day_one_checklist:
+  - "Set up Python via pyenv: pyenv install 3.11 && pyenv global 3.11"
+  - "Configure pip to use internal PyPI: pip config set global.index-url https://artifactory.company.com/api/pypi/pypi-virtual/simple"
+  - "Clone dbt-models repo and run 'dbt debug' to verify warehouse connection"
+  - "Access Airflow UI at https://airflow.company.com and verify DAG visibility"
+  - "Access MLflow at https://mlflow.company.com for experiment tracking"
+  - "Set up AWS credentials for S3 data lake access"
+  - "Review data catalog at https://datacatalog.company.com"
+  - "Verify Jupyter access at https://jupyter.company.com"
+
+dev_workflow:
+  branching: "feature/<JIRA-ID>-short-description"
+  commit_format: "feat(data): description"
+  pr_checklist:
+    - "dbt tests pass (dbt test)"
+    - "Data quality expectations defined (Great Expectations)"
+    - "No PII exposure in new columns"
+    - "Pipeline documentation updated"
+    - "Minimum 1 reviewer approval"
+  local_dev: "docker compose up — runs Airflow, Postgres, MinIO locally"
+
+conventions:
+  python_style: "Black formatter, Ruff linter, type hints required"
+  sql_style: "Lowercase keywords, CTEs preferred over subqueries"
+  data_modeling: "Star schema in analytics warehouse, dbt for transformations"
+  notebook_policy: "Notebooks for exploration only — production code must be .py files"
+  pii_handling: "All PII columns must be tagged, masked in non-prod environments"
+
+training:
+  required:
+    - "Data privacy and GDPR"
+    - "Security awareness"
+  recommended:
+    - "dbt fundamentals certification"
+    - "Spark performance tuning"
+    - "MLOps best practices"

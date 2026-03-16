@@ -52,12 +52,12 @@ class TestGitCommands:
     def test_git_clone(self, mock_run, accessor, tmp_path):
         target = tmp_path / "repo"
         accessor.git_clone("https://github.com/test/repo.git", target)
-        mock_run.assert_called_once_with(
-            ["git", "clone", "https://github.com/test/repo.git", str(target)],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
+        mock_run.assert_called_once()
+        call_args = mock_run.call_args
+        assert call_args[0][0] == ["git", "clone", "https://github.com/test/repo.git", str(target)]
+        assert call_args[1]["check"] is True
+        assert call_args[1]["timeout"] == 120
+        assert call_args[1]["env"]["GIT_TERMINAL_PROMPT"] == "0"
 
 
 class TestSSHCommands:

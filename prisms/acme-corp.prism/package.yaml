@@ -1,24 +1,25 @@
 # ============================================================================
-# ACME CORP PRISM (Example / Template)
+# ACME CORP PRISM - MID-SIZE COMPANY DEVELOPMENT ENVIRONMENT
 # ============================================================================
-# Use this as a template for your own company.
-# Demonstrates a 2-level hierarchy: sub-org → team
+# Acme Corp: ~200 engineers, growing fast, moving from monolith to
+# microservices, standardizing on AWS, establishing CI/CD and shared
+# conventions as the team scales.
 
 package:
   name: "acme-corp-prism"
-  version: "1.0.0"
-  description: "ACME Corp prism — example template for small-to-medium companies"
-  author: "ACME Corp IT Team"
+  version: "2.0.0"
+  description: "Acme Corp prism — growing engineering org standardizing on microservices, AWS, and CI/CD"
+  author: "Acme Corp Platform Team"
   homepage: "https://dev.acmecorp.com"
   support:
-    email: "devops@acmecorp.com"
-    slack: "#dev-support"
+    email: "platform-team@acmecorp.com"
+    slack: "#platform-support"
 
   type: "company"
 
   requires:
     onboarding_version: ">=1.0.0"
-    python_version: ">=3.8"
+    python_version: ">=3.10"
 
 # PRISM META-CONFIGURATION
 prism_config:
@@ -30,44 +31,62 @@ prism_config:
   custom_themes:
     - id: "acme"
       name: "ACME Brand"
-      gradient_1: "#1e3a8a"
-      gradient_2: "#1e40af"
-      gradient_3: "#2563eb"
-      gradient_4: "#f59e0b"
-      gradient_5: "#fbbf24"
+      gradient_1: "#FF6B35"
+      gradient_2: "#E85D26"
+      gradient_3: "#004E89"
+      gradient_4: "#1A6FB5"
+      gradient_5: "#2E8BC0"
 
   sources:
     - url: "local"
       name: "Built-in Prisms"
       type: "local"
 
+  # Internal npm registry (recently set up)
+  npm_registry: "https://npm.acmecorp.com"
+  docker_registry: "ecr.acmecorp.com"
+
   branding:
-    name: "ACME Corp Prism"
-    tagline: "ACME developer environment"
-    primary_color: "#1e3a8a"
-    secondary_color: "#f59e0b"
+    name: "Acme Developer Hub"
+    tagline: "Build. Ship. Iterate."
+    primary_color: "#FF6B35"
+    secondary_color: "#004E89"
 
 # BUNDLED SUB-PRISMS
-# Hierarchy: base → sub-org → team
+# Hierarchy: base (required) -> team (pick one)
 bundled_prisms:
   base:
     - id: "acme-base"
-      name: "ACME Corp Base"
-      description: "Company-wide settings: proxy, git, required tools"
+      name: "Acme Corp Base"
+      description: "Git conventions, AWS auth, Docker setup, shared tooling"
       required: true
       config: "base/acme-corp.yaml"
-
-  orgs:
-    - id: "acme-engineering"
-      name: "ACME Engineering"
-      description: "Product engineering division"
-      config: "orgs/acme-engineering.yaml"
 
   teams:
     - id: "platform-team"
       name: "Platform Team"
-      description: "Platform engineering team"
+      description: "Infrastructure, CI/CD, developer experience, cloud"
       config: "teams/platform-team.yaml"
+
+    - id: "backend-team"
+      name: "Backend Team"
+      description: "APIs, services, database, the monolith-to-microservices migration"
+      config: "teams/backend-team.yaml"
+
+    - id: "frontend-team"
+      name: "Frontend Team"
+      description: "Web app, design system, customer-facing UI"
+      config: "teams/frontend-team.yaml"
+
+    - id: "data-team"
+      name: "Data Team"
+      description: "Analytics, data pipelines, reporting, ML experiments"
+      config: "teams/data-team.yaml"
+
+    - id: "mobile-team"
+      name: "Mobile Team"
+      description: "iOS and Android apps, React Native shared code"
+      config: "teams/mobile-team.yaml"
 
 # SETUP CONFIGURATION
 setup:
@@ -83,8 +102,6 @@ setup:
     directories:
       - source: "base/"
         dest: "config/base/"
-      - source: "orgs/"
-        dest: "config/orgs/"
       - source: "teams/"
         dest: "config/teams/"
 
@@ -94,14 +111,25 @@ setup:
 
   post_install:
     message: |
-      💎 ACME Corp prism installed!
+      Your Acme Corp development environment is configured.
 
-      This is a template — customize it for your company:
-        base/acme-corp.yaml      Company-wide settings
-        orgs/acme-engineering.yaml  Sub-org settings
-        teams/platform-team.yaml    Team settings
+      What's set up:
+      - Git configured with @acmecorp.com email
+      - Docker pointing to our ECR registry
+      - AWS CLI configured for SSO login
+      - Pre-commit hooks for linting and secret detection
 
-      Next: python3 install-ui.py
+      Workspace layout:
+        ~/work/services/       Microservices (and the monolith)
+        ~/work/libraries/      Shared packages
+        ~/work/infrastructure/ Terraform and K8s configs
+        ~/work/docs/           Team docs and ADRs
+
+      Next steps:
+      1. Run 'aws sso login' to authenticate
+      2. Run 'docker login ecr.acmecorp.com'
+      3. Clone your team's repos (see your team config for the list)
+      4. Join #engineering and your team's Slack channel
 
 # User info fields
 user_info_fields:
@@ -109,10 +137,10 @@ user_info_fields:
     label: "Full Name"
     type: "text"
     required: true
-    placeholder: "Alice Smith"
+    placeholder: "Alice Chen"
 
   - id: "email"
-    label: "ACME Email"
+    label: "Acme Email"
     type: "email"
     required: true
     placeholder: "alice@acmecorp.com"
@@ -120,57 +148,30 @@ user_info_fields:
       pattern: ".*@acmecorp\\.com$"
       message: "Must be an @acmecorp.com email"
 
-  - id: "org"
-    label: "Sub-Organization"
-    type: "select"
-    required: true
-    options:
-      - "Engineering"
-      - "Product"
-      - "Design"
-
-  - id: "team"
-    label: "Team"
-    type: "select"
-    required: true
-    depends_on: "org"
-    options:
-      - "Platform"
-      - "Backend"
-      - "Frontend"
-      - "Mobile"
-      - "Infrastructure"
-    option_map:
-      Engineering:
-        - "Platform"
-        - "Backend"
-        - "Frontend"
-        - "Infrastructure"
-      Product:
-        - "Product Engineering"
-        - "Integrations"
-      Design:
-        - "Design Systems"
-        - "Frontend"
-
   - id: "github_username"
-    label: "GitHub Enterprise Username"
+    label: "GitHub Username"
     type: "text"
     required: true
-    placeholder: "asmith"
-    description: "Your username on GitHub Enterprise"
+    placeholder: "achen"
+    description: "Your username on GitHub (we use github.com, not GHE)"
+
+  - id: "manager"
+    label: "Manager Name"
+    type: "text"
+    required: true
+    placeholder: "Bob Martinez"
 
 distribution:
   local:
-    path: "prisms/acme-corp/"
+    path: "prisms/acme-corp.prism/"
     discoverable: true
 
 metadata:
   tags:
-    - example
-    - template
     - company
-    - minimal
-
+    - mid-size
+    - aws
+    - microservices
+    - growing-team
   company_size: "medium"
-  last_updated: "2026-03-05"
+  last_updated: "2026-03-15"

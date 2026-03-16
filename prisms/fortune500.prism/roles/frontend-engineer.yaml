@@ -1,13 +1,62 @@
 # ============================================================================
 # FRONTEND ENGINEER ROLE
 # ============================================================================
+# UI/UX development, design systems, web performance, accessibility.
 
 role:
   id: "frontend-engineer"
   name: "Frontend Engineer"
-  description: "UI/UX development"
+  description: "UI/UX development, design systems"
 
 tools_required:
-  - vscode
+  - nvm
   - nodejs
   - git
+  - gh
+  - docker
+
+tools_optional:
+  - code
+  - nx
+  - jq
+  - ripgrep
+  - lazygit
+
+day_one_checklist:
+  - "Install Node via nvm: nvm install --lts"
+  - "Clone the web-monorepo and run 'pnpm install'"
+  - "Start the dev server: pnpm nx serve <app-name>"
+  - "Run Storybook: pnpm nx storybook design-system"
+  - "Run E2E tests: pnpm nx e2e <app-name>-e2e"
+  - "Review the design system docs at https://design.company.com"
+  - "Get Figma access and install the Figma VS Code extension"
+  - "Set up Chromatic for visual regression testing"
+
+dev_workflow:
+  branching: "feature/<JIRA-ID>-short-description"
+  commit_format: "feat(ui): description"
+  pr_checklist:
+    - "Storybook stories for new components"
+    - "Accessibility audit passes (axe-core)"
+    - "Lighthouse performance score >= 90"
+    - "Visual regression test via Chromatic"
+    - "Minimum 1 reviewer approval (design review for UI changes)"
+  design_review: "Required for any user-facing UI change — tag @design-system team"
+
+conventions:
+  component_pattern: "Atomic design (atoms, molecules, organisms)"
+  state_management: "React Query for server state, Zustand for client state"
+  styling: "Tailwind CSS + design tokens"
+  testing_pyramid:
+    - "Unit: Vitest + React Testing Library"
+    - "Visual: Storybook + Chromatic"
+    - "E2E: Playwright (critical user journeys)"
+
+training:
+  required:
+    - "Accessibility (WCAG 2.1 AA)"
+    - "Security awareness"
+  recommended:
+    - "Web performance optimization"
+    - "React server components and streaming SSR"
+    - "Design systems at scale"

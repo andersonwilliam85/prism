@@ -30,8 +30,13 @@ def _run(args: Namespace) -> None:
         print("Install it with: pip install prism-dx[ui]")
         sys.exit(1)
 
+    import logging
+
     app = create_app()
     url = f"http://{args.host}:{args.port}"
+
+    # Suppress Flask/Werkzeug dev server noise
+    logging.getLogger("werkzeug").setLevel(logging.ERROR)
 
     if not args.no_browser:
 

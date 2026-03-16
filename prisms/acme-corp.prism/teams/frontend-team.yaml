@@ -1,0 +1,97 @@
+# ============================================================================
+# FRONTEND TEAM
+# ============================================================================
+# 15 engineers. Owns: the customer-facing web app, admin dashboard,
+# design system, web performance. Moving from CRA to Next.js.
+
+team:
+  id: "frontend-team"
+  name: "Frontend Team"
+  description: "Web app, design system, customer-facing UI"
+  size: 15
+  slack_channels:
+    - "#frontend-team"
+    - "#design-system"
+    - "#frontend-oncall"
+  oncall: "Bi-weekly rotation — frontend issues tend to be lower severity"
+
+tools_required:
+  - nodejs
+  - nvm
+  - docker
+  - gh
+  - gitleaks
+
+tools_optional:
+  - vscode
+  - jq
+  - ripgrep
+  - lazygit
+  - postman
+
+workspace:
+  directories:
+    - path: "~/work/services/acme-web"
+      description: "Main customer-facing web app (Next.js migration in progress)"
+    - path: "~/work/services/admin-dashboard"
+      description: "Internal admin dashboard (React + Vite)"
+    - path: "~/work/libraries/design-system"
+      description: "Shared React component library"
+    - path: "~/work/libraries/acme-ui-utils"
+      description: "Shared hooks, helpers, API client"
+
+repositories:
+  - name: "acme-web"
+    url: "https://github.com/acmecorp/acme-web"
+    description: "Customer-facing web app — migrating from CRA to Next.js"
+  - name: "admin-dashboard"
+    url: "https://github.com/acmecorp/admin-dashboard"
+    description: "Internal admin UI (React + Vite)"
+  - name: "design-system"
+    url: "https://github.com/acmecorp/design-system"
+    description: "Shared component library — React, Storybook, design tokens"
+  - name: "acme-ui-utils"
+    url: "https://github.com/acmecorp/acme-ui-utils"
+    description: "Shared hooks, API client, form utils"
+
+tech_stack:
+  languages:
+    - "TypeScript (strict mode)"
+  frameworks:
+    - "React 18"
+    - "Next.js 14 (migrating to from CRA)"
+    - "Vite (admin dashboard, Storybook)"
+  state_management:
+    - "React Query (server state)"
+    - "Zustand (client state)"
+  styling:
+    - "Tailwind CSS"
+    - "Design tokens from Figma"
+  testing:
+    - "Vitest (unit tests)"
+    - "React Testing Library (component tests)"
+    - "Playwright (E2E — critical flows)"
+    - "Storybook (visual documentation)"
+
+conventions:
+  node_version: "LTS — managed via .nvmrc"
+  package_manager: "pnpm"
+  component_structure: "Feature-based: src/features/<feature>/components/"
+  api_layer: "Centralized API client with React Query hooks"
+  accessibility: "WCAG 2.1 AA — enforced via eslint-plugin-jsx-a11y"
+
+current_projects:
+  - name: "CRA to Next.js migration"
+    status: "In progress — 60% of pages migrated"
+    doc: "https://dev.acmecorp.com/docs/nextjs-migration"
+  - name: "Design system v2"
+    status: "Building — standardizing tokens, publishing to internal npm"
+    doc: "https://dev.acmecorp.com/docs/design-system-v2"
+
+day_one_checklist:
+  - "Install Node via nvm: nvm install (reads .nvmrc)"
+  - "Clone acme-web and run 'pnpm install && pnpm dev'"
+  - "Clone design-system and run 'pnpm storybook'"
+  - "Get Figma access (request via IT ticket)"
+  - "Review the Next.js migration guide"
+  - "Join #design-system for component discussions"

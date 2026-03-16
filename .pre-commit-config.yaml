@@ -16,3 +16,12 @@ repos:
     hooks:
       - id: flake8
         args: ["--max-line-length=120", "--extend-ignore=E203,W503"]
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest
+        entry: python3 -m pytest tests/unit -x -q --no-header --override-ini="addopts=-ra"
+        language: system
+        types: [python]
+        pass_filenames: false

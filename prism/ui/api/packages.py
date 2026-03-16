@@ -183,6 +183,7 @@ def get_user_fields(package_name):
                         "options": f.options if f.options else None,
                         "depends_on": f.depends_on or None,
                         "option_map": f.option_map if f.option_map else None,
+                        "validation": f.validation if f.validation else None,
                     }
                     for f in ordered
                 ]
@@ -267,31 +268,52 @@ def get_tools(package_name):
         # Merge tiers to get the effective config
         merged = im.merge_tiers(config, selected_sub_prisms)
 
-        # Collect tools from merged config
+        # Detect platform to filter tools
+        platform_name = container.system_accessor.get_platform()[0]
+
+        # Resolve tools against registry
+        registry = merged.get("tool_registry", config.get("tool_registry", {}))
         tools_required = merged.get("tools_required", config.get("tools_required", []))
         tools_optional = merged.get("tools_optional", config.get("tools_optional", []))
 
+        def _resolve(name):
+            return registry.get(name, {}) if isinstance(name, str) else {}
+
+        def _has_platform(reg, platform):
+            platforms = reg.get("platforms", {})
+            if not platforms:
+                return True
+            return platform in platforms
+
         seen = {}
         for tool in tools_required:
-            if isinstance(tool, dict):
-                tid = tool.get("name", "")
-                seen[tid] = {
-                    "id": tid,
-                    "name": tid.replace("-", " ").title(),
-                    "description": tool.get("description", ""),
-                    "required": True,
-                }
+            tid = tool.get("name", tool) if isinstance(tool, dict) else tool
+            reg = _resolve(tid)
+            if not _has_platform(reg, platform_name):
+                continue
+            seen[tid] = {
+                "id": tid,
+                "name": reg.get("label", tid.replace("-", " ").title()),
+                "summary": reg.get("summary", ""),
+                "description": reg.get("description", ""),
+                "required": True,
+                "category": reg.get("category", ""),
+            }
 
         for tool in tools_optional:
-            if isinstance(tool, dict):
-                tid = tool.get("name", "")
-                if tid not in seen:
-                    seen[tid] = {
-                        "id": tid,
-                        "name": tid.replace("-", " ").title(),
-                        "description": tool.get("description", ""),
-                        "required": False,
-                    }
+            tid = tool.get("name", tool) if isinstance(tool, dict) else tool
+            reg = _resolve(tid)
+            if not _has_platform(reg, platform_name):
+                continue
+            if tid not in seen:
+                seen[tid] = {
+                    "id": tid,
+                    "name": reg.get("label", tid.replace("-", " ").title()),
+                    "summary": reg.get("summary", ""),
+                    "description": reg.get("description", ""),
+                    "required": False,
+                    "category": reg.get("category", ""),
+                }
 
         tools = list(seen.values())
         return jsonify({"tools": tools, "has_tools": len(tools) > 0})

@@ -271,3 +271,45 @@ def sudo_session_status(token: str):
         _sudo_sessions.pop(token, None)
 
     return jsonify({"valid": valid, "expired": session.is_expired, "locked": session.is_locked})
+
+
+@installation_bp.route("/api/rollback", methods=["POST"])
+def rollback():
+    """Rollback a previous installation using the saved manifest."""
+    data = request.json or {}
+    workspace = data.get("workspace", "")
+
+    container = current_app.config["container"]
+    im = container.installation_manager
+
+    # Load the manifest and hydrate the engine's rollback state
+    from prism.engines.rollback_engine import find_manifest, load_manifest
+    from prism.models.installation import RollbackAction, RollbackState
+
+    manifest_path = find_manifest(workspace or None)
+    if not manifest_path:
+        return jsonify({"success": False, "error": "No rollback manifest found"}), 404
+
+    try:
+        manifest = load_manifest(manifest_path)
+    except Exception as e:
+        return jsonify({"success": False, "error": f"Failed to read manifest: {e}"}), 500
+
+    # Build rollback state from manifest and set it on the engine
+    state = RollbackState(package_name=manifest.get("package", "unknown"))
+    for action in manifest.get("actions", []):
+        state.record(
+            RollbackAction(
+                action_type=action["type"],
+                target=action["target"],
+                rollback_command=action.get("rollback_command", ""),
+                original_value=action.get("original_value", ""),
+            )
+        )
+    im._engine._rollback_state = state
+
+    results = im.rollback()
+    manifest_path.unlink(missing_ok=True)
+
+    succeeded = sum(1 for r in results if r.get("success"))
+    return jsonify({"success": True, "actions_undone": succeeded, "results": results})

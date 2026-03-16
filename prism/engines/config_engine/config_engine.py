@@ -85,6 +85,11 @@ class ConfigEngine:
 
         _validators.validate_metadata(config, errors)
 
+        registry = config.get("tool_registry", {})
+        if registry:
+            _validators.validate_tool_registry(registry, errors, warnings)
+            _validators.validate_tool_references(config, registry, errors, warnings)
+
         is_valid = len(errors) == 0
         return is_valid, errors, warnings
 

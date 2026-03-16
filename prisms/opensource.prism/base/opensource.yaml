@@ -1,6 +1,8 @@
 # ============================================================================
 # OPEN SOURCE BASE CONFIGURATION
 # ============================================================================
+# Core setup for OSS maintainers and contributors. Covers git configuration,
+# workspace structure, multi-repo workflows, and shell integration.
 
 project:
   type: "opensource"
@@ -11,20 +13,393 @@ environment:
   vpn:
     required: false
 
+# ---------------------------------------------------------------------------
+# WORKSPACE STRUCTURE
+# ---------------------------------------------------------------------------
+workspace:
+  root: "~/oss"
+  structure:
+    - maintained      # projects you own/co-maintain
+    - contributing    # upstream projects you send PRs to
+    - forks           # fork clones (auto-managed by oss-fork alias)
+
+# ---------------------------------------------------------------------------
+# GIT CONFIGURATION — optimized for OSS multi-repo work
+# ---------------------------------------------------------------------------
 git:
   user:
-    name: "${USER}"
-    email: "${USER}@example.com"
+    name: "${USER_NAME}"
+    email: "${USER_EMAIL}"
+
   config:
+    # Branch defaults
     init.defaultBranch: main
-    pull.rebase: false
+
+    # Rebase workflow — keeps PR history linear and clean
+    pull.rebase: true
+    rebase.autoStash: true
+    rebase.autoSquash: true
+
+    # Better merge conflict markers (shows base in addition to ours/theirs)
+    merge.conflictstyle: zdiff3
+
+    # GPG commit signing — required for verified badges on GitHub
+    commit.gpgsign: true
+    tag.gpgSign: true
+    # gpg.program and user.signingkey should be set per-machine via:
+    #   git config --global user.signingkey <KEY_ID>
+    #   git config --global gpg.program gpg
+
+    # Diff and log improvements
+    diff.algorithm: histogram
+    diff.colorMoved: default
+    log.date: iso
+
+    # Push behavior
+    push.default: current
+    push.autoSetupRemote: true
+    push.followTags: true
+
+    # Fetch housekeeping
+    fetch.prune: true
+    fetch.pruneTags: true
+
+    # Rerere — remember conflict resolutions across rebases
+    rerere.enabled: true
+
+    # DCO sign-off reminder (many CNCF/Linux Foundation projects require this)
+    # Use: git commit -s
+    # Or add to aliases below
+
+  # Commit message conventions (Conventional Commits)
+  commit_conventions:
+    format: "type(scope): description"
+    types:
+      - feat      # new feature
+      - fix       # bug fix
+      - docs      # documentation only
+      - style     # formatting, no code change
+      - refactor  # code change that neither fixes nor adds
+      - perf      # performance improvement
+      - test      # adding or updating tests
+      - build     # build system or dependencies
+      - ci        # CI configuration
+      - chore     # maintenance tasks
+      - revert    # revert a previous commit
+
+# ---------------------------------------------------------------------------
+# TOOL REQUIREMENTS
+# ---------------------------------------------------------------------------
+tool_registry_file: "tool-registry.yaml"
 
 tools_required:
   - git
   - gh
+  - gpg
+  - jq
 
-tools_available:
+tools_optional:
+  # Editors
+  - code
+  - nvim
+  - zed
+
+  # Languages / runtimes — most OSS maintainers work across several
   - python3
   - nodejs
+  - nvm
+  - pyenv
+  - rustup
+  - go
+  - rbenv
+
+  # Containers
   - docker
-  - vscode
+  - podman
+
+  # Code quality and security
+  - pre-commit
+  - shellcheck
+  - actionlint
+  - trivy
+  - hadolint
+
+  # Documentation
+  - mkdocs
+
+  # Release and changelog
+  - git-cliff
+  - cargo-release
+
+  # CLI productivity
+  - ripgrep
+  - fd
+  - fzf
+  - lazygit
+  - tmux
+  - delta
+
+# ---------------------------------------------------------------------------
+# SHELL ALIASES — OSS workflow shortcuts
+# ---------------------------------------------------------------------------
+# These should be sourced into .bashrc/.zshrc by the onboarding tool.
+shell_aliases:
+
+  # --- Fork and clone workflow ---
+  oss-fork: |
+    # Usage: oss-fork owner/repo
+    # Forks on GitHub, clones to ~/oss/forks/, sets upstream remote
+    _oss_fork() {
+      local repo="$1"
+      if [ -z "$repo" ]; then echo "Usage: oss-fork owner/repo"; return 1; fi
+      local name="${repo##*/}"
+      gh repo fork "$repo" --clone=true -- ~/oss/forks/"$name"
+      cd ~/oss/forks/"$name" || return 1
+      git remote add upstream "https://github.com/${repo}.git" 2>/dev/null
+      git fetch upstream
+      echo "Forked and cloned to ~/oss/forks/$name (upstream set)"
+    }
+    _oss_fork "$@"
+
+  oss-clone-maintained: |
+    # Usage: oss-clone-maintained owner/repo
+    # Clones a repo you maintain to ~/oss/maintained/
+    _oss_clone_maintained() {
+      local repo="$1"
+      if [ -z "$repo" ]; then echo "Usage: oss-clone-maintained owner/repo"; return 1; fi
+      local name="${repo##*/}"
+      gh repo clone "$repo" ~/oss/maintained/"$name"
+      cd ~/oss/maintained/"$name" || return 1
+      echo "Cloned to ~/oss/maintained/$name"
+    }
+    _oss_clone_maintained "$@"
+
+  oss-clone-contrib: |
+    # Usage: oss-clone-contrib owner/repo
+    # Forks and clones to ~/oss/contributing/ with upstream set
+    _oss_clone_contrib() {
+      local repo="$1"
+      if [ -z "$repo" ]; then echo "Usage: oss-clone-contrib owner/repo"; return 1; fi
+      local name="${repo##*/}"
+      gh repo fork "$repo" --clone=true -- ~/oss/contributing/"$name"
+      cd ~/oss/contributing/"$name" || return 1
+      git remote add upstream "https://github.com/${repo}.git" 2>/dev/null
+      git fetch upstream
+      echo "Forked and cloned to ~/oss/contributing/$name (upstream set)"
+    }
+    _oss_clone_contrib "$@"
+
+  # --- Upstream sync ---
+  oss-sync: |
+    # Sync current repo's main branch with upstream
+    _oss_sync() {
+      local branch="${1:-main}"
+      git fetch upstream
+      git checkout "$branch"
+      git rebase "upstream/$branch"
+      git push origin "$branch" --force-with-lease
+      echo "Synced $branch with upstream"
+    }
+    _oss_sync "$@"
+
+  oss-sync-all: |
+    # Sync all repos in ~/oss/forks/ and ~/oss/contributing/ with upstream
+    _oss_sync_all() {
+      for dir in ~/oss/forks/*/ ~/oss/contributing/*/; do
+        [ -d "$dir/.git" ] || continue
+        echo "--- Syncing $(basename "$dir") ---"
+        (cd "$dir" && git fetch upstream 2>/dev/null && git rebase upstream/main 2>/dev/null && echo "OK" || echo "SKIPPED (no upstream or conflict)")
+      done
+    }
+    _oss_sync_all
+
+  # --- PR workflow ---
+  oss-pr: |
+    # Create a PR from the current branch to upstream
+    _oss_pr() {
+      gh pr create --web
+    }
+    _oss_pr
+
+  oss-pr-ready: |
+    # Mark a draft PR as ready for review
+    _oss_pr_ready() {
+      gh pr ready
+    }
+    _oss_pr_ready
+
+  oss-pr-checks: |
+    # Watch CI checks on the current PR
+    _oss_pr_checks() {
+      gh pr checks --watch
+    }
+    _oss_pr_checks
+
+  # --- Issue triage ---
+  oss-issues: |
+    # List open issues with labels, sorted by most recent
+    _oss_issues() {
+      gh issue list --limit 30 --sort updated
+    }
+    _oss_issues
+
+  oss-issues-mine: |
+    # List issues assigned to you
+    _oss_issues_mine() {
+      gh issue list --assignee @me
+    }
+    _oss_issues_mine
+
+  oss-triage: |
+    # Interactive issue triage — view issues in the browser
+    _oss_triage() {
+      gh issue list --label "needs-triage" --limit 20 --web
+    }
+    _oss_triage
+
+  # --- Release workflow ---
+  oss-release: |
+    # Usage: oss-release v1.2.3
+    # Creates a signed tag, generates changelog, pushes, creates GitHub release
+    _oss_release() {
+      local version="$1"
+      if [ -z "$version" ]; then echo "Usage: oss-release v1.2.3"; return 1; fi
+      echo "Creating release $version..."
+      # Generate changelog if git-cliff is available
+      if command -v git-cliff &>/dev/null; then
+        git-cliff --tag "$version" -o CHANGELOG.md
+        git add CHANGELOG.md
+        git commit -s -m "chore: update changelog for $version"
+      fi
+      git tag -s "$version" -m "Release $version"
+      git push origin main --follow-tags
+      # Create GitHub release with auto-generated notes
+      gh release create "$version" --generate-notes --latest
+      echo "Release $version published"
+    }
+    _oss_release "$@"
+
+  oss-release-draft: |
+    # Create a draft release from the latest tag
+    _oss_release_draft() {
+      local version="$1"
+      if [ -z "$version" ]; then echo "Usage: oss-release-draft v1.2.3"; return 1; fi
+      gh release create "$version" --generate-notes --draft
+    }
+    _oss_release_draft "$@"
+
+  # --- Review helpers ---
+  oss-review: |
+    # Check out a PR locally for review
+    _oss_review() {
+      local pr="$1"
+      if [ -z "$pr" ]; then echo "Usage: oss-review <PR-number>"; return 1; fi
+      gh pr checkout "$pr"
+    }
+    _oss_review "$@"
+
+  oss-reviews-pending: |
+    # List PRs awaiting your review
+    _oss_reviews_pending() {
+      gh pr list --search "review-requested:@me"
+    }
+    _oss_reviews_pending
+
+  oss-approve: |
+    # Approve the current PR
+    _oss_approve() {
+      gh pr review --approve
+    }
+    _oss_approve
+
+  # --- Branch housekeeping ---
+  oss-cleanup: |
+    # Delete local branches that have been merged
+    _oss_cleanup() {
+      git branch --merged main | grep -v '^\*\|main\|master' | xargs -r git branch -d
+      git remote prune origin
+      echo "Cleaned up merged branches"
+    }
+    _oss_cleanup
+
+  # --- Quick DCO sign-off commit ---
+  oss-commit: |
+    # Commit with DCO sign-off and conventional format
+    _oss_commit() {
+      git commit -s "$@"
+    }
+    _oss_commit "$@"
+
+  # --- CI / Actions ---
+  oss-ci: |
+    # View the latest CI run for the current branch
+    _oss_ci() {
+      gh run list --branch "$(git branch --show-current)" --limit 5
+    }
+    _oss_ci
+
+  oss-ci-watch: |
+    # Watch the latest CI run
+    _oss_ci_watch() {
+      gh run watch
+    }
+    _oss_ci_watch
+
+  oss-ci-rerun: |
+    # Re-run failed CI jobs
+    _oss_ci_rerun() {
+      local run_id
+      run_id=$(gh run list --branch "$(git branch --show-current)" --limit 1 --json databaseId --jq '.[0].databaseId')
+      gh run rerun "$run_id" --failed
+    }
+    _oss_ci_rerun
+
+# ---------------------------------------------------------------------------
+# GIT HOOKS — pre-commit framework integration
+# ---------------------------------------------------------------------------
+pre_commit:
+  # Default .pre-commit-config.yaml for new projects
+  default_config:
+    repos:
+      - repo: "https://github.com/pre-commit/pre-commit-hooks"
+        rev: "v4.6.0"
+        hooks:
+          - id: trailing-whitespace
+          - id: end-of-file-fixer
+          - id: check-yaml
+          - id: check-json
+          - id: check-added-large-files
+            args: ["--maxkb=500"]
+          - id: check-merge-conflict
+          - id: detect-private-key
+
+      - repo: "https://github.com/commitizen-tools/commitizen"
+        rev: "v3.29.0"
+        hooks:
+          - id: commitizen
+
+# ---------------------------------------------------------------------------
+# GITHUB ACTIONS — awareness and local testing
+# ---------------------------------------------------------------------------
+github_actions:
+  notes: |
+    Use 'actionlint' to validate workflow YAML before pushing.
+    Use 'act' (https://github.com/nektos/act) to run Actions locally.
+    CI alias 'oss-ci' wraps 'gh run' for quick status checks.
+
+  recommended_workflows:
+    - name: "CI"
+      trigger: "push, pull_request"
+      purpose: "Run tests, linting, and build on every PR"
+
+    - name: "Release"
+      trigger: "tag push (v*)"
+      purpose: "Build artifacts and publish GitHub release"
+
+    - name: "Dependency Review"
+      trigger: "pull_request"
+      purpose: "Scan new dependencies for known vulnerabilities"
+
+    - name: "Stale"
+      trigger: "schedule (weekly)"
+      purpose: "Label and close stale issues and PRs"

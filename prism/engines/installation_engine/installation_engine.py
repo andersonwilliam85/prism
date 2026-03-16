@@ -11,7 +11,9 @@ Volatility: low-medium — installation surface evolves slowly.
 from __future__ import annotations
 
 import json
+import os
 import secrets
+import subprocess
 import threading
 from dataclasses import replace
 from datetime import datetime, timedelta
@@ -402,16 +404,34 @@ class InstallationEngine:
             return
 
         for tool in tools:
+            self._check_cancelled()
             name = tool["name"]
             if self._commands.pkg_is_installed(name):
                 self._log("tools", f"{name} already installed", "success")
-            else:
-                self._log("tools", f"Installing {name}...")
-                try:
-                    self._commands.pkg_install(name, platform_name)
-                    self._log("tools", f"Installed {name}", "success")
-                except Exception:
-                    self._log("tools", f"Failed to install {name} — skipping", "warning")
+                continue
+
+            # Only install if the YAML defines an explicit command for this platform
+            platforms = tool.get("platforms", {})
+            cmd = platforms.get(platform_name, "") if isinstance(platforms, dict) else ""
+            if not cmd:
+                self._log("tools", f"{name} — no install command for {platform_name}, skipping", "warning")
+                continue
+
+            # Get uninstall command for rollback
+            uninstall_cmd = tool.get("uninstall", {})
+            if isinstance(uninstall_cmd, dict):
+                uninstall_cmd = uninstall_cmd.get(platform_name, "")
+
+            self._log("tools", f"Installing {name}...")
+            try:
+                env = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}
+                subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True, timeout=300, env=env)
+                self._record("tool_installed", name, rollback_command=uninstall_cmd)
+                self._log("tools", f"Installed {name}", "success")
+            except subprocess.TimeoutExpired:
+                self._log("tools", f"Timed out installing {name} — skipping", "warning")
+            except Exception:
+                self._log("tools", f"Failed to install {name} — skipping", "warning")
 
     def _clone_repos(self, merged_config: dict, workspace_root: str) -> None:
         plans = self._plan_repo_clones(merged_config, workspace_root)
@@ -498,12 +518,39 @@ class InstallationEngine:
         )
         self._files.write_text(marker, marker_data)
         self._record("file_created", str(marker))
+
+        # Persist rollback manifest so we can undo later
+        if self._rollback_state and self._rollback_state.actions:
+            manifest = {
+                "installed_at": datetime.now().isoformat(),
+                "package": package_name,
+                "platform": platform_name,
+                "actions": [
+                    {
+                        "type": str(a.action_type),
+                        "target": str(a.target),
+                        "rollback_command": str(a.rollback_command) if a.rollback_command else "",
+                        "original_value": str(a.original_value) if a.original_value else "",
+                    }
+                    for a in self._rollback_state.actions
+                ],
+            }
+            manifest_path = workspace_root / ".prism_rollback.json"
+            self._files.write_text(manifest_path, json.dumps(manifest, indent=2))
+            self._record("file_created", str(manifest_path))
+            self._log("finalize", f"Rollback manifest saved to {manifest_path}")
+
         self._log("finalize", "Installation complete!", "success")
 
         post_msg = config.get("setup", {}).get("post_install", {}).get("message")
         if not post_msg:
             post_msg = config.get("package", {}).get("post_install", {}).get("message")
         if post_msg:
+            try:
+                display = {k: v.replace("-", " ").title() for k, v in selected_sub_prisms.items()}
+                post_msg = post_msg.format(**display)
+            except (KeyError, ValueError):
+                pass
             self._log("finalize", post_msg)
 
     # ==================================================================
@@ -529,7 +576,7 @@ class InstallationEngine:
 
         extra_config = merged_config.get("git", {}).get("config", {})
         for key, value in extra_config.items():
-            plan.append((key, str(value)))
+            plan.append((key.replace("_", "."), str(value)))
 
         return plan
 
@@ -539,11 +586,23 @@ class InstallationEngine:
         else:
             dirs = ["projects", "experiments", "learning", "archived", "docs", "tooling"]
 
-        extra = merged_config.get("workspace", {}).get("directories", [])
-        if isinstance(extra, list):
-            for d in extra:
-                if isinstance(d, str) and d not in dirs:
-                    dirs.append(d)
+        # Collect directories from both workspace.directories and environment.directories
+        for key in ("workspace", "environment"):
+            extra = merged_config.get(key, {}).get("directories", [])
+            if isinstance(extra, list):
+                for d in extra:
+                    if not isinstance(d, str):
+                        continue
+                    # Strip ~/dev/ or similar prefixes — make relative to workspace_root
+                    d = d.replace("~/", "").strip("/")
+                    # Remove workspace_root prefix if present (e.g. "dev/projects" -> "projects")
+                    ws_root_name = (
+                        merged_config.get("environment", {}).get("workspace_root", "").replace("~/", "").strip("/")
+                    )
+                    if ws_root_name and d.startswith(ws_root_name + "/"):
+                        d = d[len(ws_root_name) + 1 :]
+                    if d and d not in dirs:
+                        dirs.append(d)
         return dirs
 
     def _plan_repo_clones(self, merged_config: dict, workspace_root: str) -> list[dict]:

@@ -1,18 +1,68 @@
 # ============================================================================
 # CS 201: DATA STRUCTURES
 # ============================================================================
+# Second CS course — typically Java-based. Students implement linked lists,
+# trees, hash maps, graphs, and learn algorithm analysis.
 
 course:
   id: "cs201"
   name: "CS 201: Data Structures"
-  description: "Fundamental data structures and algorithms"
+  description: "Fundamental data structures and algorithm analysis using Java."
+  language: "Java"
+
+# ── Tools ─────────────────────────────────────────────────────────────────────
 
 tools_required:
-  - python3
-  - vscode
+  - openjdk
+  - code
   - git
+
+tools_optional:
+  - python3
+  - gh
+
+# ── Workspace ─────────────────────────────────────────────────────────────────
+
+workspace:
+  directory: "~/courses/${SEMESTER}/cs201"
+  structure:
+    - "homework/"
+    - "labs/"
+    - "projects/"
+    - "notes/"
+
+# ── Setup Steps ───────────────────────────────────────────────────────────────
+
+setup:
+  steps:
+    - title: "Open your course folder"
+      command: "cd ~/courses/${SEMESTER}/cs201"
+
+    - title: "Verify Java is installed"
+      command: "java --version && javac --version"
+
+    - title: "Compile and run a test file"
+      command: |
+        echo 'public class Hello { public static void main(String[] args) { System.out.println("Hello, CS 201!"); } }' > Hello.java
+        javac Hello.java
+        java Hello
+
+    - title: "Install the VS Code Java Extension Pack"
+      command: "code --install-extension vscjava.vscode-java-pack"
+
+# ── VS Code Extensions ───────────────────────────────────────────────────────
+
+vscode:
+  extensions:
+    - "redhat.java"
+    - "vscjava.vscode-java-pack"
+    - "vscjava.vscode-java-debug"
+    - "eamodio.gitlens"
+
+# ── Repositories ──────────────────────────────────────────────────────────────
 
 repositories:
   - name: "cs201-assignments"
     url: "https://github.com/university/cs201-assignments"
-    description: "Data structures assignment starter code"
+    description: "Starter code and JUnit tests for data structure assignments"
+    clone_to: "~/courses/${SEMESTER}/cs201/assignments"
