@@ -224,21 +224,55 @@ def get_config(package_name):
         config_dict["theme_options"] = prism_config.theme_options
         config_dict["default_theme"] = prism_config.default_theme
 
-        # Built-in themes with their display names
+        # Built-in themes with gradients
         builtin_themes = {
-            "ocean": "Ocean Blue",
-            "purple": "Purple Haze",
-            "forest": "Forest Green",
-            "sunset": "Sunset Orange",
-            "midnight": "Midnight Dark",
+            "ocean": {
+                "name": "Ocean Blue",
+                "gradient_1": "#0093E9",
+                "gradient_2": "#80D0C7",
+                "gradient_3": "#13547a",
+                "gradient_4": "#009ffd",
+                "gradient_5": "#2a2a72",
+            },
+            "purple": {
+                "name": "Purple Haze",
+                "gradient_1": "#667eea",
+                "gradient_2": "#764ba2",
+                "gradient_3": "#f093fb",
+                "gradient_4": "#4facfe",
+                "gradient_5": "#00f2fe",
+            },
+            "forest": {
+                "name": "Forest Green",
+                "gradient_1": "#134E5E",
+                "gradient_2": "#71B280",
+                "gradient_3": "#56ab2f",
+                "gradient_4": "#a8e063",
+                "gradient_5": "#0f9b0f",
+            },
+            "sunset": {
+                "name": "Sunset Orange",
+                "gradient_1": "#f12711",
+                "gradient_2": "#f5af19",
+                "gradient_3": "#ff6a00",
+                "gradient_4": "#ee0979",
+                "gradient_5": "#ff512f",
+            },
+            "midnight": {
+                "name": "Midnight Dark",
+                "gradient_1": "#2c3e50",
+                "gradient_2": "#3498db",
+                "gradient_3": "#34495e",
+                "gradient_4": "#2980b9",
+                "gradient_5": "#1abc9c",
+            },
         }
 
-        # Build available_themes list: built-in themes that are in
-        # theme_options, plus any custom themes
+        # Build available_themes: built-in (with gradients) + custom
         available = []
         for tid in prism_config.theme_options:
             if tid in builtin_themes:
-                available.append({"id": tid, "name": builtin_themes[tid]})
+                available.append({"id": tid, **builtin_themes[tid]})
         for t in prism_config.custom_themes:
             available.append(
                 {
