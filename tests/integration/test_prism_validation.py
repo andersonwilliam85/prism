@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts"))
 import pytest  # noqa: E402
 from package_validator import PrismValidator  # noqa: E402
 
-PRISMS_DIR = Path(__file__).parent.parent.parent / "prisms"
+PRISMS_DIR = Path(__file__).parent.parent.parent / "prism" / "prisms"
 
 
 def collect_prism_dirs():
