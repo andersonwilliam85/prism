@@ -1147,17 +1147,11 @@
             const npmReg = document.getElementById('settingsNpmRegistry').value.trim();
             if (npmReg) {
                 prismConfig.npmRegistry = npmReg;
-                savePrismConfig(prismConfig);
             }
-            
+            savePrismConfig(prismConfig);
+
             // Close settings panel
             toggleSettings();
-            
-            // If a prism is selected, proceed with installation
-            if (selectedPackage) {
-                // Trigger the package selection
-                selectPackage(selectedPackage);
-            }
         }
         
         function exportPrismConfig() {
@@ -2246,29 +2240,20 @@
                 
                 if (data.prism_config) {
                     console.log(`📦 Applying prism_config from ${packageName}:`, data.prism_config);
-                    
-                    // Apply theme if specified
-                    if (data.prism_config.theme) {
-                        const theme = data.prism_config.theme;
-                        document.documentElement.setAttribute('data-theme', theme);
 
-                        // Update theme selection in settings
-                        document.querySelectorAll('.theme-option').forEach(opt => {
-                            if (opt.dataset.theme === theme) {
-                                opt.classList.add('active');
-                            } else {
-                                opt.classList.remove('active');
-                            }
-                        });
-
-                        // Save to prismConfig
-                        prismConfig.theme = theme;
-                        savePrismConfig(prismConfig);
+                    // Render available themes FIRST so custom gradients get cached
+                    if (data.prism_config.available_themes) {
+                        const currentTheme = prismConfig.theme || data.prism_config.theme;
+                        renderThemeGrid(data.prism_config.available_themes, currentTheme);
                     }
 
-                    // Render available themes from package config
-                    if (data.prism_config.available_themes) {
-                        renderThemeGrid(data.prism_config.available_themes, data.prism_config.theme || prismConfig.theme);
+                    // Apply theme — use saved preference if set, otherwise package default
+                    const savedTheme = prismConfig.theme;
+                    const packageTheme = data.prism_config.theme;
+                    const themeToApply = savedTheme || packageTheme;
+
+                    if (themeToApply) {
+                        selectTheme(themeToApply);
                     }
                     
                     // Apply sources if specified
