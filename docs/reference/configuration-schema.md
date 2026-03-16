@@ -11,7 +11,7 @@ Complete YAML schema reference for `package.yaml` — the manifest for every pri
 
 ## Overview
 
-Every prism lives in its own directory inside `prisms/` and must have a `package.yaml` file. The schema has five top-level sections:
+Every prism lives in its own directory inside `prisms/` and must have a `package.yaml` file. The schema has seven top-level sections:
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'primaryColor': '#eef2ff', 'primaryTextColor': '#1e293b', 'primaryBorderColor': '#6366f1', 'lineColor': '#6366f1', 'secondaryColor': '#f0fdf4', 'tertiaryColor': '#faf5ff', 'background': '#ffffff', 'mainBkg': '#eef2ff', 'nodeBorder': '#6366f1', 'clusterBkg': '#f8faff', 'edgeLabelBackground': '#ffffff'}}}%%
@@ -19,13 +19,13 @@ Every prism lives in its own directory inside `prisms/` and must have a `package
 flowchart LR
     PY["package.yaml"]
 
-    PY --> PKG["package\nIdentity\nname · version · type · support"]
-    PY --> PC["prism_config\nTool settings\ntheme · proxy · registry · branding"]
+    PY --> PKG["package\nIdentity\nname - version - type - support"]
+    PY --> PC["prism_config\nTool settings\ntheme - proxy - registry - branding"]
     PY --> BP["bundled_prisms\nSub-prism tiers\nbase + optional layers"]
-    PY --> SU["setup\nFile installation\nfiles · directories · post_install"]
-    PY --> UIF["user_info_fields\nUser input\nname · email · role · team"]
-    PY --> DI["distribution\nSource\nlocal · remote · discoverable"]
-    PY --> ME["metadata\nDiscovery\ntags · keywords · org_size"]
+    PY --> SU["setup\nFile installation\nfiles - directories - post_install"]
+    PY --> UIF["user_info_fields\nUser input\nname - email - role - team"]
+    PY --> DI["distribution\nSource\nlocal - remote - discoverable"]
+    PY --> ME["metadata\nDiscovery\ntags - keywords - org_size"]
 
     style PY fill:#fff7ed,stroke:#f97316,color:#1e293b,font-weight:bold
     style PKG fill:#eef2ff,stroke:#6366f1,color:#1e293b
@@ -38,14 +38,16 @@ flowchart LR
 ```
 
 ```yaml
-package:          # 🔷 Identity — name, version, type, support
-prism_config:     # ⚙️  Prism tool settings — theme, proxy, registry, branding
+package:          # Identity — name, version, type, support
+prism_config:     # Prism tool settings — theme, proxy, registry, branding
 bundled_prisms:   # Hierarchical sub-prisms — base + optional tiers
-setup:            # 📁 File installation steps
-user_info_fields: # 👤 Info collected from the user at install time
-distribution:     # 📦 Where this prism is sourced from
-metadata:         # 🏷️  Tags, keywords, company size
+setup:            # File installation steps
+user_info_fields: # Info collected from the user at install time
+distribution:     # Where this prism is sourced from
+metadata:         # Tags, keywords, company size
 ```
+
+In addition, each prism's base directory contains a `tool-registry.yaml` file — the centralized tool registry. See [Prism System](package-system.md) for details.
 
 ---
 
@@ -127,7 +129,7 @@ bundled_prisms:
     - id: "company-base"
       name: "Company Base"
       description: "Company-wide settings"
-      required: true                  # ← marks this as auto-applied
+      required: true                  # marks this as auto-applied
       config: "base/company.yaml"     # path relative to prism directory
 
   # Example optional tier — user picks one
@@ -159,7 +161,7 @@ bundled_prisms:
 
 ### Sub-prism config file structure
 
-Each config file referenced by `bundled_prisms` is plain YAML. Any keys it contains are deep-merged into the final configuration:
+Each config file referenced by `bundled_prisms` is plain YAML. Any keys it contains are deep-merged into the final configuration. Tools are referenced by name only — they must exist in the `tool-registry.yaml`:
 
 ```yaml
 # base/company.yaml
@@ -227,7 +229,7 @@ setup:
 
   post_install:
     message: |
-      💎 Prism installed!
+      Prism installed!
       Next steps: ...
 ```
 
@@ -261,6 +263,8 @@ user_info_fields:
       pattern: ".*@mycompany\\.com$"
       message: "Must be a @mycompany.com email"
 ```
+
+The config engine validates email patterns from YAML — patterns defined in `validation.pattern` are checked at install time.
 
 ### Select dropdown
 
@@ -421,14 +425,22 @@ metadata:
 
 ```bash
 # Validate a single prism
-python3 scripts/package_validator.py prisms/my-company
+prism packages validate my-company
 
 # Validate all prisms
-python3 scripts/package_validator.py
-
-# Using package manager
-python3 scripts/package_manager.py validate my-company
+prism packages validate
 ```
+
+The config engine validates:
+- `package.yaml` exists and is valid YAML
+- Required fields: `package.name`, `package.version`, `package.description`
+- `bundled_prisms` entries have `id` and `config` fields
+- `user_info_fields` entries have `id`, `label`, and `type` fields
+- Field types are valid: text, email, url, select, number, checkbox
+- `prism_config.theme` is a string
+- Tool registry entries have `platforms` (install) and `uninstall` commands
+- Tool references in sub-prism configs exist in the tool registry
+- Email validation patterns are valid
 
 ### Common Errors
 
@@ -442,7 +454,7 @@ package:
 **`Sub-prism config not found: roles/engineer.yaml`**
 ```bash
 # Fix: create the referenced file
-touch prisms/my-company/roles/engineer.yaml
+touch prisms/my-company.prism/roles/engineer.yaml
 ```
 
 **`Unknown theme 'blue'`**
@@ -452,6 +464,16 @@ prism_config:
   theme: "ocean"   # ocean | purple | forest | sunset | midnight
 ```
 
+**`tool_registry.docker has no uninstall commands`**
+```yaml
+# Fix: add uninstall commands for each platform
+docker:
+  platforms:
+    mac: brew install --cask docker
+  uninstall:
+    mac: brew uninstall --cask docker
+```
+
 ---
 
 ## Resources
@@ -459,3 +481,4 @@ prism_config:
 - [Sub-Prism Inheritance](../user-guide/config-inheritance.md)
 - [Choosing a Prism](../getting-started/choosing-a-prism.md)
 - [Creating Prisms](../user-guide/creating-configurations.md)
+- [Prism System](package-system.md) — Tool registry and CLI reference

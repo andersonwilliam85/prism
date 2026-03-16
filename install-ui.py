@@ -19,7 +19,7 @@ from prism.ui.app import create_app
 ROOT_DIR = Path(__file__).parent
 
 # Create the app via HD composition root
-app = create_app(prisms_dir=ROOT_DIR / "prisms")
+app = create_app(prisms_dir=ROOT_DIR / "prism" / "prisms")
 
 
 def open_browser():

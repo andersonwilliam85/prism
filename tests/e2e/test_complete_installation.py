@@ -105,8 +105,11 @@ class TestCompleteInstallationFlow:
         page.locator("button").filter(has_text="Next").first.click()
         page.wait_for_selector("#step2.active")
 
-        # Fill some info
+        # Fill all required info
         page.fill("input[name='name']", "Test User")
+        page.fill("input[name='email']", "test@example.com")
+        if page.locator("input[name='username']").count() > 0:
+            page.fill("input[name='username']", "testuser")
 
         # Step 2 -> next step (3, 4, or 5 depending on config)
         _advance_past_step2(page)
@@ -172,7 +175,7 @@ class TestCompleteInstallationFlow:
         # Any outcome is acceptable — we're testing the app doesn't crash
         step2_active = page.locator("#step2.active").count() > 0
         advanced = page.locator("#step3.active, #step4.active, #step5.active").count() > 0
-        validation_msg = page.locator(".error, .validation, [class*='error']").count() > 0
+        validation_msg = page.locator(".validation-error, .field-error, .error, [class*='error']").count() > 0
 
         assert step2_active or advanced or validation_msg, "Should either validate or navigate"
 
@@ -239,6 +242,8 @@ class TestPackageSpecificConfiguration:
         # Fill basic info
         page.fill("input[name='name']", "Enterprise User")
         page.fill("input[name='email']", "user@enterprise.com")
+        if page.locator("input[name='username']").count() > 0:
+            page.fill("input[name='username']", "enterpriseuser")
 
         # Check for org/team fields
         org_field = page.locator("select[name='org']").or_(page.locator("input[name='organization']"))
@@ -336,8 +341,8 @@ class TestErrorHandling:
         # Should show validation error or prevent navigation
         email_field = page.locator("input[name='email']")
         is_invalid = (
-            email_field.evaluate("el => el.validity.valid") is False
-            or page.locator(".error, .invalid, [class*='error']").count() > 0
+            email_field.evaluate("el => !el.validity.valid")
+            or page.locator(".validation-error, .field-error, .error, [class*='error']").count() > 0
         )
 
         assert is_invalid, "Invalid email should trigger validation"

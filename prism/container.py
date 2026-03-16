@@ -32,7 +32,7 @@ class Container:
 
     def __init__(self, prisms_dir: Path | None = None) -> None:
         if prisms_dir is None:
-            prisms_dir = Path(__file__).parent.parent / "prisms"
+            prisms_dir = Path(__file__).parent / "prisms"
         self._prisms_dir = prisms_dir
 
         # Utilities

@@ -10,6 +10,7 @@ title: Contributing
 - [Branch Strategy](#branch-strategy)
 - [Development Setup](#development-setup)
 - [Workflow](#workflow)
+- [Pre-Commit Hooks](#pre-commit-hooks)
 - [Testing](#testing)
 - [Coding Standards](#coding-standards)
 - [Adding a New Prism](#adding-a-new-prism)
@@ -22,11 +23,11 @@ Prism uses **gitflow**. All three long-lived branches are protected — no direc
 
 ```
 main        production — tagged releases only
- ↑
+ ^
 stage       release candidate — full test suite + smoke tests
- ↑
+ ^
 dev         integration — features land here first
- ↑
+ ^
 feature/*   your work branches from dev
 ```
 
@@ -34,15 +35,15 @@ feature/*   your work branches from dev
 
 1. Branch from `dev`
 2. PR back to `dev`
-3. When `dev` is stable, PR `dev` → `stage`
-4. When `stage` passes, PR `stage` → `main`
+3. When `dev` is stable, PR `dev` -> `stage`
+4. When `stage` passes, PR `stage` -> `main`
 
 ### Hotfixes
 
 1. Branch `hotfix/*` from `main`
 2. PR directly to `main`
 3. Cherry-pick the fix to `dev`
-4. Normal flow: `dev` → `stage` → `main`
+4. Normal flow: `dev` -> `stage` -> `main`
 
 ---
 
@@ -110,6 +111,8 @@ refactor: Simplify config merger
 test: Add E2E tests for installer
 ```
 
+Pre-commit hooks will run automatically on commit (see below).
+
 ### 5. Push and open PR to dev
 
 ```bash
@@ -117,6 +120,33 @@ git push origin feature/your-feature-name
 ```
 
 Open a PR targeting `dev`. CI runs automatically. Once approved, it merges to `dev`.
+
+---
+
+## Pre-Commit Hooks
+
+Prism uses pre-commit hooks that run automatically on every commit. All hooks must pass before the commit is accepted.
+
+The hooks run in order:
+
+1. **isort** — sort imports (profile: black, line length: 120)
+2. **black** — format code (line length: 120)
+3. **flake8** — lint (max line length: 120, ignores: E203, W503)
+4. **pytest** — run unit tests (`tests/unit -x -q`)
+
+With 590+ tests in the suite, the pytest hook runs the unit test subset to keep commits fast while still catching regressions.
+
+To run the hooks manually:
+
+```bash
+make pre-commit
+```
+
+To install the hooks in a fresh clone:
+
+```bash
+pre-commit install
+```
 
 ---
 
@@ -137,7 +167,7 @@ make check             # All CI checks
 
 ### Test types
 
-- **Unit** — individual functions/classes
+- **Unit** — individual functions/classes (590+ test functions)
 - **CLI** — command-line interface
 - **Web** — Flask API endpoints
 - **Integration** — component interactions
@@ -151,7 +181,7 @@ Coverage requirement: >90%
 
 ### Style
 
-- **PEP 8** with 100-character line length
+- **PEP 8** with 120-character line length
 - **black** for formatting
 - **isort** for imports
 - Type hints where appropriate
@@ -169,11 +199,12 @@ make lint     # flake8 + mypy
 
 See [Package System](https://andersonwilliam85.github.io/prism/reference/package-system) for the full guide.
 
-1. Create `prisms/your-prism/`
+1. Create `prisms/your-prism.prism/`
 2. Add `package.yaml`
-3. Add `README.md`
-4. Add tests
-5. Submit PR to `dev`
+3. Add `base/tool-registry.yaml` (or inherit from the default prism's registry)
+4. Add `README.md`
+5. Add tests
+6. Submit PR to `dev`
 
 ---
 

@@ -16,7 +16,7 @@ from prism.ui.app import create_app
 @pytest.fixture(scope="session")
 def prisms_dir() -> Path:
     """Path to the real prisms directory."""
-    return Path(__file__).parent.parent.parent / "prisms"
+    return Path(__file__).parent.parent.parent / "prism" / "prisms"
 
 
 @pytest.fixture(scope="session")

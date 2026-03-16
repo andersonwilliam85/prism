@@ -13,7 +13,7 @@ import yaml  # noqa: E402
 
 from installer_engine import InstallationEngine  # noqa: E402
 
-PRISMS_DIR = Path(__file__).parent.parent.parent / "prisms"
+PRISMS_DIR = Path(__file__).parent.parent.parent / "prism" / "prisms"
 
 
 def prism_exists(name: str) -> bool:

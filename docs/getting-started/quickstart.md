@@ -15,8 +15,7 @@ Get your development environment configured in minutes with Prism.
 - Git
 
 ```bash
-# Install Python dependencies
-pip3 install pyyaml flask rich
+make install-dev
 ```
 
 ---
@@ -24,30 +23,31 @@ pip3 install pyyaml flask rich
 ## Option A: Web UI (Recommended)
 
 ```bash
-cd prism
-python3 install-ui.py
+make run
 # Opens at http://localhost:5555
 ```
 
 The web UI walks you through:
 1. **Choose a prism** — prism, startup, acme-corp, fortune500, etc.
 2. **Select sub-prisms** — pick your role, division, team, etc.
-3. **Fill in your info** — name, email, platform-specific fields
-4. **Install** — watch the live progress log
+3. **Select tools** — tool selection page with categories (Core, Editor, Containers, Runtime, Cloud, Kubernetes, CLI), hover tooltips, and platform-aware filtering
+4. **Fill in your info** — name, email, platform-specific fields (inline validation, no alerts)
+5. **Install** — watch the live progress log; cancel/retry if needed
 
 ---
 
 ## Option B: CLI
 
 ```bash
-# Basic install — prompts for name and email
-python3 install.py
+# Install from PyPI
+pip install prism-dx
+prism install
 
 # Install a specific prism
-python3 install.py --prism prism
+prism install --prism prism
 
 # Install with a custom npm registry (corporate environments)
-python3 install.py --prism fortune500 --npm-registry https://npm.mycompany.com
+prism install --prism fortune500 --npm-registry https://npm.mycompany.com
 ```
 
 ---
@@ -58,22 +58,47 @@ After installation you'll have:
 
 ```
 ~/workspace/
-├── projects/          ← your code lives here
-├── experiments/
-├── learning/
-├── archived/
-├── docs/
-│   └── config/        ← your prism configuration files
-│       ├── merged-config.yaml   ← the merged result of all sub-prisms
-│       └── user-info.yaml
-└── tooling/
++-- projects/          <- your code lives here
++-- experiments/
++-- learning/
++-- archived/
++-- docs/
+|   +-- config/        <- your prism configuration files
+|       +-- merged-config.yaml   <- the merged result of all sub-prisms
+|       +-- user-info.yaml
++-- tooling/
 ```
 
 Plus:
 - Git configured with your name and email
 - SSH key generated (`~/.ssh/id_ed25519`)
-- Tools from your prism installed (git, docker, kubectl, etc.)
+- Only the tools you checked in the UI get installed (from the centralized tool registry)
 - Repositories cloned (if declared in your prism)
+- A `.prism_rollback.json` manifest for undoing the installation
+
+---
+
+## Rollback
+
+If something goes wrong, reverse the installation:
+
+```bash
+prism rollback ~/workspace
+```
+
+The rollback engine reads `.prism_rollback.json` and undoes all recorded actions in LIFO order (uninstalls tools, deletes files and directories, restores config changes).
+
+---
+
+## Installation History
+
+View previous installations on your machine:
+
+```bash
+prism history
+```
+
+Also available via the `/api/history` endpoint.
 
 ---
 
@@ -81,16 +106,19 @@ Plus:
 
 ```bash
 # Create a scaffold for your company
-python3 scripts/package_manager.py create my-company --company "My Company"
+prism packages create my-company --company "My Company"
 
 # Customize the base configuration
-vim prisms/my-company/base/my-company.yaml
+vim prisms/my-company.prism/base/my-company.yaml
+
+# Add tools to the tool registry
+vim prisms/my-company.prism/base/tool-registry.yaml
 
 # Validate it
-python3 scripts/package_manager.py validate my-company
+prism packages validate my-company
 
 # Install it
-python3 install.py --prism my-company
+prism install --prism my-company
 ```
 
 ---
