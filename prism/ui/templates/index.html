@@ -2440,7 +2440,7 @@
 
         // Initialize
         updateProgress();
-        loadEnvCounts().then(() => loadPackages());
+        loadEnvCounts().finally(() => loadPackages());
         checkPreviousInstalls();
     </script>
 </body>
