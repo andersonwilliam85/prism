@@ -2039,12 +2039,14 @@
                     default: pkg.default,
                 }));
 
-                // Auto-select the default prism (or first available)
-                const defaultPkg = data.packages.find(pkg => pkg.default) || data.packages[0];
-                if (defaultPkg) {
-                    selectedPackage = defaultPkg.id;
-                    await loadAndApplyPrismConfig(defaultPkg.id);
-                    await renderStep1Tiers(defaultPkg.id);
+                // Restore saved package or fall back to default
+                const savedPkg = prismConfig.selectedPackage;
+                const targetPkg = savedPkg && data.packages.find(pkg => pkg.id === savedPkg)
+                    ? savedPkg
+                    : (data.packages.find(pkg => pkg.default) || data.packages[0])?.id;
+                if (targetPkg) {
+                    await selectPackage(targetPkg, !savedPkg);
+                    loadPrismsIntoSettings();
                 } else {
                     packagesList.innerHTML = `
                         <div class="alert alert-warning">
@@ -2067,6 +2069,8 @@
         async function selectPackage(packageName, resetTheme = true) {
             const isNewPackage = selectedPackage !== packageName;
             selectedPackage = packageName;
+            // Save selected package
+            prismConfig.selectedPackage = packageName;
             // Clear previous tier selections
             Object.keys(selectedSubPrisms).forEach(k => delete selectedSubPrisms[k]);
             // Reset theme only when switching to a genuinely different package
@@ -2075,6 +2079,7 @@
                 delete prismConfig.customGradients;
                 _themeGradients = {};
             }
+            savePrismConfig(prismConfig);
             // Apply config (theme, branding, sources) and re-render Step 1 tiers
             await loadAndApplyPrismConfig(packageName);
             await renderStep1Tiers(packageName);
