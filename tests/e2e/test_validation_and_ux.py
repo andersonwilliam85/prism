@@ -281,20 +281,20 @@ class TestUserExperience:
         page.locator("button").filter(has_text="Next").first.click()
         page.wait_for_selector("#step2.active")
 
-        # Submit with invalid data
+        # Fill name (required) but put invalid email to trigger email validation
+        page.fill("input[name='name']", "Test User")
         page.fill("input[name='email']", "invalid-email")
-        page.locator("button").filter(has_text="Next").nth(1).click()
+        page.locator("#step2 button").filter(has_text="Next").click()
 
         page.wait_for_timeout(500)
 
-        # Check for error messages
-        # HTML5 validation will handle this, but we can check validity
+        # The custom JS validation should show an error for invalid email format
+        # or the field should remain invalid via HTML5 validation
+        validation_shown = page.locator(".validation-error").count() > 0
         email_field = page.locator("input[name='email']")
-        is_valid = email_field.evaluate("el => el.validity.valid")
+        is_html5_invalid = email_field.evaluate("el => !el.validity.valid")
 
-        if not is_valid:
-            # Error state is correctly detected
-            assert True
+        assert validation_shown or is_html5_invalid, "Invalid email should trigger validation"
 
     def test_progress_indication_through_steps(self, page: Page, installer_server):
         """Test that progress is indicated as user moves through steps."""
