@@ -21,7 +21,7 @@ package:
 
 # PRISM META-CONFIGURATION
 prism_config:
-  theme: "launchpad"
+  theme: "sunset"
   theme_options:
     - "sunset"
     - "ocean"

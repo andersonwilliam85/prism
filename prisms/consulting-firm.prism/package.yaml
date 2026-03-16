@@ -25,9 +25,8 @@ package:
 
 # PRISM META-CONFIGURATION
 prism_config:
-  theme: "consultant"
+  theme: "purple"
   theme_options:
-    - "consultant"
     - "purple"
     - "midnight"
     - "ocean"
@@ -141,7 +140,7 @@ user_info_fields:
 
   - id: "active_clients"
     label: "Active Client Engagements"
-    type: "multiselect"
+    type: "select"
     required: true
     options:
       - "FinTech Client (Meridian)"
