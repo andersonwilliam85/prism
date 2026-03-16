@@ -21,7 +21,8 @@ from typing import Any, Dict, List, Tuple
 
 import yaml
 
-VALID_THEMES = {"ocean", "purple", "forest", "sunset", "midnight"}
+# No built-in themes — all themes are defined per-package in custom_themes
+VALID_THEMES: set[str] = set()
 VALID_FIELD_TYPES = {"text", "email", "url", "select", "number", "checkbox"}
 
 
@@ -134,8 +135,13 @@ class PrismValidator:
     def _validate_prism_config(self, prism_config: dict):
         """Validate the prism_config section."""
         theme = prism_config.get("theme")
-        if theme and theme not in VALID_THEMES:
-            self.warnings.append(f"Unknown theme '{theme}' — valid themes: {', '.join(sorted(VALID_THEMES))}")
+        if theme:
+            custom_ids: set[str] = {
+                str(ct["id"]) for ct in prism_config.get("custom_themes", []) if isinstance(ct, dict) and "id" in ct
+            }
+            all_valid = VALID_THEMES | custom_ids
+            if theme not in all_valid:
+                self.warnings.append(f"Unknown theme '{theme}' — valid themes: {', '.join(sorted(all_valid))}")
 
         sources = prism_config.get("sources", [])
         if sources and not isinstance(sources, list):
