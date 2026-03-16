@@ -1353,29 +1353,15 @@
         
         // Initialize Prism Configuration on load
         (function() {
-            // Apply saved theme
-            document.documentElement.setAttribute('data-theme', prismConfig.theme);
-
-            // Restore custom theme gradients if saved
+            // Restore custom gradient cache if saved
             if (prismConfig.customGradients) {
                 _customThemeGradients[prismConfig.theme] = prismConfig.customGradients;
-                const g = prismConfig.customGradients;
-                const root = document.documentElement.style;
-                if (g.gradient_1) root.setProperty('--gradient-1', g.gradient_1);
-                if (g.gradient_2) root.setProperty('--gradient-2', g.gradient_2);
-                if (g.gradient_3) root.setProperty('--gradient-3', g.gradient_3);
-                if (g.gradient_4) root.setProperty('--gradient-4', g.gradient_4);
-                if (g.gradient_5) root.setProperty('--gradient-5', g.gradient_5);
             }
-            
-            // Set active theme in settings
-            document.querySelectorAll('.theme-option').forEach(opt => {
-                if (opt.dataset.theme === prismConfig.theme) {
-                    opt.classList.add('active');
-                } else {
-                    opt.classList.remove('active');
-                }
-            });
+
+            // Apply saved theme (handles both built-in and custom)
+            if (prismConfig.theme) {
+                selectTheme(prismConfig.theme);
+            }
             
             // Render prism sources
             renderPrismSources();
