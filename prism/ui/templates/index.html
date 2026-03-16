@@ -2076,9 +2076,10 @@
 
                 // Restore saved package or fall back to default
                 const savedPkg = prismConfig.selectedPackage;
-                const targetPkg = savedPkg && data.packages.find(pkg => pkg.id === savedPkg)
+                const matchesSaved = savedPkg && data.packages.find(pkg => pkg.id === savedPkg || pkg.name === savedPkg);
+                const targetPkg = matchesSaved
                     ? savedPkg
-                    : (data.packages.find(pkg => pkg.default) || data.packages[0])?.id;
+                    : (data.packages.find(pkg => pkg.default) || data.packages[0])?.name;
                 if (targetPkg) {
                     await selectPackage(targetPkg, !savedPkg);
                     loadPrismsIntoSettings();
