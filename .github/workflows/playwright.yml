@@ -3,8 +3,16 @@ name: Playwright Tests
 on:
   push:
     branches: [ main, dev, stage ]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'LICENSE'
   pull_request:
     branches: [ main, dev, stage ]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'LICENSE'
 
 jobs:
   test:
