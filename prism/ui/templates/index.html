@@ -2143,6 +2143,10 @@
             selectedPackage = packageName;
             // Clear previous tier selections
             Object.keys(selectedSubPrisms).forEach(k => delete selectedSubPrisms[k]);
+            // Reset theme so the new package's default applies
+            prismConfig.theme = null;
+            delete prismConfig.customGradients;
+            _themeGradients = {};
             // Apply config (theme, branding, sources) and re-render Step 1 tiers
             await loadAndApplyPrismConfig(packageName);
             await renderStep1Tiers(packageName);
