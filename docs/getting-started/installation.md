@@ -16,26 +16,22 @@ title: Installation
 
 ---
 
-## Install Dependencies
+## Install from PyPI
 
 ```bash
-# Minimal (CLI only)
-pip3 install pyyaml
-
-# Full (Web UI + better CLI)
-pip3 install pyyaml flask rich
-
-# Or using requirements file
-pip3 install -r requirements.txt
+pip install prism-dx
+prism ui            # Launch the web installer
+prism install       # Or install directly from CLI
 ```
 
 ---
 
-## Clone the Repository
+## Install from Source
 
 ```bash
 git clone https://github.com/andersonwilliam85/prism.git
 cd prism
+make install-dev
 ```
 
 ---
@@ -43,15 +39,8 @@ cd prism
 ## Start the Web UI
 
 ```bash
-python3 install-ui.py
+make run
 # Opens at http://localhost:5555
-```
-
-Or via Makefile:
-
-```bash
-make install-dev  # installs dependencies
-make run          # starts web UI
 ```
 
 ---
@@ -60,16 +49,22 @@ make run          # starts web UI
 
 ```bash
 # Show help
-python3 install.py --help
+prism --help
 
-# Install with a specific prism
-python3 install.py --prism prism
+# Launch web UI
+prism ui
+
+# Install a specific prism
+prism install --prism prism
+
+# Roll back a previous installation
+prism rollback ~/workspace
+
+# View installation history
+prism history
 
 # Use a custom npm registry
-python3 install.py --prism fortune500 --npm-registry https://npm.mycompany.com
-
-# Check installation status
-python3 install.py --status
+prism install --prism fortune500 --npm-registry https://npm.mycompany.com
 ```
 
 ---
@@ -92,10 +87,10 @@ Or pass via environment variable / CLI flag:
 
 ```bash
 export PRISM_NPM_REGISTRY=https://npm.mycompany.com
-python3 install.py --prism my-company
+prism install --prism my-company
 
 # Or inline
-python3 install.py --prism my-company --npm-registry https://npm.mycompany.com
+prism install --prism my-company --npm-registry https://npm.mycompany.com
 ```
 
 ---
@@ -105,14 +100,19 @@ python3 install.py --prism my-company --npm-registry https://npm.mycompany.com
 ### macOS
 - Homebrew is installed automatically if missing
 - Apple Silicon (M1/M2/M3) fully supported
+- Tools without explicit macOS install commands in the tool registry are skipped
 
 ### Windows
-- Chocolatey is installed automatically if missing
+- Uses winget for package installation
 - Run from PowerShell or Git Bash
 
 ### Linux / Ubuntu
 - Uses `apt-get` for package installation
 - WSL2 is fully supported
+
+### No Generic Fallbacks
+
+Tools without explicit platform install commands in the tool registry are skipped. Prism does not guess install commands.
 
 ---
 

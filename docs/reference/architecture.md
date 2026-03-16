@@ -22,6 +22,7 @@ flowchart LR
         end
         subgraph ENGINES["ENGINES"]
             CE["ConfigEngine"] ~~~ IE["InstallationEngine"]
+            RE["RollbackEngine"]
         end
         subgraph ACCESSORS["RESOURCE ACCESSORS"]
             FA["FileAccessor"] ~~~ CA["CommandAccessor"]
@@ -72,10 +73,13 @@ Encapsulate the "how" — business logic grouped by volatility axis. Engines rec
 |---|---|---|
 | `ConfigEngine` | Schema evolution (medium-high) | `validate()`, `prepare()`, `merge()`, `merge_tiers()`, hierarchy methods |
 | `InstallationEngine` | Installation surface (low-medium) | `install()`, `rollback()`, `install_privileged()`, sudo session management |
+| `RollbackEngine` | Rollback execution | `find_manifest()`, `load_manifest()`, `execute_rollback()` |
 
-**ConfigEngine** owns config validation, merge strategies, and field hierarchy resolution. When the `package.yaml` schema evolves, validation rules, merge strategies, and field dependencies all change together — same volatility axis.
+**ConfigEngine** owns config validation, merge strategies, and field hierarchy resolution. It validates the tool registry (every tool must have install + uninstall commands), validates that tool references in sub-prism configs exist in the registry, and validates email patterns from YAML.
 
-**InstallationEngine** owns the full installation pipeline: preflight checks, git config, workspace creation, repo cloning, tool installation, config file copying, rollback, and sudo sessions. It receives accessors via DI and calls them internally — the manager doesn't need to know about individual steps.
+**InstallationEngine** owns the full installation pipeline: preflight checks, git config, workspace creation, repo cloning, tool installation, config file copying, rollback manifest persistence, and sudo sessions. The UI sends `toolsSelected` from checkboxes — only checked tools get installed. `tools_selected=[]` means nothing is installed. Subprocesses have timeouts and `GIT_TERMINAL_PROMPT=0`.
+
+**RollbackEngine** (`prism/engines/rollback_engine.py`) handles rollback execution. It is shared by the CLI (`prism rollback`) and the API (`/api/rollback`). Installs persist a `.prism_rollback.json` manifest; `prism rollback <workspace>` reverses all recorded actions.
 
 ### Accessors
 
@@ -162,6 +166,7 @@ flowchart TB
     IE --> FA["FileAccessor"]
     IE --> SA["SystemAccessor"]
     IE --> RBA["RollbackAccessor"]
+    IE -->|"persist .prism_rollback.json"| MANIFEST[".prism_rollback.json"]
     IM --> EB["EventBus.publish()"]
 
     style USER fill:#041f41,color:#fff
@@ -173,7 +178,23 @@ flowchart TB
     style SA fill:#2a8703,color:#fff
     style RBA fill:#2a8703,color:#fff
     style EB fill:#76c043,color:#000
+    style MANIFEST fill:#64748b,color:#fff
 ```
+
+---
+
+## Tool Registry
+
+Tools are defined in a centralized `tool-registry.yaml` file. Each tool has:
+
+- **label** — display name (shown in UI)
+- **summary** — short tagline (always visible next to label)
+- **description** — full explanation (shown on hover in UI)
+- **category** — grouping key (core, editor, containers, runtime, cloud, kubernetes, cli)
+- **platforms** — explicit install commands per OS (mac, ubuntu, linux, windows)
+- **uninstall** — explicit uninstall commands per OS (used by rollback)
+
+Child configs reference tools by string name only (e.g., `- git`). The ConfigEngine validates that tool references exist in the registry and that every tool has both install and uninstall commands. Tools without explicit platform install commands for the current OS are skipped — no generic fallbacks.
 
 ---
 
@@ -186,6 +207,7 @@ flowchart TB
 5. **Coarse-grained interfaces** — Engines expose few public operations. Fine-grained logic stays private.
 6. **One composition root** — `container.py` is the only file that knows concrete types.
 7. **Volatility-based grouping** — Components that change for the same reason live together.
+8. **No generic fallbacks** — Tools without explicit platform install commands are skipped.
 
 ---
 
@@ -193,26 +215,38 @@ flowchart TB
 
 ```
 prism/
-├── container.py                 # Composition root (DI wiring)
-├── managers/
-│   ├── installation_manager/
-│   └── package_manager/
-├── engines/
-│   ├── config_engine/           # Schema evolution axis
-│   └── installation_engine/     # Installation surface axis
-├── accessors/
-│   ├── file_accessor/
-│   ├── command_accessor/
-│   ├── registry_accessor/
-│   ├── system_accessor/
-│   ├── rollback_accessor/
-│   └── sudo_accessor/
-├── utilities/
-│   └── event_bus/
-└── models/
-    ├── installation.py
-    ├── package_info.py
-    └── prism_config.py
++-- container.py                 # Composition root (DI wiring)
++-- managers/
+|   +-- installation_manager/
+|   +-- package_manager/
++-- engines/
+|   +-- config_engine/           # Schema evolution axis
+|   +-- installation_engine/     # Installation surface axis
+|   +-- rollback_engine.py       # Rollback execution (shared by CLI and API)
++-- accessors/
+|   +-- file_accessor/
+|   +-- command_accessor/
+|   +-- registry_accessor/
+|   +-- system_accessor/
+|   +-- rollback_accessor/
+|   +-- sudo_accessor/
++-- cli/
+|   +-- install.py
+|   +-- rollback.py              # prism rollback CLI command
+|   +-- history.py               # prism history CLI command
+|   +-- packages.py
+|   +-- ui.py
++-- ui/
+|   +-- api/
+|   +-- templates/
++-- utilities/
+|   +-- event_bus/
++-- models/
+|   +-- installation.py
+|   +-- package_info.py
+|   +-- prism_config.py
++-- tools/
+    +-- docs_server/
 ```
 
 ---

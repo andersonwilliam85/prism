@@ -1,11 +1,9 @@
 """
-E2E tests for the Flask web API (install-ui.py).
+E2E tests for the Flask web API.
 
 Uses Flask test client — no browser required.
 """
 
-# Make install-ui.py importable (hyphenated filename requires importlib)
-import importlib.util
 import sys
 from pathlib import Path
 
@@ -13,22 +11,17 @@ import pytest
 import yaml
 
 ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(ROOT))
-
-
-def _load_install_ui():
-    spec = importlib.util.spec_from_file_location("install_ui", ROOT / "install-ui.py")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+PRISMS_DIR = ROOT / "prism" / "prisms"
 
 
 @pytest.fixture(scope="module")
 def app():
-    """Return the Flask app from install-ui.py."""
-    ui_module = _load_install_ui()
-    ui_module.app.config["TESTING"] = True
-    return ui_module.app
+    """Return the Flask app using the real Container."""
+    from prism.ui.app import create_app
+
+    application = create_app(prisms_dir=PRISMS_DIR)
+    application.config["TESTING"] = True
+    return application
 
 
 @pytest.fixture(scope="module")

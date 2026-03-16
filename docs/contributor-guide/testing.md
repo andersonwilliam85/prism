@@ -5,20 +5,21 @@ title: Testing
 
 # Testing
 
-Comprehensive testing guide for Prism Package Manager.
+Comprehensive testing guide for Prism.
 
 ---
 
 ## Overview
 
-Prism uses a multi-layered testing strategy:
+Prism uses a multi-layered testing strategy with 590+ test functions across 35 test files:
 
-- **Unit Tests** (15 tests) - Core logic validation
-- **CLI Tests** (3 tests) - Command-line interface
-- **E2E Tests** (54 tests) - Full user workflows (Playwright)
-- **Integration Tests** - Component interactions
+- **Unit Tests** — Core logic validation (config engine, installation engine, accessors, managers, utilities, CLI, UI, tools)
+- **CLI Tests** — Command-line interface
+- **Web Tests** — Flask API endpoints
+- **Integration Tests** — Component interactions
+- **E2E Tests** — Full user workflows (Playwright)
 
-**Total: 72 tests** | **Target Coverage: >90%**
+**Target Coverage: >90%**
 
 ---
 
@@ -56,11 +57,16 @@ make test-trace
 
 ### Unit Tests (`tests/unit/`)
 
-Test individual components in isolation.
+Test individual components in isolation. This is the largest test category, covering:
 
-**Files:**
-- `test_config_merger.py` - Configuration inheritance logic
-- `test_package_validator.py` - Package validation
+- `engines/` — ConfigEngine, InstallationEngine
+- `managers/` — InstallationManager, PackageManager
+- `accessors/` — FileAccessor, CommandAccessor, SystemAccessor, RollbackAccessor, RegistryAccessor
+- `utilities/` — EventBus, PlatformDetector, EnvSubstitutor, ProgressLogger
+- `cli/` — CLI command tests
+- `ui/` — API endpoint tests (packages, installation, validation, configuration)
+- `tools/` — DocsServer, DocsDiscovery, DocsRenderer
+- Top-level — ConfigMerger, PrismValidator, InstallerEngine, PackageManager, E2E install flows
 
 **Run:**
 ```bash
@@ -69,20 +75,9 @@ make test-unit
 pytest tests/unit/ -v
 ```
 
-**Example:**
-```python
-def test_merges_simple_configs():
-    base = {"package": {"name": "test", "version": "1.0.0"}}
-    override = {"package": {"version": "2.0.0"}}
-    result = merge_configs(base, override)
-    
-    assert result["package"]["name"] == "test"
-    assert result["package"]["version"] == "2.0.0"
-```
-
 ### CLI Tests (`tests/e2e/test_cli_installer.py`)
 
-Test command-line installer interface.
+Test command-line installer interface, including `prism install`, `prism rollback`, and `prism history`.
 
 **Run:**
 ```bash
@@ -91,19 +86,26 @@ make test-cli
 pytest tests/e2e/test_cli_installer.py -v
 ```
 
-**Tests:**
-- Help text display
-- Package listing
-- Status checking
+### Web Tests (`tests/unit/ui/`)
+
+Test Flask API endpoints including packages, installation, validation, and configuration APIs.
+
+**Run:**
+```bash
+pytest tests/unit/ui/ -v
+```
 
 ### E2E Tests (`tests/e2e/`)
 
 End-to-end browser testing with Playwright.
 
 **Files:**
-- `test_installer_flow.py` - Core installation workflow
-- `test_complete_installation.py` - Full user journey
-- `test_validation_and_ux.py` - UX and validation
+- `test_installer_flow.py` — Core installation workflow
+- `test_complete_installation.py` — Full user journey
+- `test_validation_and_ux.py` — UX and validation (inline validation, no alerts)
+- `test_full_install_flow.py` — Full install flow
+- `test_hd_api_e2e.py` — HD API E2E tests
+- `test_web_api.py` — Web API tests
 
 **Run:**
 ```bash
@@ -112,25 +114,9 @@ make test-e2e
 pytest tests/e2e/ --headed
 ```
 
-**Example:**
-```python
-def test_package_selection(page: Page):
-    page.goto("http://localhost:5555")
-    
-    # Select package
-    page.click("#pkg_prism")
-    
-    # Verify selected
-    expect(page.locator("#pkg_prism")).to_have_class(/selected/)
-    
-    # Next step
-    page.click("button:has-text('Next')")
-    expect(page.locator("#step2")).to_be_visible()
-```
-
 ### Integration Tests (`tests/integration/`)
 
-Test component interactions.
+Test component interactions (installer engine, prism validation).
 
 **Run:**
 ```bash
@@ -138,6 +124,19 @@ make test-integration
 # or
 pytest tests/integration/ -v
 ```
+
+---
+
+## Pre-Commit Hooks
+
+Pre-commit hooks run automatically on every commit and must all pass:
+
+1. **isort** — sort imports
+2. **black** — format code
+3. **flake8** — lint
+4. **pytest** — run unit tests (`tests/unit -x -q`)
+
+This ensures that all commits pass formatting, linting, and unit tests before they are accepted.
 
 ---
 
@@ -185,13 +184,6 @@ open playwright-report/report.html
 make test-report
 ```
 
-**What you get:**
-- ✅ Color-coded pass/fail results
-- 📊 Test duration statistics
-- 📝 Detailed error messages with stack traces
-- 🎨 Beautiful HTML formatting
-- 📤 Shareable standalone file
-
 ### Trace Viewer (Time-Travel Debugging)
 
 Debug tests with Playwright's trace viewer:
@@ -207,15 +199,6 @@ make show-trace
 python3 -m pytest tests/e2e/ --tracing=on
 python3 -m playwright show-trace test-results/*/trace.zip
 ```
-
-**What you get:**
-- 📸 Screenshot at each test action
-- 🌐 Network requests timeline
-- 📝 Console logs and errors
-- ⚡ DOM snapshots (time-travel through page state)
-- 🔍 Source code highlighting
-- ⏱️ Performance metrics
-- 🎯 Click timeline to see exact state
 
 ### Screenshots & Videos
 
@@ -295,24 +278,24 @@ open htmlcov/index.html
 
 ```python
 import pytest
-from scripts.config_merger import merge_configs
+from prism.engines.config_engine._merge import ConfigMerger
 
 class TestConfigMerger:
     def test_merges_simple_configs(self):
-        \"\"\"Test basic config merging\"\"\"
+        """Test basic config merging"""
         base = {"package": {"name": "test"}}
         override = {"package": {"version": "1.0"}}
         result = merge_configs(base, override)
-        
+
         assert result["package"]["name"] == "test"
         assert result["package"]["version"] == "1.0"
-    
+
     def test_handles_nested_configs(self):
-        \"\"\"Test deep merging\"\"\"
+        """Test deep merging"""
         base = {"package": {"settings": {"debug": False}}}
         override = {"package": {"settings": {"verbose": True}}}
         result = merge_configs(base, override)
-        
+
         assert result["package"]["settings"]["debug"] == False
         assert result["package"]["settings"]["verbose"] == True
 ```
@@ -325,20 +308,20 @@ from playwright.sync_api import Page, expect
 
 class TestInstallerFlow:
     def test_complete_workflow(self, page: Page):
-        \"\"\"Test full installation workflow\"\"\"
+        """Test full installation workflow"""
         # 1. Start page
         page.goto("http://localhost:5555")
         expect(page.locator("h1")).to_contain_text("Prism Installer")
-        
+
         # 2. Select package
         page.click("#pkg_prism")
         page.click("button:has-text('Next')")
-        
+
         # 3. Enter user info
         page.fill("#name", "Test User")
         page.fill("#email", "test@example.com")
         page.click("button:has-text('Install')")
-        
+
         # 4. Verify completion
         expect(page.locator(".success")).to_be_visible()
         expect(page.locator(".success")).to_contain_text("Installation complete")
@@ -383,7 +366,7 @@ Prism uses GitHub Actions for automated testing.
 ### Workflows
 
 1. **ci.yml** - Runs on every PR
-   - Lint (black, flake8, mypy)
+   - Lint (isort, black, flake8, mypy)
    - Unit tests
    - CLI tests
    - E2E tests
@@ -510,57 +493,15 @@ def mock_server():
 ### 6. Document Tests
 ```python
 def test_complex_workflow():
-    \"\"\"
+    """
     Test the complete installation workflow including:
     1. Package selection
     2. User info entry
     3. Configuration
     4. Installation
     5. Completion
-    \"\"\"
+    """
     # Test implementation
-```
-
----
-
-## Troubleshooting
-
-### Playwright Install Fails
-
-```bash
-# Linux: Install system dependencies
-sudo apt-get install -y \
-    libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 \
-    libcups2 libdrm2 libxkbcommon0 libxcomposite1
-
-# Reinstall Playwright
-python3 -m playwright install --force
-```
-
-### Tests Hang
-
-```bash
-# Increase timeout
-pytest --timeout=60
-
-# Check background processes
-ps aux | grep python
-
-# Kill hung processes
-pkill -f "python.*install"
-```
-
-### Import Errors
-
-```bash
-# Ensure in project root
-cd prism
-
-# Install in development mode
-pip install -e .
-
-# Or add to PYTHONPATH
-export PYTHONPATH="${PYTHONPATH}:$(pwd)"
 ```
 
 ---
@@ -569,12 +510,13 @@ export PYTHONPATH="${PYTHONPATH}:$(pwd)"
 
 When adding features:
 
-1. ✅ Write unit tests first (TDD)
-2. ✅ Add E2E tests for user flows
-3. ✅ Ensure >90% coverage
-4. ✅ All tests pass locally
-5. ✅ Tests pass in CI
-6. ✅ Document test cases
+1. Write unit tests first (TDD)
+2. Add E2E tests for UI changes
+3. Ensure >90% coverage
+4. All tests pass locally
+5. Pre-commit hooks pass (isort, black, flake8, pytest)
+6. Tests pass in CI
+7. Document test cases
 
 ### Test Checklist
 

@@ -37,15 +37,17 @@ Tiers are applied in order: `base` first, then each selected optional tier in th
 
 ---
 
-## Tool Selection Fields
+## Tool Selection
 
-Each sub-prism YAML can specify three tool-related lists:
+Tools are defined in the centralized `tool-registry.yaml` and referenced by name in sub-prism configs. Each sub-prism YAML can specify three tool-related lists:
 
 | Field | Type | Meaning |
 |---|---|---|
 | `tools_required` | list | Tools that must be installed |
 | `tools_selected` | list | Tools added to the install list by this tier |
 | `tools_excluded` | list | Tools suppressed from the install list |
+
+**Important:** The UI sends `toolsSelected` from checkboxes. Only checked tools get installed. `tools_selected=[]` means nothing is installed. All tool names must reference entries in the `tool-registry.yaml`.
 
 ### Merge behavior: union
 
@@ -148,13 +150,13 @@ git:
 
 ## Implementation
 
-The merge logic lives in `scripts/config_merger.py` — `ConfigMerger.merge_configs()`. To inspect a merged result without running an install:
+The merge logic lives in `prism/engines/config_engine/_merge.py`. To inspect a merged result without running an install:
 
 ```bash
 python3 -c "
-from scripts.config_merger import ConfigMerger
+from prism.engines.config_engine._merge import ConfigMerger
 merger = ConfigMerger()
-result = merger.merge_configs(['prisms/my-company/base', 'prisms/my-company/platform-eng'])
+result = merger.merge_configs(['prisms/my-company.prism/base', 'prisms/my-company.prism/platform-eng'])
 import yaml; print(yaml.dump(result, default_flow_style=False))
 "
 ```
@@ -166,3 +168,4 @@ import yaml; print(yaml.dump(result, default_flow_style=False))
 - [Sub-Prism Inheritance](../user-guide/config-inheritance.md) — Visual guide to tier hierarchy
 - [Configuration Schema](configuration-schema.md) — Full `package.yaml` reference
 - [Creating Configurations](../user-guide/creating-configurations.md) — Authoring a prism
+- [Prism System](package-system.md) — Tool registry and tool categories

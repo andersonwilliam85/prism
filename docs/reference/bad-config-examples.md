@@ -16,13 +16,12 @@ The `bad-config-examples/` directory in the repository root contains YAML files 
 1. Copy one of the example files into a prism's sub-prism directory
 2. Select that prism in the installer
 3. Navigate to the **Confirmation** step
-4. Click **Validate Configurations**
-5. The validator will report the exact error
+4. The validator will report the exact error (inline — no alerts)
 
 ### Trigger validation via CLI
 
 ```bash
-python3 scripts/package_validator.py prisms/my-company
+prism packages validate my-company
 ```
 
 ---
@@ -41,7 +40,7 @@ company:
 
 **Output:**
 ```
-❌  Company field 'name' cannot be empty
+Company field 'name' cannot be empty
 ```
 
 ---
@@ -61,7 +60,7 @@ git:
 
 **Output:**
 ```
-❌  Invalid YAML syntax: while scanning a simple key...
+Invalid YAML syntax: while scanning a simple key...
 ```
 
 ---
@@ -79,8 +78,8 @@ git:
 
 **Output:**
 ```
-❌  Invalid git URL format: ftp://invalid-protocol.com
-❌  Invalid GitHub Enterprise URL: not-a-url
+Invalid git URL format: ftp://invalid-protocol.com
+Invalid GitHub Enterprise URL: not-a-url
 ```
 
 Valid protocols: `https://`, `http://`, `git@`
@@ -97,7 +96,7 @@ company: "This should be a dictionary!"
 
 **Output:**
 ```
-❌  'company' must be a dictionary
+'company' must be a dictionary
 ```
 
 ---
@@ -112,7 +111,7 @@ A completely empty file.
 
 **Output:**
 ```
-❌  Configuration file is empty: empty.yaml
+Configuration file is empty: empty.yaml
 ```
 
 ---
@@ -130,7 +129,7 @@ organization:
 
 **Output:**
 ```
-❌  Organization missing required 'name' field
+Organization missing required 'name' field
 ```
 
 ---
@@ -148,8 +147,55 @@ environment:
 
 **Output:**
 ```
-❌  Invalid http proxy URL: proxy.example.com:8080
-❌  Invalid https proxy URL: socks5://proxy.example.com
+Invalid http proxy URL: proxy.example.com:8080
+Invalid https proxy URL: socks5://proxy.example.com
+```
+
+---
+
+### Tool registry errors
+
+The config engine validates the tool registry. Common issues:
+
+**Tool missing install commands:**
+```yaml
+# tool-registry.yaml
+mytool:
+  label: My Tool
+  category: cli
+  # Missing 'platforms' — no install commands
+```
+
+**Output:**
+```
+tool_registry.mytool has no install commands (platforms)
+```
+
+**Tool missing uninstall commands:**
+```yaml
+mytool:
+  label: My Tool
+  category: cli
+  platforms:
+    mac: brew install mytool
+  # Missing 'uninstall' — rollback cannot remove this tool
+```
+
+**Output:**
+```
+tool_registry.mytool has no uninstall commands — rollback will not be able to remove this tool
+```
+
+**Tool reference not in registry:**
+```yaml
+# sub-prism config references a tool that doesn't exist in tool-registry.yaml
+tools_required:
+  - nonexistent-tool
+```
+
+**Output:**
+```
+tools_required references 'nonexistent-tool' which is not in the tool registry
 ```
 
 ---
@@ -161,7 +207,7 @@ The validator distinguishes between hard errors (installation blocked) and warni
 | Severity | Examples |
 |---|---|
 | Error | Missing required field, invalid URL, empty file, bad YAML syntax |
-| Warning | Missing recommended field (`email`), no `README.md` in prism, no user section in user config |
+| Warning | Missing recommended field (`email`), no `README.md` in prism, tool missing uninstall commands, tool reference not in registry |
 
 Warnings appear in the validation output but do not prevent installation.
 
@@ -171,4 +217,4 @@ Warnings appear in the validation output but do not prevent installation.
 
 - [Creating Configurations](../user-guide/creating-configurations.md) — Author a valid prism
 - [Configuration Schema](configuration-schema.md) — Full schema reference
-- `scripts/package_validator.py` — Validator implementation
+- [Prism System](package-system.md) — Tool registry validation rules

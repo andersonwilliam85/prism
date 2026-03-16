@@ -21,7 +21,7 @@ Prism uses a two-phase install model to minimize the time spent running with ele
 
 ### Phase 2: Privileged Operations (requires sudo)
 
-- Install system packages (`apt-get install`, `brew install`, `choco install`)
+- Install system packages (commands from the tool registry: `apt-get install`, `brew install`, `winget install`, etc.)
 - Configure global tools
 - Modify system-level configuration
 
