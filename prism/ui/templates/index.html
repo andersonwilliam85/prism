@@ -796,10 +796,8 @@
     
     <div class="container">
         <div class="header">
-            <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
-                <img src="/assets/branding/prism_light_128.png" alt="Prism" id="brandingLogo" style="height: 48px; width: auto;">
-                <h1 id="brandingTitle" style="margin: 0;">Prism</h1>
-            </div>
+            <img src="/assets/branding/prism_light_128.png" alt="Prism" id="brandingLogo" style="height: 36px; width: auto; margin-bottom: 8px;">
+            <h1 id="brandingTitle" style="margin: 0;">Prism</h1>
             <p class="subtitle" id="brandingTagline">Refract complexity into clarity</p>
         </div>
         
@@ -1057,8 +1055,8 @@
             }
         }
         
-        function selectPrismFromSettings(prismName) {
-            selectedPackage = prismName;
+        async function selectPrismFromSettings(prismName) {
+            await selectPackage(prismName);
             loadPrismsIntoSettings();
         }
         
