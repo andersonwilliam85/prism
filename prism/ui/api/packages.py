@@ -223,18 +223,22 @@ def get_config(package_name):
         # Theme metadata comes directly from prism_config
         config_dict["theme_options"] = prism_config.theme_options
         config_dict["default_theme"] = prism_config.default_theme
-        config_dict["available_themes"] = [
-            {
-                "id": t.id,
-                "name": t.name,
-                "gradient_1": t.gradient_1,
-                "gradient_2": t.gradient_2,
-                "gradient_3": t.gradient_3,
-                "gradient_4": t.gradient_4,
-                "gradient_5": t.gradient_5,
-            }
-            for t in prism_config.custom_themes
-        ]
+
+        # All themes come from the package's custom_themes — no built-ins
+        available = []
+        for t in prism_config.custom_themes:
+            available.append(
+                {
+                    "id": t.id,
+                    "name": t.name,
+                    "gradient_1": t.gradient_1,
+                    "gradient_2": t.gradient_2,
+                    "gradient_3": t.gradient_3,
+                    "gradient_4": t.gradient_4,
+                    "gradient_5": t.gradient_5,
+                }
+            )
+        config_dict["available_themes"] = available
 
         return jsonify({"prism_config": config_dict, "package_name": package_name})
     except Exception as e:

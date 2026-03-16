@@ -21,20 +21,33 @@ package:
 
 # PRISM META-CONFIGURATION
 prism_config:
-  theme: "sunset"
+  theme: "launchpad"
   theme_options:
-    - "sunset"
-    - "ocean"
-    - "purple"
     - "launchpad"
+    - "hustle"
+    - "growth"
   custom_themes:
     - id: "launchpad"
       name: "Launchpad"
-      gradient_1: "#f97316"
-      gradient_2: "#fb923c"
-      gradient_3: "#fbbf24"
-      gradient_4: "#facc15"
-      gradient_5: "#fde68a"
+      gradient_1: "#ff6b35"
+      gradient_2: "#f7931e"
+      gradient_3: "#ff4e50"
+      gradient_4: "#fc913a"
+      gradient_5: "#f9d423"
+    - id: "hustle"
+      name: "Hustle"
+      gradient_1: "#00b4d8"
+      gradient_2: "#0077b6"
+      gradient_3: "#03045e"
+      gradient_4: "#023e8a"
+      gradient_5: "#48cae4"
+    - id: "growth"
+      name: "Growth"
+      gradient_1: "#059669"
+      gradient_2: "#10b981"
+      gradient_3: "#34d399"
+      gradient_4: "#6ee7b7"
+      gradient_5: "#047857"
 
   sources:
     - url: "local"

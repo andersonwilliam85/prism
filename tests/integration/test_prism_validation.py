@@ -86,17 +86,19 @@ def test_bundled_prisms_config_files_exist():
 
 @pytest.mark.integration
 def test_prism_themes_are_valid():
-    """All prisms that specify a theme use a valid theme value."""
+    """All prisms that specify a theme use a valid built-in or custom theme."""
     import yaml
     from package_validator import VALID_THEMES
 
     for prism_path in collect_prism_dirs():
         data = yaml.safe_load((prism_path / "package.yaml").read_text()) or {}
-        theme = data.get("prism_config", {}).get("theme")
+        prism_config = data.get("prism_config", {})
+        theme = prism_config.get("theme")
         if theme:
-            assert theme in VALID_THEMES, (
-                f"{prism_path.name}: invalid theme '{theme}'. " f"Valid themes: {sorted(VALID_THEMES)}"
-            )
+            # Accept built-in themes and any custom themes defined in the package
+            custom_ids = {ct.get("id") for ct in prism_config.get("custom_themes", []) if isinstance(ct, dict)}
+            all_valid = VALID_THEMES | custom_ids
+            assert theme in all_valid, f"{prism_path.name}: invalid theme '{theme}'. " f"Valid: {sorted(all_valid)}"
 
 
 @pytest.mark.integration

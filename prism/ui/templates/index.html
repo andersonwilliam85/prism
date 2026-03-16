@@ -8,55 +8,14 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/branding/prism_transparent_16.png">
     <style>
         :root {
-            /* Ocean Blue Theme (Default) */
-            --gradient-1: #0093E9;
-            --gradient-2: #80D0C7;
-            --gradient-3: #13547a;
-            --gradient-4: #009ffd;
-            --gradient-5: #2a2a72;
-        }
-        
-        /* Theme Definitions */
-        [data-theme="ocean"] {
-            --gradient-1: #0093E9;
-            --gradient-2: #80D0C7;
-            --gradient-3: #13547a;
-            --gradient-4: #009ffd;
-            --gradient-5: #2a2a72;
-        }
-        
-        [data-theme="purple"] {
+            /* Defaults — overridden by package theme via JS */
             --gradient-1: #667eea;
             --gradient-2: #764ba2;
             --gradient-3: #f093fb;
-            --gradient-4: #4facfe;
-            --gradient-5: #00f2fe;
+            --gradient-4: #f5576c;
+            --gradient-5: #4facfe;
         }
-        
-        [data-theme="forest"] {
-            --gradient-1: #134E5E;
-            --gradient-2: #71B280;
-            --gradient-3: #56ab2f;
-            --gradient-4: #a8e063;
-            --gradient-5: #0f9b0f;
-        }
-        
-        [data-theme="sunset"] {
-            --gradient-1: #f12711;
-            --gradient-2: #f5af19;
-            --gradient-3: #ff6a00;
-            --gradient-4: #ee0979;
-            --gradient-5: #ff512f;
-        }
-        
-        [data-theme="midnight"] {
-            --gradient-1: #2c3e50;
-            --gradient-2: #3498db;
-            --gradient-3: #34495e;
-            --gradient-4: #2980b9;
-            --gradient-5: #1abc9c;
-        }
-        
+
         * {
             margin: 0;
             padding: 0;
@@ -426,6 +385,9 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
+        .hamburger-menu.open {
+            display: none;
+        }
         
         .hamburger-menu:hover {
             transform: scale(1.05);
@@ -473,9 +435,18 @@
             transition: left 0.3s ease;
             z-index: 9999;
             overflow-y: auto;
+            overflow-x: hidden;
             padding: 0;
             display: flex;
             flex-direction: column;
+            scrollbar-width: thin;
+        }
+        .settings-panel::-webkit-scrollbar {
+            width: 4px;
+        }
+        .settings-panel::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.15);
+            border-radius: 2px;
         }
         
         .settings-panel.open {
@@ -602,26 +573,6 @@
             height: 40px;
             border-radius: 6px;
             margin-bottom: 8px;
-        }
-        
-        .theme-preview.ocean {
-            background: linear-gradient(135deg, #0093E9, #80D0C7);
-        }
-        
-        .theme-preview.purple {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-        }
-        
-        .theme-preview.forest {
-            background: linear-gradient(135deg, #134E5E, #71B280);
-        }
-        
-        .theme-preview.sunset {
-            background: linear-gradient(135deg, #f12711, #f5af19);
-        }
-        
-        .theme-preview.midnight {
-            background: linear-gradient(135deg, #2c3e50, #3498db);
         }
         
         .theme-name {
@@ -809,26 +760,7 @@
                 <p style="color: #666; margin-bottom: 20px;">Select your preferred color scheme</p>
                 
                 <div class="theme-grid" id="themeGrid">
-                    <div class="theme-option active" data-theme="ocean" onclick="selectTheme('ocean')">
-                        <div class="theme-preview ocean"></div>
-                        <div class="theme-name">Ocean Blue</div>
-                    </div>
-                    <div class="theme-option" data-theme="purple" onclick="selectTheme('purple')">
-                        <div class="theme-preview purple"></div>
-                        <div class="theme-name">Purple Haze</div>
-                    </div>
-                    <div class="theme-option" data-theme="forest" onclick="selectTheme('forest')">
-                        <div class="theme-preview forest"></div>
-                        <div class="theme-name">Forest Green</div>
-                    </div>
-                    <div class="theme-option" data-theme="sunset" onclick="selectTheme('sunset')">
-                        <div class="theme-preview sunset"></div>
-                        <div class="theme-name">Sunset Orange</div>
-                    </div>
-                    <div class="theme-option" data-theme="midnight" onclick="selectTheme('midnight')">
-                        <div class="theme-preview midnight"></div>
-                        <div class="theme-name">Midnight Dark</div>
-                    </div>
+                    <p style="color: #999; font-size: 0.85em;">Themes load from the selected package.</p>
                 </div>
                 
                 <div style="margin-top: 20px; padding: 15px; background: #f0f9ff; border-left: 4px solid #0093E9; border-radius: 4px;">
@@ -868,18 +800,15 @@
         <!-- Action Buttons -->
         <div style="padding: 20px; border-top: 1px solid #e0e0e0; background: white;">
             <div style="display: flex; gap: 10px;">
-                <button class="btn-secondary" onclick="toggleSettings()" style="flex: 1;">Close</button>
-                <button class="btn-primary" onclick="applySettingsAndContinue()" style="flex: 2;">Apply & Continue →</button>
+                <button class="btn-primary" onclick="toggleSettings()" style="flex: 1;">Close</button>
             </div>
         </div>
     </div>
     
     <div class="container">
         <div class="header">
-            <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
-                <img src="/assets/branding/prism_light_128.png" alt="Prism" id="brandingLogo" style="height: 48px; width: auto;">
-                <h1 id="brandingTitle" style="margin: 0;">Prism</h1>
-            </div>
+            <img src="/assets/branding/prism_light_128.png" alt="Prism" id="brandingLogo" style="height: 36px; width: auto; margin-bottom: 8px;">
+            <h1 id="brandingTitle" style="margin: 0;">Prism</h1>
             <p class="subtitle" id="brandingTagline">Refract complexity into clarity</p>
         </div>
         
@@ -1043,7 +972,7 @@
         
         // Default Prism Configuration
         const DEFAULT_PRISM_CONFIG = {
-            theme: 'ocean',
+            theme: null,
             sources: [
                 { url: 'local', name: 'Built-in Prisms', type: 'local' }
             ],
@@ -1108,22 +1037,41 @@
             document.getElementById('settingsStep' + stepNum).classList.add('active');
         }
         
+        // Cache for environment counts per package
+        let _envCounts = {};
+
+        async function loadEnvCounts() {
+            try {
+                const resp = await fetch('/api/history');
+                const data = await resp.json();
+                _envCounts = {};
+                (data.installs || []).forEach(inst => {
+                    const pkg = inst.package || '';
+                    _envCounts[pkg] = (_envCounts[pkg] || 0) + 1;
+                });
+            } catch (e) { /* ignore */ }
+        }
+
         function loadPrismsIntoSettings() {
             const container = document.getElementById('settingsPrismList');
-            
-            // Show the prisms from the main packages data
+
             if (typeof packages !== 'undefined' && packages.length > 0) {
                 let html = '';
-                // Default prism first
-                const sorted = [...packages].sort((a, b) => (b.default ? 1 : 0) - (a.default ? 1 : 0));
+                const sorted = [...packages].sort((a, b) => {
+                    if (a.name === selectedPackage) return -1;
+                    if (b.name === selectedPackage) return 1;
+                    return (b.default ? 1 : 0) - (a.default ? 1 : 0);
+                });
                 sorted.forEach(pkg => {
                     const isSelected = selectedPackage === pkg.name;
                     const defaultBadge = pkg.default ? '<span style="display:inline-block;background:var(--gradient-1);color:white;font-size:0.7em;padding:2px 8px;border-radius:10px;margin-left:8px;vertical-align:middle;">Default</span>' : '';
+                    const envCount = _envCounts[pkg.name] || 0;
+                    const envBadge = envCount > 0 ? `<span style="display:inline-block;background:#10b981;color:white;font-size:0.7em;padding:2px 8px;border-radius:10px;margin-left:6px;vertical-align:middle;">${envCount} env${envCount > 1 ? 's' : ''}</span>` : '';
                     html += `
                         <div onclick="selectPrismFromSettings('${pkg.name}')" style="margin-bottom: 10px; padding: 14px 16px; border: 2px solid ${isSelected ? 'var(--gradient-1)' : '#e0e0e0'}; border-radius: 10px; cursor: pointer; transition: all 0.2s ease; background: ${isSelected ? 'rgba(0,147,233,0.04)' : 'white'};">
                             <div style="display: flex; align-items: center; justify-content: space-between;">
                                 <div>
-                                    <span style="font-weight: 600; font-size: 1.05em;">${pkg.title}</span>${defaultBadge}
+                                    <span style="font-weight: 600; font-size: 1.05em;">${pkg.title}</span>${defaultBadge}${envBadge}
                                     <div style="font-size: 0.85em; color: #888; margin-top: 4px;">${pkg.description}</div>
                                 </div>
                                 ${isSelected ? '<span style="color: var(--gradient-1); font-size: 1.2em;">&#10003;</span>' : ''}
@@ -1137,8 +1085,8 @@
             }
         }
         
-        function selectPrismFromSettings(prismName) {
-            selectedPackage = prismName;
+        async function selectPrismFromSettings(prismName) {
+            await selectPackage(prismName);
             loadPrismsIntoSettings();
         }
         
@@ -1147,16 +1095,17 @@
             const npmReg = document.getElementById('settingsNpmRegistry').value.trim();
             if (npmReg) {
                 prismConfig.npmRegistry = npmReg;
-                savePrismConfig(prismConfig);
             }
-            
+            // Preserve user's theme selection across package reload
+            const userTheme = prismConfig.theme;
+            savePrismConfig(prismConfig);
+
             // Close settings panel
             toggleSettings();
-            
-            // If a prism is selected, proceed with installation
+
+            // Reload package config (applies branding, tiers, etc.) without resetting theme
             if (selectedPackage) {
-                // Trigger the package selection
-                selectPackage(selectedPackage);
+                selectPackage(selectedPackage, false);
             }
         }
         
@@ -1208,9 +1157,22 @@
             }
         }
         
+        // Theme gradient definitions — populated entirely from the package config API
+        let _themeGradients = {};
+
         function selectTheme(themeName) {
-            // Update theme
             document.documentElement.setAttribute('data-theme', themeName);
+
+            // Apply gradients via inline styles — works for both built-in and custom
+            const gradients = _themeGradients[themeName];
+            if (gradients) {
+                const root = document.documentElement.style;
+                root.setProperty('--gradient-1', gradients.gradient_1);
+                root.setProperty('--gradient-2', gradients.gradient_2);
+                root.setProperty('--gradient-3', gradients.gradient_3 || gradients.gradient_1);
+                root.setProperty('--gradient-4', gradients.gradient_4 || gradients.gradient_2);
+                root.setProperty('--gradient-5', gradients.gradient_5 || gradients.gradient_1);
+            }
 
             // Update active state in settings
             document.querySelectorAll('.theme-option').forEach(opt => {
@@ -1223,6 +1185,15 @@
 
             // Save to config
             prismConfig.theme = themeName;
+            // Save per-package theme
+            if (selectedPackage) {
+                if (!prismConfig.packageThemes) prismConfig.packageThemes = {};
+                prismConfig.packageThemes[selectedPackage] = themeName;
+            }
+            // Save custom gradients for reload
+            if (gradients) {
+                prismConfig.customGradients = gradients;
+            }
             savePrismConfig(prismConfig);
         }
 
@@ -1230,8 +1201,17 @@
             const grid = document.getElementById('themeGrid');
             if (!grid || !themes || themes.length === 0) return;
 
-            // Inject CSS for any custom themes
+            // Cache custom theme gradients and inject CSS
             themes.forEach(t => {
+                if (t.gradient_1) {
+                    _themeGradients[t.id] = {
+                        gradient_1: t.gradient_1,
+                        gradient_2: t.gradient_2,
+                        gradient_3: t.gradient_3,
+                        gradient_4: t.gradient_4,
+                        gradient_5: t.gradient_5,
+                    };
+                }
                 if (t.gradient_1 && !document.querySelector(`style[data-theme-css="${t.id}"]`)) {
                     const style = document.createElement('style');
                     style.setAttribute('data-theme-css', t.id);
@@ -1327,17 +1307,15 @@
         
         // Initialize Prism Configuration on load
         (function() {
-            // Apply saved theme
-            document.documentElement.setAttribute('data-theme', prismConfig.theme);
-            
-            // Set active theme in settings
-            document.querySelectorAll('.theme-option').forEach(opt => {
-                if (opt.dataset.theme === prismConfig.theme) {
-                    opt.classList.add('active');
-                } else {
-                    opt.classList.remove('active');
-                }
-            });
+            // Restore custom gradient cache if saved
+            if (prismConfig.customGradients) {
+                _themeGradients[prismConfig.theme] = prismConfig.customGradients;
+            }
+
+            // Apply saved theme (handles both built-in and custom)
+            if (prismConfig.theme) {
+                selectTheme(prismConfig.theme);
+            }
             
             // Render prism sources
             renderPrismSources();
@@ -2096,12 +2074,14 @@
                     default: pkg.default,
                 }));
 
-                // Auto-select the default prism (or first available)
-                const defaultPkg = data.packages.find(pkg => pkg.default) || data.packages[0];
-                if (defaultPkg) {
-                    selectedPackage = defaultPkg.id;
-                    await loadAndApplyPrismConfig(defaultPkg.id);
-                    await renderStep1Tiers(defaultPkg.id);
+                // Restore saved package or fall back to default
+                const savedPkg = prismConfig.selectedPackage;
+                const targetPkg = savedPkg && data.packages.find(pkg => pkg.id === savedPkg)
+                    ? savedPkg
+                    : (data.packages.find(pkg => pkg.default) || data.packages[0])?.id;
+                if (targetPkg) {
+                    await selectPackage(targetPkg, !savedPkg);
+                    loadPrismsIntoSettings();
                 } else {
                     packagesList.innerHTML = `
                         <div class="alert alert-warning">
@@ -2121,13 +2101,31 @@
             }
         }
         
-        async function selectPackage(packageName) {
+        async function selectPackage(packageName, resetTheme = true) {
+            const isNewPackage = selectedPackage !== packageName;
+
+            // Save current package's theme before switching
+            if (isNewPackage && selectedPackage && prismConfig.theme) {
+                if (!prismConfig.packageThemes) prismConfig.packageThemes = {};
+                prismConfig.packageThemes[selectedPackage] = prismConfig.theme;
+            }
+
             selectedPackage = packageName;
+            prismConfig.selectedPackage = packageName;
             // Clear previous tier selections
             Object.keys(selectedSubPrisms).forEach(k => delete selectedSubPrisms[k]);
+            // Restore saved theme for this package, or null to use package default
+            if (isNewPackage && resetTheme) {
+                const savedThemeForPkg = (prismConfig.packageThemes || {})[packageName];
+                prismConfig.theme = savedThemeForPkg || null;
+                delete prismConfig.customGradients;
+                _themeGradients = {};
+            }
+            savePrismConfig(prismConfig);
             // Apply config (theme, branding, sources) and re-render Step 1 tiers
             await loadAndApplyPrismConfig(packageName);
             await renderStep1Tiers(packageName);
+            checkPreviousInstalls();
         }
 
         async function renderStep1Tiers(packageName) {
@@ -2202,29 +2200,20 @@
                 
                 if (data.prism_config) {
                     console.log(`📦 Applying prism_config from ${packageName}:`, data.prism_config);
-                    
-                    // Apply theme if specified
-                    if (data.prism_config.theme) {
-                        const theme = data.prism_config.theme;
-                        document.documentElement.setAttribute('data-theme', theme);
 
-                        // Update theme selection in settings
-                        document.querySelectorAll('.theme-option').forEach(opt => {
-                            if (opt.dataset.theme === theme) {
-                                opt.classList.add('active');
-                            } else {
-                                opt.classList.remove('active');
-                            }
-                        });
-
-                        // Save to prismConfig
-                        prismConfig.theme = theme;
-                        savePrismConfig(prismConfig);
+                    // Render available themes FIRST so custom gradients get cached
+                    if (data.prism_config.available_themes) {
+                        const currentTheme = prismConfig.theme || data.prism_config.theme;
+                        renderThemeGrid(data.prism_config.available_themes, currentTheme);
                     }
 
-                    // Render available themes from package config
-                    if (data.prism_config.available_themes) {
-                        renderThemeGrid(data.prism_config.available_themes, data.prism_config.theme || prismConfig.theme);
+                    // Apply theme — use saved preference if set, otherwise package default
+                    const savedTheme = prismConfig.theme;
+                    const packageTheme = data.prism_config.theme;
+                    const themeToApply = savedTheme || packageTheme;
+
+                    if (themeToApply) {
+                        selectTheme(themeToApply);
                     }
                     
                     // Apply sources if specified
@@ -2389,8 +2378,15 @@
             try {
                 const resp = await fetch('/api/history');
                 const data = await resp.json();
-                const installs = data.installs || [];
-                if (installs.length === 0) return;
+                // Only show environments for the selected package
+                const installs = (data.installs || []).filter(
+                    inst => !selectedPackage || !inst.package || inst.package === selectedPackage
+                );
+                if (installs.length === 0) {
+                    const wrapper = document.getElementById('previousInstalls');
+                    wrapper.style.display = 'none';
+                    return;
+                }
 
                 const container = document.getElementById('previousInstallsList');
                 const wrapper = document.getElementById('previousInstalls');
@@ -2444,7 +2440,7 @@
 
         // Initialize
         updateProgress();
-        loadPackages();
+        loadEnvCounts().finally(() => loadPackages());
         checkPreviousInstalls();
     </script>
 </body>

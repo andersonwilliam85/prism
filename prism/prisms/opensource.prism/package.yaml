@@ -21,21 +21,33 @@ package:
 
 # PRISM META-CONFIGURATION
 prism_config:
-  theme: "forest"
+  theme: "community"
   theme_options:
-    - "forest"
-    - "ocean"
-    - "purple"
-    - "sunset"
     - "community"
+    - "contributor"
+    - "maintainer"
   custom_themes:
     - id: "community"
       name: "Community"
-      gradient_1: "#059669"
-      gradient_2: "#10b981"
-      gradient_3: "#34d399"
-      gradient_4: "#6ee7b7"
-      gradient_5: "#a7f3d0"
+      gradient_1: "#238636"
+      gradient_2: "#2ea043"
+      gradient_3: "#3fb950"
+      gradient_4: "#0d1117"
+      gradient_5: "#161b22"
+    - id: "contributor"
+      name: "Contributor"
+      gradient_1: "#d97706"
+      gradient_2: "#f59e0b"
+      gradient_3: "#fbbf24"
+      gradient_4: "#1f2937"
+      gradient_5: "#111827"
+    - id: "maintainer"
+      name: "Maintainer"
+      gradient_1: "#4338ca"
+      gradient_2: "#4f46e5"
+      gradient_3: "#6366f1"
+      gradient_4: "#818cf8"
+      gradient_5: "#1e1b4b"
 
   sources:
     - url: "local"

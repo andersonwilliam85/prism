@@ -24,18 +24,33 @@ package:
 
 # PRISM META-CONFIGURATION
 prism_config:
-  theme: "midnight"
+  theme: "corporate"
   theme_options:
-    - "midnight"
-    - "ocean"
+    - "corporate"
+    - "boardroom"
+    - "innovation"
   custom_themes:
     - id: "corporate"
       name: "Corporate Blue"
-      gradient_1: "#1e3a8a"
-      gradient_2: "#1e40af"
-      gradient_3: "#2563eb"
-      gradient_4: "#3b82f6"
-      gradient_5: "#60a5fa"
+      gradient_1: "#1e3a5f"
+      gradient_2: "#2c5282"
+      gradient_3: "#4a6fa5"
+      gradient_4: "#718096"
+      gradient_5: "#a0aec0"
+    - id: "boardroom"
+      name: "Boardroom"
+      gradient_1: "#7f1d1d"
+      gradient_2: "#991b1b"
+      gradient_3: "#b91c1c"
+      gradient_4: "#d4af37"
+      gradient_5: "#fbbf24"
+    - id: "innovation"
+      name: "Innovation"
+      gradient_1: "#1d4ed8"
+      gradient_2: "#2563eb"
+      gradient_3: "#3b82f6"
+      gradient_4: "#60a5fa"
+      gradient_5: "#93c5fd"
 
   sources:
     - url: "local"

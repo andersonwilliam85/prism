@@ -22,14 +22,11 @@ package:
 
 # PRISM META-CONFIGURATION
 prism_config:
-  theme: "ocean"
+  theme: "prism"
   theme_options:
-    - "ocean"
-    - "purple"
-    - "forest"
-    - "sunset"
-    - "midnight"
     - "prism"
+    - "clarity"
+    - "spectrum"
   custom_themes:
     - id: "prism"
       name: "Prism"
@@ -38,6 +35,20 @@ prism_config:
       gradient_3: "#f093fb"
       gradient_4: "#f5576c"
       gradient_5: "#4facfe"
+    - id: "clarity"
+      name: "Clarity"
+      gradient_1: "#3b82f6"
+      gradient_2: "#60a5fa"
+      gradient_3: "#93c5fd"
+      gradient_4: "#dbeafe"
+      gradient_5: "#2563eb"
+    - id: "spectrum"
+      name: "Spectrum"
+      gradient_1: "#ec4899"
+      gradient_2: "#f59e0b"
+      gradient_3: "#10b981"
+      gradient_4: "#6366f1"
+      gradient_5: "#8b5cf6"
   default: true
 
   sources:
