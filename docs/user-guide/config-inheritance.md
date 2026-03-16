@@ -238,7 +238,7 @@ bundled_prisms:
 
 ## Sub-Prism Config File Structure
 
-Each sub-prism is a plain YAML file. Any keys it contains are merged into the final config:
+Each sub-prism is a plain YAML file. Any keys it contains are merged into the final config. Tools are referenced by string name only — they must exist in the centralized `tool-registry.yaml`:
 
 ```yaml
 # base/company.yaml
