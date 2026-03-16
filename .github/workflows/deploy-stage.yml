@@ -80,7 +80,6 @@ jobs:
         run: |
           tar -czf prism-rc-${{ steps.version.outputs.version }}.tar.gz \
             prism/ \
-            prisms/ \
             scripts/ \
             install.py \
             install-ui.py \
