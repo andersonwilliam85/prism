@@ -31,7 +31,7 @@ docs/
 │   ├── configuration-schema.md           # Full package.yaml schema
 │   ├── package-system.md                 # Prism system internals
 │   ├── npm-packages.md                   # NPM distribution
-│   ├── merge-strategies.md               # tools merge rules
+│   ├── merge-strategies.md               # Tool merge rules
 │   ├── bad-config-examples.md            # Common validation errors and fixes
 │   ├── rollback-system.md                # Installation rollback
 │   └── privilege-separation.md           # Sudo / privilege separation
@@ -61,8 +61,8 @@ docs/
 Complete catalog of pre-built prisms:
 
 - **Personal Dev** — Solo developers
-- **Startup** — Fast-moving teams (10–50)
-- **ACME Corp** — Small companies (100–1K)
+- **Startup** — Fast-moving teams (10--50)
+- **ACME Corp** — Small companies (100--1K)
 - **Consulting Firm** — Multi-client setups
 - **Fortune 500** — Enterprise (50K+)
 - **University** — Academic institutions
@@ -77,6 +77,7 @@ Step-by-step guide to authoring a custom prism:
 - Prism structure — `package.yaml`, sub-prism tiers, YAML config files
 - `prism_config` — themes, proxies, registries, branding
 - `bundled_prisms` — defining base and optional tiers
+- Centralized tool registry (`tool-registry.yaml`)
 - Writing sub-prism YAML files
 - Validation and testing
 
@@ -86,7 +87,7 @@ Step-by-step guide to authoring a custom prism:
 
 Deep dive into hierarchical configuration merging:
 
-- How sub-prisms merge (base → division → role → team)
+- How sub-prisms merge (base -> division -> role -> team)
 - Merge strategies: union, deep_merge, override, append
 - Conflict resolution
 - Examples and visualizations
@@ -124,7 +125,7 @@ Dynamic field dependencies in the installer UI:
 - Parent-child field relationships via `depends_on`
 - Filtered option lists via `option_map`
 - Topological dependency resolution
-- Example: division → team cascading
+- Example: division -> team cascading
 
 ### [Settings Panel](user-guide/settings-panel.md)
 
@@ -144,6 +145,7 @@ VBD-inspired layered architecture:
 
 - Managers (the "what"), Engines (the "how"), Accessors (the "where")
 - Dependency injection via `container.py`
+- Tool registry and config engine validation
 - Complete component inventory
 
 **Perfect for:** Contributors and anyone extending Prism
@@ -166,11 +168,12 @@ Complete `package.yaml` schema reference:
 
 Technical deep-dive into the prism system:
 
+- Centralized tool registry (`tool-registry.yaml`)
+- Tool categories (core, editor, containers, runtime, cloud, kubernetes, cli)
 - Prism structure and format
-- Metadata and manifests
 - Discovery, loading, and validation
 - Sub-prism merge algorithms
-- CLI reference
+- CLI reference (`prism install`, `prism rollback`, `prism history`)
 
 **Perfect for:** Advanced customization and troubleshooting
 
@@ -188,12 +191,13 @@ Distributing prisms via NPM:
 
 ### [Rollback System](reference/rollback-system.md)
 
-Installation rollback and crash recovery:
+Installation rollback and undo:
 
-- Action tracking (files, directories, commands, packages, config changes)
+- `.prism_rollback.json` manifest persisted on install
+- `prism rollback <workspace>` CLI command
+- UI rollback button via `/api/rollback` endpoint
+- Rollback engine at `prism/engines/rollback_engine.py`
 - LIFO undo sequences
-- State persistence to JSON temp files
-- Auto-rollback vs explicit rollback
 
 **Perfect for:** Understanding installation safety guarantees
 
@@ -216,7 +220,8 @@ Sudo session management and two-phase install:
 How to contribute to Prism:
 
 - Development setup
-- Code style and standards
+- Code style and standards (isort, black, flake8)
+- Pre-commit hooks (including pytest)
 - Commit conventions
 - PR workflow and code review
 
@@ -224,7 +229,8 @@ How to contribute to Prism:
 
 Comprehensive testing guide:
 
-- Test types (unit, CLI, E2E, integration)
+- 590+ test functions across 35 test files
+- Test types (unit, CLI, web, integration, E2E)
 - Running tests (Makefile commands)
 - Writing tests — templates and best practices
 - Coverage reports and CI integration
@@ -235,7 +241,7 @@ Complete CI/CD automation:
 
 - GitHub Actions workflows
 - Branch protection rules
-- Development workflow (dev → stage → main)
+- Development workflow (dev -> stage -> main)
 - Release process and Makefile commands
 
 ### [Publishing Prisms](contributor-guide/publishing-prisms.md)
@@ -254,41 +260,57 @@ End-to-end guide to publishing a prism package to npm:
 ### I want to...
 
 **Choose a prism for my team**
-→ [Choosing a Prism](getting-started/choosing-a-prism.md)
+-> [Choosing a Prism](getting-started/choosing-a-prism.md)
 
 **Create a custom prism**
-→ [Creating Configurations](user-guide/creating-configurations.md)
+-> [Creating Configurations](user-guide/creating-configurations.md)
 
 **Understand how sub-prisms merge**
-→ [Sub-Prism Inheritance](user-guide/config-inheritance.md)
+-> [Sub-Prism Inheritance](user-guide/config-inheritance.md)
 
 **Validate my package.yaml**
-→ [Configuration Schema](reference/configuration-schema.md)
+-> [Configuration Schema](reference/configuration-schema.md)
 
 **Set up a private registry**
-→ [Custom Registries](user-guide/custom-registries.md)
+-> [Custom Registries](user-guide/custom-registries.md)
 
 **Customize the UI theme**
-→ [Themes](user-guide/themes.md)
+-> [Themes](user-guide/themes.md)
 
 **Set up cascading dropdowns**
-→ [Cascading Dropdowns](user-guide/cascading-dropdowns.md)
+-> [Cascading Dropdowns](user-guide/cascading-dropdowns.md)
 
 **Understand the architecture**
-→ [Architecture](reference/architecture.md)
+-> [Architecture](reference/architecture.md)
 
 **Publish to NPM**
-→ [NPM Packages](reference/npm-packages.md)
+-> [NPM Packages](reference/npm-packages.md)
+
+**Roll back an installation**
+-> [Rollback System](reference/rollback-system.md)
+
+**View installation history**
+-> [Prism System](reference/package-system.md)
 
 **Set up CI/CD**
-→ [CI/CD Pipeline](contributor-guide/ci-cd.md)
+-> [CI/CD Pipeline](contributor-guide/ci-cd.md)
 
 **Run tests**
-→ [Testing](contributor-guide/testing.md)
+-> [Testing](contributor-guide/testing.md)
 
 ---
 
 ## Feature Highlights
+
+### Tool Registry
+
+Tools are defined once in a centralized `tool-registry.yaml` file. Each tool specifies a label, summary, description, category, per-platform install commands, and per-platform uninstall commands. Child configs reference tools by string name only.
+
+[Learn more](reference/package-system.md)
+
+### Tool Categories
+
+Tools are grouped into 7 categories: **core**, **editor**, **containers**, **runtime**, **cloud**, **kubernetes**, **cli**. The UI displays tools with category grouping, hover tooltips, and platform-aware filtering.
 
 ### Prism System
 
@@ -296,10 +318,10 @@ Every prism is self-contained: identity, tool settings, and a hierarchy of compo
 
 ```
 my-company.prism
- └── bundled_prisms
-      ├── base         → required, applies to everyone
-      ├── divisions    → user picks one
-      └── roles        → user picks one
+ +-- bundled_prisms
+      +-- base         -> required, applies to everyone
+      +-- divisions    -> user picks one
+      +-- roles        -> user picks one
 ```
 
 [Learn more](reference/package-system.md)
@@ -310,25 +332,29 @@ Settings flow down through tiers. Later layers extend earlier ones — tools mer
 
 [Learn more](user-guide/config-inheritance.md)
 
-### 7 Pre-Built Prisms
+### 8 Starter Packages
 
-From solo developers to Fortune 500 enterprises.
+From solo developers to Fortune 500 enterprises: `prism`, `startup`, `opensource`, `university`, `fortune500`, `acme-corp`, `consulting-firm`, and `cli-test-prism`.
 [See all prisms](getting-started/choosing-a-prism.md)
+
+### Installation Rollback
+
+Every install persists a `.prism_rollback.json` manifest. Use `prism rollback <workspace>` from the CLI or the rollback button in the UI to reverse all actions.
+[Learn more](reference/rollback-system.md)
+
+### Installation History
+
+`prism history` scans for previous installations. Also available via the `/api/history` endpoint.
 
 ### Beautiful Web UI
 
-5 themes, real-time progress, responsive design.
+Tool selection page with category grouping, inline validation (no alerts), hover tooltips for tool descriptions, and platform-aware filtering. 5 themes, real-time progress, responsive design.
 [Customize themes](user-guide/themes.md)
 
 ### Cascading Dropdowns
 
 Dynamic field dependencies — selecting a division filters available teams automatically.
 [Learn more](user-guide/cascading-dropdowns.md)
-
-### Installation Rollback
-
-Every action is tracked. If something fails, Prism unwinds changes in LIFO order.
-[Learn more](reference/rollback-system.md)
 
 ### Privilege Separation
 
@@ -342,7 +368,7 @@ Clean layered design: Managers (the "what"), Engines (the "how"), Accessors (the
 
 ### Comprehensive Testing
 
-Unit + CLI + E2E tests, coverage reports, Playwright traces.
+590+ tests across unit, CLI, web, integration, and E2E suites. Pre-commit hooks enforce isort, black, flake8, and pytest.
 [Learn more](contributor-guide/testing.md)
 
 ### Full CI/CD
@@ -381,14 +407,15 @@ GitHub Actions workflows, 3 environments, automated releases.
 # Clone and install
 git clone https://github.com/andersonwilliam85/prism.git
 cd prism
-pip3 install pyyaml flask rich
+make install-dev
 
 # Launch Web UI
-python3 install-ui.py
+make run
 # Opens at http://localhost:5555
 
 # Or use the CLI
-python3 install.py --prism prism
+prism install
+prism ui
 ```
 
 ---

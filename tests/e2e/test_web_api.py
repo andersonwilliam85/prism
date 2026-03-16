@@ -78,7 +78,7 @@ class TestPackagesEndpoint:
 @pytest.mark.e2e
 class TestUserFieldsEndpoint:
     def test_prism_returns_fields(self, client):
-        prism_path = Path(__file__).parent.parent.parent / "prisms" / "prism.prism"
+        prism_path = Path(__file__).parent.parent.parent / "prism" / "prisms" / "prism.prism"
         if not prism_path.exists():
             pytest.skip("prism.prism not present")
         resp = client.get("/api/package/prism/user-fields")
@@ -89,7 +89,7 @@ class TestUserFieldsEndpoint:
         assert len(data["fields"]) > 0
 
     def test_each_field_has_id_and_label(self, client):
-        prism_path = Path(__file__).parent.parent.parent / "prisms" / "prism.prism"
+        prism_path = Path(__file__).parent.parent.parent / "prism" / "prisms" / "prism.prism"
         if not prism_path.exists():
             pytest.skip("prism.prism not present")
         resp = client.get("/api/package/prism/user-fields")
@@ -113,7 +113,7 @@ class TestUserFieldsEndpoint:
 @pytest.mark.e2e
 class TestMetadataEndpoint:
     def test_prism_metadata(self, client):
-        prism_path = Path(__file__).parent.parent.parent / "prisms" / "prism.prism"
+        prism_path = Path(__file__).parent.parent.parent / "prism" / "prisms" / "prism.prism"
         if not prism_path.exists():
             pytest.skip("prism.prism not present")
         resp = client.get("/api/package/prism/metadata")
@@ -122,7 +122,7 @@ class TestMetadataEndpoint:
         assert data.get("name") == "prism"
 
     def test_metadata_has_display_name(self, client):
-        prism_path = Path(__file__).parent.parent.parent / "prisms" / "prism.prism"
+        prism_path = Path(__file__).parent.parent.parent / "prism" / "prisms" / "prism.prism"
         if not prism_path.exists():
             pytest.skip("prism.prism not present")
         resp = client.get("/api/package/prism/metadata")
@@ -130,7 +130,7 @@ class TestMetadataEndpoint:
         assert "display_name" in data
 
     def test_metadata_has_tiers_flag(self, client):
-        prism_path = Path(__file__).parent.parent.parent / "prisms" / "prism.prism"
+        prism_path = Path(__file__).parent.parent.parent / "prism" / "prisms" / "prism.prism"
         if not prism_path.exists():
             pytest.skip("prism.prism not present")
         resp = client.get("/api/package/prism/metadata")
@@ -151,7 +151,7 @@ class TestMetadataEndpoint:
 @pytest.mark.e2e
 class TestTiersEndpoint:
     def test_prism_tiers(self, client):
-        prism_path = Path(__file__).parent.parent.parent / "prisms" / "prism.prism"
+        prism_path = Path(__file__).parent.parent.parent / "prism" / "prisms" / "prism.prism"
         if not prism_path.exists():
             pytest.skip("prism.prism not present")
         resp = client.get("/api/package/prism/tiers")
@@ -161,7 +161,7 @@ class TestTiersEndpoint:
         assert isinstance(data["optional_tiers"], list)
 
     def test_tiers_have_required_fields(self, client):
-        prism_path = Path(__file__).parent.parent.parent / "prisms" / "prism.prism"
+        prism_path = Path(__file__).parent.parent.parent / "prism" / "prisms" / "prism.prism"
         if not prism_path.exists():
             pytest.skip("prism.prism not present")
         resp = client.get("/api/package/prism/tiers")
@@ -173,7 +173,7 @@ class TestTiersEndpoint:
             assert isinstance(tier["options"], list)
 
     def test_tier_options_have_id_and_name(self, client):
-        prism_path = Path(__file__).parent.parent.parent / "prisms" / "prism.prism"
+        prism_path = Path(__file__).parent.parent.parent / "prism" / "prisms" / "prism.prism"
         if not prism_path.exists():
             pytest.skip("prism.prism not present")
         resp = client.get("/api/package/prism/tiers")
@@ -231,7 +231,7 @@ class TestTiersEndpoint:
 @pytest.mark.e2e
 class TestPackageConfigEndpoint:
     def test_prism_config(self, client):
-        prism_path = Path(__file__).parent.parent.parent / "prisms" / "prism.prism"
+        prism_path = Path(__file__).parent.parent.parent / "prism" / "prisms" / "prism.prism"
         if not prism_path.exists():
             pytest.skip("prism.prism not present")
         resp = client.get("/api/package/prism/config")
