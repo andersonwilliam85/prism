@@ -14,13 +14,8 @@ Usage:
     python3 install.py --status           # Show current progress
 """
 
-import argparse
-import getpass
-import os
 import platform
-import shutil
 import subprocess
-import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -28,12 +23,8 @@ import yaml
 
 # Try to import rich/questionary for better UX
 try:
-    from rich import print as rprint
-    from rich.console import Console
-    from rich.panel import Panel
-    from rich.progress import BarColumn, Progress, SpinnerColumn, TextColumn
-    from rich.prompt import Confirm, IntPrompt, Prompt
-    from rich.table import Table
+    from rich.console import Console  # noqa: F401
+    from rich.table import Table  # noqa: F401
 
     RICH_AVAILABLE = True
     console = Console()
@@ -41,7 +32,7 @@ except ImportError:
     RICH_AVAILABLE = False
 
 try:
-    import questionary
+    import questionary  # noqa: F401
 
     QUESTIONARY_AVAILABLE = True
 except ImportError:
@@ -125,7 +116,7 @@ def detect_platform():
             with open("/etc/os-release") as f:
                 if "ubuntu" in f.read().lower():
                     return "ubuntu", platform.version()
-        except:
+        except Exception:
             pass
         return "linux", platform.version()
     else:

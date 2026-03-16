@@ -1,22 +1,104 @@
 # ============================================================================
-# MERN STACK
+# MERN STACK — MongoDB, Express, React, Node.js
 # ============================================================================
+# The classic JavaScript-everywhere stack. Fast to prototype, huge ecosystem.
+# Good for: MVPs, real-time apps, content platforms, marketplaces.
 
 stack:
   id: "mern"
   name: "MERN Stack"
-  description: "MongoDB, Express, React, Node.js"
+  description: "MongoDB + Express + React + Node.js — JavaScript top to bottom"
 
 tools_required:
+  - nvm
   - nodejs
   - docker
+  - git
+  - gh
+  - mongosh
+  - mongodb-database-tools
+  - prettier
+  - eslint
 
+tools_optional:
+  - vercel-cli
+  - railway-cli
+  - sentry-cli
+  - act
+  - lazygit
+
+# ---------- Stack details ----------
 tech_stack:
   frontend:
-    - React
-    - JavaScript
+    - React 18+ with TypeScript
+    - Vite for dev server (fast HMR)
+    - Tailwind CSS for styling
+    - React Query / TanStack Query for data fetching
   backend:
-    - Node.js
-    - Express
+    - Node.js LTS
+    - Express.js or Fastify
+    - Mongoose ODM for MongoDB
+    - JWT auth with refresh tokens
   databases:
-    - MongoDB
+    - MongoDB (primary — via Docker or MongoDB Atlas)
+    - Redis (sessions, caching — via Docker or Railway)
+  testing:
+    - Vitest for unit/integration tests
+    - Supertest for API testing
+    - Playwright for E2E
+  deployment:
+    - Docker Compose for local dev (MongoDB + Redis + API + client)
+    - GitHub Actions CI pipeline
+    - Vercel for frontend, Railway for API + MongoDB
+
+# ---------- Local dev setup ----------
+local_dev:
+  docker_compose_services:
+    - mongodb (port 27017)
+    - redis (port 6379)
+    - mongo-express (port 8081, MongoDB admin UI)
+  dev_commands:
+    start_services: "docker compose up -d mongodb redis mongo-express"
+    start_api: "cd src/api && npm run dev"
+    start_client: "cd src/client && npm run dev"
+    start_all: "docker compose up -d mongodb redis && concurrently 'npm run dev:api' 'npm run dev:client'"
+    seed_db: "cd src/api && npm run db:seed"
+    reset_db: "cd src/api && npm run db:reset"
+
+# ---------- Shell aliases for MERN ----------
+shell:
+  aliases:
+    mongo: "docker compose exec mongodb mongosh"
+    mongoui: "open http://localhost:8081"
+    mongodump: "docker compose exec mongodb mongodump --out /dump"
+    mongorestore: "docker compose exec mongodb mongorestore /dump"
+    api: "cd src/api && npm run dev"
+    client: "cd src/client && npm run dev"
+    both: "concurrently 'npm run dev:api' 'npm run dev:client'"
+
+# ---------- Recommended project structure ----------
+project_structure:
+  description: "Monorepo with shared types"
+  layout:
+    - src/
+    -   client/          # React app (Vite)
+    -     src/
+    -       components/  # Shared UI components
+    -       pages/       # Route-level components
+    -       hooks/       # Custom React hooks
+    -       lib/         # API client, utils
+    -   api/             # Express/Fastify server
+    -     src/
+    -       routes/      # API route handlers
+    -       models/      # Mongoose models
+    -       middleware/   # Auth, validation, error handling
+    -       services/    # Business logic
+    -   shared/          # Shared TypeScript types
+    - infrastructure/
+    -   docker-compose.yaml
+    -   Dockerfile.api
+    -   Dockerfile.client
+    - .github/
+    -   workflows/
+    -     ci.yaml        # Lint, test, build on every PR
+    -     deploy.yaml    # Deploy on merge to main

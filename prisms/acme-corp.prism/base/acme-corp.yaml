@@ -1,57 +1,191 @@
 # ============================================================================
-# ACME CORP BASE CONFIGURATION (Example)
+# ACME CORP BASE CONFIGURATION
 # ============================================================================
+# Company-wide settings for all Acme engineers.
+# Acme is standardizing on AWS, GitHub (cloud, not GHE), and
+# establishing shared conventions as the team grows.
 
 company:
-  name: "ACME Corp"
+  name: "Acme Corp"
   domain: "acmecorp.com"
   internal_domain: ".acmecorp.com"
 
-# Network & Environment
+tool_registry_file: "tool-registry.yaml"
+
+# ---------------------------------------------------------------------------
+# NETWORK — no corporate proxy (cloud-first), VPN for prod access only
+# ---------------------------------------------------------------------------
 environment:
   proxy:
-    http: "http://proxy.acmecorp.com:8080"
-    https: "http://proxy.acmecorp.com:8080"
-    no_proxy: "localhost,127.0.0.1,.acmecorp.com"
-  
+    enabled: false
   vpn:
     required: false
-    name: "ACME VPN"
+    name: "Acme VPN (WireGuard)"
+    instructions: "VPN is only required for production database access and internal admin tools. Download WireGuard and import your config from https://vpn.acmecorp.com"
 
-# Git Configuration
+# ---------------------------------------------------------------------------
+# PACKAGE REGISTRIES
+# ---------------------------------------------------------------------------
+registries:
+  npm:
+    url: "https://npm.acmecorp.com"
+    config_command: "npm config set @acme:registry https://npm.acmecorp.com"
+    note: "Public npm for everything except @acme scoped packages"
+  docker:
+    url: "ecr.acmecorp.com"
+    login_command: "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ecr.acmecorp.com"
+  pypi:
+    url: "https://pypi.acmecorp.com/simple"
+    config_command: "pip config set global.extra-index-url https://pypi.acmecorp.com/simple"
+    note: "Public PyPI as primary, internal index for @acme packages"
+
+# ---------------------------------------------------------------------------
+# GIT — GitHub cloud, signed commits encouraged (not yet required)
+# ---------------------------------------------------------------------------
 git:
   user:
-    name: "${USER}"  # Auto-detected
+    name: "${USER}"
     email: "${USER}@acmecorp.com"
-  
-  enterprise:
-    enabled: true
-    enterprise_url: "https://github.acmecorp.com"
+  platform:
+    provider: "github.com"
+    org: "acmecorp"
+    url: "https://github.com/acmecorp"
+  commit_signing:
+    required: false
+    recommended: true
+    instructions: "We strongly encourage GPG-signed commits. See https://dev.acmecorp.com/docs/commit-signing"
+  branch_protection:
+    default_branch: "main"
+    rules:
+      - "Require pull request reviews (minimum 1 approval)"
+      - "Require CI status checks to pass"
+      - "No direct pushes to main"
+  conventions:
+    branch_format: "feature/<JIRA-ID>-short-description or fix/<JIRA-ID>-short-description"
+    commit_format: "Conventional commits encouraged: feat|fix|chore|docs|refactor: description"
+    pr_template: "Available at .github/PULL_REQUEST_TEMPLATE.md in every repo"
 
-# Required Tools (installed for everyone)
+# ---------------------------------------------------------------------------
+# WORKSPACE LAYOUT
+# ---------------------------------------------------------------------------
+workspace:
+  base_dir: "~/work"
+  directories:
+    - path: "~/work/services"
+      description: "The monolith and extracted microservices"
+    - path: "~/work/libraries"
+      description: "Shared npm/Python packages"
+    - path: "~/work/infrastructure"
+      description: "Terraform modules and Kubernetes configs"
+    - path: "~/work/docs"
+      description: "Architecture decision records (ADRs) and team docs"
+
+# ---------------------------------------------------------------------------
+# AWS — standardized on AWS, single region for now
+# ---------------------------------------------------------------------------
+cloud:
+  primary: "AWS"
+  aws:
+    region: "us-east-1"
+    sso_start_url: "https://acmecorp.awsapps.com/start"
+    accounts:
+      - name: "acme-dev"
+        id: "111111111111"
+        purpose: "Development and CI"
+      - name: "acme-staging"
+        id: "222222222222"
+        purpose: "Pre-production testing"
+      - name: "acme-prod"
+        id: "333333333333"
+        purpose: "Production"
+    login_command: "aws sso login"
+    services_used:
+      - "ECS Fargate (containers — migrating to EKS)"
+      - "RDS PostgreSQL (primary database)"
+      - "S3 (storage)"
+      - "SQS/SNS (messaging)"
+      - "CloudFront (CDN)"
+      - "Lambda (event handlers)"
+      - "ECR (container registry)"
+
+# ---------------------------------------------------------------------------
+# CI/CD — GitHub Actions, deploying via Terraform + ECS
+# ---------------------------------------------------------------------------
+ci_cd:
+  platform: "GitHub Actions"
+  pipeline_stages:
+    - "lint + type-check"
+    - "unit tests"
+    - "build Docker image"
+    - "push to ECR"
+    - "deploy to dev (auto on merge)"
+    - "deploy to staging (manual trigger)"
+    - "deploy to prod (manual trigger + approval)"
+  shared_workflows: "https://github.com/acmecorp/.github/tree/main/workflow-templates"
+
+# ---------------------------------------------------------------------------
+# SECURITY — establishing basics as team grows
+# ---------------------------------------------------------------------------
+security:
+  scanning:
+    dependency_scanning:
+      tool: "dependabot"
+      note: "Enabled on all repos via GitHub"
+    secrets_detection:
+      tool: "gitleaks"
+      pre_commit: true
+      note: "Pre-commit hook installed via base setup"
+  access:
+    sso_provider: "Okta"
+    mfa_required: true
+
+# ---------------------------------------------------------------------------
+# REQUIRED TOOLS — every engineer
+# ---------------------------------------------------------------------------
 tools_required:
   - git
   - docker
+  - aws
+  - gh
+  - jq
+
+tools_optional:
   - kubectl
-  - python3
-
-# Available Tools (optional)
-tools_available:
-  - nodejs
-  - java
-  - terraform
   - helm
+  - k9s
+  - ripgrep
+  - fzf
+  - lazygit
+  - httpie
+  - tmux
 
-# Cloud Accounts
-cloud:
-  aws:
-    accounts:
-      - name: "acme-prod"
-        id: "123456789012"
-      - name: "acme-dev"
-        id: "210987654321"
-  
-  gcp:
-    projects:
-      - "acme-production"
-      - "acme-development"
+# ---------------------------------------------------------------------------
+# INTERNAL TOOLS
+# ---------------------------------------------------------------------------
+internal_tools:
+  jira: "https://acmecorp.atlassian.net"
+  confluence: "https://acmecorp.atlassian.net/wiki"
+  slack: "https://acmecorp.slack.com"
+  figma: "https://figma.com/files/team/acmecorp"
+  datadog: "https://app.datadoghq.com"
+  sentry: "https://acmecorp.sentry.io"
+  argocd: "https://argocd.acmecorp.com"
+
+# ---------------------------------------------------------------------------
+# THE MONOLITH — context for new engineers
+# ---------------------------------------------------------------------------
+monolith_migration:
+  status: "In progress — extracting services one domain at a time"
+  monolith_repo: "https://github.com/acmecorp/acme-monolith"
+  monolith_tech: "Python/Django, PostgreSQL"
+  strategy: "Strangler fig pattern — new features as microservices, extract existing domains over time"
+  extracted_services:
+    - "auth-service (Go)"
+    - "notifications-service (Node.js)"
+    - "payments-service (Python/FastAPI)"
+    - "search-service (Python/FastAPI + Elasticsearch)"
+  next_to_extract:
+    - "user-profiles"
+    - "inventory"
+    - "order-management"
+  guidelines: "https://dev.acmecorp.com/docs/monolith-migration"

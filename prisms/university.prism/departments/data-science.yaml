@@ -1,23 +1,88 @@
 # ============================================================================
 # DATA SCIENCE DEPARTMENT
 # ============================================================================
+# Python, R, Jupyter, SQL, conda environments, and visualization tools.
+# Designed for coursework in statistics, machine learning, and data analysis.
 
 department:
   id: "data-science"
   name: "Data Science"
 
+# ── Tools ─────────────────────────────────────────────────────────────────────
+
 tools_required:
+  - git
   - python3
   - jupyter
-  - git
+  - conda
+  - datasci-python
+  - code
 
-tech_stack:
-  languages:
-    - Python
-    - R
-    - SQL
-  tools:
-    - Jupyter
-    - Pandas
-    - scikit-learn
-    - TensorFlow
+tools_optional:
+  - r-lang
+  - rstudio
+  - sqlite3
+  - dbeaver
+  - postgresql
+  - git-lfs
+  - dvc
+  - gh
+
+# ── Language & Library Setup ─────────────────────────────────────────────────
+
+languages:
+  python:
+    version: "3.12+"
+    key_libraries:
+      - "numpy — numerical arrays"
+      - "pandas — data manipulation"
+      - "matplotlib — plotting"
+      - "seaborn — statistical visualization"
+      - "scikit-learn — machine learning"
+      - "scipy — scientific computing"
+      - "statsmodels — statistical modeling"
+    notes: "All installed via the datasci-python tool"
+  r:
+    notes: "Optional. Install r-lang and rstudio if your courses use R."
+    key_libraries:
+      - "tidyverse — data wrangling and visualization"
+      - "ggplot2 — advanced plotting"
+      - "caret — machine learning"
+  sql:
+    notes: "SQLite for coursework, PostgreSQL for advanced database courses"
+
+# ── Conda Environment ────────────────────────────────────────────────────────
+
+conda:
+  default_environment:
+    name: "ds-base"
+    file: "environment.yml"
+    contents: |
+      name: ds-base
+      channels:
+        - conda-forge
+      dependencies:
+        - python=3.12
+        - numpy
+        - pandas
+        - matplotlib
+        - seaborn
+        - scikit-learn
+        - scipy
+        - statsmodels
+        - jupyterlab
+        - ipykernel
+        - sqlalchemy
+        - openpyxl
+        - xlrd
+
+# ── VS Code Extensions ───────────────────────────────────────────────────────
+
+vscode:
+  extensions:
+    - "ms-python.python"
+    - "ms-python.vscode-pylance"
+    - "ms-toolsai.jupyter"
+    - "ms-toolsai.datawrangler"
+    - "mtxr.sqltools"
+    - "eamodio.gitlens"

@@ -1,7 +1,8 @@
 # ============================================================================
 # STARTUP BASE CONFIGURATION
 # ============================================================================
-# Core setup for fast-moving startups — minimal process, maximum velocity.
+# Core setup every startup engineer gets, regardless of role or stack.
+# Optimized for trunk-based development, fast deploys, and day-one productivity.
 
 environment:
   proxy:
@@ -9,19 +10,137 @@ environment:
   vpn:
     required: false
 
+# ---------- Git — trunk-based, fast PRs ----------
 git:
   user:
-    name: "${USER}"
-    email: "${USER}@startup.com"
+    name: "${USER_FULL_NAME}"
+    email: "${USER_EMAIL}"
   config:
+    # Trunk-based development
     init.defaultBranch: main
-    pull.rebase: false
+    pull.rebase: true
+    push.autoSetupRemote: true
+    push.default: current
+    # Fast diffs
+    diff.algorithm: histogram
+    merge.conflictstyle: zdiff3
+    rerere.enabled: true
+    # Startup velocity — auto-prune stale branches
+    fetch.prune: true
+    # Readable logs
+    log.abbrevCommit: true
+    # Commit signing (set up per-user)
+    # commit.gpgsign: true
 
+# ---------- Required tools — every engineer gets these ----------
 tools_required:
   - git
-  - docker
-
-tools_available:
-  - python3
-  - nodejs
   - gh
+  - docker
+  - curl
+  - jq
+  - ripgrep
+  - fzf
+
+tool_registry_file: "tool-registry.yaml"
+
+# ---------- Optional but recommended ----------
+tools_optional:
+  - lazygit
+  - fd
+  - httpie
+  - tmux
+  - act
+  - sentry-cli
+  - slack-cli
+  - trivy
+
+# ---------- Shell aliases — startup velocity ----------
+shell:
+  aliases:
+    # Git — fast trunk-based workflow
+    gs: "git status -sb"
+    gc: "git commit"
+    gca: "git commit --amend --no-edit"
+    gp: "git push"
+    gpl: "git pull --rebase"
+    gcb: "git checkout -b"
+    gco: "git checkout"
+    gbd: "git branch -d"
+    glog: "git log --oneline --graph -20"
+    gsync: "git fetch origin && git rebase origin/main"
+    gnuke: "git clean -fd && git checkout ."
+
+    # GitHub — PRs are the unit of work
+    pr: "gh pr create --fill"
+    prs: "gh pr list"
+    prv: "gh pr view --web"
+    prco: "gh pr checkout"
+    ci: "gh run list -L 5"
+    ciw: "gh run watch"
+
+    # Docker — local services
+    dc: "docker compose"
+    dcu: "docker compose up -d"
+    dcd: "docker compose down"
+    dcr: "docker compose restart"
+    dcl: "docker compose logs -f"
+    dps: "docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'"
+    dclean: "docker system prune -af --volumes"
+
+    # Project navigation
+    dev: "cd ~/dev/${STARTUP_NAME}"
+    src: "cd ~/dev/${STARTUP_NAME}/src"
+    infra: "cd ~/dev/${STARTUP_NAME}/infrastructure"
+
+    # Utilities
+    ports: "lsof -iTCP -sTCP:LISTEN -P -n"
+    myip: "curl -s ifconfig.me"
+    weather: "curl -s wttr.in/?format=3"
+    uuid: "python3 -c 'import uuid; print(uuid.uuid4())'"
+    epoch: "date +%s"
+    serve: "python3 -m http.server 8000"
+    json: "python3 -m json.tool"
+
+  # Shell functions for common workflows
+  functions:
+    # Create a branch, commit, push, and open a PR in one flow
+    ship: |
+      branch="$1"
+      if [ -z "$branch" ]; then echo "Usage: ship <branch-name>"; return 1; fi
+      git checkout -b "$branch" && git add -A && git commit && git push -u origin "$branch" && gh pr create --fill
+    # Quick deploy check — see the last 5 CI runs
+    deploys: |
+      gh run list --limit 5 --json status,conclusion,name,createdAt \
+        --template '{{range .}}{{.createdAt}} {{.name}} {{.status}}/{{.conclusion}}{{"\n"}}{{end}}'
+
+# ---------- Workspace structure ----------
+workspace:
+  root: "~/dev/${STARTUP_NAME}"
+  directories:
+    - src              # Application source code (monorepo or multi-repo clones)
+    - infrastructure   # Terraform/Pulumi IaC, Docker configs, k8s manifests
+    - docs             # Architecture decisions, runbooks, API docs
+    - scripts          # One-off scripts, data migrations, automation
+
+# ---------- VS Code settings — shared team defaults ----------
+vscode:
+  extensions:
+    - ms-vscode.vscode-typescript-next
+    - dbaeumer.vscode-eslint
+    - esbenp.prettier-vscode
+    - ms-azuretools.vscode-docker
+    - github.vscode-github-actions
+    - github.copilot
+    - eamodio.gitlens
+    - bradlc.vscode-tailwindcss
+  settings:
+    editor.formatOnSave: true
+    editor.defaultFormatter: "esbenp.prettier-vscode"
+    editor.tabSize: 2
+    editor.rulers: [100]
+    files.trimTrailingWhitespace: true
+    files.insertFinalNewline: true
+    typescript.preferences.importModuleSpecifier: "non-relative"
+    git.autofetch: true
+    git.pruneOnFetch: true

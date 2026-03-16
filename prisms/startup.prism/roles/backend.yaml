@@ -1,25 +1,93 @@
 # ============================================================================
 # BACKEND ENGINEER ROLE
 # ============================================================================
+# API-focused: builds the services, data pipelines, and infrastructure
+# that the product runs on. Owns uptime, performance, and data integrity.
 
 role:
   id: "backend"
   name: "Backend Engineer"
-  description: "APIs and services"
+  description: "APIs, services, databases, and infrastructure — own the system behind the product"
 
 tools_required:
-  - vscode
-  - docker
-  - python3
   - git
+  - gh
+  - docker
+  - curl
+  - jq
+  - ripgrep
+  - httpie
+  - postgresql
+  - redis-cli
 
+tools_optional:
+  - nvm
+  - nodejs
+  - python3
+  - pyenv
+  - aws
+  - gcloud
+  - terraform
+  - railway-cli
+  - flyctl
+  - sentry-cli
+  - act
+  - trivy
+  - lazygit
+  - k9s
+  - kubectl
+
+# ---------- What you will build ----------
 tech_stack:
   backend:
-    - Python + FastAPI
-    - Node.js + Express
+    - Node.js + Express / Fastify (API layer)
+    - Python + FastAPI (data/ML services)
   databases:
-    - PostgreSQL
-    - Redis
-  tools:
-    - Postman
-    - Docker Compose
+    - PostgreSQL (primary data store)
+    - Redis (caching, job queues, pub/sub)
+  infrastructure:
+    - Docker Compose for local multi-service dev
+    - GitHub Actions for CI/CD pipelines
+    - Terraform or Pulumi for cloud infra
+  observability:
+    - Sentry for error tracking
+    - Structured JSON logging
+    - Health check endpoints on every service
+
+# ---------- Shell extras for backend work ----------
+shell:
+  aliases:
+    # Database
+    pg: "docker compose exec db psql -U postgres"
+    pgdump: "docker compose exec db pg_dump -U postgres"
+    rediscli: "docker compose exec redis redis-cli"
+
+    # API development
+    apilogs: "docker compose logs -f api"
+    apitest: "docker compose exec api npm test"
+    apish: "docker compose exec api sh"
+    loadtest: "npx autocannon"
+
+    # Infrastructure
+    tf: "terraform"
+    tfp: "terraform plan"
+    tfa: "terraform apply"
+
+    # Debugging
+    curlj: "curl -s -H 'Content-Type: application/json'"
+    health: "curl -sf http://localhost:3000/health | jq"
+    dbsize: "docker compose exec db psql -U postgres -c \"SELECT pg_size_pretty(pg_database_size(current_database()))\""
+
+# ---------- VS Code extensions for backend ----------
+vscode:
+  extensions:
+    - ms-azuretools.vscode-docker
+    - humao.rest-client
+    - ms-python.python
+    - ms-python.vscode-pylance
+    - dbaeumer.vscode-eslint
+    - esbenp.prettier-vscode
+    - github.copilot
+    - hashicorp.terraform
+    - redhat.vscode-yaml
+    - cweijan.vscode-postgresql-client2

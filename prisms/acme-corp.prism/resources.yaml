@@ -1,40 +1,92 @@
 # ============================================================================
-# ACME CORP RESOURCES (Example)
+# ACME CORP RESOURCES
 # ============================================================================
 
 company:
-  name: "ACME Corp"
+  name: "Acme Corp"
 
 resources:
   developer_tools:
-    - name: "GitHub Enterprise"
-      icon: "🐙"
-      url: "https://github.acmecorp.com"
-      description: "Source code and collaboration"
-    
-    - name: "CI/CD Dashboard"
-      icon: "🚀"
-      url: "https://ci.acmecorp.com"
-      description: "Build and deployment pipelines"
-  
+    - name: "GitHub"
+      url: "https://github.com/acmecorp"
+      description: "Source code — all repos in the acmecorp org"
+
+    - name: "CI/CD (GitHub Actions)"
+      url: "https://github.com/acmecorp?tab=repositories&q=&type=&language=&sort="
+      description: "Build and deployment pipelines (see Actions tab on each repo)"
+
+    - name: "Argo CD"
+      url: "https://argocd.acmecorp.com"
+      description: "GitOps deployments for EKS services"
+
+    - name: "AWS Console"
+      url: "https://acmecorp.awsapps.com/start"
+      description: "AWS SSO portal — access dev, staging, and prod accounts"
+
+    - name: "Docker Registry (ECR)"
+      url: "https://us-east-1.console.aws.amazon.com/ecr/repositories?region=us-east-1"
+      description: "Container image registry"
+
+  monitoring:
+    - name: "Datadog"
+      url: "https://app.datadoghq.com"
+      description: "Metrics, APM, logs, dashboards"
+
+    - name: "Sentry"
+      url: "https://acmecorp.sentry.io"
+      description: "Error tracking and performance monitoring"
+
+    - name: "PagerDuty"
+      url: "https://acmecorp.pagerduty.com"
+      description: "On-call alerting (Platform and Backend teams)"
+
   documentation:
     - name: "Engineering Handbook"
-      icon: "📚"
-      url: "https://handbook.acmecorp.com"
-      description: "Standards, practices, and guides"
-    
+      url: "https://dev.acmecorp.com/handbook"
+      description: "Coding standards, architecture, processes"
+
     - name: "API Docs"
-      icon: "📝"
-      url: "https://api-docs.acmecorp.com"
-      description: "Internal API documentation"
-  
-  communication:
-    - name: "Slack"
-      icon: "💬"
-      url: "https://acmecorp.slack.com"
-      description: "Team chat and collaboration"
-    
+      url: "https://dev.acmecorp.com/api-docs"
+      description: "OpenAPI specs for all services"
+
+    - name: "Architecture Decision Records"
+      url: "https://dev.acmecorp.com/adrs"
+      description: "Past architecture decisions and their rationale"
+
+    - name: "Monolith Migration Guide"
+      url: "https://dev.acmecorp.com/docs/monolith-migration"
+      description: "How to extract services from the monolith"
+
+    - name: "Confluence"
+      url: "https://acmecorp.atlassian.net/wiki"
+      description: "Team wikis, meeting notes, RFCs"
+
+  project_management:
     - name: "Jira"
-      icon: "🎫"
-      url: "https://jira.acmecorp.com"
-      description: "Project and issue tracking"
+      url: "https://acmecorp.atlassian.net"
+      description: "Issue tracking, sprint boards, roadmaps"
+
+    - name: "Slack"
+      url: "https://acmecorp.slack.com"
+      description: "Team communication — key channels listed in team configs"
+
+    - name: "Figma"
+      url: "https://figma.com/files/team/acmecorp"
+      description: "Design files, prototypes, design system components"
+
+  data:
+    - name: "Snowflake"
+      url: "https://acmecorp.snowflakecomputing.com"
+      description: "Analytics data warehouse"
+
+    - name: "Looker"
+      url: "https://acmecorp.looker.com"
+      description: "BI dashboards and reports"
+
+    - name: "Airflow"
+      url: "https://airflow.acmecorp.com"
+      description: "Data pipeline orchestration"
+
+    - name: "MLflow"
+      url: "https://mlflow.acmecorp.com"
+      description: "ML experiment tracking and model registry"

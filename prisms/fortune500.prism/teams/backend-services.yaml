@@ -1,0 +1,100 @@
+# ============================================================================
+# BACKEND SERVICES TEAM
+# ============================================================================
+# Owns: microservices, APIs, event-driven systems, databases,
+# inter-service communication, API gateway.
+
+team:
+  id: "backend-services"
+  name: "Backend Services"
+  description: "Microservices, APIs, event-driven systems, databases"
+  slack_channels:
+    - "#backend-engineering"
+    - "#api-design"
+    - "#backend-oncall"
+  oncall_rotation: "https://company.pagerduty.com/schedules/backend"
+
+tools_required:
+  - docker
+  - kubectl
+  - helm
+  - aws
+  - gh
+  - jq
+  - httpie
+  - java
+  - python3
+
+tools_optional:
+  - k9s
+  - stern
+  - go
+  - sdk
+  - skaffold
+  - vault
+
+workspace:
+  directories:
+    - path: "~/work/services"
+      description: "Microservices — one directory per service"
+    - path: "~/work/libraries"
+      description: "Shared libraries (SDKs, proto definitions, common utils)"
+    - path: "~/work/docs/api-specs"
+      description: "OpenAPI specs and AsyncAPI definitions"
+
+repositories:
+  - name: "api-gateway"
+    url: "https://github.company.com/backend/api-gateway"
+    description: "Kong/Envoy API gateway configuration"
+  - name: "service-template"
+    url: "https://github.company.com/backend/service-template"
+    description: "Cookiecutter template for new microservices"
+  - name: "proto-definitions"
+    url: "https://github.company.com/backend/proto-definitions"
+    description: "Protobuf/gRPC service definitions"
+  - name: "shared-libraries"
+    url: "https://github.company.com/backend/shared-libraries"
+    description: "Common auth, logging, tracing, error handling libraries"
+  - name: "event-schemas"
+    url: "https://github.company.com/backend/event-schemas"
+    description: "Kafka/EventBridge event schema registry"
+
+tech_stack:
+  languages:
+    - "Java 21 (Spring Boot) — primary for business services"
+    - "Python 3.12 (FastAPI) — lightweight services, data APIs"
+    - "Go — high-performance services, infrastructure tooling"
+    - "TypeScript (Node.js) — BFF layer, lightweight APIs"
+  messaging:
+    - "Kafka (event streaming)"
+    - "SQS/SNS (AWS async messaging)"
+    - "gRPC (inter-service sync calls)"
+  databases:
+    - "PostgreSQL (primary OLTP)"
+    - "DynamoDB (high-throughput key-value)"
+    - "Redis (caching, rate limiting)"
+    - "Elasticsearch (search, logging)"
+  api:
+    - "REST (OpenAPI 3.1 specs required)"
+    - "gRPC (internal service-to-service)"
+    - "GraphQL (BFF aggregation layer)"
+
+conventions:
+  service_naming: "<domain>-<service>-svc (e.g., payments-processor-svc)"
+  api_versioning: "URL path versioning (/v1/, /v2/)"
+  error_format: "RFC 7807 Problem Details"
+  logging: "Structured JSON, correlation IDs required"
+  testing:
+    unit: "80% minimum coverage"
+    integration: "Contract tests for all APIs (Pact)"
+    load: "k6 load tests for P95 latency SLOs"
+
+environments:
+  - name: "local"
+    description: "docker compose up — runs service + dependencies locally"
+  - name: "dev"
+    description: "Shared dev cluster — auto-deployed on merge to main"
+  - name: "staging"
+    description: "Pre-prod — mirrors production data (anonymized)"
+  - name: "production"
+    description: "Blue/green deploys via Argo CD"

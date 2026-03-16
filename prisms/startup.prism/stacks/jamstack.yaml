@@ -1,23 +1,109 @@
 # ============================================================================
-# JAMSTACK
+# JAMSTACK — JavaScript, APIs, Markup
 # ============================================================================
+# Static-first with serverless backends. Deploy globally on CDN edges.
+# Good for: marketing sites, blogs, docs, e-commerce, content-heavy products.
 
 stack:
   id: "jamstack"
   name: "JAMstack"
-  description: "Next.js, Vercel, Serverless"
+  description: "Next.js / Astro + Vercel / Netlify — static-first with serverless backends"
 
 tools_required:
+  - nvm
   - nodejs
   - git
+  - gh
+  - vercel-cli
+  - prettier
+  - eslint
 
+tools_optional:
+  - netlify-cli
+  - hugo
+  - docker
+  - imagemagick
+  - sentry-cli
+  - act
+  - lazygit
+
+# ---------- Stack details ----------
 tech_stack:
   frontend:
-    - Next.js
-    - TypeScript
-  deployment:
-    - Vercel
-    - Netlify
+    - Next.js 14+ (App Router, RSC)
+    - TypeScript (strict mode)
+    - Tailwind CSS
+    - MDX for content pages
+    - Astro as alternative for content-heavy sites
   backend:
-    - Serverless Functions
-    - Edge Functions
+    - Vercel Serverless Functions / Edge Functions
+    - tRPC or REST API routes in Next.js
+    - Prisma ORM for database access
+  databases:
+    - Vercel Postgres or PlanetScale (serverless MySQL)
+    - Upstash Redis (serverless Redis)
+    - Supabase as Firebase alternative
+  cms:
+    - Sanity / Contentful / Keystatic for structured content
+    - MDX files in repo for developer docs
+  deployment:
+    - Vercel (primary — preview deploy on every PR)
+    - Netlify (alternative)
+    - GitHub Actions for CI checks
+    - Automatic preview URLs on every pull request
+
+# ---------- Local dev setup ----------
+local_dev:
+  dev_commands:
+    install: "npm install"
+    dev: "npm run dev"
+    build: "npm run build"
+    preview: "npm run start"
+    lint: "npm run lint"
+    typecheck: "npx tsc --noEmit"
+    deploy_preview: "vercel --yes"
+    deploy_prod: "vercel --prod --yes"
+
+# ---------- Shell aliases for JAMstack ----------
+shell:
+  aliases:
+    nrd: "npm run dev"
+    nrb: "npm run build"
+    nrs: "npm run start"
+    nrl: "npm run lint"
+    tc: "npx tsc --noEmit"
+    preview: "vercel --yes"
+    deploy: "vercel --prod --yes"
+    netlify: "netlify dev"
+    ndeploy: "netlify deploy --prod"
+    newpage: "npx plop page"
+    newcomp: "npx plop component"
+    lighthouse: "npx lighthouse http://localhost:3000 --view"
+    sitemap: "npx next-sitemap"
+    analyze: "ANALYZE=true npm run build"
+    og: "open http://localhost:3000/api/og"
+
+# ---------- Recommended project structure ----------
+project_structure:
+  description: "Next.js App Router with content and serverless"
+  layout:
+    - src/
+    -   app/             # Next.js App Router pages
+    -     (marketing)/   # Marketing route group
+    -     (app)/         # Authenticated app route group
+    -     api/           # API routes / serverless functions
+    -   components/
+    -     ui/            # Shared UI primitives (Button, Input, etc.)
+    -     sections/      # Page sections (Hero, Features, Pricing)
+    -   lib/             # Utilities, API client, auth helpers
+    -   content/         # MDX content files
+    -   styles/          # Global CSS, Tailwind config
+    - public/
+    -   images/          # Static assets
+    -   fonts/           # Self-hosted fonts
+    - .github/
+    -   workflows/
+    -     ci.yaml        # Lint, typecheck, build on every PR
+    - vercel.json        # Vercel config (redirects, headers)
+    - next.config.js
+    - tailwind.config.ts

@@ -1,0 +1,126 @@
+# ============================================================================
+# BACKEND TEAM
+# ============================================================================
+# 25 engineers (largest team). Owns: the monolith, extracted microservices,
+# APIs, databases. Leading the monolith-to-microservices migration.
+
+team:
+  id: "backend-team"
+  name: "Backend Team"
+  description: "APIs, services, database, the monolith-to-microservices migration"
+  size: 25
+  slack_channels:
+    - "#backend-team"
+    - "#backend-oncall"
+    - "#api-design"
+    - "#monolith-migration"
+  oncall: "Weekly rotation — see PagerDuty schedule in #backend-oncall"
+
+tools_required:
+  - python3
+  - docker
+  - aws
+  - gh
+  - jq
+  - httpie
+  - gitleaks
+
+tools_optional:
+  - go
+  - nodejs
+  - kubectl
+  - k9s
+  - postman
+  - vscode
+  - lazygit
+  - ripgrep
+
+workspace:
+  directories:
+    - path: "~/work/services/acme-monolith"
+      description: "The Django monolith (still serves most traffic)"
+    - path: "~/work/services/auth-service"
+      description: "Go — handles auth, SSO, JWT tokens"
+    - path: "~/work/services/notifications-service"
+      description: "Node.js — email, push, SMS notifications"
+    - path: "~/work/services/payments-service"
+      description: "Python/FastAPI — payment processing"
+    - path: "~/work/services/search-service"
+      description: "Python/FastAPI + Elasticsearch"
+    - path: "~/work/libraries"
+      description: "Shared Python packages (acme-common, acme-auth-client)"
+
+repositories:
+  - name: "acme-monolith"
+    url: "https://github.com/acmecorp/acme-monolith"
+    description: "The Django monolith — main codebase"
+  - name: "auth-service"
+    url: "https://github.com/acmecorp/auth-service"
+    description: "Authentication and authorization (Go)"
+  - name: "notifications-service"
+    url: "https://github.com/acmecorp/notifications-service"
+    description: "Multi-channel notifications (Node.js)"
+  - name: "payments-service"
+    url: "https://github.com/acmecorp/payments-service"
+    description: "Payment processing (Python/FastAPI)"
+  - name: "search-service"
+    url: "https://github.com/acmecorp/search-service"
+    description: "Search indexing and queries (Python/FastAPI)"
+  - name: "service-template"
+    url: "https://github.com/acmecorp/service-template"
+    description: "Cookiecutter template for new microservices"
+  - name: "acme-common-py"
+    url: "https://github.com/acmecorp/acme-common-py"
+    description: "Shared Python library (logging, auth client, error handling)"
+  - name: "api-specs"
+    url: "https://github.com/acmecorp/api-specs"
+    description: "OpenAPI specs for all services"
+
+tech_stack:
+  monolith:
+    - "Python 3.11 / Django 4.2"
+    - "PostgreSQL 15 (RDS)"
+    - "Redis (caching, sessions)"
+    - "Celery + SQS (background jobs)"
+  microservices:
+    - "Python 3.12 / FastAPI (default for new services)"
+    - "Go (high-performance services)"
+    - "Node.js / Express (notification, lightweight BFFs)"
+  databases:
+    - "PostgreSQL (primary — one per service for new services)"
+    - "Redis (caching, rate limiting)"
+    - "Elasticsearch (search)"
+    - "DynamoDB (considered for new high-throughput services)"
+  messaging:
+    - "SQS/SNS (async communication between services)"
+    - "EventBridge (domain events — gradually adopting)"
+
+conventions:
+  api_style: "REST (OpenAPI 3.1 spec required for every endpoint)"
+  api_versioning: "URL path: /api/v1/"
+  error_format: "Consistent JSON error envelope: {error: {code, message, details}}"
+  logging: "Structured JSON logs with request_id correlation"
+  testing:
+    monolith: "pytest, 70% coverage minimum"
+    microservices: "pytest or Go testing, 80% coverage for new services"
+    integration: "docker compose up runs the service + its dependencies"
+
+migration_guide:
+  doc: "https://dev.acmecorp.com/docs/monolith-migration"
+  pattern: "Strangler fig — proxy traffic through API gateway, route to service or monolith"
+  steps:
+    - "1. Identify the domain boundary in the monolith"
+    - "2. Define the API contract (OpenAPI spec)"
+    - "3. Scaffold new service from service-template"
+    - "4. Implement and test the service"
+    - "5. Set up dual-write if data migration needed"
+    - "6. Route traffic via API gateway"
+    - "7. Monitor, validate, remove monolith code"
+
+day_one_checklist:
+  - "Clone acme-monolith and run 'docker compose up'"
+  - "Run the test suite: 'docker compose exec web pytest'"
+  - "Read the monolith-migration guide"
+  - "Clone the service you'll be working on"
+  - "Get database access (request via IT ticket for dev RDS)"
+  - "Join #api-design for API review discussions"

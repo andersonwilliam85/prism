@@ -1,21 +1,185 @@
 # ============================================================================
-# RETAIL CLIENT CONFIGURATION
+# RETAIL CLIENT — "BRIGHTCART"
 # ============================================================================
+# GCP-based Node.js/TypeScript stack. PCI-DSS compliance for payments.
+# E-commerce platform with Shopify integrations and headless storefront.
 
 client:
   id: "client-retail"
-  name: "Retail Client"
-  description: "Retail / e-commerce client engagement"
+  slug: "brightcart"
+  name: "BrightCart"
+  description: "Headless e-commerce platform — Node.js on GCP with Shopify integrations"
+  status: "active"
+  engagement_type: "managed-services"
 
+  contacts:
+    tech_lead: "Raj Patel <raj@brightcart.com>"
+    product_owner: "Emily Zhang <emily@brightcart.com>"
+    cto: "Chris Okafor <chris@brightcart.com>"
+
+  communication:
+    slack_workspace: "brightcart-team"
+    standup: "Async — post by 10 AM PT in #eng-standup"
+    sprint_cadence: "1-week sprints, Mon start"
+    linear_project: "BRC"
+
+# ---------------------------------------------------------------------------
+# COMPLIANCE
+# ---------------------------------------------------------------------------
 compliance:
-  - pci-dss
+  frameworks:
+    - pci-dss
+  requirements:
+    - "No cardholder data stored outside PCI-scoped services"
+    - "Payment tokenization via Stripe — never handle raw card numbers"
+    - "Quarterly vulnerability scans required"
+    - "Log all payment-related API calls"
+    - "TLS 1.2+ on all endpoints"
+  pre_commit_checks:
+    - "No Stripe secret keys in code (use restricted keys)"
+    - "No customer PII in test fixtures"
 
-tools_required:
-  - nodejs
-  - docker
+# ---------------------------------------------------------------------------
+# SECURITY & ACCESS
+# ---------------------------------------------------------------------------
+security:
+  vpn:
+    required: false
+    notes: "BrightCart uses Tailscale mesh — join the tailnet"
+  tailscale:
+    required: true
+    network: "brightcart"
+    setup: "tailscale up --login-server https://ts.brightcart.com"
+  mfa_required: true
+  data_classification: "pci"
+  credential_rotation: "90 days"
 
+# ---------------------------------------------------------------------------
+# GIT IDENTITY & REPOS
+# ---------------------------------------------------------------------------
+git:
+  user:
+    name: "${USER_NAME}"
+    email: "${USER_NAME_SLUG}@brightcart.com"
+  ssh_key: "~/.ssh/id_ed25519_brightcart"
+  primary_repos:
+    - name: "storefront"
+      url: "git@brightcart-github:brightcart/storefront.git"
+      description: "Next.js headless storefront"
+    - name: "commerce-api"
+      url: "git@brightcart-github:brightcart/commerce-api.git"
+      description: "Node.js/Express commerce backend"
+    - name: "shopify-sync"
+      url: "git@brightcart-github:brightcart/shopify-sync.git"
+      description: "Shopify inventory and order sync service"
+    - name: "infra"
+      url: "git@brightcart-github:brightcart/infra.git"
+      description: "Terraform + GCP infrastructure"
+  branching:
+    strategy: "trunk-based"
+    main: "main"
+    feature_prefix: "feat/"
+    pr_required: true
+    min_reviewers: 1
+    deploy_on_merge: true
+
+# ---------------------------------------------------------------------------
+# TECH STACK
+# ---------------------------------------------------------------------------
 tech_stack:
-  focus:
-    - E-commerce
-    - Payment processing
-    - Inventory systems
+  languages:
+    - "TypeScript"
+    - "SQL (Cloud SQL / PostgreSQL)"
+  frameworks:
+    - "Next.js 14 (storefront)"
+    - "Express.js (API)"
+    - "Prisma (ORM)"
+    - "Vitest + Playwright (testing)"
+    - "Turborepo (monorepo)"
+  infrastructure:
+    - "GCP (Cloud Run, Cloud SQL, Cloud Storage, Pub/Sub, Secret Manager)"
+    - "Cloud SQL for PostgreSQL"
+    - "Redis (Memorystore)"
+    - "Cloud CDN + Cloud Armor"
+    - "Cloud Run (serverless containers)"
+  ci_cd:
+    - "GitHub Actions"
+    - "Terraform for GCP infra"
+    - "Preview deployments on every PR"
+  observability:
+    - "Google Cloud Monitoring"
+    - "Cloud Trace"
+    - "Sentry (error tracking)"
+  integrations:
+    - "Stripe (payments)"
+    - "Shopify Admin API"
+    - "Shopify Storefront API"
+    - "Algolia (search)"
+    - "Segment (analytics)"
+
+# ---------------------------------------------------------------------------
+# CLOUD CREDENTIALS
+# ---------------------------------------------------------------------------
+cloud:
+  provider: "gcp"
+  project: "brightcart-prod"
+  project_dev: "brightcart-dev"
+  region: "us-central1"
+  setup_commands:
+    - "gcloud auth login"
+    - "gcloud config configurations create brightcart"
+    - "gcloud config set project brightcart-dev"
+    - "gcloud config set compute/region us-central1"
+  environment_variables:
+    GOOGLE_CLOUD_PROJECT: "brightcart-dev"
+    CLOUDSDK_ACTIVE_CONFIG_NAME: "brightcart"
+
+# ---------------------------------------------------------------------------
+# LOCAL DEVELOPMENT
+# ---------------------------------------------------------------------------
+local_dev:
+  setup:
+    - "cd repos/storefront && npm install"
+    - "cd repos/commerce-api && npm install"
+    - "docker compose up -d postgres redis"
+    - "cd repos/commerce-api && npx prisma migrate dev"
+  env_file: ".env.local"
+  ports:
+    storefront: 3000
+    api: 4000
+    postgres: 5432
+    redis: 6379
+  notes:
+    - "Use 'turbo dev' from monorepo root to run storefront + API together"
+    - "Stripe test mode keys in .env.local — never use live keys locally"
+    - "Shopify dev store: brightcart-dev.myshopify.com"
+
+# ---------------------------------------------------------------------------
+# TOOLS
+# ---------------------------------------------------------------------------
+tools_required:
+  - git
+  - docker
+  - nodejs
+  - gcloud
+  - terraform
+  - jq
+
+tools_optional:
+  - postman
+  - code
+  - lazygit
+  - k9s
+
+# ---------------------------------------------------------------------------
+# DIRENV
+# ---------------------------------------------------------------------------
+direnv:
+  envrc: |
+    export CLOUDSDK_ACTIVE_CONFIG_NAME=brightcart
+    export GOOGLE_CLOUD_PROJECT=brightcart-dev
+    export CLIENT_NAME="BrightCart"
+    export LINEAR_PROJECT=BRC
+    export NODE_ENV=development
+    # Use local nvm if present
+    [ -f .nvmrc ] && nvm use 2>/dev/null
