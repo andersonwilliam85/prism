@@ -23,24 +23,26 @@ Prism is a **configuration inheritance system** that manages complex, multi-leve
 
 Large organizations face configuration chaos:
 
-- **Complex hierarchies** — Fortune 500 companies with 5+ organizational levels
-- **Conflicting requirements** — Different teams need different tools, configs, and access
-- **Configuration drift** — No single source of truth across thousands of employees
-- **Onboarding friction** — New hires waste days configuring their environment
+- **Complex hierarchies** -- Fortune 500 companies with 5+ organizational levels
+- **Conflicting requirements** -- Different teams need different tools, configs, and access
+- **Configuration drift** -- No single source of truth across thousands of employees
+- **Onboarding friction** -- New hires waste days configuring their environment
 
 ### The Solution
 
 Prism provides:
 
-- **Configuration inheritance** — Define once at company level, override per team
-- **Multi-level hierarchies** — Support structures from flat (startups) to 5+ levels (enterprise)
-- **Web UI** — Visual prism selection and installation wizard with themes, cascading dropdowns, and real-time progress
-- **CLI tools** — Scriptable, automatable, CI/CD friendly
-- **NPM distribution** — Packages published to npm, no custom infrastructure needed
-- **Validation** — Catch errors before deployment
-- **Smart merging** — Deep-merge with configurable strategies (union, override, append)
-- **Installation rollback** — Every action tracked, automatic LIFO undo on failure
-- **Privilege separation** — Two-phase install with sudo session management
+- **Centralized tool registry** -- Tools defined once in `tool-registry.yaml` with per-platform install/uninstall commands; child configs reference tools by name only
+- **Configuration inheritance** -- Define once at company level, override per team
+- **Multi-level hierarchies** -- Support structures from flat (startups) to 5+ levels (enterprise)
+- **Web UI** -- Tool selection with categories (Core, Editor, Containers, Runtime, Cloud, Kubernetes, CLI), inline validation, hover tooltips, platform-aware filtering, cancel/retry flow
+- **CLI tools** -- `prism install`, `prism rollback`, `prism history` -- scriptable, automatable, CI/CD friendly
+- **NPM distribution** -- Packages published to npm, no custom infrastructure needed
+- **Validation** -- Config engine validates tool registry (install + uninstall), tool references, and email patterns from YAML
+- **Smart merging** -- Deep-merge with configurable strategies (union, override, append)
+- **Installation rollback** -- `.prism_rollback.json` manifest persisted on install; `prism rollback <workspace>` reverses all actions
+- **Privilege separation** -- Two-phase install with sudo session management
+- **No generic fallbacks** -- Tools without explicit platform install commands are skipped
 
 ---
 
@@ -71,75 +73,56 @@ See [Getting Started](https://andersonwilliam85.github.io/prism/getting-started/
 
 ### Web UI Installer
 
-- Prism gallery with visual cards for all configurations
+- Tool selection page with categories (Core, Editor, Containers, Runtime, Cloud, Kubernetes, CLI)
+- Hover tooltips for tool descriptions
+- Platform-aware filtering (tools without install commands for your OS are hidden)
+- Inline validation (no alerts)
 - Step-by-step wizard with progress tracking
-- **Theme system** — 5 built-in themes + custom themes with 5 gradient color slots
-- **Cascading dropdowns** — Dynamic field dependencies (e.g., division filters available teams)
-- **Settings panel** — Runtime registry, CDN, and language overrides
-- Responsive design with smart validation
+- **Theme system** -- 5 built-in themes + custom themes with 5 gradient color slots
+- **Cascading dropdowns** -- Dynamic field dependencies (e.g., division filters available teams)
+- **Settings panel** -- Runtime registry, CDN, and language overrides
+- **Environment management** on landing page
+- Cancel/retry flow
+- Rollback button
 
-### Configuration Inheritance
+### Tool Registry
 
-Multi-level hierarchy with configurable merge strategies:
+Tools are defined once in a centralized `tool-registry.yaml`. Each tool specifies:
+- **label**, **summary**, **description** -- for the UI
+- **category** -- core, editor, containers, runtime, cloud, kubernetes, cli
+- **platforms** -- per-OS install commands (mac, ubuntu, linux, windows)
+- **uninstall** -- per-OS uninstall commands (used by rollback)
 
-```
-Company (base)
-  └── Business Unit
-      └── Department
-          └── Team
-              └── Individual
-```
+Child configs reference tools by string name only (e.g., `- git`). Tools without explicit install commands for the current platform are skipped -- no guessing.
 
-Configurations merge intelligently — base layer defines company standards, each level can override or extend using union, deep_merge, override, or append strategies.
+### Starter Packages
 
-### The Default Prism
-
-The built-in `prism` package scales from a solo developer to an enterprise team. Pick three tiers and go:
-
-| Tier | Options | What it controls |
-|------|---------|-----------------|
-| **Scale** | Individual, Small Team, Enterprise | Git workflows, PR templates, access patterns |
-| **Environment** | Minimal, Standard, Full-Featured | Tooling depth — just git+SSH up to full runtime stacks |
-| **Platform** | GitHub, GitLab, Bitbucket, Gitea, Multi | Provider-specific config (SSH hosts, CLI tools, webhooks) |
-
-A solo dev picks **Individual + Minimal + GitHub** and gets git config and an SSH key in seconds. A platform team picks **Enterprise + Full-Featured + Multi** and gets structured workspaces, multiple runtimes, and multi-provider support.
-
-### More Prisms
+8 starter packages ship in the `prisms/` directory:
 
 | Prism | Use Case | Hierarchy | Scale |
 |-------|----------|-----------|-------|
-| `startup` | Seed/Series A startups | 1 level | 10–50 |
-| `acme-corp` | Template for companies | 2 levels | 100–1K |
+| `prism` | Default -- solo developers | Flat | Any |
+| `startup` | Seed/Series A startups | 1 level | 10--50 |
+| `acme-corp` | Template for companies | 2 levels | 100--1K |
 | `consulting-firm` | Multi-client work | By client | Variable |
 | `fortune500` | Enterprise | 5 levels | 50K+ |
 | `university` | Academic institutions | Dept to Lab | Variable |
 | `opensource` | Community projects | Flat | Community |
-
-Each prism includes custom themes, cascading user fields, and rollback configuration.
+| `cli-test-prism` | CLI testing fixture | Flat | Testing |
 
 ### Installation Safety
 
-- **Rollback** — Every file copy, directory creation, command execution, and config change is tracked. On failure, changes unwind in LIFO order.
-- **Privilege separation** — Normal operations run first. Privileged steps (apt-get, global npm) require explicit sudo approval in a separate phase.
-- **Sudo sessions** — Cryptographic tokens with 15-minute TTL and 3-attempt lockout.
+- **Rollback** -- Every install persists a `.prism_rollback.json` manifest. `prism rollback <workspace>` reverses all actions. The UI also has a rollback button. Rollback engine at `prism/engines/rollback_engine.py`.
+- **Privilege separation** -- Normal operations run first. Privileged steps (tool installs from the registry) require explicit sudo approval in a separate phase.
+- **Sudo sessions** -- Cryptographic tokens with 15-minute TTL and 3-attempt lockout.
 
-### NPM Distribution
-
-```bash
-# Packages auto-fetch from npm via unpkg CDN
-python3 install.py --prism prism
-
-# Use custom registry (corporate/air-gapped)
-python3 install.py --npm-registry https://npm.mycompany.com
-```
-
-### Local Docs Server
-
-Post-install, browse your workspace configuration:
+### Installation History
 
 ```bash
-python3 -m prism.tools.docs_server --workspace ~/dev
+prism history
 ```
+
+Scans for previous installations. Also available via the `/api/history` endpoint.
 
 ---
 
@@ -149,14 +132,15 @@ Prism follows a **VBD-inspired** (Volatility-Based Decomposition) layered archit
 
 | Layer | Role | Components |
 |-------|------|------------|
-| **Managers** | Orchestration — *the "what"* | `installation_manager`, `package_manager` |
-| **Engines** | Business logic — *the "how"* | `config_engine` (schema evolution), `installation_engine` (installation surface) |
-| **Accessors** | External boundaries — *the "where"* | `file`, `command`, `registry`, `system`, `rollback`, `sudo` |
+| **Managers** | Orchestration -- *the "what"* | `installation_manager`, `package_manager` |
+| **Engines** | Business logic -- *the "how"* | `config_engine`, `installation_engine`, `rollback_engine` |
+| **Accessors** | External boundaries -- *the "where"* | `file`, `command`, `registry`, `system`, `rollback`, `sudo` |
 | **Utilities** | Cross-cutting services | `event_bus` (pub/sub progress) |
 | **Models** | Plain dataclasses | Installation, config, rollback DTOs |
 | **UI** | Flask web app | REST API + static frontend |
+| **CLI** | Click commands | `install`, `rollback`, `history`, `packages`, `ui` |
 
-All layers are wired through a composition root (`container.py`) with constructor injection — no global state, fully testable.
+All layers are wired through a composition root (`container.py`) with constructor injection -- no global state, fully testable.
 
 See [Architecture Reference](https://andersonwilliam85.github.io/prism/reference/architecture) for the full breakdown.
 
@@ -174,7 +158,7 @@ See [Architecture Reference](https://andersonwilliam85.github.io/prism/reference
 ```bash
 make install-dev    # Install dev dependencies
 make test           # Run tests (unit + CLI)
-make test-all       # All tests including E2E
+make test-all       # All tests (590+ test functions)
 make run            # Start dev server
 make lint           # Run linters (flake8 + mypy)
 make format         # Format code (black + isort)
@@ -185,12 +169,12 @@ make check          # All CI checks
 
 ```bash
 make test              # Unit + CLI tests
-make test-all          # All tests including E2E
+make test-all          # All tests (590+ test functions)
 make test-coverage     # With coverage report
 make test-trace        # E2E with Playwright traces
 ```
 
-GitHub Actions runs lint, test, coverage, and security scans on every PR.
+GitHub Actions runs lint, test, coverage, and security scans on every PR. Pre-commit hooks enforce isort, black, flake8, and pytest.
 
 ---
 
@@ -227,19 +211,21 @@ Full documentation at **[andersonwilliam85.github.io/prism](https://andersonwill
 5. Run CI checks: `make check`
 6. Submit a Pull Request
 
+Pre-commit hooks run isort, black, flake8, and pytest on every commit. All must pass.
+
 See [Contributing Guide](https://andersonwilliam85.github.io/prism/contributor-guide/contributing).
 
 ---
 
 ## License
 
-MIT License — See [LICENSE](LICENSE)
+MIT License -- See [LICENSE](LICENSE)
 
 Copyright (c) 2025 William Anderson
 
 ---
 
 <p align="center">
-  <strong>Prism — Refract complexity into clarity</strong><br>
+  <strong>Prism -- Refract complexity into clarity</strong><br>
   Made by <a href="https://github.com/andersonwilliam85">William Anderson</a>
 </p>
