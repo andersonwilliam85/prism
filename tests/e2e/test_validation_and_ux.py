@@ -195,14 +195,16 @@ class TestConfigurationPersistence:
         # Navigate to user info
         page.locator(".tier-card").first.click()
         page.locator("button").filter(has_text="Next").first.click()
-        page.wait_for_selector("#step2.active")
+        page.wait_for_selector("#step2.active", timeout=5000)
+
+        # Wait for dynamic fields to load
+        page.wait_for_selector("#userInfoFields input", timeout=5000)
 
         # Fill info
-        test_data = {"name": "Persistence Test User", "email": "persist@test.com", "username": "persisttest"}
-
-        for field, value in test_data.items():
-            if page.locator(f"input[name='{field}']").count() > 0:
-                page.fill(f"input[name='{field}']", value)
+        page.fill("input[name='name']", "Persistence Test User")
+        page.fill("input[name='email']", "persist@test.com")
+        if page.locator("input[name='username']").count() > 0:
+            page.fill("input[name='username']", "persisttest")
 
         # Go to next step — lands on step 4 (tools) since step 3 is skipped
         page.locator("#step2 button").filter(has_text="Next").click()
