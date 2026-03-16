@@ -809,26 +809,7 @@
                 <p style="color: #666; margin-bottom: 20px;">Select your preferred color scheme</p>
                 
                 <div class="theme-grid" id="themeGrid">
-                    <div class="theme-option active" data-theme="ocean" onclick="selectTheme('ocean')">
-                        <div class="theme-preview ocean"></div>
-                        <div class="theme-name">Ocean Blue</div>
-                    </div>
-                    <div class="theme-option" data-theme="purple" onclick="selectTheme('purple')">
-                        <div class="theme-preview purple"></div>
-                        <div class="theme-name">Purple Haze</div>
-                    </div>
-                    <div class="theme-option" data-theme="forest" onclick="selectTheme('forest')">
-                        <div class="theme-preview forest"></div>
-                        <div class="theme-name">Forest Green</div>
-                    </div>
-                    <div class="theme-option" data-theme="sunset" onclick="selectTheme('sunset')">
-                        <div class="theme-preview sunset"></div>
-                        <div class="theme-name">Sunset Orange</div>
-                    </div>
-                    <div class="theme-option" data-theme="midnight" onclick="selectTheme('midnight')">
-                        <div class="theme-preview midnight"></div>
-                        <div class="theme-name">Midnight Dark</div>
-                    </div>
+                    <p style="color: #999; font-size: 0.85em;">Themes load from the selected package.</p>
                 </div>
                 
                 <div style="margin-top: 20px; padding: 15px; background: #f0f9ff; border-left: 4px solid #0093E9; border-radius: 4px;">
@@ -1148,10 +1129,17 @@
             if (npmReg) {
                 prismConfig.npmRegistry = npmReg;
             }
+            // Preserve user's theme selection across package reload
+            const userTheme = prismConfig.theme;
             savePrismConfig(prismConfig);
 
             // Close settings panel
             toggleSettings();
+
+            // Reload package config (applies branding, tiers, etc.) without resetting theme
+            if (selectedPackage) {
+                selectPackage(selectedPackage, false);
+            }
         }
         
         function exportPrismConfig() {
@@ -2139,14 +2127,17 @@
             }
         }
         
-        async function selectPackage(packageName) {
+        async function selectPackage(packageName, resetTheme = true) {
+            const isNewPackage = selectedPackage !== packageName;
             selectedPackage = packageName;
             // Clear previous tier selections
             Object.keys(selectedSubPrisms).forEach(k => delete selectedSubPrisms[k]);
-            // Reset theme so the new package's default applies
-            prismConfig.theme = null;
-            delete prismConfig.customGradients;
-            _themeGradients = {};
+            // Reset theme only when switching to a genuinely different package
+            if (isNewPackage && resetTheme) {
+                prismConfig.theme = null;
+                delete prismConfig.customGradients;
+                _themeGradients = {};
+            }
             // Apply config (theme, branding, sources) and re-render Step 1 tiers
             await loadAndApplyPrismConfig(packageName);
             await renderStep1Tiers(packageName);
