@@ -788,8 +788,7 @@
         <!-- Action Buttons -->
         <div style="padding: 20px; border-top: 1px solid #e0e0e0; background: white;">
             <div style="display: flex; gap: 10px;">
-                <button class="btn-secondary" onclick="toggleSettings()" style="flex: 1;">Close</button>
-                <button class="btn-primary" onclick="applySettingsAndContinue()" style="flex: 2;">Apply & Continue →</button>
+                <button class="btn-primary" onclick="toggleSettings()" style="flex: 1;">Close</button>
             </div>
         </div>
     </div>
@@ -2087,6 +2086,7 @@
             // Apply config (theme, branding, sources) and re-render Step 1 tiers
             await loadAndApplyPrismConfig(packageName);
             await renderStep1Tiers(packageName);
+            checkPreviousInstalls();
         }
 
         async function renderStep1Tiers(packageName) {
@@ -2339,8 +2339,15 @@
             try {
                 const resp = await fetch('/api/history');
                 const data = await resp.json();
-                const installs = data.installs || [];
-                if (installs.length === 0) return;
+                // Only show environments for the selected package
+                const installs = (data.installs || []).filter(
+                    inst => !selectedPackage || !inst.package || inst.package === selectedPackage
+                );
+                if (installs.length === 0) {
+                    const wrapper = document.getElementById('previousInstalls');
+                    wrapper.style.display = 'none';
+                    return;
+                }
 
                 const container = document.getElementById('previousInstallsList');
                 const wrapper = document.getElementById('previousInstalls');
