@@ -15,6 +15,7 @@ from flask import Flask, render_template
 from prism.container import Container
 
 TEMPLATE_DIR = Path(__file__).parent / "templates"
+STATIC_DIR = Path(__file__).parent / "static"
 
 
 def create_app(prisms_dir: Path | None = None) -> Flask:

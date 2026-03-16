@@ -1,0 +1,95 @@
+# ============================================================================
+# DATA TEAM
+# ============================================================================
+# 10 engineers (analytics engineers + data engineers + 2 ML engineers).
+# Owns: analytics warehouse, data pipelines, reporting dashboards,
+# early ML experiments (recommendations, search ranking).
+
+team:
+  id: "data-team"
+  name: "Data Team"
+  description: "Analytics, data pipelines, reporting, ML experiments"
+  size: 10
+  slack_channels:
+    - "#data-team"
+    - "#data-requests"
+    - "#ml-experiments"
+
+tools_required:
+  - python3
+  - pyenv
+  - docker
+  - aws
+  - gh
+  - dbt
+  - jq
+  - gitleaks
+
+tools_optional:
+  - vscode
+  - kubectl
+  - ripgrep
+
+workspace:
+  directories:
+    - path: "~/work/services/data-pipelines"
+      description: "Airflow DAGs, ETL scripts"
+    - path: "~/work/services/dbt-models"
+      description: "dbt project — analytics transformations"
+    - path: "~/work/services/ml-experiments"
+      description: "ML model training and experiments"
+    - path: "~/work/libraries/acme-data-utils"
+      description: "Shared data processing utilities"
+    - path: "~/work/docs/data-dictionary"
+      description: "Dataset documentation"
+
+repositories:
+  - name: "data-pipelines"
+    url: "https://github.com/acmecorp/data-pipelines"
+    description: "Airflow DAGs and ETL jobs"
+  - name: "dbt-models"
+    url: "https://github.com/acmecorp/dbt-models"
+    description: "dbt project for the Snowflake warehouse"
+  - name: "ml-experiments"
+    url: "https://github.com/acmecorp/ml-experiments"
+    description: "ML model training — recommendations, search ranking"
+  - name: "acme-data-utils"
+    url: "https://github.com/acmecorp/acme-data-utils"
+    description: "Shared Python utils for data processing"
+  - name: "looker-models"
+    url: "https://github.com/acmecorp/looker-models"
+    description: "LookML models for BI dashboards"
+
+tech_stack:
+  languages:
+    - "Python 3.11+ (primary)"
+    - "SQL (dbt, Snowflake queries)"
+  orchestration:
+    - "Airflow on ECS (managed via Astronomer)"
+  warehouse:
+    - "Snowflake (analytics warehouse)"
+    - "PostgreSQL (operational data — replicated)"
+  storage:
+    - "S3 (data lake, raw and processed)"
+  visualization:
+    - "Looker (BI dashboards)"
+    - "Jupyter (exploration)"
+  ml:
+    - "scikit-learn, XGBoost (tabular models)"
+    - "SageMaker (training jobs)"
+    - "MLflow (experiment tracking — self-hosted)"
+
+conventions:
+  python_version: "Managed via pyenv, pinned in .python-version"
+  sql_style: "Lowercase keywords, CTEs over subqueries, dbt conventions"
+  data_modeling: "Star schema in Snowflake, dbt for all transformations"
+  notebook_policy: "Notebooks for exploration — production code goes in .py files"
+  data_requests: "Submit via #data-requests with business context"
+
+day_one_checklist:
+  - "Set up Python via pyenv: pyenv install 3.11 && pyenv global 3.11"
+  - "Clone dbt-models and run 'dbt debug' to verify Snowflake connection"
+  - "Get Snowflake access (request via IT ticket)"
+  - "Access Airflow UI at https://airflow.acmecorp.com"
+  - "Access Looker at https://acmecorp.looker.com"
+  - "Review the data dictionary at ~/work/docs/data-dictionary"

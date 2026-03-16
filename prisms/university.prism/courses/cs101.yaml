@@ -1,18 +1,68 @@
 # ============================================================================
-# CS 101: INTRO TO PROGRAMMING
+# CS 101: INTRODUCTION TO PROGRAMMING
 # ============================================================================
+# First programming course — no prior experience assumed.
+# Python only. Minimal tooling so students focus on learning to code.
 
 course:
   id: "cs101"
   name: "CS 101: Introduction to Programming"
-  description: "Foundational programming course"
+  description: "Learn programming fundamentals using Python. No prior experience required."
+  language: "Python"
+
+# ── Tools ─────────────────────────────────────────────────────────────────────
+# Deliberately minimal — just Python, an editor, and Git basics.
 
 tools_required:
   - python3
-  - vscode
+  - code
   - git
+
+tools_optional:
+  - jupyter
+
+# ── Workspace ─────────────────────────────────────────────────────────────────
+
+workspace:
+  directory: "~/courses/${SEMESTER}/cs101"
+  structure:
+    - "homework/"
+    - "labs/"
+    - "projects/"
+    - "notes/"
+
+# ── Setup Steps ───────────────────────────────────────────────────────────────
+# Walk a brand-new student through getting started.
+
+setup:
+  steps:
+    - title: "Open your course folder"
+      command: "cd ~/courses/${SEMESTER}/cs101"
+
+    - title: "Create a virtual environment (keeps your packages organized)"
+      command: "python3 -m venv .venv"
+
+    - title: "Activate it (do this every time you work on the course)"
+      command: "source .venv/bin/activate"
+      windows: ".venv\\Scripts\\activate"
+
+    - title: "Verify Python works"
+      command: "python3 --version"
+
+    - title: "Write your first program"
+      command: "echo 'print(\"Hello, world!\")' > hello.py && python3 hello.py"
+
+# ── VS Code Extensions ───────────────────────────────────────────────────────
+
+vscode:
+  extensions:
+    - "ms-python.python"
+    - "ms-python.vscode-pylance"
+
+# ── Repositories ──────────────────────────────────────────────────────────────
 
 repositories:
   - name: "cs101-assignments"
     url: "https://github.com/university/cs101-assignments"
-    description: "Course assignment starter code"
+    description: "Starter code for homework and lab assignments"
+    clone_to: "~/courses/${SEMESTER}/cs101/assignments"

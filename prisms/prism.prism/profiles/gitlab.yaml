@@ -30,7 +30,7 @@ tools_required:
   - git
   - glab            # GitLab CLI - essential!
 
-tools_available:
+tools_optional:
   - vscode          # Good GitLab integration
   - docker
   - docker-compose

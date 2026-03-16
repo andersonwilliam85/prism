@@ -29,7 +29,7 @@ tools_required:
   - git
   - tea             # Gitea CLI (optional but recommended)
 
-tools_available:
+tools_optional:
   - vscode
   - docker
   - docker-compose

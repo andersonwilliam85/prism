@@ -131,6 +131,7 @@ class PackageManager:
                 options=f.get("options", []),
                 depends_on=f.get("depends_on", ""),
                 option_map=f.get("option_map", {}),
+                validation=f.get("validation", {}),
             )
             for f in raw_fields
             if isinstance(f, dict) and f.get("id")

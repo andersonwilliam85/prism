@@ -1,17 +1,57 @@
 # ============================================================================
 # MATHEMATICS DEPARTMENT
 # ============================================================================
+# LaTeX for proofs and papers, SageMath for computation, Python for
+# numerical work. Lightweight setup — math students mostly write, not code.
 
 department:
   id: "math"
   name: "Mathematics"
 
-tools_required:
-  - python3
-  - git
+# ── Tools ─────────────────────────────────────────────────────────────────────
 
-tech_stack:
-  tools:
-    - SageMath
-    - Mathematica
-    - LaTeX
+tools_required:
+  - git
+  - python3
+  - latex
+  - code
+
+tools_optional:
+  - sagemath
+  - jupyter
+  - pandoc
+  - zotero
+
+# ── Tool Notes ────────────────────────────────────────────────────────────────
+
+tools:
+  latex:
+    notes: "The standard for writing proofs, homework, and papers in mathematics"
+    getting_started: |
+      Create a file like homework.tex, then build it:
+        latexmk -pdf homework.tex
+      Or use the LaTeX Workshop extension in VS Code for live preview.
+    useful_packages:
+      - "amsmath, amssymb, amsthm — standard math typesetting"
+      - "tikz — diagrams and graphs"
+      - "algorithm2e — pseudocode"
+      - "hyperref — clickable references"
+  sagemath:
+    notes: "Free alternative to Mathematica and Maple. Handles algebra, calculus, combinatorics, number theory, and more."
+    getting_started: "Launch with: sage"
+  python:
+    notes: "numpy and scipy for numerical methods courses; sympy for symbolic math"
+    key_libraries:
+      - "numpy — linear algebra, numerical computation"
+      - "scipy — optimization, integration, differential equations"
+      - "sympy — symbolic math (CAS)"
+      - "matplotlib — plotting functions and data"
+
+# ── VS Code Extensions ───────────────────────────────────────────────────────
+
+vscode:
+  extensions:
+    - "james-yu.latex-workshop"
+    - "ms-python.python"
+    - "ms-toolsai.jupyter"
+    - "eamodio.gitlens"

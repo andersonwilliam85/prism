@@ -1,18 +1,86 @@
 # ============================================================================
-# CS 301: ALGORITHMS
+# CS 301: SYSTEMS PROGRAMMING
 # ============================================================================
+# C/C++ systems programming — memory management, pointers, OS concepts,
+# debugging with GDB, and memory checking with Valgrind.
 
 course:
   id: "cs301"
-  name: "CS 301: Algorithms"
-  description: "Algorithm design and complexity analysis"
+  name: "CS 301: Systems Programming"
+  description: "Systems-level programming in C/C++. Memory management, concurrency, and OS interfaces."
+  language: "C/C++"
+
+# ── Tools ─────────────────────────────────────────────────────────────────────
 
 tools_required:
-  - python3
-  - vscode
+  - gcc
+  - cmake
+  - code
   - git
+
+tools_optional:
+  - gdb
+  - valgrind
+  - docker
+
+# ── Workspace ─────────────────────────────────────────────────────────────────
+
+workspace:
+  directory: "~/courses/${SEMESTER}/cs301"
+  structure:
+    - "homework/"
+    - "labs/"
+    - "projects/"
+    - "notes/"
+
+# ── Setup Steps ───────────────────────────────────────────────────────────────
+
+setup:
+  steps:
+    - title: "Open your course folder"
+      command: "cd ~/courses/${SEMESTER}/cs301"
+
+    - title: "Verify GCC is installed"
+      command: "gcc --version && g++ --version"
+
+    - title: "Compile and run a test program"
+      command: |
+        echo '#include <stdio.h>\nint main() { printf("Hello, Systems!\\n"); return 0; }' > hello.c
+        gcc -Wall -Wextra -o hello hello.c
+        ./hello
+
+    - title: "Verify GDB (debugger)"
+      command: "gdb --version"
+
+    - title: "Verify Valgrind (Linux only)"
+      command: "valgrind --version"
+
+# ── Compiler Flags ────────────────────────────────────────────────────────────
+# Recommended flags for coursework — strict warnings catch bugs early.
+
+compiler:
+  recommended_flags:
+    c: "gcc -Wall -Wextra -Werror -std=c17 -g"
+    cpp: "g++ -Wall -Wextra -Werror -std=c++20 -g"
+  debug_flags: "-g -O0 -fsanitize=address,undefined"
+  notes: |
+    -Wall -Wextra: Enable all common warnings (your code should compile without warnings)
+    -Werror: Treat warnings as errors (forces clean code)
+    -g: Include debug symbols (needed for GDB)
+    -fsanitize=address,undefined: Catch memory bugs and undefined behavior at runtime
+
+# ── VS Code Extensions ───────────────────────────────────────────────────────
+
+vscode:
+  extensions:
+    - "ms-vscode.cpptools"
+    - "ms-vscode.cmake-tools"
+    - "eamodio.gitlens"
+
+# ── Repositories ──────────────────────────────────────────────────────────────
 
 repositories:
   - name: "cs301-assignments"
     url: "https://github.com/university/cs301-assignments"
-    description: "Algorithm assignment starter code"
+    description: "Starter code, Makefiles, and test harnesses for systems assignments"
+    clone_to: "~/courses/${SEMESTER}/cs301/assignments"

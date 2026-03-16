@@ -1,25 +1,23 @@
 # ============================================================================
 # OPEN SOURCE PRISM
 # ============================================================================
-# For open source project maintainers and contributors.
-# Community-driven, welcoming, transparent.
+# For open source maintainers and contributors who work across multiple
+# projects, languages, and communities. Optimized for multi-repo workflows,
+# GitHub-centric development, and the realities of maintaining public code.
 
 package:
   name: "opensource-prism"
-  version: "1.0.0"
-  description: "Open source contributor prism — minimal, welcoming, community-focused"
-  author: "Project Maintainers"
+  version: "2.0.0"
+  description: "Open source maintainer and contributor workstation — multi-repo, multi-language, GitHub-native"
+  author: "OSS Maintainers"
   homepage: "https://github.com/your-project"
   support:
     github: "https://github.com/your-project/issues"
-    discord: "https://discord.gg/your-project"
-    discussions: "https://github.com/your-project/discussions"
 
   type: "opensource"
 
   requires:
     onboarding_version: ">=1.0.0"
-    python_version: ">=3.8"
 
 # PRISM META-CONFIGURATION
 prism_config:
@@ -46,7 +44,7 @@ prism_config:
 
   branding:
     name: "Open Source Prism"
-    tagline: "Everyone is welcome. Every contribution counts."
+    tagline: "Ship, maintain, and contribute — across every repo."
     primary_color: "#059669"
     secondary_color: "#7c3aed"
 
@@ -55,7 +53,7 @@ bundled_prisms:
   base:
     - id: "opensource-base"
       name: "Open Source Base"
-      description: "Core open source contributor setup"
+      description: "Core OSS maintainer and contributor setup"
       required: true
       config: "base/opensource.yaml"
 
@@ -76,57 +74,57 @@ setup:
 
   post_install:
     message: |
-      🌟 Open source prism installed!
+      Open source prism installed.
 
-      Welcome to the community! We're excited to have you.
+      Workspace layout created:
+        ~/oss/maintained/   - projects you own and maintain
+        ~/oss/contributing/ - projects you contribute to
+        ~/oss/forks/        - forked repos awaiting upstream merge
 
-      First time contributing?
-      1. Read CONTRIBUTING.md
-      2. Look for "good first issue" labels
-      3. Join our Discord for help
+      Quick start:
+        oss-fork <owner/repo>       - fork, clone, set upstream
+        oss-sync                    - sync all forks with upstream
+        oss-pr                      - create PR from current branch
+        oss-release <version>       - tag, changelog, GitHub release
 
-      Ready to contribute:
-      1. Fork the repo
-      2. Create a branch
-      3. Make your changes
-      4. Submit a PR!
+      Run 'gh auth login' if you haven't already.
 
-      Every contribution counts! 💚
-
-# User info fields (minimal — open to all!)
+# User info fields
 user_info_fields:
   - id: "name"
     label: "Name"
     type: "text"
     required: true
-    placeholder: "Alex"
-    description: "How should we call you?"
+    placeholder: "Alex Chen"
+    description: "Name for git commits and DCO sign-off"
 
   - id: "email"
     label: "Email"
     type: "email"
     required: true
     placeholder: "alex@example.com"
-    description: "For git commits and notifications"
+    description: "For git commits and GPG key association"
 
   - id: "github_username"
     label: "GitHub Username"
     type: "text"
     required: true
     placeholder: "alexcodes"
+    description: "Used for fork URLs and PR workflows"
 
-  - id: "timezone"
-    label: "Timezone"
+  - id: "gpg_key_id"
+    label: "GPG Key ID"
     type: "text"
     required: false
-    placeholder: "UTC-5 (EST)"
-    description: "Helps with async collaboration"
+    placeholder: "ABCDEF1234567890"
+    description: "For verified/signed commits (run 'gpg --list-secret-keys --keyid-format=long')"
 
-  - id: "contribution_interest"
-    label: "What interests you?"
+  - id: "primary_languages"
+    label: "Primary Languages"
     type: "text"
     required: false
-    placeholder: "Documentation, bug fixes, new features"
+    placeholder: "python, rust, go, typescript"
+    description: "Languages you work in most — drives which linters and formatters to install"
 
 distribution:
   local:
@@ -141,12 +139,13 @@ metadata:
   tags:
     - recommended
     - opensource
-    - community
-    - contributors
-    - welcoming
+    - maintainer
+    - contributor
+    - multi-repo
+    - github
 
   company_size: "community"
   regions: ["Global"]
-  last_updated: "2026-03-05"
+  last_updated: "2026-03-15"
   maintainers:
     - "Open Source Community"

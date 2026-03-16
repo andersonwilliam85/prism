@@ -1,20 +1,71 @@
 # ============================================================================
 # COMPUTER SCIENCE DEPARTMENT
 # ============================================================================
+# Full development stack for CS majors and faculty.
+# Covers the languages used across the typical CS curriculum:
+#   - Python  (intro courses, AI/ML, scripting)
+#   - Java    (data structures, software engineering)
+#   - C/C++   (systems, OS, compilers)
+#   - JavaScript/Node (web development courses)
 
 department:
   id: "computer-science"
   name: "Computer Science"
 
-tools_required:
-  - vscode
-  - python3
-  - git
-  - docker
+# ── Tools ─────────────────────────────────────────────────────────────────────
 
-tech_stack:
-  languages:
-    - Python
-    - Java
-    - C++
-    - Haskell
+tools_required:
+  - git
+  - python3
+  - openjdk
+  - gcc
+  - code
+  - nvm
+
+tools_optional:
+  - jupyter
+  - docker
+  - cmake
+  - gdb
+  - valgrind
+  - sqlite3
+  - postgresql
+  - gh
+  - lazygit
+  - ripgrep
+  - fd
+
+# ── Language Setup ────────────────────────────────────────────────────────────
+
+languages:
+  python:
+    version: "3.12+"
+    notes: "Used in CS 101, AI, ML, scripting courses"
+  java:
+    version: "21 LTS"
+    notes: "Used in CS 201 (Data Structures), Software Engineering"
+    post_install: "javac --version  # verify compiler is available"
+  c_cpp:
+    compiler: "gcc/g++"
+    notes: "Used in CS 301 (Systems), OS, Compilers"
+    post_install: "gcc --version && g++ --version"
+  javascript:
+    manager: "nvm"
+    version: "lts"
+    notes: "Used in Web Development courses"
+    post_install: "nvm install --lts && node --version"
+
+# ── VS Code Extensions ───────────────────────────────────────────────────────
+
+vscode:
+  extensions:
+    - "ms-python.python"
+    - "ms-python.vscode-pylance"
+    - "redhat.java"
+    - "vscjava.vscode-java-pack"
+    - "ms-vscode.cpptools"
+    - "ms-vscode.cmake-tools"
+    - "dbaeumer.vscode-eslint"
+    - "esbenp.prettier-vscode"
+    - "ms-toolsai.jupyter"
+    - "eamodio.gitlens"

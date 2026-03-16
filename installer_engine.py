@@ -56,8 +56,8 @@ class InstallationEngine:
             selected_sub_prisms: Dict mapping tier name → sub-prism id the user chose.
                                  e.g. {"roles": "full-stack", "stacks": "mern"}
                                  Required sub-prisms (base tier) are always included automatically.
-            tools_selected:      Optional list of tool names to install (whitelist). If set, only these tools are installed.
-            tools_excluded:      Optional list of tool names to skip (blacklist). Applied after tools_selected.
+            tools_selected:      Optional list of tool names to install (whitelist).
+            tools_excluded:      Optional list of tool names to skip (blacklist).
             progress_callback:   Optional callable(step, message, level) for UI progress updates.
         """
         self.root_dir = Path(__file__).parent
@@ -391,9 +391,10 @@ class InstallationEngine:
             self.log("package_manager", "Installing Chocolatey...")
             install_cmd = (
                 'powershell -Command "Set-ExecutionPolicy Bypass -Scope Process -Force; '
-                "[System.Net.ServicePointManager]::SecurityProtocol = "
+                "[System.Net.ServicePointManager]::SecurityProtocol = "  # noqa: E501
                 "[System.Net.ServicePointManager]::SecurityProtocol -bor 3072; "
-                "iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))\""
+                "iex ((New-Object System.Net.WebClient)"
+                ".DownloadString('https://community.chocolatey.org/install.ps1'))\""
             )
             self.run_command(install_cmd, shell=True)
 

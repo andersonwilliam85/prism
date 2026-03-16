@@ -2,23 +2,19 @@
 # For developers who want an organized, batteries-included setup
 
 tools_required:
-  - git
-  - vscode
-  - node
-  - docker
-  - python3
+  - "git"
+  - "nvm"
+  - "docker"
 
 tools_optional:
-  - gh
-  - httpie
-  - jq
-  - tmux
-  - ripgrep
-  - fd
-  - fzf
-  - lazygit
-  - go
-  - rustc
+  - "gh"
+  - "httpie"
+  - "jq"
+  - "tmux"
+  - "ripgrep"
+  - "fd"
+  - "fzf"
+  - "lazygit"
 
 environment:
   workspace_root: "~/dev"

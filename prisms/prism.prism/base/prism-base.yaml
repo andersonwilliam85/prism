@@ -17,10 +17,48 @@ workspace:
     - docs
     - tooling
 
+# Tool definitions live in tool-registry.yaml
+# Sub-prisms can define their own tool-registry.yaml to add/override tools
+tool_registry_file: "tool-registry.yaml"
+
 tools_required:
-  - name: "git"
-    description: "Version control"
-    platforms:
-      mac: "brew install git"
-      ubuntu: "sudo apt-get install -y git"
-      linux: "sudo apt-get install -y git"
+  - "git"
+
+tools_optional:
+  - "cursor"
+  - "code"
+  - "zed"
+  - "nvim"
+  - "subl"
+  - "docker"
+  - "rancher"
+  - "podman"
+  - "nvm"
+  - "pyenv"
+  - "sdk"
+  - "dotnet"
+  - "rustup"
+  - "go"
+  - "perl"
+  - "rbenv"
+  - "aws"
+  - "az"
+  - "gcloud"
+  - "terraform"
+  - "pulumi"
+  - "kubectl"
+  - "helm"
+  - "k9s"
+  - "kubectx"
+  - "stern"
+  - "kustomize"
+  - "skaffold"
+  - "argocd"
+  - "gh"
+  - "httpie"
+  - "jq"
+  - "tmux"
+  - "ripgrep"
+  - "fd"
+  - "fzf"
+  - "lazygit"
