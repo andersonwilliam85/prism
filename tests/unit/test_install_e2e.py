@@ -17,7 +17,7 @@ from unittest.mock import MagicMock, patch
 from prism.engines.installation_engine._tools import get_install_command, resolve_from_registry, resolve_tools
 from prism.ui.app import create_app
 
-PRISMS_DIR = Path(__file__).parent.parent.parent / "prisms"
+PRISMS_DIR = Path(__file__).parent.parent.parent / "prism" / "prisms"
 
 
 # ======================================================================
