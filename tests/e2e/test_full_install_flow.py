@@ -79,7 +79,7 @@ class TestPrismConfig:
         resp = client.get("/api/package/prism.prism/config")
         assert resp.status_code == 200
         data = resp.get_json()
-        assert data["prism_config"]["theme"] == "ocean"
+        assert data["prism_config"]["theme"] == "prism"
 
     def test_config_returns_branding(self, client):
         resp = client.get("/api/package/prism.prism/config")
