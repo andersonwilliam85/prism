@@ -21,22 +21,17 @@ package:
 
 # PRISM META-CONFIGURATION
 prism_config:
-  theme: "university-brand"
+  theme: "campus"
   theme_options:
-    - "ocean"
-    - "purple"
-    - "forest"
-    - "sunset"
-    - "midnight"
-    - "university-brand"
+    - "campus"
   custom_themes:
-    - id: "university-brand"
-      name: "University Colors"
-      gradient_1: "#059669"
-      gradient_2: "#047857"
-      gradient_3: "#065f46"
-      gradient_4: "#064e3b"
-      gradient_5: "#022c22"
+    - id: "campus"
+      name: "Campus"
+      gradient_1: "#A51C30"
+      gradient_2: "#C62535"
+      gradient_3: "#1E1E1E"
+      gradient_4: "#8B0000"
+      gradient_5: "#D4AF37"
 
   sources:
     - url: "local"

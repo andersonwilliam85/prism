@@ -23,20 +23,15 @@ package:
 prism_config:
   theme: "launchpad"
   theme_options:
-    - "ocean"
-    - "purple"
-    - "forest"
-    - "sunset"
-    - "midnight"
     - "launchpad"
   custom_themes:
     - id: "launchpad"
       name: "Launchpad"
-      gradient_1: "#ea580c"
-      gradient_2: "#f97316"
-      gradient_3: "#fb923c"
-      gradient_4: "#f43f5e"
-      gradient_5: "#fb7185"
+      gradient_1: "#ff6b35"
+      gradient_2: "#f7931e"
+      gradient_3: "#ff4e50"
+      gradient_4: "#fc913a"
+      gradient_5: "#f9d423"
 
   sources:
     - url: "local"

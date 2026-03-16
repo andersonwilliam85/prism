@@ -22,13 +22,8 @@ package:
 
 # PRISM META-CONFIGURATION
 prism_config:
-  theme: "ocean"
+  theme: "prism"
   theme_options:
-    - "ocean"
-    - "purple"
-    - "forest"
-    - "sunset"
-    - "midnight"
     - "prism"
   custom_themes:
     - id: "prism"

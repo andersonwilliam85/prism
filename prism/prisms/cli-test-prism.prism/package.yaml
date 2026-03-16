@@ -8,6 +8,16 @@ package:
 
 prism_config:
   theme: "midnight"
+  theme_options:
+    - "midnight"
+  custom_themes:
+    - id: "midnight"
+      name: "Midnight"
+      gradient_1: "#2c3e50"
+      gradient_2: "#3498db"
+      gradient_3: "#34495e"
+      gradient_4: "#2980b9"
+      gradient_5: "#1abc9c"
   branding:
     name: "CLI Test Co Prism"
     tagline: "Empowering CLI Test Co Development"

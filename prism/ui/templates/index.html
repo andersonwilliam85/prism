@@ -8,55 +8,14 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/assets/branding/prism_transparent_16.png">
     <style>
         :root {
-            /* Ocean Blue Theme (Default) */
-            --gradient-1: #0093E9;
-            --gradient-2: #80D0C7;
-            --gradient-3: #13547a;
-            --gradient-4: #009ffd;
-            --gradient-5: #2a2a72;
-        }
-        
-        /* Theme Definitions */
-        [data-theme="ocean"] {
-            --gradient-1: #0093E9;
-            --gradient-2: #80D0C7;
-            --gradient-3: #13547a;
-            --gradient-4: #009ffd;
-            --gradient-5: #2a2a72;
-        }
-        
-        [data-theme="purple"] {
+            /* Defaults — overridden by package theme via JS */
             --gradient-1: #667eea;
             --gradient-2: #764ba2;
             --gradient-3: #f093fb;
-            --gradient-4: #4facfe;
-            --gradient-5: #00f2fe;
+            --gradient-4: #f5576c;
+            --gradient-5: #4facfe;
         }
-        
-        [data-theme="forest"] {
-            --gradient-1: #134E5E;
-            --gradient-2: #71B280;
-            --gradient-3: #56ab2f;
-            --gradient-4: #a8e063;
-            --gradient-5: #0f9b0f;
-        }
-        
-        [data-theme="sunset"] {
-            --gradient-1: #f12711;
-            --gradient-2: #f5af19;
-            --gradient-3: #ff6a00;
-            --gradient-4: #ee0979;
-            --gradient-5: #ff512f;
-        }
-        
-        [data-theme="midnight"] {
-            --gradient-1: #2c3e50;
-            --gradient-2: #3498db;
-            --gradient-3: #34495e;
-            --gradient-4: #2980b9;
-            --gradient-5: #1abc9c;
-        }
-        
+
         * {
             margin: 0;
             padding: 0;
@@ -602,26 +561,6 @@
             height: 40px;
             border-radius: 6px;
             margin-bottom: 8px;
-        }
-        
-        .theme-preview.ocean {
-            background: linear-gradient(135deg, #0093E9, #80D0C7);
-        }
-        
-        .theme-preview.purple {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-        }
-        
-        .theme-preview.forest {
-            background: linear-gradient(135deg, #134E5E, #71B280);
-        }
-        
-        .theme-preview.sunset {
-            background: linear-gradient(135deg, #f12711, #f5af19);
-        }
-        
-        .theme-preview.midnight {
-            background: linear-gradient(135deg, #2c3e50, #3498db);
         }
         
         .theme-name {

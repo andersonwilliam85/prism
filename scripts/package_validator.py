@@ -21,7 +21,8 @@ from typing import Any, Dict, List, Tuple
 
 import yaml
 
-VALID_THEMES = {"ocean", "purple", "forest", "sunset", "midnight"}
+# No built-in themes — all themes are defined per-package in custom_themes
+VALID_THEMES: set[str] = set()
 VALID_FIELD_TYPES = {"text", "email", "url", "select", "number", "checkbox"}
 
 

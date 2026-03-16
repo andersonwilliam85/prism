@@ -26,20 +26,15 @@ package:
 prism_config:
   theme: "corporate"
   theme_options:
-    - "ocean"
-    - "purple"
-    - "forest"
-    - "sunset"
-    - "midnight"
     - "corporate"
   custom_themes:
     - id: "corporate"
       name: "Corporate Blue"
-      gradient_1: "#1e3a8a"
-      gradient_2: "#1e40af"
-      gradient_3: "#2563eb"
-      gradient_4: "#3b82f6"
-      gradient_5: "#60a5fa"
+      gradient_1: "#1e3a5f"
+      gradient_2: "#2c5282"
+      gradient_3: "#4a6fa5"
+      gradient_4: "#718096"
+      gradient_5: "#a0aec0"
 
   sources:
     - url: "local"
