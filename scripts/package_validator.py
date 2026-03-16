@@ -275,7 +275,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         package_path = Path(sys.argv[1])
     else:
-        package_path = Path(__file__).parent.parent / "prisms"
+        package_path = Path(__file__).parent.parent / "prism" / "prisms"
 
     if package_path.is_dir() and (package_path / "package.yaml").exists():
         # Validate single prism
