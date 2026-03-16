@@ -25,19 +25,22 @@ package:
 
 # PRISM META-CONFIGURATION
 prism_config:
-  theme: "purple"
+  theme: "consultant"
   theme_options:
-    - "purple"
-    - "midnight"
     - "ocean"
+    - "purple"
+    - "forest"
+    - "sunset"
+    - "midnight"
+    - "consultant"
   custom_themes:
     - id: "consultant"
       name: "Consultant"
-      gradient_1: "#7c3aed"
-      gradient_2: "#8b5cf6"
-      gradient_3: "#a78bfa"
-      gradient_4: "#06b6d4"
-      gradient_5: "#22d3ee"
+      gradient_1: "#6d28d9"
+      gradient_2: "#7c3aed"
+      gradient_3: "#8b5cf6"
+      gradient_4: "#0d9488"
+      gradient_5: "#14b8a6"
 
   sources:
     - url: "local"

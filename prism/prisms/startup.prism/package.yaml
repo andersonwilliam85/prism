@@ -21,20 +21,22 @@ package:
 
 # PRISM META-CONFIGURATION
 prism_config:
-  theme: "sunset"
+  theme: "launchpad"
   theme_options:
-    - "sunset"
     - "ocean"
     - "purple"
+    - "forest"
+    - "sunset"
+    - "midnight"
     - "launchpad"
   custom_themes:
     - id: "launchpad"
       name: "Launchpad"
-      gradient_1: "#f97316"
-      gradient_2: "#fb923c"
-      gradient_3: "#fbbf24"
-      gradient_4: "#facc15"
-      gradient_5: "#fde68a"
+      gradient_1: "#ea580c"
+      gradient_2: "#f97316"
+      gradient_3: "#fb923c"
+      gradient_4: "#f43f5e"
+      gradient_5: "#fb7185"
 
   sources:
     - url: "local"

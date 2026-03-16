@@ -24,10 +24,14 @@ package:
 
 # PRISM META-CONFIGURATION
 prism_config:
-  theme: "midnight"
+  theme: "corporate"
   theme_options:
-    - "midnight"
     - "ocean"
+    - "purple"
+    - "forest"
+    - "sunset"
+    - "midnight"
+    - "corporate"
   custom_themes:
     - id: "corporate"
       name: "Corporate Blue"

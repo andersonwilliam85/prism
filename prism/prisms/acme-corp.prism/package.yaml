@@ -23,10 +23,13 @@ package:
 
 # PRISM META-CONFIGURATION
 prism_config:
-  theme: "midnight"
+  theme: "acme"
   theme_options:
-    - "midnight"
     - "ocean"
+    - "purple"
+    - "forest"
+    - "sunset"
+    - "midnight"
     - "acme"
   custom_themes:
     - id: "acme"

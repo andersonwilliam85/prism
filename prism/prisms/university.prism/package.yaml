@@ -21,11 +21,14 @@ package:
 
 # PRISM META-CONFIGURATION
 prism_config:
-  theme: "forest"
+  theme: "university-brand"
   theme_options:
-    - "forest"
     - "ocean"
+    - "purple"
+    - "forest"
+    - "sunset"
     - "midnight"
+    - "university-brand"
   custom_themes:
     - id: "university-brand"
       name: "University Colors"

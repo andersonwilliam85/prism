@@ -21,12 +21,13 @@ package:
 
 # PRISM META-CONFIGURATION
 prism_config:
-  theme: "forest"
+  theme: "community"
   theme_options:
-    - "forest"
     - "ocean"
     - "purple"
+    - "forest"
     - "sunset"
+    - "midnight"
     - "community"
   custom_themes:
     - id: "community"
