@@ -887,6 +887,15 @@
             <div class="progress-fill" id="progressFill" style="width: 20%"></div>
         </div>
         
+        <!-- Previous Installs Banner -->
+        <div id="previousInstalls" style="display: none; margin-bottom: 20px; padding: 16px 20px; background: linear-gradient(135deg, rgba(102,126,234,0.06), rgba(118,75,162,0.06)); border: 1px solid rgba(102,126,234,0.15); border-radius: 10px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                <h4 style="margin: 0; font-size: 0.95em; color: #444;">Previous Installations</h4>
+                <button class="btn-secondary" style="font-size: 0.8em; padding: 4px 12px;" onclick="document.getElementById('previousInstalls').style.display='none'">Dismiss</button>
+            </div>
+            <div id="previousInstallsList"></div>
+        </div>
+
         <!-- Step 1: Environment Selection (tiers from loaded prism) -->
         <div class="step active" id="step1">
             <h2 id="step1Title">Choose Your Setup</h2>
@@ -2376,9 +2385,68 @@
             });
         }
         
+        // Check for previous installations
+        async function checkPreviousInstalls() {
+            try {
+                const resp = await fetch('/api/history');
+                const data = await resp.json();
+                const installs = data.installs || [];
+                if (installs.length === 0) return;
+
+                const container = document.getElementById('previousInstallsList');
+                const wrapper = document.getElementById('previousInstalls');
+                wrapper.style.display = 'block';
+
+                container.innerHTML = installs.map((inst, i) => `
+                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; background: white; border-radius: 8px; margin-bottom: 6px; border: 1px solid #eee;">
+                        <div style="flex: 1;">
+                            <strong style="font-size: 0.9em;">${inst.package || 'Unknown'}</strong>
+                            <span style="color: #888; font-size: 0.8em; margin-left: 8px;">${inst.workspace}</span>
+                            ${inst.installed_at ? `<span style="color: #aaa; font-size: 0.75em; margin-left: 8px;">${new Date(inst.installed_at).toLocaleDateString()}</span>` : ''}
+                            ${inst.tools_installed ? `<div style="color: #888; font-size: 0.75em; margin-top: 2px;">${inst.tools_installed.length} tools installed</div>` : ''}
+                        </div>
+                        ${inst.has_rollback ? `
+                            <button class="btn-danger" style="font-size: 0.8em; padding: 5px 14px;"
+                                onclick="rollbackPrevious('${inst.workspace}', this)">Rollback</button>
+                        ` : `
+                            <span style="color: #aaa; font-size: 0.75em;">No rollback available</span>
+                        `}
+                    </div>
+                `).join('');
+            } catch (e) {
+                // Silently fail — not critical
+            }
+        }
+
+        async function rollbackPrevious(workspace, btn) {
+            if (!confirm('Rollback this installation? This will uninstall tools and remove directories.')) return;
+            btn.disabled = true;
+            btn.textContent = 'Rolling back...';
+            try {
+                const resp = await fetch('/api/rollback', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ workspace })
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    btn.textContent = 'Done';
+                    btn.style.background = '#10b981';
+                    setTimeout(() => checkPreviousInstalls(), 1000);
+                } else {
+                    btn.textContent = 'Failed';
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                btn.textContent = 'Failed';
+                btn.disabled = false;
+            }
+        }
+
         // Initialize
         updateProgress();
         loadPackages();
+        checkPreviousInstalls();
     </script>
 </body>
 </html>
