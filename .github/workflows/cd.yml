@@ -1,0 +1,55 @@
+name: CD
+
+on:
+  push:
+    branches: [dev, stage, main]
+    paths-ignore: ['docs/**', '*.md', 'LICENSE']
+
+jobs:
+  deploy-dev:
+    name: Deploy dev
+    if: github.ref_name == 'dev'
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: make install-dev
+      - name: Quick checks
+        run: make check
+      - name: Deploy
+        run: make deploy-dev
+
+  deploy-stage:
+    name: Deploy stage
+    if: github.ref_name == 'stage'
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: make install-dev
+      - name: Full tests
+        run: make test-all
+      - name: Deploy
+        run: make deploy-stage
+      - name: Smoke tests
+        run: make test-smoke
+
+  deploy-prod:
+    name: Deploy prod
+    if: github.ref_name == 'main'
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install dependencies
+        run: make install-dev
+      - name: Build distribution
+        run: pip install build && python -m build
+      - name: Deploy
+        run: make deploy-prod
+      - name: Publish to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+        run: pip install twine && twine upload dist/*
