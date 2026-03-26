@@ -15,10 +15,10 @@ concurrency:
 jobs:
   deploy:
     name: Build & publish to GitHub Pages
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     container: ruby:3
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install Jekyll dependencies
         run: cd docs && bundle install

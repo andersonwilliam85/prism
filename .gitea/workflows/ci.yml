@@ -11,10 +11,10 @@ on:
 jobs:
   lint:
     name: Lint
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     container: python:3.11
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: make install-dev
@@ -27,10 +27,10 @@ jobs:
 
   unit:
     name: Unit tests
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     container: python:3.11
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: make install-dev
@@ -40,10 +40,10 @@ jobs:
 
   cli:
     name: CLI tests
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     container: python:3.11
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: make install-dev
@@ -53,10 +53,10 @@ jobs:
 
   web:
     name: Web API tests
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     container: python:3.11
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: make install-dev
@@ -66,10 +66,10 @@ jobs:
 
   integration:
     name: Integration tests
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     container: python:3.11
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: make install-dev
@@ -79,10 +79,10 @@ jobs:
 
   coverage:
     name: Coverage
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     container: python:3.11
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: make install-dev
@@ -91,14 +91,14 @@ jobs:
         run: make test-coverage
 
       - name: Upload report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-report
           path: htmlcov/
 
   gate:
     name: All checks
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     container: ubuntu:24.04
     needs: [lint, unit, cli, web, integration, coverage]
     if: always()

@@ -7,10 +7,10 @@ on:
 jobs:
   publish:
     name: Build & Publish
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     container: python:3.11
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install build tools
         run: pip install build twine

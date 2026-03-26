@@ -17,10 +17,10 @@ on:
 jobs:
   test:
     name: Test (Python 3.11)
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     container: python:3.11
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
@@ -38,7 +38,7 @@ jobs:
         run: pytest tests/integration/ -v
 
       - name: Upload coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-report
           path: |
@@ -47,10 +47,10 @@ jobs:
 
   lint:
     name: Lint
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     container: python:3.11
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install linting tools
         run: pip install flake8 black isort mypy

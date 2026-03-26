@@ -12,10 +12,10 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     container: python:3.11
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -35,7 +35,7 @@ jobs:
         run: cd dist && sha256sum * > SHA256SUMS.txt
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: prism-${{ steps.version.outputs.version }}
           path: dist/
@@ -43,26 +43,26 @@ jobs:
 
   release:
     name: Create Release
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     container: ubuntu:24.04
     needs: build
     if: startsWith(gitea.ref, 'refs/tags/')
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: prism-*
           path: ./artifacts
 
       - name: Create Gitea release
         env:
-          GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
+          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
         run: |
           TAG="${GITEA_REF_NAME}"
           curl -sf -X POST \
-            -H "Authorization: token $GITEA_TOKEN" \
+            -H "Authorization: token $GIT_TOKEN" \
             -H "Content-Type: application/json" \
             "https://git.neuralplatform.ai/api/v1/repos/${{ gitea.repository }}/releases" \
             -d "{\"tag_name\":\"$TAG\",\"name\":\"Prism $TAG\",\"draft\":false}"
