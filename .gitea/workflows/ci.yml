@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [dev, stage, main]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'LICENSE'
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: make install-dev
+
+      - name: Check formatting
+        run: make format-check
+
+      - name: Run linters
+        run: make lint
+
+  unit:
+    name: Unit tests
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: make install-dev
+
+      - name: Run tests
+        run: make test-unit
+
+  cli:
+    name: CLI tests
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: make install-dev
+
+      - name: Run tests
+        run: make test-cli
+
+  web:
+    name: Web API tests
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: make install-dev
+
+      - name: Run tests
+        run: make test-web
+
+  integration:
+    name: Integration tests
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: make install-dev
+
+      - name: Run tests
+        run: make test-integration
+
+  coverage:
+    name: Coverage
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: make install-dev
+
+      - name: Run tests with coverage
+        run: make test-coverage
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: htmlcov/
+
+  gate:
+    name: All checks
+    runs-on: self-hosted
+    needs: [lint, unit, cli, web, integration, coverage]
+    if: always()
+    steps:
+      - name: Verify results
+        run: |
+          if [ "${{ needs.lint.result }}" != "success" ] || \
+             [ "${{ needs.unit.result }}" != "success" ] || \
+             [ "${{ needs.cli.result }}" != "success" ] || \
+             [ "${{ needs.web.result }}" != "success" ] || \
+             [ "${{ needs.integration.result }}" != "success" ] || \
+             [ "${{ needs.coverage.result }}" != "success" ]; then
+            echo "Some checks failed"
+            exit 1
+          fi

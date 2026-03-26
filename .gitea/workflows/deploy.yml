@@ -1,0 +1,66 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - dev
+      - stage
+      - main
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install build tools
+        run: pip install build
+
+      - name: Get version
+        id: version
+        run: |
+          VERSION=$(git describe --tags --always --dirty 2>/dev/null || echo "0.0.0-${GITEA_SHA::8}")
+          echo "version=$VERSION" >> $GITEA_OUTPUT
+
+      - name: Build distribution
+        run: python -m build
+
+      - name: Generate checksums
+        run: cd dist && sha256sum * > SHA256SUMS.txt
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: prism-${{ steps.version.outputs.version }}
+          path: dist/
+          retention-days: 30
+
+  release:
+    name: Create Release
+    runs-on: self-hosted
+    needs: build
+    if: startsWith(gitea.ref, 'refs/tags/')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: prism-*
+          path: ./artifacts
+
+      - name: Create Gitea release
+        env:
+          GITEA_TOKEN: ${{ secrets.GITEA_TOKEN }}
+        run: |
+          TAG="${GITEA_REF_NAME}"
+          curl -sf -X POST \
+            -H "Authorization: token $GITEA_TOKEN" \
+            -H "Content-Type: application/json" \
+            "https://git.neuralplatform.ai/api/v1/repos/${{ gitea.repository }}/releases" \
+            -d "{\"tag_name\":\"$TAG\",\"name\":\"Prism $TAG\",\"draft\":false}"
