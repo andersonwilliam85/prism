@@ -8,48 +8,37 @@ on:
       - 'docs/**'
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 concurrency:
   group: docs-deploy
   cancel-in-progress: true
 
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    name: Build & publish to GitHub Pages
+    runs-on: self-hosted
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.2'
-          bundler-cache: true
-          working-directory: docs
-
-      - name: Build with Jekyll
+      - name: Install Jekyll dependencies
         run: |
-          cd docs
-          bundle install
-          bundle exec jekyll build --destination ../_site
+          gem install bundler
+          cd docs && bundle install
+
+      - name: Build site
+        run: cd docs && bundle exec jekyll build --destination ../_site
         env:
           JEKYLL_ENV: production
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Push to gh-pages
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          git config user.name "Gitea CI"
+          git config user.email "ci@neuralplatform.ai"
+          cd _site
+          git init
+          git add -A
+          git commit -m "docs: deploy from ${GITEA_SHA::8}"
+          git push --force \
+            "https://x-access-token:${GH_PAT}@github.com/andersonwilliam85/prism.git" \
+            HEAD:gh-pages
