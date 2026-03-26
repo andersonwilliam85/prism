@@ -8,6 +8,7 @@ jobs:
   publish:
     name: Build & Publish
     runs-on: self-hosted
+    container: python:3.11
     steps:
       - uses: actions/checkout@v4
 

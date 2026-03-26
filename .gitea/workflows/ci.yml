@@ -12,6 +12,7 @@ jobs:
   lint:
     name: Lint
     runs-on: self-hosted
+    container: python:3.11
     steps:
       - uses: actions/checkout@v4
 
@@ -27,6 +28,7 @@ jobs:
   unit:
     name: Unit tests
     runs-on: self-hosted
+    container: python:3.11
     steps:
       - uses: actions/checkout@v4
 
@@ -39,6 +41,7 @@ jobs:
   cli:
     name: CLI tests
     runs-on: self-hosted
+    container: python:3.11
     steps:
       - uses: actions/checkout@v4
 
@@ -51,6 +54,7 @@ jobs:
   web:
     name: Web API tests
     runs-on: self-hosted
+    container: python:3.11
     steps:
       - uses: actions/checkout@v4
 
@@ -63,6 +67,7 @@ jobs:
   integration:
     name: Integration tests
     runs-on: self-hosted
+    container: python:3.11
     steps:
       - uses: actions/checkout@v4
 
@@ -75,6 +80,7 @@ jobs:
   coverage:
     name: Coverage
     runs-on: self-hosted
+    container: python:3.11
     steps:
       - uses: actions/checkout@v4
 
@@ -93,6 +99,7 @@ jobs:
   gate:
     name: All checks
     runs-on: self-hosted
+    container: ubuntu:24.04
     needs: [lint, unit, cli, web, integration, coverage]
     if: always()
     steps:

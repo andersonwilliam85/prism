@@ -18,6 +18,7 @@ jobs:
   test:
     name: Test (Python 3.11)
     runs-on: self-hosted
+    container: python:3.11
     steps:
       - uses: actions/checkout@v4
 
@@ -47,6 +48,7 @@ jobs:
   lint:
     name: Lint
     runs-on: self-hosted
+    container: python:3.11
     steps:
       - uses: actions/checkout@v4
 

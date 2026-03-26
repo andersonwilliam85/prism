@@ -16,6 +16,7 @@ jobs:
   deploy:
     name: Build & publish to GitHub Pages
     runs-on: self-hosted
+    container: ruby:3
     steps:
       - uses: actions/checkout@v4
 
