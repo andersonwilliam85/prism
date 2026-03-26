@@ -19,9 +19,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Jekyll dependencies
+      - name: Install Ruby & Jekyll dependencies
         run: |
-          gem install bundler
+          apt-get install -y ruby-full ruby-bundler build-essential zlib1g-dev
           cd docs && bundle install
 
       - name: Build site
